@@ -52,9 +52,10 @@ export default function TriviaGame() {
 
   return (
     <div
-      className="min-h-screen flex flex-col relative overflow-hidden"
+      className="min-h-screen flex flex-col relative"
       style={{ background: "hsl(var(--game-bg))" }}
     >
+
       {/* Ambient light blobs */}
       <div
         className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
