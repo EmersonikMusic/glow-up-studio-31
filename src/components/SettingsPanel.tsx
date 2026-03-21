@@ -1,6 +1,14 @@
-import { X, LayoutGrid, BarChart2, Hourglass, SlidersHorizontal, MoreHorizontal, ChevronDown } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
+import iconCategoriesActive from "@/assets/icon-categories-active.svg";
+import iconCategoriesInactive from "@/assets/icon-categories-inactive.svg";
+import iconDifficultyActive from "@/assets/icon-difficulty-active.svg";
+import iconDifficultyInactive from "@/assets/icon-difficulty-inactive.svg";
+import iconEraActive from "@/assets/icon-era-active.svg";
+import iconEraInactive from "@/assets/icon-era-inactive.svg";
+import iconSettingsActive from "@/assets/icon-settings-active.svg";
+import iconSettingsInactive from "@/assets/icon-settings-inactive.svg";
 
 interface SettingsPanelProps {
   open: boolean;
