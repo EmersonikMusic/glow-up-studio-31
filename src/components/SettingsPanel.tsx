@@ -56,6 +56,33 @@ function ToggleRow({ label, active, onClick }: { label: string; active: boolean;
   );
 }
 
+function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="flex items-center justify-center w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl active:scale-95"
+      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "14px 30px", minHeight: "48px" }}
+      aria-label={expanded ? "Show less" : "Show more"}
+    >
+      {expanded ? (
+        <span className="text-[10px] font-black tracking-[0.2em] uppercase" style={{ color: "hsl(185 70% 55%)" }}>
+          Show less ↑
+        </span>
+      ) : (
+        <div className="flex items-center gap-[5px]">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="rounded-full"
+              style={{ width: "6px", height: "6px", background: "hsl(185 70% 55%)" }}
+            />
+          ))}
+        </div>
+      )}
+    </button>
+  );
+}
+
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
