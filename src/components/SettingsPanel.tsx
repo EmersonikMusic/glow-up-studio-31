@@ -24,7 +24,7 @@ const difficulties = ["Casual", "Easy", "Average", "Hard", "Genius"];
 const eras = ["Pre-1500","1500-1800","1800-1900","1900-1950","1950s","1960s","1970s","1980s","1990s","2000s","2010s","2020s"];
 
 const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
-const EXTRA_ROW_H = 42;
+const EXTRA_ROW_H = 46;
 const SECTION_MAX = 2000;
 
 function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
@@ -42,8 +42,8 @@ function SectionHeader({ icon, label, open, onToggle }: {
   return (
     <button
       onClick={onToggle}
-      className="flex items-center gap-2 w-full shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)] rounded-2xl"
-      style={{ padding: "30px" }}
+      className="flex items-center gap-3 w-full shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)] rounded-2xl"
+      style={{ padding: "14px 20px" }}
     >
       {icon}
       <span
@@ -61,8 +61,8 @@ function SectionHeader({ icon, label, open, onToggle }: {
 function ToggleRow({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <div
-      className="flex items-center gap-3 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
-      style={{ borderBottom: "1px solid hsl(var(--game-card-border))", paddingLeft: "30px", paddingRight: "30px" }}
+      className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
+      style={{ borderBottom: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
       onClick={onClick}
     >
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
@@ -81,7 +81,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
     <button
       onClick={onToggle}
       className="flex items-center justify-center w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl active:scale-95"
-      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "14px 30px", minHeight: "48px" }}
+      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
       aria-label={expanded ? "Show less" : "Show more"}
     >
       {expanded ? (
@@ -176,7 +176,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       {/* Sliding panel */}
       <div
         className="fixed inset-y-0 right-0 z-40 flex"
-        style={{ width: "min(360px, 90vw)", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
+        style={{ width: "min(400px, 92vw)", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
         {/* Close tab */}
         <button
@@ -194,25 +194,25 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           style={{ background: "hsl(var(--game-card))", borderLeft: "1px solid hsl(var(--game-card-border))", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)", display: "flex", flexDirection: "column" }}
         >
           {/* Nav links */}
-          <div className="flex items-center justify-end gap-6 px-6 pt-5 pb-3">
+          <div className="flex items-center justify-end gap-5 px-5 pt-4 pb-3">
             <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">LOGIN</button>
             <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">ABOUT US</button>
           </div>
-          <div className="px-6 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+          <div className="px-5 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
           {/* Title */}
-          <div className="px-6 py-4">
+          <div className="px-5 py-4">
             <h2
-              className="text-4xl font-black leading-none tracking-tight uppercase"
-              style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.05 }}
+              className="text-3xl font-black leading-none tracking-tight uppercase"
+              style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
             >
               CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
             </h2>
           </div>
-          <div className="px-6 mb-4"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+          <div className="px-5 mb-3"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
           {/* ── CATEGORIES ── */}
-          <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
@@ -229,7 +229,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </section>
 
           {/* ── DIFFICULTY ── */}
-          <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
@@ -240,7 +240,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </section>
 
           {/* ── ERAS ── */}
-          <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
@@ -257,10 +257,10 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </section>
 
           {/* ── GAME SETTINGS ── */}
-          <section className="mx-4 mb-6 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
             <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <div className="p-4 flex flex-col gap-4">
+              <div className="px-5 py-5 flex flex-col gap-5">
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-2">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
@@ -287,7 +287,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </section>
 
           {/* Apply button */}
-          <div className="px-4 pb-8">
+          <div className="px-3 pb-6">
             <button
               onClick={onClose}
               className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
