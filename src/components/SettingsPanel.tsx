@@ -81,7 +81,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
     <button
       onClick={onToggle}
       className="flex items-center justify-center w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl active:scale-95"
-      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "14px 30px", minHeight: "48px" }}
+      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
       aria-label={expanded ? "Show less" : "Show more"}
     >
       {expanded ? (
