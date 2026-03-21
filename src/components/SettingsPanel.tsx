@@ -1,12 +1,41 @@
 import { X, LayoutGrid, BarChart2, Hourglass, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
 
 interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
 }
 
-const categories = ["Science", "History", "Geography", "Sports", "Entertainment", "Literature"];
+const categories = [
+  "All Categories",
+  "Art",
+  "Economics",
+  "Food",
+  "Games",
+  "Geography",
+  "History",
+  "Human Body",
+  "Language",
+  "Law",
+  "Literature",
+  "Math",
+  "Miscellaneous",
+  "Movies",
+  "Music",
+  "Nature",
+  "Philosophy",
+  "Politics",
+  "Pop Culture",
+  "Science",
+  "Sports",
+  "Technology",
+  "Television",
+  "Theater",
+  "Theology",
+  "Video Games",
+];
+
 const difficulties = ["Easy", "Medium", "Hard", "Genius"];
 const eras = ["Ancient", "Medieval", "Modern", "Contemporary"];
 
@@ -18,12 +47,25 @@ const difficultyColor: Record<string, string> = {
 };
 
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(["Science", "History"]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(["All Categories"]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Medium", "Hard"]);
   const [selectedEras, setSelectedEras] = useState<string[]>(["Modern", "Contemporary"]);
   const [numQuestions, setNumQuestions] = useState(40);
   const [timePerQuestion, setTimePerQuestion] = useState(10);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
+
+  const toggleCategory = (cat: string) => {
+    if (cat === "All Categories") {
+      setSelectedCategories(
+        selectedCategories.includes("All Categories") ? [] : ["All Categories"]
+      );
+      return;
+    }
+    const withoutAll = selectedCategories.filter((v) => v !== "All Categories");
+    setSelectedCategories(
+      withoutAll.includes(cat) ? withoutAll.filter((v) => v !== cat) : [...withoutAll, cat]
+    );
+  };
 
   const toggle = (
     val: string,
@@ -55,7 +97,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        {/* Gear tab on left edge */}
+        {/* Close tab on left edge */}
         <button
           onClick={onClose}
           className="absolute -left-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 rounded-l-2xl transition-all duration-200 hover:brightness-110 active:scale-95"
@@ -114,28 +156,49 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
           </div>
 
-          {/* Categories */}
-          <section className="px-6 mb-4">
-            <div className="flex items-center gap-2 mb-3">
+          {/* Categories — scrollable, 50vh tall */}
+          <section
+            className="mx-4 mb-4 rounded-2xl flex flex-col"
+            style={{
+              background: "hsl(240 42% 15%)",
+              border: "1px solid hsl(var(--game-card-border))",
+              height: "50vh",
+              minHeight: 0,
+            }}
+          >
+            <div className="flex items-center gap-2 px-4 pt-4 pb-3 shrink-0">
               <LayoutGrid className="w-4 h-4 text-[hsl(185_70%_55%)]" />
-              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Categories</span>
+              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
+                Categories
+              </span>
             </div>
-            <div className="flex flex-wrap gap-2">
+
+            <div
+              className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-3"
+              style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(185 70% 35%) transparent" }}
+            >
               {categories.map((cat) => {
                 const active = selectedCategories.includes(cat);
                 return (
-                  <button
+                  <div
                     key={cat}
-                    onClick={() => toggle(cat, setSelectedCategories, selectedCategories)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95"
-                    style={{
-                      background: active ? "hsl(185 70% 40% / 0.3)" : "hsl(var(--game-progress))",
-                      border: `1px solid ${active ? "hsl(185 70% 55%)" : "transparent"}`,
-                      color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))",
-                    }}
+                    className="flex items-center justify-between py-2.5 cursor-pointer"
+                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+                    onClick={() => toggleCategory(cat)}
                   >
-                    {cat}
-                  </button>
+                    <Switch
+                      checked={active}
+                      onCheckedChange={() => toggleCategory(cat)}
+                      className="data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span
+                      className="text-xs font-black tracking-widest uppercase transition-colors"
+                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+                    >
+                      {cat}
+                    </span>
+                  </div>
                 );
               })}
             </div>
@@ -145,7 +208,9 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <section className="px-6 mb-4">
             <div className="flex items-center gap-2 mb-3">
               <BarChart2 className="w-4 h-4 text-[hsl(185_70%_55%)]" />
-              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Difficulty</span>
+              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
+                Difficulty
+              </span>
             </div>
             <div className="flex flex-wrap gap-2">
               {difficulties.map((diff) => {
@@ -172,7 +237,9 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <section className="px-6 mb-5">
             <div className="flex items-center gap-2 mb-3">
               <Hourglass className="w-4 h-4 text-[hsl(185_70%_55%)]" />
-              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Eras</span>
+              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
+                Eras
+              </span>
             </div>
             <div className="flex flex-wrap gap-2">
               {eras.map((era) => {
@@ -205,57 +272,44 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           >
             <div className="flex items-center gap-2 mb-4">
               <SlidersHorizontal className="w-4 h-4 text-[hsl(185_70%_55%)]" />
-              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Game Settings</span>
+              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
+                Game Settings
+              </span>
             </div>
 
-            {/* Questions slider */}
             <div className="mb-4">
               <div className="flex items-baseline gap-1.5 mb-2">
                 <span className="text-lg font-black text-foreground">{numQuestions}</span>
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Questions</span>
               </div>
               <input
-                type="range"
-                min={5}
-                max={80}
-                step={5}
-                value={numQuestions}
+                type="range" min={5} max={80} step={5} value={numQuestions}
                 onChange={(e) => setNumQuestions(Number(e.target.value))}
                 className="w-full h-1 rounded-full appearance-none cursor-pointer"
                 style={{ accentColor: "hsl(185 70% 55%)" }}
               />
             </div>
 
-            {/* Time per question slider */}
             <div className="mb-4">
               <div className="flex items-baseline gap-1.5 mb-2">
                 <span className="text-lg font-black text-foreground">{timePerQuestion}s</span>
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">/ Question</span>
               </div>
               <input
-                type="range"
-                min={5}
-                max={60}
-                step={5}
-                value={timePerQuestion}
+                type="range" min={5} max={60} step={5} value={timePerQuestion}
                 onChange={(e) => setTimePerQuestion(Number(e.target.value))}
                 className="w-full h-1 rounded-full appearance-none cursor-pointer"
                 style={{ accentColor: "hsl(185 70% 55%)" }}
               />
             </div>
 
-            {/* Time per answer slider */}
             <div>
               <div className="flex items-baseline gap-1.5 mb-2">
                 <span className="text-lg font-black text-foreground">{timePerAnswer}s</span>
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">/ Answer</span>
               </div>
               <input
-                type="range"
-                min={2}
-                max={30}
-                step={1}
-                value={timePerAnswer}
+                type="range" min={2} max={30} step={1} value={timePerAnswer}
                 onChange={(e) => setTimePerAnswer(Number(e.target.value))}
                 className="w-full h-1 rounded-full appearance-none cursor-pointer"
                 style={{ accentColor: "hsl(185 70% 55%)" }}
