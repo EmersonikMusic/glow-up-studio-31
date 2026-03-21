@@ -24,7 +24,7 @@ const difficulties = ["Casual", "Easy", "Average", "Hard", "Genius"];
 const eras = ["Pre-1500","1500-1800","1800-1900","1900-1950","1950s","1960s","1970s","1980s","1990s","2000s","2010s","2020s"];
 
 const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
-const EXTRA_ROW_H = 42;
+const EXTRA_ROW_H = 46;
 const SECTION_MAX = 2000;
 
 function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
