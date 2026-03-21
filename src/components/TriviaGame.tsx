@@ -59,8 +59,12 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
   }, []);
 
+  if (gameState === "about") {
+    return <AboutScreen onClose={() => setGameState("start")} />;
+  }
+
   if (gameState === "start") {
-    return <StartScreen onStart={handleStart} />;
+    return <StartScreen onStart={handleStart} onAbout={() => setGameState("about")} />;
   }
 
   return (
