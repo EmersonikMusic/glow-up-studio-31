@@ -257,7 +257,6 @@ All colors MUST be HSL.
   border-radius: 50%;
   background: hsl(185 70% 55%);
   cursor: pointer;
-  margin-top: -6px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
   border: 2px solid hsl(185 70% 80%);
   position: relative;
