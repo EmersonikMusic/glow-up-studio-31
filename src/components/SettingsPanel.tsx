@@ -104,7 +104,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
   );
 }
 
-export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
   const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
