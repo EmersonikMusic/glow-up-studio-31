@@ -212,7 +212,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <div className="px-5 mb-3"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
           {/* ── CATEGORIES ── */}
-          <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
