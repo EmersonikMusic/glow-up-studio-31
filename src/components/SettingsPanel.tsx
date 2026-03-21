@@ -26,7 +26,7 @@ function SectionHeader({ icon, label, open, onToggle }: {
     <button
       onClick={onToggle}
       className="flex items-center gap-2 w-full shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)] rounded-t-2xl"
-      style={{ padding: "16px 60px" }}
+      style={{ padding: "30px" }}
     >
       {icon}
       <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase flex-1 text-left">{label}</span>
@@ -42,7 +42,7 @@ function ToggleRow({ label, active, onClick }: { label: string; active: boolean;
   return (
     <div
       className="flex items-center gap-3 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
-      style={{ borderBottom: "1px solid hsl(var(--game-card-border))", paddingLeft: "60px", paddingRight: "60px" }}
+      style={{ borderBottom: "1px solid hsl(var(--game-card-border))", paddingLeft: "30px", paddingRight: "30px" }}
       onClick={onClick}
     >
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
