@@ -112,8 +112,10 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setSelectedEras(on ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
     console.log(`${era}: ${on ? "FALSE" : "TRUE"}`);
   };
-  const erasVisible = eras.slice(0, 6);
-  const erasExtra = eras.slice(6);
+  const diffsVisible = difficulties.slice(0, 4);
+  const diffsExtra = difficulties.slice(4);
+  const erasVisible = eras.slice(0, 4);
+  const erasExtra = eras.slice(4);
 
   return (
     <>
