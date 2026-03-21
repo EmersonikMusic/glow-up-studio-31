@@ -1,11 +1,16 @@
+import { useState } from "react";
+import { Settings } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
 import startBtn from "@/assets/btn-startgame.svg";
+import SettingsPanel from "./SettingsPanel";
 
 interface StartScreenProps {
   onStart: () => void;
 }
 
 export default function StartScreen({ onStart }: StartScreenProps) {
+  const [panelOpen, setPanelOpen] = useState(false);
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
@@ -27,11 +32,23 @@ export default function StartScreen({ onStart }: StartScreenProps) {
         }}
       />
 
-      {/* Logo */}
-      <div
-        className="w-full max-w-3xl px-6 animate-fade-in"
-        style={{ animationDelay: "0ms" }}
+      {/* Gear button — top right */}
+      <button
+        onClick={() => setPanelOpen(true)}
+        className="absolute top-5 right-5 z-20 flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 hover:bg-secondary active:scale-95"
+        aria-label="Open settings"
       >
+        <Settings
+          className="w-6 h-6 transition-transform duration-500"
+          style={{
+            color: "hsl(var(--game-gold))",
+            transform: panelOpen ? "rotate(60deg)" : "rotate(0deg)",
+          }}
+        />
+      </button>
+
+      {/* Logo */}
+      <div className="w-full max-w-3xl px-6 animate-fade-in" style={{ animationDelay: "0ms" }}>
         <img
           src={logo}
           alt="Triviolivia — Earth's Deepest Trivia Source"
@@ -40,23 +57,11 @@ export default function StartScreen({ onStart }: StartScreenProps) {
         />
       </div>
 
-      {/* Subtitle */}
-      <p
-        className="mt-2 mb-10 text-base font-black tracking-[0.25em] uppercase animate-fade-in"
-        style={{
-          color: "hsl(185 70% 60%)",
-          animationDelay: "120ms",
-          textShadow: "0 2px 12px hsl(185 70% 40% / 0.4)",
-        }}
-      >
-        Earth's Deepest Trivia Source
-      </p>
-
       {/* Start button */}
       <button
         onClick={onStart}
-        className="group relative transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
-        style={{ animationDelay: "220ms" }}
+        className="mt-10 transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
+        style={{ animationDelay: "180ms" }}
         aria-label="Start Game"
       >
         <img
@@ -66,6 +71,10 @@ export default function StartScreen({ onStart }: StartScreenProps) {
           draggable={false}
         />
       </button>
+
+      {/* Settings panel */}
+      <SettingsPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
     </div>
   );
 }
+
