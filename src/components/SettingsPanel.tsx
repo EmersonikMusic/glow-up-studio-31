@@ -249,24 +249,24 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               <div className="p-4 flex flex-col gap-4">
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-2">
-                    <span className="text-lg font-black text-foreground">{numQuestions}</span>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Questions</span>
+                    <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
+                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
                   </div>
-                  <input type="range" min={5} max={80} step={5} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <input type="range" min={10} max={50} step={5} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
                 </div>
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-2">
-                    <span className="text-lg font-black text-foreground">{timePerQuestion}s</span>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">/ Question</span>
+                    <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
+                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Questions</span>
                   </div>
-                  <input type="range" min={5} max={60} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
                 </div>
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-2">
-                    <span className="text-lg font-black text-foreground">{timePerAnswer}s</span>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">/ Answer</span>
+                    <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
+                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
                   </div>
-                  <input type="range" min={2} max={30} step={1} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <input type="range" min={5} max={30} step={1} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
                 </div>
               </div>
             </div>
