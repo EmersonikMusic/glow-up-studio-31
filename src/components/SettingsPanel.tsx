@@ -241,7 +241,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── ERAS ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<img src={eraOpen ? iconEraActive : iconEraInactive} alt="" style={{ width: 24, height: 24 }} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
+            <SectionHeader icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
               {erasVisible.map((era) => (
