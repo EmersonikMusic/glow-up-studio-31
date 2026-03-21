@@ -9,7 +9,7 @@ interface StartScreenProps {
 }
 
 export default function StartScreen({ onStart }: StartScreenProps) {
-  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(true);
 
   return (
     <div

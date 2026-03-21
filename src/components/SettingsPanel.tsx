@@ -37,7 +37,10 @@ function SectionHeader({ icon, label, open, onToggle }: {
       style={{ padding: "30px" }}
     >
       {icon}
-      <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase flex-1 text-left">{label}</span>
+      <span
+        className="text-xs font-black tracking-widest uppercase flex-1 text-left transition-colors duration-300"
+        style={{ color: open ? "hsl(185 70% 55%)" : "#fff" }}
+      >{label}</span>
       <ChevronDown
         className="w-4 h-4 text-[hsl(185_70%_55%)] transition-transform duration-300"
         style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
