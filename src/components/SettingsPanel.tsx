@@ -170,7 +170,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
         {/* Panel body */}
         <div
-          className="flex-1 h-full flex flex-col overflow-y-auto"
+          className="flex-1 flex flex-col overflow-y-auto max-h-screen"
           style={{ background: "hsl(var(--game-card))", borderLeft: "1px solid hsl(var(--game-card-border))", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)" }}
         >
           {/* Nav links */}
