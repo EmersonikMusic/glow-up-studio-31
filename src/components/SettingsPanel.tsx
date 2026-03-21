@@ -260,27 +260,56 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
             <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <div className="px-5 py-5 flex flex-col gap-5">
+              <div className="px-5 py-5 flex flex-col gap-6">
+                {/* Questions — step 10: 10,20,30,40,50 (5 stops) */}
                 <div>
-                  <div className="flex items-baseline gap-1.5 mb-2">
+                  <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
                   </div>
-                  <input type="range" min={10} max={50} step={5} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <div className="flex justify-between mt-1.5 px-0.5">
+                    {[10,20,30,40,50].map((v) => (
+                      <div key={v} className="flex flex-col items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full transition-colors duration-200" style={{ background: numQuestions >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
+                        <span className="text-[9px] font-bold tabular-nums" style={{ color: numQuestions >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Seconds/Question — step 5: 5,10,15,20,25,30 (6 stops) */}
                 <div>
-                  <div className="flex items-baseline gap-1.5 mb-2">
+                  <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
-                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Questions</span>
+                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
                   </div>
                   <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <div className="flex justify-between mt-1.5 px-0.5">
+                    {[5,10,15,20,25,30].map((v) => (
+                      <div key={v} className="flex flex-col items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full transition-colors duration-200" style={{ background: timePerQuestion >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
+                        <span className="text-[9px] font-bold tabular-nums" style={{ color: timePerQuestion >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}s</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Seconds/Answer — step 5: 5,10,15,20,25,30 (6 stops) */}
                 <div>
-                  <div className="flex items-baseline gap-1.5 mb-2">
+                  <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
                   </div>
-                  <input type="range" min={5} max={30} step={1} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                  <div className="flex justify-between mt-1.5 px-0.5">
+                    {[5,10,15,20,25,30].map((v) => (
+                      <div key={v} className="flex flex-col items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full transition-colors duration-200" style={{ background: timePerAnswer >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
+                        <span className="text-[9px] font-bold tabular-nums" style={{ color: timePerAnswer >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}s</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
