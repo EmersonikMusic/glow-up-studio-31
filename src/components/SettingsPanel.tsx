@@ -260,7 +260,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
             <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
             <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <div className="p-4 flex flex-col gap-4">
+              <div className="px-5 py-5 flex flex-col gap-5">
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-2">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
