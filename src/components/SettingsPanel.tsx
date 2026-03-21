@@ -1,6 +1,14 @@
-import { X, LayoutGrid, BarChart2, Hourglass, SlidersHorizontal, MoreHorizontal, ChevronDown } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
+import iconCategoriesActive from "@/assets/icon-categories-active.svg";
+import iconCategoriesInactive from "@/assets/icon-categories-inactive.svg";
+import iconDifficultyActive from "@/assets/icon-difficulty-active.svg";
+import iconDifficultyInactive from "@/assets/icon-difficulty-inactive.svg";
+import iconEraActive from "@/assets/icon-era-active.svg";
+import iconEraInactive from "@/assets/icon-era-inactive.svg";
+import iconSettingsActive from "@/assets/icon-settings-active.svg";
+import iconSettingsInactive from "@/assets/icon-settings-inactive.svg";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -193,7 +201,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── CATEGORIES ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<LayoutGrid className="w-4 h-4 text-[hsl(185_70%_55%)]" />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
+            <SectionHeader icon={<img src={catOpen ? iconCategoriesActive : iconCategoriesInactive} alt="" style={{ width: 24, height: 24 }} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
               {catsVisible.map((cat) => (
@@ -210,7 +218,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── DIFFICULTY ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<BarChart2 className="w-4 h-4 text-[hsl(185_70%_55%)]" />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
+            <SectionHeader icon={<img src={diffOpen ? iconDifficultyActive : iconDifficultyInactive} alt="" style={{ width: 24, height: 24 }} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
               {difficulties.map((diff) => (
@@ -221,7 +229,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── ERAS ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<Hourglass className="w-4 h-4 text-[hsl(185_70%_55%)]" />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
+            <SectionHeader icon={<img src={eraOpen ? iconEraActive : iconEraInactive} alt="" style={{ width: 24, height: 24 }} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
               {erasVisible.map((era) => (
@@ -238,7 +246,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── GAME SETTINGS ── */}
           <section className="mx-4 mb-6 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<SlidersHorizontal className="w-4 h-4 text-[hsl(185_70%_55%)]" />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
+            <SectionHeader icon={<img src={gameOpen ? iconSettingsActive : iconSettingsInactive} alt="" style={{ width: 24, height: 24 }} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
             <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <div className="p-4 flex flex-col gap-4">
                 <div>
