@@ -155,7 +155,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
       {/* Sliding panel */}
       <div
-        className="fixed top-0 right-0 h-full z-40 flex overflow-hidden"
+        className="fixed top-0 right-0 h-full z-40 flex overflow-x-hidden"
         style={{ width: "min(360px, 90vw)", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
         {/* Close tab */}
