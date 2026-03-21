@@ -220,9 +220,32 @@ All colors MUST be HSL.
 }
 
 /* ── Step Slider ── */
+.step-slider-wrap {
+  position: relative;
+  height: 22px; /* matches thumb height — single source of truth */
+  display: flex;
+  align-items: center;
+}
+
+/* Dot overlay — absolutely centred on the 22px wrapper */
+.step-slider-dots {
+  position: absolute;
+  inset-x-0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
+  /* horizontal padding mirrors the thumb radius so dots align with snap points */
+  padding: 0 11px;
+}
+
 .step-slider {
   -webkit-appearance: none;
   appearance: none;
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 10px;
   border-radius: 5px;
@@ -230,9 +253,7 @@ All colors MUST be HSL.
   cursor: pointer;
   outline: none;
   accent-color: transparent;
-}
-.step-slider::-webkit-slider-container {
-  background: rgba(0, 0, 0, 0.5);
+  margin: 0; /* kill browser default vertical margin */
 }
 .step-slider::-webkit-slider-runnable-track {
   height: 10px;
@@ -259,8 +280,6 @@ All colors MUST be HSL.
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
   border: 2px solid hsl(185 70% 80%);
-  position: relative;
-  z-index: 10;
 }
 .step-slider::-moz-range-thumb {
   width: 22px;
