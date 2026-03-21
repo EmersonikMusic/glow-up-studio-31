@@ -267,13 +267,13 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
                   </div>
-                  <div className="relative" style={{ height: 10 }}>
-                    <div className="absolute inset-x-0 flex justify-between items-center pointer-events-none" style={{ top: 0, bottom: 0, zIndex: 1 }}>
+                  <div className="relative">
+                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="step-slider w-full" style={{ position: "relative", zIndex: 2 }} />
+                    <div className="absolute inset-x-0 flex justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)", zIndex: 1 }}>
                       {[10,20,30,40,50].map((v) => (
                         <div key={v} className="rounded-full transition-colors duration-200" style={{ width: 5, height: 5, background: "#fff", opacity: numQuestions >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
-                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="step-slider absolute inset-0 w-full" style={{ zIndex: 2, position: "relative" }} />
                   </div>
                 </div>
 
@@ -283,13 +283,13 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
                   </div>
-                  <div className="relative" style={{ height: 10 }}>
-                    <div className="absolute inset-x-0 flex justify-between items-center pointer-events-none" style={{ top: 0, bottom: 0, zIndex: 1 }}>
+                  <div className="relative">
+                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="step-slider w-full" style={{ position: "relative", zIndex: 2 }} />
+                    <div className="absolute inset-x-0 flex justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)", zIndex: 1 }}>
                       {[5,10,15,20,25,30].map((v) => (
                         <div key={v} className="rounded-full transition-colors duration-200" style={{ width: 5, height: 5, background: "#fff", opacity: timePerQuestion >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
-                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="step-slider absolute inset-0 w-full" style={{ zIndex: 2, position: "relative" }} />
                   </div>
                 </div>
 
@@ -299,13 +299,13 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
                   </div>
-                  <div className="relative" style={{ height: 10 }}>
-                    <div className="absolute inset-x-0 flex justify-between items-center pointer-events-none" style={{ top: 0, bottom: 0, zIndex: 1 }}>
+                  <div className="relative">
+                    <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="step-slider w-full" style={{ position: "relative", zIndex: 2 }} />
+                    <div className="absolute inset-x-0 flex justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)", zIndex: 1 }}>
                       {[5,10,15,20,25,30].map((v) => (
                         <div key={v} className="rounded-full transition-colors duration-200" style={{ width: 5, height: 5, background: "#fff", opacity: timePerAnswer >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
-                    <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="step-slider absolute inset-0 w-full" style={{ zIndex: 2, position: "relative" }} />
                   </div>
                 </div>
               </div>
