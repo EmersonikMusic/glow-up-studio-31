@@ -172,17 +172,12 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               {catsVisible.map((cat) => (
                 <ToggleRow key={cat} label={cat} active={selectedCategories.includes(cat)} onClick={() => toggleCategory(cat)} />
               ))}
-              {/* Animated extra rows */}
               <div className="flex flex-col overflow-hidden" style={{ maxHeight: catExpanded ? `${catsExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
                 {catsExtra.map((cat) => (
                   <ToggleRow key={cat} label={cat} active={selectedCategories.includes(cat)} onClick={() => toggleCategory(cat)} />
                 ))}
               </div>
-              <button onClick={() => setCatExpanded((v) => !v)} className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)]">
-                {catExpanded
-                  ? <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
-                  : <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />}
-              </button>
+              <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
             </div>
           </section>
 
@@ -191,9 +186,15 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             <SectionHeader icon={<BarChart2 className="w-4 h-4 text-[hsl(185_70%_55%)]" />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
-              {difficulties.map((diff) => (
+              {diffsVisible.map((diff) => (
                 <ToggleRow key={diff} label={diff} active={selectedDifficulties.includes(diff)} onClick={() => toggleDiff(diff)} />
               ))}
+              <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffExpanded ? `${diffsExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+                {diffsExtra.map((diff) => (
+                  <ToggleRow key={diff} label={diff} active={selectedDifficulties.includes(diff)} onClick={() => toggleDiff(diff)} />
+                ))}
+              </div>
+              <ExpandButton expanded={diffExpanded} onToggle={() => setDiffExpanded((v) => !v)} />
             </div>
           </section>
 
@@ -210,11 +211,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                   <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
                 ))}
               </div>
-              <button onClick={() => setEraExpanded((v) => !v)} className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)]">
-                {eraExpanded
-                  ? <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
-                  : <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />}
-              </button>
+              <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
             </div>
           </section>
 
