@@ -230,7 +230,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── DIFFICULTY ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<img src={diffOpen ? iconDifficultyActive : iconDifficultyInactive} alt="" style={{ width: 24, height: 24 }} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
+            <SectionHeader icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
               {difficulties.map((diff) => (
