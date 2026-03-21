@@ -197,7 +197,10 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
           {/* Nav links */}
           <div className="flex items-center justify-end gap-5 px-5 pt-4 pb-3">
             <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">LOGIN</button>
-            <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">ABOUT US</button>
+            <button
+              className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+              onClick={onAbout}
+            >ABOUT US</button>
           </div>
           <div className="px-5 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
