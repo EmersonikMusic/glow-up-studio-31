@@ -25,7 +25,7 @@ function SectionHeader({ icon, label, open, onToggle }: {
   return (
     <button
       onClick={onToggle}
-      className="flex items-center gap-2 w-full shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)] rounded-t-2xl"
+      className="flex items-center gap-2 w-full shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)] rounded-2xl"
       style={{ padding: "30px" }}
     >
       {icon}
