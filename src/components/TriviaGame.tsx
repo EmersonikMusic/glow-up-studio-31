@@ -2,9 +2,9 @@ import { useState, useCallback } from "react";
 import { questions } from "@/data/questions";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
-import AnswerGrid from "./AnswerGrid";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
+
 
 type GameState = "playing" | "answered" | "finished";
 

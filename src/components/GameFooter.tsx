@@ -26,6 +26,8 @@ export default function GameFooter({
   onNext,
 }: GameFooterProps) {
   const progress = (questionIndex / totalQuestions) * 100;
+  void progress; // retained for potential future use
+
 
   return (
     <footer className="flex items-center gap-4 px-6 py-4">
