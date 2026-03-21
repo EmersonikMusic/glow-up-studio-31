@@ -268,12 +268,12 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
                   </div>
                   <div className="relative" style={{ height: 10 }}>
-                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="step-slider absolute inset-0 w-full" />
-                    <div className="absolute inset-x-0 flex justify-between items-center pointer-events-none" style={{ top: 0, bottom: 0 }}>
+                    <div className="absolute inset-x-0 flex justify-between items-center pointer-events-none" style={{ top: 0, bottom: 0, zIndex: 1 }}>
                       {[10,20,30,40,50].map((v) => (
                         <div key={v} className="rounded-full transition-colors duration-200" style={{ width: 5, height: 5, background: "#fff", opacity: numQuestions >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
+                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="step-slider absolute inset-0 w-full" style={{ zIndex: 2, position: "relative" }} />
                   </div>
                 </div>
 
