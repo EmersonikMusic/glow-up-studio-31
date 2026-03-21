@@ -27,6 +27,15 @@ const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchec
 const EXTRA_ROW_H = 42;
 const SECTION_MAX = 2000;
 
+function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
+  return (
+    <div style={{ position: "relative", width: 24, height: 24, flexShrink: 0 }}>
+      <img src={inactive} alt="" style={{ width: 24, height: 24, position: "absolute", inset: 0, opacity: open ? 0 : 1, transition: "opacity 0.3s ease" }} />
+      <img src={active}   alt="" style={{ width: 24, height: 24, position: "absolute", inset: 0, opacity: open ? 1 : 0, transition: "opacity 0.3s ease" }} />
+    </div>
+  );
+}
+
 function SectionHeader({ icon, label, open, onToggle }: {
   icon: React.ReactNode; label: string; open: boolean; onToggle: () => void;
 }) {
