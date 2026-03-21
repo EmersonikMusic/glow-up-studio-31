@@ -72,6 +72,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
   // Item-level expand (show more rows within section)
   const [catExpanded, setCatExpanded] = useState(false);
+  const [diffExpanded, setDiffExpanded] = useState(false);
   const [eraExpanded, setEraExpanded] = useState(false);
 
   // --- Categories ---
@@ -85,8 +86,8 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setSelectedCategories(on ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
     console.log(`${cat}: ${on ? "FALSE" : "TRUE"}`);
   };
-  const catsVisible = categories.slice(0, 6);
-  const catsExtra = categories.slice(6);
+  const catsVisible = categories.slice(0, 4);
+  const catsExtra = categories.slice(4);
 
   // --- Difficulties ---
   const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
