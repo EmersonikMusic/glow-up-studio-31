@@ -113,8 +113,8 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setSelectedCategories(on ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
     console.log(`${cat}: ${on ? "FALSE" : "TRUE"}`);
   };
-  const catsVisible = categories.slice(0, 4);
-  const catsExtra = categories.slice(4);
+  const catsVisible = categories.slice(0, 5);
+  const catsExtra = categories.slice(5);
 
   // --- Difficulties ---
   const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
@@ -139,10 +139,10 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setSelectedEras(on ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
     console.log(`${era}: ${on ? "FALSE" : "TRUE"}`);
   };
-  const diffsVisible = difficulties.slice(0, 4);
-  const diffsExtra = difficulties.slice(4);
-  const erasVisible = eras.slice(0, 4);
-  const erasExtra = eras.slice(4);
+  const diffsVisible = difficulties.slice(0, 5);
+  const diffsExtra = difficulties.slice(5);
+  const erasVisible = eras.slice(0, 5);
+  const erasExtra = eras.slice(5);
 
   return (
     <>
