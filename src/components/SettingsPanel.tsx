@@ -268,12 +268,12 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
                   </div>
                   <div className="step-slider-wrap">
+                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="step-slider w-full" />
                     <div className="step-slider-dots">
                       {[10,20,30,40,50].map((v) => (
                         <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: numQuestions >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
-                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="step-slider w-full" style={{ position: "relative", zIndex: 2 }} />
                   </div>
                 </div>
 
@@ -284,12 +284,12 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
                   </div>
                   <div className="step-slider-wrap">
+                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="step-slider w-full" />
                     <div className="step-slider-dots">
                       {[5,10,15,20,25,30].map((v) => (
                         <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerQuestion >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
-                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="step-slider w-full" style={{ position: "relative", zIndex: 2 }} />
                   </div>
                 </div>
 
@@ -300,12 +300,12 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
                   </div>
                   <div className="step-slider-wrap">
+                    <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="step-slider w-full" />
                     <div className="step-slider-dots">
                       {[5,10,15,20,25,30].map((v) => (
                         <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerAnswer >= v ? 1 : 0.35 }} />
                       ))}
                     </div>
-                    <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="step-slider w-full" style={{ position: "relative", zIndex: 2 }} />
                   </div>
                 </div>
               </div>
