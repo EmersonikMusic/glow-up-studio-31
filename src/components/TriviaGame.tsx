@@ -5,8 +5,9 @@ import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
+import AboutScreen from "./AboutScreen";
 
-type GameState = "start" | "playing" | "answered" | "finished";
+type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -58,8 +59,12 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
   }, []);
 
+  if (gameState === "about") {
+    return <AboutScreen onClose={() => setGameState("start")} />;
+  }
+
   if (gameState === "start") {
-    return <StartScreen onStart={handleStart} />;
+    return <StartScreen onStart={handleStart} onAbout={() => setGameState("about")} />;
   }
 
   return (
