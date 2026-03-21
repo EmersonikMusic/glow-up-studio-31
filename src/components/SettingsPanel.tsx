@@ -38,19 +38,23 @@ const categories = [
 const difficulties = ["Casual", "Easy", "Average", "Hard", "Genius"];
 const eras = ["Pre-1500", "1500-1800", "1800-1900", "1900-1950", "1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"];
 
+const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
+
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Medium", "Hard"]);
-  const [selectedEras, setSelectedEras] = useState<string[]>(["Modern", "Contemporary"]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
+  const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
   const [numQuestions, setNumQuestions] = useState(40);
   const [timePerQuestion, setTimePerQuestion] = useState(10);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [difficultiesExpanded, setDifficultiesExpanded] = useState(false);
+  const [erasExpanded, setErasExpanded] = useState(false);
 
-  const allSelected = categories.every((c) => selectedCategories.includes(c));
-
+  // Categories
+  const allCatsSelected = categories.every((c) => selectedCategories.includes(c));
   const toggleAllCategories = () => {
-    if (allSelected) {
+    if (allCatsSelected) {
       setSelectedCategories([]);
       categories.forEach((c) => console.log(`${c}: FALSE`));
     } else {
@@ -58,27 +62,49 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       categories.forEach((c) => console.log(`${c}: TRUE`));
     }
   };
-
   const toggleCategory = (cat: string) => {
     const isActive = selectedCategories.includes(cat);
-    if (isActive) {
-      setSelectedCategories(selectedCategories.filter((v) => v !== cat));
-      console.log(`${cat}: FALSE`);
-    } else {
-      setSelectedCategories([...selectedCategories, cat]);
-      console.log(`${cat}: TRUE`);
-    }
+    setSelectedCategories(isActive ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
+    console.log(`${cat}: ${isActive ? "FALSE" : "TRUE"}`);
   };
 
-  const toggle = (
-    val: string,
-    set: React.Dispatch<React.SetStateAction<string[]>>,
-    arr: string[]
-  ) => {
-    set(arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val]);
+  // Difficulties
+  const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
+  const toggleAllDifficulties = () => {
+    if (allDiffsSelected) {
+      setSelectedDifficulties([]);
+      difficulties.forEach((d) => console.log(`${d}: FALSE`));
+    } else {
+      setSelectedDifficulties([...difficulties]);
+      difficulties.forEach((d) => console.log(`${d}: TRUE`));
+    }
+  };
+  const toggleDifficulty = (diff: string) => {
+    const isActive = selectedDifficulties.includes(diff);
+    setSelectedDifficulties(isActive ? selectedDifficulties.filter((v) => v !== diff) : [...selectedDifficulties, diff]);
+    console.log(`${diff}: ${isActive ? "FALSE" : "TRUE"}`);
+  };
+
+  // Eras
+  const allErasSelected = eras.every((e) => selectedEras.includes(e));
+  const toggleAllEras = () => {
+    if (allErasSelected) {
+      setSelectedEras([]);
+      eras.forEach((e) => console.log(`${e}: FALSE`));
+    } else {
+      setSelectedEras([...eras]);
+      eras.forEach((e) => console.log(`${e}: TRUE`));
+    }
+  };
+  const toggleEra = (era: string) => {
+    const isActive = selectedEras.includes(era);
+    setSelectedEras(isActive ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
+    console.log(`${era}: ${isActive ? "FALSE" : "TRUE"}`);
   };
 
   const visibleCategories = categoriesExpanded ? categories : categories.slice(0, 4);
+  const visibleDifficulties = difficultiesExpanded ? difficulties : difficulties.slice(0, 4);
+  const visibleEras = erasExpanded ? eras : eras.slice(0, 4);
 
   return (
     <>
