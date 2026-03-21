@@ -287,7 +287,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </section>
 
           {/* Apply button */}
-          <div className="px-4 pb-8">
+          <div className="px-3 pb-6">
             <button
               onClick={onClose}
               className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
