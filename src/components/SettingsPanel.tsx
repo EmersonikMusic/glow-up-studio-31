@@ -102,9 +102,16 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     console.log(`${era}: ${isActive ? "FALSE" : "TRUE"}`);
   };
 
-  const visibleCategories = categoriesExpanded ? categories : categories.slice(0, 4);
-  const visibleDifficulties = difficultiesExpanded ? difficulties : difficulties.slice(0, 4);
-  const visibleEras = erasExpanded ? eras : eras.slice(0, 4);
+  const EXTRA_ROW_HEIGHT = 42; // px per row (py-2.5 ≈ 42px)
+
+  const categoriesVisible = categories.slice(0, 4);
+  const categoriesExtra = categories.slice(4);
+
+  const difficultiesVisible = difficulties.slice(0, 4);
+  const difficultiesExtra = difficulties.slice(4);
+
+  const erasVisible = eras.slice(0, 4);
+  const erasExtra = eras.slice(4);
 
   return (
     <>
@@ -223,9 +230,9 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </span>
             </div>
 
-            {/* Individual categories */}
+            {/* Always-visible rows */}
             <div className="flex flex-col">
-              {visibleCategories.map((cat) => {
+              {categoriesVisible.map((cat) => {
                 const active = selectedCategories.includes(cat);
                 return (
                   <div
@@ -234,18 +241,32 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
                     onClick={() => toggleCategory(cat)}
                   >
-                    <Switch
-                      checked={active}
-                      onCheckedChange={() => toggleCategory(cat)}
-                      className={SWITCH_ON}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <span
-                      className="text-xs font-black tracking-widest uppercase transition-colors"
-                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {cat}
-                    </span>
+                    <Switch checked={active} onCheckedChange={() => toggleCategory(cat)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{cat}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Animated extra rows */}
+            <div
+              className="flex flex-col overflow-hidden"
+              style={{
+                maxHeight: categoriesExpanded ? `${categoriesExtra.length * EXTRA_ROW_HEIGHT}px` : "0px",
+                transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              {categoriesExtra.map((cat) => {
+                const active = selectedCategories.includes(cat);
+                return (
+                  <div
+                    key={cat}
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
+                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+                    onClick={() => toggleCategory(cat)}
+                  >
+                    <Switch checked={active} onCheckedChange={() => toggleCategory(cat)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{cat}</span>
                   </div>
                 );
               })}
@@ -295,43 +316,34 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </span>
             </div>
 
+            {/* Always-visible rows */}
             <div className="flex flex-col">
-              {visibleDifficulties.map((diff) => {
+              {difficultiesVisible.map((diff) => {
                 const active = selectedDifficulties.includes(diff);
                 return (
-                  <div
-                    key={diff}
-                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
-                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
-                    onClick={() => toggleDifficulty(diff)}
-                  >
-                    <Switch
-                      checked={active}
-                      onCheckedChange={() => toggleDifficulty(diff)}
-                      className={SWITCH_ON}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <span
-                      className="text-xs font-black tracking-widest uppercase transition-colors"
-                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {diff}
-                    </span>
+                  <div key={diff} className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }} onClick={() => toggleDifficulty(diff)}>
+                    <Switch checked={active} onCheckedChange={() => toggleDifficulty(diff)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{diff}</span>
                   </div>
                 );
               })}
             </div>
 
-            <button
-              onClick={() => setDifficultiesExpanded((v) => !v)}
-              className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl"
-              aria-label={difficultiesExpanded ? "Collapse difficulties" : "Expand difficulties"}
-            >
-              {difficultiesExpanded ? (
-                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
-              ) : (
-                <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
-              )}
+            {/* Animated extra rows */}
+            <div className="flex flex-col overflow-hidden" style={{ maxHeight: difficultiesExpanded ? `${difficultiesExtra.length * EXTRA_ROW_HEIGHT}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              {difficultiesExtra.map((diff) => {
+                const active = selectedDifficulties.includes(diff);
+                return (
+                  <div key={diff} className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }} onClick={() => toggleDifficulty(diff)}>
+                    <Switch checked={active} onCheckedChange={() => toggleDifficulty(diff)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{diff}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button onClick={() => setDifficultiesExpanded((v) => !v)} className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl" aria-label={difficultiesExpanded ? "Collapse difficulties" : "Expand difficulties"}>
+              {difficultiesExpanded ? <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span> : <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />}
             </button>
           </section>
 
@@ -365,43 +377,34 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </span>
             </div>
 
+            {/* Always-visible rows */}
             <div className="flex flex-col">
-              {visibleEras.map((era) => {
+              {erasVisible.map((era) => {
                 const active = selectedEras.includes(era);
                 return (
-                  <div
-                    key={era}
-                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
-                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
-                    onClick={() => toggleEra(era)}
-                  >
-                    <Switch
-                      checked={active}
-                      onCheckedChange={() => toggleEra(era)}
-                      className={SWITCH_ON}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <span
-                      className="text-xs font-black tracking-widest uppercase transition-colors"
-                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {era}
-                    </span>
+                  <div key={era} className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }} onClick={() => toggleEra(era)}>
+                    <Switch checked={active} onCheckedChange={() => toggleEra(era)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{era}</span>
                   </div>
                 );
               })}
             </div>
 
-            <button
-              onClick={() => setErasExpanded((v) => !v)}
-              className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl"
-              aria-label={erasExpanded ? "Collapse eras" : "Expand eras"}
-            >
-              {erasExpanded ? (
-                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
-              ) : (
-                <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
-              )}
+            {/* Animated extra rows */}
+            <div className="flex flex-col overflow-hidden" style={{ maxHeight: erasExpanded ? `${erasExtra.length * EXTRA_ROW_HEIGHT}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              {erasExtra.map((era) => {
+                const active = selectedEras.includes(era);
+                return (
+                  <div key={era} className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }} onClick={() => toggleEra(era)}>
+                    <Switch checked={active} onCheckedChange={() => toggleEra(era)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{era}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button onClick={() => setErasExpanded((v) => !v)} className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl" aria-label={erasExpanded ? "Collapse eras" : "Expand eras"}>
+              {erasExpanded ? <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span> : <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />}
             </button>
           </section>
 
