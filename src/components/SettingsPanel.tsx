@@ -102,9 +102,16 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     console.log(`${era}: ${isActive ? "FALSE" : "TRUE"}`);
   };
 
-  const visibleCategories = categoriesExpanded ? categories : categories.slice(0, 4);
-  const visibleDifficulties = difficultiesExpanded ? difficulties : difficulties.slice(0, 4);
-  const visibleEras = erasExpanded ? eras : eras.slice(0, 4);
+  const EXTRA_ROW_HEIGHT = 42; // px per row (py-2.5 ≈ 42px)
+
+  const categoriesVisible = categories.slice(0, 4);
+  const categoriesExtra = categories.slice(4);
+
+  const difficultiesVisible = difficulties.slice(0, 4);
+  const difficultiesExtra = difficulties.slice(4);
+
+  const erasVisible = eras.slice(0, 4);
+  const erasExtra = eras.slice(4);
 
   return (
     <>
