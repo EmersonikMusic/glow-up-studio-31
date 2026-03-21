@@ -316,43 +316,34 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </span>
             </div>
 
+            {/* Always-visible rows */}
             <div className="flex flex-col">
-              {visibleDifficulties.map((diff) => {
+              {difficultiesVisible.map((diff) => {
                 const active = selectedDifficulties.includes(diff);
                 return (
-                  <div
-                    key={diff}
-                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
-                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
-                    onClick={() => toggleDifficulty(diff)}
-                  >
-                    <Switch
-                      checked={active}
-                      onCheckedChange={() => toggleDifficulty(diff)}
-                      className={SWITCH_ON}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <span
-                      className="text-xs font-black tracking-widest uppercase transition-colors"
-                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {diff}
-                    </span>
+                  <div key={diff} className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }} onClick={() => toggleDifficulty(diff)}>
+                    <Switch checked={active} onCheckedChange={() => toggleDifficulty(diff)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{diff}</span>
                   </div>
                 );
               })}
             </div>
 
-            <button
-              onClick={() => setDifficultiesExpanded((v) => !v)}
-              className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl"
-              aria-label={difficultiesExpanded ? "Collapse difficulties" : "Expand difficulties"}
-            >
-              {difficultiesExpanded ? (
-                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
-              ) : (
-                <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
-              )}
+            {/* Animated extra rows */}
+            <div className="flex flex-col overflow-hidden" style={{ maxHeight: difficultiesExpanded ? `${difficultiesExtra.length * EXTRA_ROW_HEIGHT}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              {difficultiesExtra.map((diff) => {
+                const active = selectedDifficulties.includes(diff);
+                return (
+                  <div key={diff} className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }} onClick={() => toggleDifficulty(diff)}>
+                    <Switch checked={active} onCheckedChange={() => toggleDifficulty(diff)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{diff}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button onClick={() => setDifficultiesExpanded((v) => !v)} className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl" aria-label={difficultiesExpanded ? "Collapse difficulties" : "Expand difficulties"}>
+              {difficultiesExpanded ? <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span> : <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />}
             </button>
           </section>
 
