@@ -213,15 +213,9 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             <SectionHeader icon={<BarChart2 className="w-4 h-4 text-[hsl(185_70%_55%)]" />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
-              {diffsVisible.map((diff) => (
+              {difficulties.map((diff) => (
                 <ToggleRow key={diff} label={diff} active={selectedDifficulties.includes(diff)} onClick={() => toggleDiff(diff)} />
               ))}
-              <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffExpanded ? `${diffsExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-                {diffsExtra.map((diff) => (
-                  <ToggleRow key={diff} label={diff} active={selectedDifficulties.includes(diff)} onClick={() => toggleDiff(diff)} />
-                ))}
-              </div>
-              <ExpandButton expanded={diffExpanded} onToggle={() => setDiffExpanded((v) => !v)} />
             </div>
           </section>
 
