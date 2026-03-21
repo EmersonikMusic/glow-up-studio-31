@@ -1,4 +1,4 @@
-import { X, LayoutGrid, BarChart2, Hourglass, SlidersHorizontal } from "lucide-react";
+import { X, LayoutGrid, BarChart2, Hourglass, SlidersHorizontal, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 
@@ -8,7 +8,6 @@ interface SettingsPanelProps {
 }
 
 const categories = [
-  "All Categories",
   "Art",
   "Economics",
   "Food",
@@ -47,24 +46,35 @@ const difficultyColor: Record<string, string> = {
 };
 
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(["All Categories"]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Medium", "Hard"]);
   const [selectedEras, setSelectedEras] = useState<string[]>(["Modern", "Contemporary"]);
   const [numQuestions, setNumQuestions] = useState(40);
   const [timePerQuestion, setTimePerQuestion] = useState(10);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+
+  const allSelected = categories.every((c) => selectedCategories.includes(c));
+
+  const toggleAllCategories = () => {
+    if (allSelected) {
+      setSelectedCategories([]);
+      categories.forEach((c) => console.log(`${c}: FALSE`));
+    } else {
+      setSelectedCategories([...categories]);
+      categories.forEach((c) => console.log(`${c}: TRUE`));
+    }
+  };
 
   const toggleCategory = (cat: string) => {
-    if (cat === "All Categories") {
-      setSelectedCategories(
-        selectedCategories.includes("All Categories") ? [] : ["All Categories"]
-      );
-      return;
+    const isActive = selectedCategories.includes(cat);
+    if (isActive) {
+      setSelectedCategories(selectedCategories.filter((v) => v !== cat));
+      console.log(`${cat}: FALSE`);
+    } else {
+      setSelectedCategories([...selectedCategories, cat]);
+      console.log(`${cat}: TRUE`);
     }
-    const withoutAll = selectedCategories.filter((v) => v !== "All Categories");
-    setSelectedCategories(
-      withoutAll.includes(cat) ? withoutAll.filter((v) => v !== cat) : [...withoutAll, cat]
-    );
   };
 
   const toggle = (
@@ -74,6 +84,8 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   ) => {
     set(arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val]);
   };
+
+  const visibleCategories = categoriesExpanded ? categories : categories.slice(0, 4);
 
   return (
     <>
@@ -156,16 +168,15 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
           </div>
 
-          {/* Categories — scrollable, 50vh tall */}
+          {/* Categories */}
           <section
             className="mx-4 mb-4 rounded-2xl flex flex-col"
             style={{
               background: "hsl(240 42% 15%)",
               border: "1px solid hsl(var(--game-card-border))",
-              height: "50vh",
-              minHeight: 0,
             }}
           >
+            {/* Section header */}
             <div className="flex items-center gap-2 px-4 pt-4 pb-3 shrink-0">
               <LayoutGrid className="w-4 h-4 text-[hsl(185_70%_55%)]" />
               <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
@@ -173,16 +184,34 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </span>
             </div>
 
+            {/* ALL CATEGORIES parent toggle */}
             <div
-              className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-3"
-              style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(185 70% 35%) transparent" }}
+              className="flex items-center gap-3 px-4 py-3 cursor-pointer shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)]"
+              style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+              onClick={toggleAllCategories}
             >
-              {categories.map((cat) => {
+              <Switch
+                checked={allSelected}
+                onCheckedChange={toggleAllCategories}
+                className="data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <span
+                className="text-xs font-black tracking-widest uppercase transition-colors"
+                style={{ color: allSelected ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+              >
+                All Categories
+              </span>
+            </div>
+
+            {/* Individual categories */}
+            <div className="flex flex-col">
+              {visibleCategories.map((cat) => {
                 const active = selectedCategories.includes(cat);
                 return (
                   <div
                     key={cat}
-                    className="flex items-center justify-between py-2.5 cursor-pointer"
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
                     style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
                     onClick={() => toggleCategory(cat)}
                   >
@@ -202,6 +231,21 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 );
               })}
             </div>
+
+            {/* 3-dot / collapse button */}
+            <button
+              onClick={() => setCategoriesExpanded((v) => !v)}
+              className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl"
+              aria-label={categoriesExpanded ? "Collapse categories" : "Expand categories"}
+            >
+              {categoriesExpanded ? (
+                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
+                  Show less ↑
+                </span>
+              ) : (
+                <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
+              )}
+            </button>
           </section>
 
           {/* Difficulty */}
