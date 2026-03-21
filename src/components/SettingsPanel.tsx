@@ -107,8 +107,8 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
   const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
-  const [numQuestions, setNumQuestions] = useState(40);
-  const [timePerQuestion, setTimePerQuestion] = useState(10);
+  const [numQuestions, setNumQuestions] = useState(10);
+  const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
 
   // Section collapsed state — Categories open by default
