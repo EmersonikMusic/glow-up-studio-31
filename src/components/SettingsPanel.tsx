@@ -27,6 +27,15 @@ const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchec
 const EXTRA_ROW_H = 42;
 const SECTION_MAX = 2000;
 
+function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
+  return (
+    <div style={{ position: "relative", width: 24, height: 24, flexShrink: 0 }}>
+      <img src={inactive} alt="" style={{ width: 24, height: 24, position: "absolute", inset: 0, opacity: open ? 0 : 1, transition: "opacity 0.3s ease" }} />
+      <img src={active}   alt="" style={{ width: 24, height: 24, position: "absolute", inset: 0, opacity: open ? 1 : 0, transition: "opacity 0.3s ease" }} />
+    </div>
+  );
+}
+
 function SectionHeader({ icon, label, open, onToggle }: {
   icon: React.ReactNode; label: string; open: boolean; onToggle: () => void;
 }) {
@@ -204,7 +213,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── CATEGORIES ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<img src={catOpen ? iconCategoriesActive : iconCategoriesInactive} alt="" style={{ width: 24, height: 24 }} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
+            <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
               {catsVisible.map((cat) => (
@@ -221,7 +230,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── DIFFICULTY ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<img src={diffOpen ? iconDifficultyActive : iconDifficultyInactive} alt="" style={{ width: 24, height: 24 }} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
+            <SectionHeader icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
               {difficulties.map((diff) => (
@@ -232,7 +241,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── ERAS ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<img src={eraOpen ? iconEraActive : iconEraInactive} alt="" style={{ width: 24, height: 24 }} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
+            <SectionHeader icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
             <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
               {erasVisible.map((era) => (
@@ -249,7 +258,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
           {/* ── GAME SETTINGS ── */}
           <section className="mx-4 mb-6 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<img src={gameOpen ? iconSettingsActive : iconSettingsInactive} alt="" style={{ width: 24, height: 24 }} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
+            <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
             <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <div className="p-4 flex flex-col gap-4">
                 <div>
