@@ -267,13 +267,17 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
                   </div>
-                  <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
-                  <div className="flex justify-between mt-1.5 px-0.5">
+                  <div className="relative">
+                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer relative z-10" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                    <div className="absolute inset-x-0 flex justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)" }}>
+                      {[10,20,30,40,50].map((v) => (
+                        <div key={v} className="w-2 h-2 rounded-full transition-colors duration-200" style={{ background: numQuestions >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-1 px-0.5">
                     {[10,20,30,40,50].map((v) => (
-                      <div key={v} className="flex flex-col items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full transition-colors duration-200" style={{ background: numQuestions >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
-                        <span className="text-[9px] font-bold tabular-nums" style={{ color: numQuestions >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}</span>
-                      </div>
+                      <span key={v} className="text-[9px] font-bold tabular-nums" style={{ color: numQuestions >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}</span>
                     ))}
                   </div>
                 </div>
@@ -284,13 +288,17 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
                   </div>
-                  <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
-                  <div className="flex justify-between mt-1.5 px-0.5">
+                  <div className="relative">
+                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer relative z-10" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                    <div className="absolute inset-x-0 flex justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)" }}>
+                      {[5,10,15,20,25,30].map((v) => (
+                        <div key={v} className="w-2 h-2 rounded-full transition-colors duration-200" style={{ background: timePerQuestion >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-1 px-0.5">
                     {[5,10,15,20,25,30].map((v) => (
-                      <div key={v} className="flex flex-col items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full transition-colors duration-200" style={{ background: timePerQuestion >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
-                        <span className="text-[9px] font-bold tabular-nums" style={{ color: timePerQuestion >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}s</span>
-                      </div>
+                      <span key={v} className="text-[9px] font-bold tabular-nums" style={{ color: timePerQuestion >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}s</span>
                     ))}
                   </div>
                 </div>
@@ -301,13 +309,17 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
                   </div>
-                  <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "hsl(185 70% 55%)" }} />
-                  <div className="flex justify-between mt-1.5 px-0.5">
+                  <div className="relative">
+                    <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} className="w-full h-1 rounded-full appearance-none cursor-pointer relative z-10" style={{ accentColor: "hsl(185 70% 55%)" }} />
+                    <div className="absolute inset-x-0 flex justify-between pointer-events-none" style={{ top: "50%", transform: "translateY(-50%)" }}>
+                      {[5,10,15,20,25,30].map((v) => (
+                        <div key={v} className="w-2 h-2 rounded-full transition-colors duration-200" style={{ background: timePerAnswer >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-1 px-0.5">
                     {[5,10,15,20,25,30].map((v) => (
-                      <div key={v} className="flex flex-col items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full transition-colors duration-200" style={{ background: timePerAnswer >= v ? "hsl(185 70% 55%)" : "hsl(240 30% 35%)" }} />
-                        <span className="text-[9px] font-bold tabular-nums" style={{ color: timePerAnswer >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}s</span>
-                      </div>
+                      <span key={v} className="text-[9px] font-bold tabular-nums" style={{ color: timePerAnswer >= v ? "hsl(185 70% 60%)" : "hsl(240 20% 50%)" }}>{v}s</span>
                     ))}
                   </div>
                 </div>
