@@ -6,9 +6,10 @@ import SettingsPanel from "./SettingsPanel";
 
 interface StartScreenProps {
   onStart: () => void;
+  onAbout: () => void;
 }
 
-export default function StartScreen({ onStart }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout }: StartScreenProps) {
   const [panelOpen, setPanelOpen] = useState(true);
 
   return (
