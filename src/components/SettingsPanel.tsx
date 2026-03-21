@@ -35,15 +35,8 @@ const categories = [
   "Video Games",
 ];
 
-const difficulties = ["Easy", "Medium", "Hard", "Genius"];
-const eras = ["Ancient", "Medieval", "Modern", "Contemporary"];
-
-const difficultyColor: Record<string, string> = {
-  Easy: "hsl(160 65% 50%)",
-  Medium: "hsl(42 100% 55%)",
-  Hard: "hsl(28 90% 52%)",
-  Genius: "hsl(340 70% 60%)",
-};
+const difficulties = ["Casual", "Easy", "Average", "Hard", "Genius"];
+const eras = ["Pre-1500", "1500-1800", "1800-1900", "1900-1950", "1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"];
 
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
