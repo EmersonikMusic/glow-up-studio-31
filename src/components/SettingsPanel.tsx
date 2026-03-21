@@ -230,9 +230,9 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </span>
             </div>
 
-            {/* Individual categories */}
+            {/* Always-visible rows */}
             <div className="flex flex-col">
-              {visibleCategories.map((cat) => {
+              {categoriesVisible.map((cat) => {
                 const active = selectedCategories.includes(cat);
                 return (
                   <div
@@ -241,18 +241,32 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
                     onClick={() => toggleCategory(cat)}
                   >
-                    <Switch
-                      checked={active}
-                      onCheckedChange={() => toggleCategory(cat)}
-                      className={SWITCH_ON}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <span
-                      className="text-xs font-black tracking-widest uppercase transition-colors"
-                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {cat}
-                    </span>
+                    <Switch checked={active} onCheckedChange={() => toggleCategory(cat)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{cat}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Animated extra rows */}
+            <div
+              className="flex flex-col overflow-hidden"
+              style={{
+                maxHeight: categoriesExpanded ? `${categoriesExtra.length * EXTRA_ROW_HEIGHT}px` : "0px",
+                transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              {categoriesExtra.map((cat) => {
+                const active = selectedCategories.includes(cat);
+                return (
+                  <div
+                    key={cat}
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
+                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+                    onClick={() => toggleCategory(cat)}
+                  >
+                    <Switch checked={active} onCheckedChange={() => toggleCategory(cat)} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+                    <span className="text-xs font-black tracking-widest uppercase transition-colors" style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}>{cat}</span>
                   </div>
                 );
               })}
