@@ -60,7 +60,7 @@ export default function StartScreen({ onStart }: StartScreenProps) {
       {/* Start button */}
       <button
         onClick={onStart}
-        className="mt-10 transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
+        className="mt-8 transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
         style={{ animationDelay: "180ms" }}
         aria-label="Start Game"
       >
