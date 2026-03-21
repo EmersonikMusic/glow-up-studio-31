@@ -85,13 +85,8 @@ export default function TriviaGame() {
           {/* Main content */}
           <main className="flex-1 flex flex-col justify-center gap-5 py-4">
             <QuestionCard question={currentQuestion} animKey={animKey} />
-            <AnswerGrid
-              answers={currentQuestion.answers}
-              selected={selected}
-              correctId={currentQuestion.correctId}
-              onSelect={handleSelect}
-            />
           </main>
+
 
           {/* Footer */}
           <GameFooter

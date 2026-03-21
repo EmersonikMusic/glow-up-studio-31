@@ -29,22 +29,7 @@ export default function GameFooter({
 
   return (
     <footer className="flex items-center gap-4 px-6 py-4">
-      {/* Progress bar */}
-      <div
-        className="flex-shrink-0 w-32 md:w-48 h-3 rounded-full overflow-hidden"
-        style={{ background: "hsl(var(--game-progress))" }}
-      >
-        <div
-          className="h-full rounded-full transition-all duration-700 ease-out"
-          style={{
-            width: `${progress}%`,
-            background: "linear-gradient(90deg, hsl(var(--game-gold-dark)), hsl(var(--game-gold)))",
-            boxShadow: "0 0 8px hsl(42 100% 55% / 0.6)",
-          }}
-        />
-      </div>
-
-      {/* Metadata */}
+      {/* Metadata — full width left edge to button */}
       <div
         className="flex-1 flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm font-semibold text-muted-foreground"
         style={{ background: "hsl(var(--game-progress))" }}
@@ -78,4 +63,5 @@ export default function GameFooter({
       </button>
     </footer>
   );
+
 }
