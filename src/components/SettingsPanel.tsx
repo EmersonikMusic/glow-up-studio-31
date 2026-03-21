@@ -13,6 +13,7 @@ import iconSettingsInactive from "@/assets/icon-settings-inactive.svg";
 interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
+  onAbout?: () => void;
 }
 
 const categories = [

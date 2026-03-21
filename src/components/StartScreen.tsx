@@ -74,7 +74,7 @@ export default function StartScreen({ onStart, onAbout }: StartScreenProps) {
       </button>
 
       {/* Settings panel */}
-      <SettingsPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+      <SettingsPanel open={panelOpen} onClose={() => setPanelOpen(false)} onAbout={onAbout} />
     </div>
   );
 }
