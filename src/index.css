@@ -2,6 +2,120 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TrivOlivia Design System */
+
+@layer base {
+  :root {
+    --background: 240 45% 16%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 42% 20%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 240 42% 20%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 42 100% 55%;
+    --primary-foreground: 240 45% 16%;
+
+    --secondary: 240 35% 28%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 35% 25%;
+    --muted-foreground: 240 20% 70%;
+
+    --accent: 280 60% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 35% 32%;
+    --input: 240 35% 28%;
+    --ring: 42 100% 55%;
+
+    --radius: 1rem;
+
+    /* Game-specific tokens */
+    --game-bg: 240 45% 16%;
+    --game-card: 240 42% 20%;
+    --game-card-border: 240 35% 38%;
+    --game-gold: 42 100% 55%;
+    --game-gold-dark: 35 90% 42%;
+    --game-answer-a: 210 75% 48%;
+    --game-answer-b: 160 65% 40%;
+    --game-answer-c: 28 90% 52%;
+    --game-answer-d: 340 70% 52%;
+    --game-correct: 140 65% 42%;
+    --game-wrong: 0 70% 50%;
+    --game-progress: 240 35% 28%;
+    --game-btn: 280 60% 52%;
+
+    --sidebar-background: 240 45% 13%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 42 100% 55%;
+    --sidebar-primary-foreground: 240 45% 16%;
+    --sidebar-accent: 240 35% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 35% 28%;
+    --sidebar-ring: 42 100% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Nunito', 'Fredoka One', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(42 100% 55% / 0.4); }
+  50% { box-shadow: 0 0 0 12px hsl(42 100% 55% / 0); }
+}
+
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes answer-reveal {
+  from { opacity: 0; transform: translateX(-16px) scale(0.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+.animate-slide-in-up { animation: slide-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-answer-reveal { animation: answer-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-shake { animation: shake 0.4s ease-in-out; }
+.animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
