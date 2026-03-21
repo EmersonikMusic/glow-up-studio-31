@@ -4,19 +4,27 @@ import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
+import StartScreen from "./StartScreen";
 
-
-type GameState = "playing" | "answered" | "finished";
+type GameState = "start" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [score, setScore] = useState(0);
-  const [gameState, setGameState] = useState<GameState>("playing");
+  const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
 
   const currentQuestion = questions[questionIndex];
   const isLast = questionIndex === questions.length - 1;
+
+  const handleStart = useCallback(() => {
+    setQuestionIndex(0);
+    setSelected(null);
+    setScore(0);
+    setAnimKey((k) => k + 1);
+    setGameState("playing");
+  }, []);
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -46,16 +54,19 @@ export default function TriviaGame() {
     setQuestionIndex(0);
     setSelected(null);
     setScore(0);
-    setGameState("playing");
+    setGameState("start");
     setAnimKey((k) => k + 1);
   }, []);
+
+  if (gameState === "start") {
+    return <StartScreen onStart={handleStart} />;
+  }
 
   return (
     <div
       className="min-h-screen flex flex-col relative"
       style={{ background: "hsl(var(--game-bg))" }}
     >
-
       {/* Ambient light blobs */}
       <div
         className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
@@ -88,7 +99,6 @@ export default function TriviaGame() {
             <QuestionCard question={currentQuestion} animKey={animKey} />
           </main>
 
-
           {/* Footer */}
           <GameFooter
             question={currentQuestion}
@@ -103,3 +113,4 @@ export default function TriviaGame() {
     </div>
   );
 }
+
