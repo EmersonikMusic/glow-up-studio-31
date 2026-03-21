@@ -222,9 +222,20 @@ All colors MUST be HSL.
 /* ── Step Slider ── */
 .step-slider-wrap {
   position: relative;
-  height: 22px; /* matches thumb height — single source of truth */
+  height: 22px;
   display: flex;
   align-items: center;
+}
+.step-slider-wrap .step-slider-dots {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Dot overlay — absolutely centred on the 22px wrapper */
