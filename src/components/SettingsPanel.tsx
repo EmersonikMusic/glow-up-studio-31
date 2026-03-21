@@ -194,22 +194,22 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           style={{ background: "hsl(var(--game-card))", borderLeft: "1px solid hsl(var(--game-card-border))", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)", display: "flex", flexDirection: "column" }}
         >
           {/* Nav links */}
-          <div className="flex items-center justify-end gap-6 px-6 pt-5 pb-3">
+          <div className="flex items-center justify-end gap-5 px-5 pt-4 pb-3">
             <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">LOGIN</button>
             <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">ABOUT US</button>
           </div>
-          <div className="px-6 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+          <div className="px-5 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
           {/* Title */}
-          <div className="px-6 py-4">
+          <div className="px-5 py-4">
             <h2
-              className="text-4xl font-black leading-none tracking-tight uppercase"
-              style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.05 }}
+              className="text-3xl font-black leading-none tracking-tight uppercase"
+              style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
             >
               CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
             </h2>
           </div>
-          <div className="px-6 mb-4"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+          <div className="px-5 mb-3"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
           {/* ── CATEGORIES ── */}
           <section className="mx-4 mb-3 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
