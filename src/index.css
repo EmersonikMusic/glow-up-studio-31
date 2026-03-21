@@ -226,16 +226,17 @@ All colors MUST be HSL.
   display: flex;
   align-items: center;
 }
-.step-slider-wrap .step-slider-dots {
+.step-slider-dots {
   position: absolute;
   left: 11px;
   right: 11px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
 }
 
 /* Dot overlay — absolutely centred on the 22px wrapper */
