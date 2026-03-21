@@ -35,29 +35,26 @@ const categories = [
   "Video Games",
 ];
 
-const difficulties = ["Easy", "Medium", "Hard", "Genius"];
-const eras = ["Ancient", "Medieval", "Modern", "Contemporary"];
+const difficulties = ["Casual", "Easy", "Average", "Hard", "Genius"];
+const eras = ["Pre-1500", "1500-1800", "1800-1900", "1900-1950", "1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"];
 
-const difficultyColor: Record<string, string> = {
-  Easy: "hsl(160 65% 50%)",
-  Medium: "hsl(42 100% 55%)",
-  Hard: "hsl(28 90% 52%)",
-  Genius: "hsl(340 70% 60%)",
-};
+const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
 
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Medium", "Hard"]);
-  const [selectedEras, setSelectedEras] = useState<string[]>(["Modern", "Contemporary"]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
+  const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
   const [numQuestions, setNumQuestions] = useState(40);
   const [timePerQuestion, setTimePerQuestion] = useState(10);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [difficultiesExpanded, setDifficultiesExpanded] = useState(false);
+  const [erasExpanded, setErasExpanded] = useState(false);
 
-  const allSelected = categories.every((c) => selectedCategories.includes(c));
-
+  // Categories
+  const allCatsSelected = categories.every((c) => selectedCategories.includes(c));
   const toggleAllCategories = () => {
-    if (allSelected) {
+    if (allCatsSelected) {
       setSelectedCategories([]);
       categories.forEach((c) => console.log(`${c}: FALSE`));
     } else {
@@ -65,27 +62,49 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       categories.forEach((c) => console.log(`${c}: TRUE`));
     }
   };
-
   const toggleCategory = (cat: string) => {
     const isActive = selectedCategories.includes(cat);
-    if (isActive) {
-      setSelectedCategories(selectedCategories.filter((v) => v !== cat));
-      console.log(`${cat}: FALSE`);
-    } else {
-      setSelectedCategories([...selectedCategories, cat]);
-      console.log(`${cat}: TRUE`);
-    }
+    setSelectedCategories(isActive ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
+    console.log(`${cat}: ${isActive ? "FALSE" : "TRUE"}`);
   };
 
-  const toggle = (
-    val: string,
-    set: React.Dispatch<React.SetStateAction<string[]>>,
-    arr: string[]
-  ) => {
-    set(arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val]);
+  // Difficulties
+  const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
+  const toggleAllDifficulties = () => {
+    if (allDiffsSelected) {
+      setSelectedDifficulties([]);
+      difficulties.forEach((d) => console.log(`${d}: FALSE`));
+    } else {
+      setSelectedDifficulties([...difficulties]);
+      difficulties.forEach((d) => console.log(`${d}: TRUE`));
+    }
+  };
+  const toggleDifficulty = (diff: string) => {
+    const isActive = selectedDifficulties.includes(diff);
+    setSelectedDifficulties(isActive ? selectedDifficulties.filter((v) => v !== diff) : [...selectedDifficulties, diff]);
+    console.log(`${diff}: ${isActive ? "FALSE" : "TRUE"}`);
+  };
+
+  // Eras
+  const allErasSelected = eras.every((e) => selectedEras.includes(e));
+  const toggleAllEras = () => {
+    if (allErasSelected) {
+      setSelectedEras([]);
+      eras.forEach((e) => console.log(`${e}: FALSE`));
+    } else {
+      setSelectedEras([...eras]);
+      eras.forEach((e) => console.log(`${e}: TRUE`));
+    }
+  };
+  const toggleEra = (era: string) => {
+    const isActive = selectedEras.includes(era);
+    setSelectedEras(isActive ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
+    console.log(`${era}: ${isActive ? "FALSE" : "TRUE"}`);
   };
 
   const visibleCategories = categoriesExpanded ? categories : categories.slice(0, 4);
+  const visibleDifficulties = difficultiesExpanded ? difficulties : difficulties.slice(0, 4);
+  const visibleEras = erasExpanded ? eras : eras.slice(0, 4);
 
   return (
     <>
@@ -191,14 +210,14 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               onClick={toggleAllCategories}
             >
               <Switch
-                checked={allSelected}
+                checked={allCatsSelected}
                 onCheckedChange={toggleAllCategories}
-                className="data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]"
+                className={SWITCH_ON}
                 onClick={(e) => e.stopPropagation()}
               />
               <span
                 className="text-xs font-black tracking-widest uppercase transition-colors"
-                style={{ color: allSelected ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+                style={{ color: allCatsSelected ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
               >
                 All Categories
               </span>
@@ -218,7 +237,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <Switch
                       checked={active}
                       onCheckedChange={() => toggleCategory(cat)}
-                      className="data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]"
+                      className={SWITCH_ON}
                       onClick={(e) => e.stopPropagation()}
                     />
                     <span
@@ -239,9 +258,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               aria-label={categoriesExpanded ? "Collapse categories" : "Expand categories"}
             >
               {categoriesExpanded ? (
-                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
-                  Show less ↑
-                </span>
+                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
               ) : (
                 <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
               )}
@@ -249,61 +266,143 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </section>
 
           {/* Difficulty */}
-          <section className="px-6 mb-4">
-            <div className="flex items-center gap-2 mb-3">
+          <section
+            className="mx-4 mb-4 rounded-2xl flex flex-col"
+            style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}
+          >
+            <div className="flex items-center gap-2 px-4 pt-4 pb-3 shrink-0">
               <BarChart2 className="w-4 h-4 text-[hsl(185_70%_55%)]" />
-              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
-                Difficulty
+              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Difficulty</span>
+            </div>
+
+            {/* ALL DIFFICULTIES parent toggle */}
+            <div
+              className="flex items-center gap-3 px-4 py-3 cursor-pointer shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)]"
+              style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+              onClick={toggleAllDifficulties}
+            >
+              <Switch
+                checked={allDiffsSelected}
+                onCheckedChange={toggleAllDifficulties}
+                className={SWITCH_ON}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <span
+                className="text-xs font-black tracking-widest uppercase transition-colors"
+                style={{ color: allDiffsSelected ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+              >
+                All Difficulties
               </span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {difficulties.map((diff) => {
+
+            <div className="flex flex-col">
+              {visibleDifficulties.map((diff) => {
                 const active = selectedDifficulties.includes(diff);
                 return (
-                  <button
+                  <div
                     key={diff}
-                    onClick={() => toggle(diff, setSelectedDifficulties, selectedDifficulties)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95"
-                    style={{
-                      background: active ? `${difficultyColor[diff]}22` : "hsl(var(--game-progress))",
-                      border: `1px solid ${active ? difficultyColor[diff] : "transparent"}`,
-                      color: active ? difficultyColor[diff] : "hsl(var(--muted-foreground))",
-                    }}
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
+                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+                    onClick={() => toggleDifficulty(diff)}
                   >
-                    {diff}
-                  </button>
+                    <Switch
+                      checked={active}
+                      onCheckedChange={() => toggleDifficulty(diff)}
+                      className={SWITCH_ON}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span
+                      className="text-xs font-black tracking-widest uppercase transition-colors"
+                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+                    >
+                      {diff}
+                    </span>
+                  </div>
                 );
               })}
             </div>
+
+            <button
+              onClick={() => setDifficultiesExpanded((v) => !v)}
+              className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl"
+              aria-label={difficultiesExpanded ? "Collapse difficulties" : "Expand difficulties"}
+            >
+              {difficultiesExpanded ? (
+                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
+              ) : (
+                <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
+              )}
+            </button>
           </section>
 
           {/* Eras */}
-          <section className="px-6 mb-5">
-            <div className="flex items-center gap-2 mb-3">
+          <section
+            className="mx-4 mb-5 rounded-2xl flex flex-col"
+            style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}
+          >
+            <div className="flex items-center gap-2 px-4 pt-4 pb-3 shrink-0">
               <Hourglass className="w-4 h-4 text-[hsl(185_70%_55%)]" />
-              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">
-                Eras
+              <span className="text-xs font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Eras</span>
+            </div>
+
+            {/* ALL ERAS parent toggle */}
+            <div
+              className="flex items-center gap-3 px-4 py-3 cursor-pointer shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)]"
+              style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+              onClick={toggleAllEras}
+            >
+              <Switch
+                checked={allErasSelected}
+                onCheckedChange={toggleAllEras}
+                className={SWITCH_ON}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <span
+                className="text-xs font-black tracking-widest uppercase transition-colors"
+                style={{ color: allErasSelected ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+              >
+                All Eras
               </span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {eras.map((era) => {
+
+            <div className="flex flex-col">
+              {visibleEras.map((era) => {
                 const active = selectedEras.includes(era);
                 return (
-                  <button
+                  <div
                     key={era}
-                    onClick={() => toggle(era, setSelectedEras, selectedEras)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95"
-                    style={{
-                      background: active ? "hsl(280 60% 50% / 0.25)" : "hsl(var(--game-progress))",
-                      border: `1px solid ${active ? "hsl(280 60% 60%)" : "transparent"}`,
-                      color: active ? "hsl(280 60% 75%)" : "hsl(var(--muted-foreground))",
-                    }}
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
+                    style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}
+                    onClick={() => toggleEra(era)}
                   >
-                    {era}
-                  </button>
+                    <Switch
+                      checked={active}
+                      onCheckedChange={() => toggleEra(era)}
+                      className={SWITCH_ON}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span
+                      className="text-xs font-black tracking-widest uppercase transition-colors"
+                      style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+                    >
+                      {era}
+                    </span>
+                  </div>
                 );
               })}
             </div>
+
+            <button
+              onClick={() => setErasExpanded((v) => !v)}
+              className="flex items-center justify-center py-3 w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl"
+              aria-label={erasExpanded ? "Collapse eras" : "Expand eras"}
+            >
+              {erasExpanded ? (
+                <span className="text-[10px] font-black tracking-widest text-[hsl(185_70%_55%)] uppercase">Show less ↑</span>
+              ) : (
+                <MoreHorizontal className="w-5 h-5 text-[hsl(185_70%_55%)]" />
+              )}
+            </button>
           </section>
 
           {/* Game Settings */}
