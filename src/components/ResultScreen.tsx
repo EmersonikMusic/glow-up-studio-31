@@ -1,5 +1,5 @@
 import { Trophy, RotateCcw, Star } from "lucide-react";
-import olivia from "@/assets/olivia-character.png";
+import mascotImg from "@/assets/Mascot.svg";
 
 interface ResultScreenProps {
   score: number;
