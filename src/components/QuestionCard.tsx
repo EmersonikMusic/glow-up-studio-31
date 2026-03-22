@@ -102,7 +102,7 @@ export default function QuestionCard({
             className="text-[10px] font-black tracking-widest uppercase"
             style={{ color: "hsl(var(--muted-foreground))" }}
           >
-            {paused ? "paused" : answered ? "answer in" : "seconds left"}
+            {paused ? "paused" : answered ? "next in" : "seconds left"}
           </span>
           {/* Thin progress bar under the label */}
           <div
@@ -120,7 +120,7 @@ export default function QuestionCard({
           </div>
         </div>
 
-        {/* Category + difficulty badge — pushed right */}
+        {/* Category badge — pushed right */}
         <div className="ml-auto flex items-center gap-2">
           <span
             className="hidden sm:inline text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-lg"
@@ -157,30 +157,23 @@ export default function QuestionCard({
 
       {/* Correct answer reveal */}
       {answered && correctAnswer && (
-        <div
-          className="rounded-xl px-5 py-4 animate-answer-reveal"
-          style={{
-            background: "hsl(var(--game-correct))",
-            boxShadow: "0 0 0 2px hsl(140 65% 60%), 0 4px 20px hsl(140 60% 40% / 0.35)",
-          }}
-        >
+        <>
+          {/* Divider between question and answer */}
+          <div className="h-px animate-answer-reveal" style={{ background: "hsl(var(--game-card-border))" }} />
+
           <p
-            className="text-[10px] font-black tracking-widest uppercase mb-1"
-            style={{ color: "hsl(140 60% 80%)" }}
-          >
-            Correct Answer
-          </p>
-          <p
-            className="font-black leading-tight"
+            className="leading-relaxed font-semibold animate-answer-reveal"
             style={{
-              color: "hsl(0 0% 100%)",
-              fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
-              letterSpacing: "-0.01em",
+              fontFamily: "'Nunito', sans-serif",
+              textWrap: "balance",
+              color: "hsl(0 0% 97%)",
+              fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)",
+              lineHeight: 1.45,
             }}
           >
             {correctAnswer}
           </p>
-        </div>
+        </>
       )}
 
       {/* Time's up indicator when timer expired without answer */}

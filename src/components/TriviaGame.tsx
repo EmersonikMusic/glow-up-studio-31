@@ -7,6 +7,7 @@ import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import type { GameSettings } from "./SettingsPanel";
+import mascotImg from "@/assets/Mascot.svg";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
