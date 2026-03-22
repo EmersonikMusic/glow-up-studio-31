@@ -62,6 +62,7 @@ export default function StartScreen({ onStart, onAbout, onApply }: StartScreenPr
       {/* Settings panel */}
       <SettingsPanel
         open={panelOpen}
+        onToggle={() => setPanelOpen((v) => !v)}
         onClose={() => setPanelOpen(false)}
         onAbout={onAbout}
         onApply={onApply}

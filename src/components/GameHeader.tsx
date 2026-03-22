@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Trophy, Settings } from "lucide-react";
+import { Trophy } from "lucide-react";
 import SettingsPanel from "./SettingsPanel";
+import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 
 interface GameHeaderProps {
   score: number;
@@ -15,47 +16,16 @@ export default function GameHeader({ score, questionIndex, totalQuestions }: Gam
   return (
     <>
       <header className="relative z-20 px-4 sm:px-6 pt-4 pb-3">
-        {/* Top row: logo | stats | gear */}
+        {/* Top row: logo | stats */}
         <div className="flex items-center gap-3">
-          {/* Logo wordmark — compact */}
-          <div className="flex items-center gap-0.5 select-none flex-shrink-0">
-            <span
-              className="text-xl font-black tracking-tight leading-none"
-              style={{
-                fontFamily: "'Fredoka One', 'Nunito', sans-serif",
-                background: "linear-gradient(135deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 60%, hsl(42 100% 72%) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              TRIV
-            </span>
-            <span
-              className="inline-flex items-center justify-center w-6 h-6 rounded-full border-2 mx-0.5 flex-shrink-0"
-              style={{
-                background: "linear-gradient(135deg, hsl(42 100% 55%) 0%, hsl(35 90% 42%) 100%)",
-                borderColor: "hsl(35 90% 35%)",
-                fontSize: "0.7rem",
-                fontWeight: 900,
-                color: "hsl(240 45% 16%)",
-                lineHeight: 1,
-              }}
-            >
-              O
-            </span>
-            <span
-              className="text-xl font-black tracking-tight leading-none"
-              style={{
-                fontFamily: "'Fredoka One', 'Nunito', sans-serif",
-                background: "linear-gradient(135deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 60%, hsl(42 100% 72%) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              LIVIA
-            </span>
+          {/* Logo */}
+          <div className="flex items-center flex-shrink-0 select-none">
+            <img
+              src={toLogoSm}
+              alt="Trivolivia"
+              className="h-8 w-auto"
+              draggable={false}
+            />
           </div>
 
           {/* Score pill */}
@@ -83,24 +53,6 @@ export default function GameHeader({ score, questionIndex, totalQuestions }: Gam
             <span className="text-foreground tabular-nums">{questionIndex}</span>
             <span className="text-muted-foreground">/ {totalQuestions}</span>
           </div>
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Settings gear */}
-          <button
-            onClick={() => setPanelOpen(true)}
-            className="flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 hover:bg-secondary active:scale-95 flex-shrink-0"
-            aria-label="Open settings"
-          >
-            <Settings
-              className="w-5 h-5 transition-transform duration-500"
-              style={{
-                color: "hsl(var(--game-gold))",
-                transform: panelOpen ? "rotate(60deg)" : "rotate(0deg)",
-              }}
-            />
-          </button>
         </div>
 
         {/* Progress bar — full width, below top row */}
@@ -119,7 +71,11 @@ export default function GameHeader({ score, questionIndex, totalQuestions }: Gam
         </div>
       </header>
 
-      <SettingsPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+      <SettingsPanel
+        open={panelOpen}
+        onToggle={() => setPanelOpen((v) => !v)}
+        onClose={() => setPanelOpen(false)}
+      />
     </>
   );
 }

@@ -21,6 +21,7 @@ export interface GameSettings {
 
 interface SettingsPanelProps {
   open: boolean;
+  onToggle: () => void;
   onClose: () => void;
   onAbout?: () => void;
   onApply?: (settings: GameSettings) => void;
@@ -114,7 +115,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
   );
 }
 
-export default function SettingsPanel({ open, onClose, onAbout, onApply }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
   const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
@@ -188,7 +189,7 @@ export default function SettingsPanel({ open, onClose, onAbout, onApply }: Setti
 
       {/* Gear tab — independent fixed element, always visible */}
       <button
-        onClick={onClose}
+      onClick={onToggle}
         className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-l-2xl hover:brightness-110 active:scale-95"
         style={{
           top: "50%",
