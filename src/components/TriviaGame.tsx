@@ -39,7 +39,7 @@ function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState(() =>
-    pickRandomQuestions(questions, DEFAULT_SETTINGS.numQuestions)
+    pickRandomQuestions(questions, DEFAULT_SETTINGS)
   );
   const [selected, setSelected] = useState<string | null>(null);
   const [score, setScore] = useState(0);
