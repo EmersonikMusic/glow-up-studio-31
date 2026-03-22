@@ -218,12 +218,12 @@ export default function TriviaGame() {
       {/* Header */}
       <GameHeader
         score={score}
-        questionIndex={gameState === "finished" ? questions.length : questionIndex}
-        totalQuestions={questions.length}
+        questionIndex={gameState === "finished" ? activeQuestions.length : questionIndex}
+        totalQuestions={activeQuestions.length}
       />
 
       {gameState === "finished" ? (
-        <ResultScreen score={score} total={questions.length} onRestart={handleRestart} />
+        <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
         <>
           {/* Main content */}
@@ -248,7 +248,7 @@ export default function TriviaGame() {
           <GameFooter
             question={currentQuestion}
             questionIndex={questionIndex}
-            totalQuestions={questions.length}
+            totalQuestions={activeQuestions.length}
             canAdvance={gameState === "answered"}
             isLast={isLast}
             onNext={handleNext}
