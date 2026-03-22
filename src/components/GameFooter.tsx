@@ -37,7 +37,7 @@ export default function GameFooter({
 
   return (
     <footer className="px-4 sm:px-6 md:px-8 pb-6 pt-2 w-full max-w-3xl mx-auto">
-      {/* Hint shown while playing */}
+      {/* Hint shown while playing (not yet answered) */}
       {!canAdvance && (
         <div
           className="w-full mb-4 rounded-xl px-5 py-3 text-sm font-semibold text-center animate-slide-in-up"
@@ -72,23 +72,21 @@ export default function GameFooter({
           <span className="hidden md:inline text-muted-foreground truncate">{question.era}</span>
         </div>
 
-        {/* Play / Pause button — always visible while game is active */}
-        {!canAdvance && (
-          <button
-            onClick={onTogglePause}
-            className="relative flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full font-black text-xs tracking-wider uppercase transition-all duration-200 active:scale-95 hover:brightness-110"
-            style={{
-              background: "hsl(var(--game-card))",
-              border: "1.5px solid hsl(var(--game-card-border))",
-              color: "hsl(185 70% 55%)",
-            }}
-            aria-label={paused ? "Resume" : "Pause"}
-          >
-            {paused ? <Play className="w-4 h-4 ml-0.5" /> : <Pause className="w-4 h-4" />}
-          </button>
-        )}
+        {/* Play / Pause — always visible during question AND answer phases */}
+        <button
+          onClick={onTogglePause}
+          className="relative flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
+          style={{
+            background: "hsl(var(--game-card))",
+            border: "1.5px solid hsl(var(--game-card-border))",
+            color: "hsl(185 70% 55%)",
+          }}
+          aria-label={paused ? "Resume" : "Pause"}
+        >
+          {paused ? <Play className="w-4 h-4 ml-0.5" /> : <Pause className="w-4 h-4" />}
+        </button>
 
-        {/* Finish button — only shows when answer is revealed on last question */}
+        {/* Finish button — only on last question once answer is revealed */}
         {canAdvance && isLast && (
           <button
             onClick={onNext}
