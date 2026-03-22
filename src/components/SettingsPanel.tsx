@@ -189,7 +189,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
       {/* Gear tab — independent fixed element, always visible */}
       <button
-        onClick={onClose}
+      onClick={onToggle}
         className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-l-2xl hover:brightness-110 active:scale-95"
         style={{
           top: "50%",
