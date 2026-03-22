@@ -3,13 +3,15 @@ import { Settings } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
 import startBtn from "@/assets/btn-startgame.svg";
 import SettingsPanel from "./SettingsPanel";
+import type { GameSettings } from "./SettingsPanel";
 
 interface StartScreenProps {
   onStart: () => void;
   onAbout: () => void;
+  onApply: (settings: GameSettings) => void;
 }
 
-export default function StartScreen({ onStart, onAbout }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onApply }: StartScreenProps) {
   const [panelOpen, setPanelOpen] = useState(true);
 
   return (
@@ -74,8 +76,12 @@ export default function StartScreen({ onStart, onAbout }: StartScreenProps) {
       </button>
 
       {/* Settings panel */}
-      <SettingsPanel open={panelOpen} onClose={() => setPanelOpen(false)} onAbout={onAbout} />
+      <SettingsPanel
+        open={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        onAbout={onAbout}
+        onApply={onApply}
+      />
     </div>
   );
 }
-

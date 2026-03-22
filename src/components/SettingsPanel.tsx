@@ -10,10 +10,20 @@ import iconEraInactive from "@/assets/icon-era-inactive.svg";
 import iconSettingsActive from "@/assets/icon-settings-active.svg";
 import iconSettingsInactive from "@/assets/icon-settings-inactive.svg";
 
+export interface GameSettings {
+  numQuestions: number;
+  timePerQuestion: number;
+  timePerAnswer: number;
+  selectedCategories: string[];
+  selectedDifficulties: string[];
+  selectedEras: string[];
+}
+
 interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
   onAbout?: () => void;
+  onApply?: (settings: GameSettings) => void;
 }
 
 const categories = [
@@ -94,7 +104,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-full"
+              className="rounded-full flex-shrink-0"
               style={{ width: "6px", height: "6px", background: "hsl(185 70% 55%)" }}
             />
           ))}
@@ -104,7 +114,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
   );
 }
 
-export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onClose, onAbout, onApply }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
   const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
@@ -126,13 +136,12 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
   // --- Categories ---
   const allCatsSelected = categories.every((c) => selectedCategories.includes(c));
   const toggleAllCategories = () => {
-    if (allCatsSelected) { setSelectedCategories([]); categories.forEach((c) => console.log(`${c}: FALSE`)); }
-    else { setSelectedCategories([...categories]); categories.forEach((c) => console.log(`${c}: TRUE`)); }
+    if (allCatsSelected) { setSelectedCategories([]); }
+    else { setSelectedCategories([...categories]); }
   };
   const toggleCategory = (cat: string) => {
     const on = selectedCategories.includes(cat);
     setSelectedCategories(on ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
-    console.log(`${cat}: ${on ? "FALSE" : "TRUE"}`);
   };
   const catsVisible = categories.slice(0, 5);
   const catsExtra = categories.slice(5);
@@ -140,30 +149,33 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
   // --- Difficulties ---
   const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
   const toggleAllDiffs = () => {
-    if (allDiffsSelected) { setSelectedDifficulties([]); difficulties.forEach((d) => console.log(`${d}: FALSE`)); }
-    else { setSelectedDifficulties([...difficulties]); difficulties.forEach((d) => console.log(`${d}: TRUE`)); }
+    if (allDiffsSelected) { setSelectedDifficulties([]); }
+    else { setSelectedDifficulties([...difficulties]); }
   };
   const toggleDiff = (diff: string) => {
     const on = selectedDifficulties.includes(diff);
     setSelectedDifficulties(on ? selectedDifficulties.filter((v) => v !== diff) : [...selectedDifficulties, diff]);
-    console.log(`${diff}: ${on ? "FALSE" : "TRUE"}`);
   };
 
   // --- Eras ---
   const allErasSelected = eras.every((e) => selectedEras.includes(e));
   const toggleAllEras = () => {
-    if (allErasSelected) { setSelectedEras([]); eras.forEach((e) => console.log(`${e}: FALSE`)); }
-    else { setSelectedEras([...eras]); eras.forEach((e) => console.log(`${e}: TRUE`)); }
+    if (allErasSelected) { setSelectedEras([]); }
+    else { setSelectedEras([...eras]); }
   };
   const toggleEra = (era: string) => {
     const on = selectedEras.includes(era);
     setSelectedEras(on ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
-    console.log(`${era}: ${on ? "FALSE" : "TRUE"}`);
   };
   const diffsVisible = difficulties.slice(0, 5);
   const diffsExtra = difficulties.slice(5);
   const erasVisible = eras.slice(0, 5);
   const erasExtra = eras.slice(5);
+
+  const handleApply = () => {
+    onApply?.({ numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras });
+    onClose();
+  };
 
   return (
     <>
@@ -265,7 +277,7 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
             <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
             <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <div className="px-5 py-5 flex flex-col gap-6">
-                {/* Questions — step 10: 10,20,30,40,50 (5 stops) */}
+                {/* Questions — step 10: 10,20,30,40,50 */}
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
@@ -281,7 +293,7 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
                   </div>
                 </div>
 
-                {/* Seconds/Question — step 5: 5,10,15,20,25,30 (6 stops) */}
+                {/* Seconds/Question — step 5: 5,10,15,20,25,30 */}
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
@@ -297,7 +309,7 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
                   </div>
                 </div>
 
-                {/* Seconds/Answer — step 5: 5,10,15,20,25,30 (6 stops) */}
+                {/* Seconds/Answer — step 5: 5,10,15,20,25,30 */}
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
@@ -319,7 +331,7 @@ export default function SettingsPanel({ open, onClose, onAbout }: SettingsPanelP
           {/* Apply button */}
           <div className="px-3 pb-6">
             <button
-              onClick={onClose}
+              onClick={handleApply}
               className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               style={{ background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))", color: "hsl(240 45% 16%)", boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)" }}
             >
