@@ -231,32 +231,8 @@ export default function SettingsPanel({ open, onClose, onAbout, onApply }: Setti
           </div>
           <div className="px-5 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
 
-          {/* Title row — gear tab overhangs to the left */}
-          <div className="relative px-5 py-4">
-            {/* Gear tab — always visible, anchored to left edge of panel */}
-            <button
-              onClick={onClose}
-              className="absolute flex items-center justify-center w-11 h-11 rounded-l-2xl transition-all duration-200 hover:brightness-110 active:scale-95"
-              style={{
-                left: "-2.75rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "hsl(var(--game-card))",
-                border: "1px solid hsl(var(--game-card-border))",
-                borderRight: "none",
-                boxShadow: "-4px 0 16px hsl(240 45% 10% / 0.4)",
-              }}
-              aria-label={open ? "Close settings" : "Open settings"}
-            >
-              <Settings
-                className="w-5 h-5 transition-transform duration-500"
-                style={{
-                  color: "hsl(var(--game-gold))",
-                  transform: open ? "rotate(60deg)" : "rotate(0deg)",
-                }}
-              />
-            </button>
-
+          {/* Title */}
+          <div className="px-5 py-4">
             <h2
               className="text-3xl font-black leading-none tracking-tight uppercase"
               style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
