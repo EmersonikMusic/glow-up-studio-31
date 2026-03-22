@@ -1,5 +1,13 @@
-export type Difficulty = "Easy" | "Medium" | "Hard" | "Genius";
-export type Category = "Science" | "History" | "Geography" | "Sports" | "Entertainment" | "Literature";
+export type Difficulty = "Casual" | "Easy" | "Average" | "Hard" | "Genius";
+export type Category =
+  | "Art" | "Economics" | "Food" | "Games" | "Geography" | "History"
+  | "Human Body" | "Language" | "Law" | "Literature" | "Math" | "Miscellaneous"
+  | "Movies" | "Music" | "Nature" | "Philosophy" | "Politics" | "Pop Culture"
+  | "Science" | "Sports" | "Technology" | "Television" | "Theater" | "Theology"
+  | "Video Games";
+export type Era =
+  | "Pre-1500" | "1500-1800" | "1800-1900" | "1900-1950" | "1950s" | "1960s"
+  | "1970s" | "1980s" | "1990s" | "2000s" | "2010s" | "2020s";
 
 export interface Answer {
   id: string;
@@ -13,6 +21,7 @@ export interface Question {
   correctId: string;
   category: Category;
   difficulty: Difficulty;
+  era: Era;
   author: string;
 }
 
@@ -29,6 +38,7 @@ export const questions: Question[] = [
     correctId: "B",
     category: "History",
     difficulty: "Genius",
+    era: "1900-1950",
     author: "Dr. Eleanor Marsh",
   },
   {
@@ -43,6 +53,7 @@ export const questions: Question[] = [
     correctId: "C",
     category: "Science",
     difficulty: "Easy",
+    era: "1950s",
     author: "Prof. Samuel Webb",
   },
   {
@@ -56,7 +67,8 @@ export const questions: Question[] = [
     ],
     correctId: "D",
     category: "Geography",
-    difficulty: "Medium",
+    difficulty: "Average",
+    era: "Pre-1500",
     author: "Amara Osei",
   },
   {
@@ -70,7 +82,8 @@ export const questions: Question[] = [
     ],
     correctId: "B",
     category: "Literature",
-    difficulty: "Medium",
+    difficulty: "Average",
+    era: "1500-1800",
     author: "Clara Fontaine",
   },
   {
@@ -85,6 +98,7 @@ export const questions: Question[] = [
     correctId: "C",
     category: "Sports",
     difficulty: "Hard",
+    era: "2000s",
     author: "Marcus Reyes",
   },
   {
@@ -97,8 +111,9 @@ export const questions: Question[] = [
       { id: "D", text: "Ex Machina" },
     ],
     correctId: "C",
-    category: "Entertainment",
-    difficulty: "Medium",
+    category: "Movies",
+    difficulty: "Average",
+    era: "1960s",
     author: "Nadia Kapoor",
   },
 ];
