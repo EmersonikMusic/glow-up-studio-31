@@ -6,6 +6,7 @@ import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
+import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "./SettingsPanel";
 import mascotImg from "@/assets/Mascot.svg";
 
@@ -46,10 +47,10 @@ export default function TriviaGame() {
   const [countdown, setCountdown] = useState<number>(DEFAULT_SETTINGS.timePerQuestion);
   const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  // Keep a ref so pause/resume callbacks always see current values
   const pausedRef = useRef(false);
   const gameStateRef = useRef<GameState>("start");
 
@@ -89,7 +90,6 @@ export default function TriviaGame() {
     }, 1000);
   }, [clearAnswerTimer]);
 
-  // Keep refs in sync
   useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
 
@@ -128,6 +128,7 @@ export default function TriviaGame() {
   const handleStart = useCallback(() => {
     clearAnswerTimer();
     setPaused(false);
+    setPanelOpen(false);
     const picked = pickRandomQuestions(questions, settings);
     setActiveQuestions(picked);
     setQuestionIndex(0);
@@ -171,6 +172,7 @@ export default function TriviaGame() {
     setSelected(null);
     setScore(0);
     setGameState("start");
+    setPanelOpen(true);
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer]);
 
@@ -186,6 +188,9 @@ export default function TriviaGame() {
         onStart={handleStart}
         onAbout={() => setGameState("about")}
         onApply={handleApply}
+        panelOpen={panelOpen}
+        onPanelToggle={() => setPanelOpen((v) => !v)}
+        onPanelClose={() => setPanelOpen(false)}
       />
     );
   }
@@ -216,9 +221,9 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="flex items-end justify-center gap-4 py-6 px-4 sm:px-6 md:px-8 w-full max-w-5xl mx-auto">
-          {/* Question + answer card — takes all remaining width */}
-          <div className="flex-1 min-w-0 flex flex-col justify-center">
+        <main className="flex items-end py-6 px-4 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
+          {/* Game area — always 70% */}
+          <div className="flex-none flex flex-col justify-center" style={{ width: "70%" }}>
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -236,16 +241,21 @@ export default function TriviaGame() {
             />
           </div>
 
-          {/* Mascot column — hidden on small screens */}
+          {/* Right column — 30%: mascot (sidebar closed) or empty space (sidebar open) */}
           <div
-            className="hidden md:flex flex-col items-center justify-end flex-shrink-0"
-            style={{ width: "clamp(160px, 18vw, 240px)" }}
+            className="flex-none flex flex-col items-center justify-end overflow-hidden"
+            style={{
+              width: "30%",
+              transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+              opacity: panelOpen ? 0 : 1,
+              pointerEvents: panelOpen ? "none" : "auto",
+            }}
           >
             <img
               src={mascotImg}
               alt="TrivOlivia mascot"
               className="w-full h-auto object-contain drop-shadow-xl"
-              style={{ maxHeight: "clamp(220px, 30vh, 360px)" }}
+              style={{ maxHeight: "clamp(220px, 40vh, 420px)", maxWidth: "clamp(160px, 22vw, 300px)" }}
             />
           </div>
         </main>
@@ -268,7 +278,14 @@ export default function TriviaGame() {
           onTogglePause={handleTogglePause}
         />
       )}
+
+      {/* Settings panel — slides over the right 30% */}
+      <SettingsPanel
+        open={panelOpen}
+        onToggle={() => setPanelOpen((v) => !v)}
+        onClose={() => setPanelOpen(false)}
+        onApply={handleApply}
+      />
     </div>
   );
 }
-
