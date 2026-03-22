@@ -37,19 +37,6 @@ export default function GameFooter({
 
   return (
     <footer className="px-4 sm:px-6 md:px-8 pb-6 pt-2 w-full max-w-3xl mx-auto">
-      {/* Hint shown while playing (not yet answered) */}
-      {!canAdvance && (
-        <div
-          className="w-full mb-4 rounded-xl px-5 py-3 text-sm font-semibold text-center animate-slide-in-up"
-          style={{
-            background: "hsl(var(--game-card))",
-            border: "1.5px dashed hsl(var(--game-card-border))",
-            color: "hsl(var(--muted-foreground))",
-          }}
-        >
-          Say your answer out loud — the correct answer will appear when time runs out
-        </div>
-      )}
 
       {/* Bottom bar: metadata pill | play-pause | finish */}
       <div className="flex items-center gap-3">
