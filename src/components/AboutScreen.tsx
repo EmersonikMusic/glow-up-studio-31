@@ -1,4 +1,4 @@
-
+import btnClose from "@/assets/btn-close.svg";
 
 interface AboutScreenProps {
   onClose: () => void;
@@ -26,28 +26,25 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         }}
       />
 
-      {/* Card */}
+      {/* Card — 70vw wide, min 300px */}
       <div
-        className="relative z-10 w-full max-w-lg mx-4 rounded-3xl overflow-hidden animate-slide-in-up"
+        className="relative z-10 rounded-3xl overflow-hidden animate-slide-in-up mx-4"
         style={{
+          width: "70vw",
+          minWidth: "300px",
           background: "hsl(var(--game-card))",
           border: "1px solid hsl(var(--game-card-border))",
           boxShadow: "0 24px 80px hsl(240 45% 10% / 0.7)",
         }}
       >
-        {/* Close button */}
+        {/* Close button — uses uploaded SVG asset */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
-          style={{
-            background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
-            boxShadow: "0 4px 12px hsl(42 100% 55% / 0.4)",
-          }}
+          className="absolute top-4 right-4 z-20 transition-all duration-200 hover:brightness-110 active:scale-95"
           aria-label="Close"
+          style={{ width: 44, height: 44 }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 2L14 14M14 2L2 14" stroke="hsl(240 45% 16%)" strokeWidth="2.5" strokeLinecap="round" />
-          </svg>
+          <img src={btnClose} alt="Close" className="w-full h-full" />
         </button>
 
         {/* Header */}
@@ -147,7 +144,11 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   "Want to just eventually know everything?",
                 ].map((item, i) => (
                   <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
-                    <span style={{ color: "hsl(185 70% 55%)" }} className="mt-0.5 shrink-0">—</span>
+                    {/* Teal bullet point */}
+                    <span
+                      className="shrink-0 mt-[5px] w-2 h-2 rounded-full"
+                      style={{ background: "hsl(185 70% 55%)" }}
+                    />
                     <span>
                       {item}{" "}
                       <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>We got you.</span>
