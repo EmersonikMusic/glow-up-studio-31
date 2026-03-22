@@ -57,12 +57,12 @@ export default function QuestionCard({
   return (
     <div
       key={animKey}
-      className="w-full rounded-2xl flex flex-col gap-5 animate-slide-in-up"
+      className="w-full rounded-2xl flex flex-col justify-center gap-5 animate-slide-in-up min-h-[50vh]"
       style={{
         background: "hsl(var(--game-card))",
         border: "1.5px solid hsl(var(--game-card-border))",
         boxShadow: "0 8px 40px hsl(240 45% 10% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
-        padding: "clamp(1.25rem, 4vw, 2rem)",
+        padding: "clamp(1.25rem, 4vw, 2.5rem)",
       }}
     >
       {/* Timer row */}
