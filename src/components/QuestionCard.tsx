@@ -1,4 +1,5 @@
 import { Question } from "@/data/questions";
+import { Pause } from "lucide-react";
 
 interface QuestionCardProps {
   question: Question;
@@ -9,6 +10,7 @@ interface QuestionCardProps {
   correctAnswer?: string;
   answerCountdown?: number | null;
   totalAnswerTime?: number;
+  paused?: boolean;
 }
 
 export default function QuestionCard({
@@ -20,6 +22,7 @@ export default function QuestionCard({
   correctAnswer,
   answerCountdown,
   totalAnswerTime = 5,
+  paused = false,
 }: QuestionCardProps) {
   const progress = totalTime > 0 ? countdown / totalTime : 0;
   const isUrgent = countdown <= 5 && !answered;
