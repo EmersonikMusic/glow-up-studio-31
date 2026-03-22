@@ -22,26 +22,10 @@ const difficultyColor: Record<string, string> = {
 export default function GameFooter({
   question,
   questionIndex,
-  totalQuestions,
   canAdvance,
   isLast,
   onNext,
-  answerCountdown,
-  totalAnswerTime,
 }: GameFooterProps) {
-  const progress = (questionIndex / totalQuestions) * 100;
-  void progress;
-
-  // Arc for the answer countdown ring
-  const size = 44;
-  const strokeWidth = 3;
-  const r = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * r;
-  const answerProgress = answerCountdown !== null && totalAnswerTime > 0
-    ? answerCountdown / totalAnswerTime
-    : 1;
-  const dashOffset = circumference * (1 - answerProgress);
-
   return (
     <footer className="flex items-center gap-4 px-6 py-4">
       {/* Metadata pill */}
@@ -58,7 +42,7 @@ export default function GameFooter({
         <span className="hidden md:inline truncate">{question.author}</span>
       </div>
 
-      {/* Next button — shows countdown ring when in answered state */}
+      {/* Next button */}
       <button
         onClick={onNext}
         disabled={!canAdvance}
@@ -73,42 +57,10 @@ export default function GameFooter({
         }}
         aria-label={isLast ? "Finish quiz" : "Next question"}
       >
-        <ChevronRight className="w-5 h-5 text-white relative z-10" />
-
-        {/* Countdown ring overlay */}
-        {canAdvance && answerCountdown !== null && (
-          <svg
-            width={size}
-            height={size}
-            className="absolute inset-0 -m-0.5"
-            style={{ transform: "rotate(-90deg)" }}
-          >
-            {/* Background ring */}
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={r}
-              fill="none"
-              stroke="hsl(0 0% 100% / 0.15)"
-              strokeWidth={strokeWidth}
-            />
-            {/* Progress arc */}
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={r}
-              fill="none"
-              stroke="hsl(185 70% 55%)"
-              strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={dashOffset}
-              style={{ transition: "stroke-dashoffset 0.9s linear" }}
-            />
-          </svg>
-        )}
+        <ChevronRight className="w-5 h-5 text-white" />
       </button>
     </footer>
   );
 }
+
 
