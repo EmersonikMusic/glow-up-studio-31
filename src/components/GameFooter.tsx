@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, CheckCircle2 } from "lucide-react";
 import { Question } from "@/data/questions";
 
 interface GameFooterProps {
@@ -10,11 +10,14 @@ interface GameFooterProps {
   onNext: () => void;
   answerCountdown: number | null;
   totalAnswerTime: number;
+  selected: string | null;
+  onSelect: (id: string) => void;
 }
 
 const difficultyColor: Record<string, string> = {
+  Casual: "hsl(160 65% 50%)",
   Easy: "hsl(160 65% 50%)",
-  Medium: "hsl(42 100% 55%)",
+  Average: "hsl(42 100% 55%)",
   Hard: "hsl(28 90% 52%)",
   Genius: "hsl(340 70% 60%)",
 };
@@ -22,45 +25,88 @@ const difficultyColor: Record<string, string> = {
 export default function GameFooter({
   question,
   questionIndex,
+  totalQuestions,
   canAdvance,
   isLast,
   onNext,
+  selected,
+  onSelect,
 }: GameFooterProps) {
-  return (
-    <footer className="flex items-center gap-4 px-6 py-4">
-      {/* Metadata pill */}
-      <div
-        className="flex-1 flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm font-semibold text-muted-foreground"
-        style={{ background: "hsl(var(--game-progress))" }}
-      >
-        <span>Q{questionIndex + 1}</span>
-        <span className="opacity-40">·</span>
-        <span>{question.category}</span>
-        <span className="opacity-40">·</span>
-        <span style={{ color: difficultyColor[question.difficulty] }}>{question.difficulty}</span>
-        <span className="opacity-40 hidden md:inline">·</span>
-        <span className="hidden md:inline truncate">{question.author}</span>
-      </div>
+  const hasAnswered = canAdvance;
 
-      {/* Next button */}
-      <button
-        onClick={onNext}
-        disabled={!canAdvance}
-        className="relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 flex-shrink-0"
-        style={{
-          background: canAdvance
-            ? "linear-gradient(135deg, hsl(280 60% 58%), hsl(280 60% 44%))"
-            : "hsl(var(--game-progress))",
-          opacity: canAdvance ? 1 : 0.4,
-          boxShadow: canAdvance ? "0 4px 16px hsl(280 60% 50% / 0.5)" : "none",
-          cursor: canAdvance ? "pointer" : "not-allowed",
-        }}
-        aria-label={isLast ? "Finish quiz" : "Next question"}
-      >
-        <ChevronRight className="w-5 h-5 text-white" />
-      </button>
+  return (
+    <footer className="px-4 sm:px-6 md:px-8 pb-6 pt-2 w-full max-w-3xl mx-auto">
+      {/* Answer input zone — shows when playing (not yet answered) */}
+      {!hasAnswered && (
+        <div
+          className="w-full mb-4 rounded-xl px-5 py-3 text-sm font-semibold text-center animate-slide-in-up"
+          style={{
+            background: "hsl(var(--game-card))",
+            border: "1.5px dashed hsl(var(--game-card-border))",
+            color: "hsl(var(--muted-foreground))",
+          }}
+        >
+          Say your answer out loud — the correct answer will appear when time runs out
+        </div>
+      )}
+
+      {/* Bottom bar: metadata pill + next button */}
+      <div className="flex items-center gap-3">
+        {/* Metadata pill */}
+        <div
+          className="flex-1 grid grid-cols-[auto_auto_1fr] sm:flex sm:flex-row items-center gap-x-2 gap-y-0 rounded-full px-4 py-2.5 text-xs font-semibold overflow-hidden"
+          style={{ background: "hsl(var(--game-progress))" }}
+        >
+          <span className="text-muted-foreground tabular-nums">Q{questionIndex + 1}/{totalQuestions}</span>
+          <span className="opacity-40">·</span>
+          <span className="text-muted-foreground truncate">{question.category}</span>
+          <span className="opacity-40 hidden sm:inline">·</span>
+          <span
+            className="font-black hidden sm:inline"
+            style={{ color: difficultyColor[question.difficulty] ?? "hsl(var(--muted-foreground))" }}
+          >
+            {question.difficulty}
+          </span>
+          <span className="opacity-40 hidden md:inline">·</span>
+          <span className="hidden md:inline text-muted-foreground truncate">{question.era}</span>
+        </div>
+
+        {/* Next / Finish button */}
+        <button
+          onClick={canAdvance ? onNext : undefined}
+          disabled={!canAdvance}
+          className="relative flex items-center gap-1.5 flex-shrink-0 px-4 py-2.5 rounded-full font-black text-xs tracking-wider uppercase transition-all duration-200 active:scale-95"
+          style={{
+            background: canAdvance
+              ? "linear-gradient(135deg, hsl(280 60% 58%), hsl(280 60% 44%))"
+              : "hsl(var(--game-progress))",
+            color: canAdvance ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))",
+            opacity: canAdvance ? 1 : 0.45,
+            boxShadow: canAdvance ? "0 4px 16px hsl(280 60% 50% / 0.45)" : "none",
+            cursor: canAdvance ? "pointer" : "not-allowed",
+          }}
+          aria-label={isLast ? "Finish quiz" : "Next question"}
+        >
+          {canAdvance ? (
+            isLast ? (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                Finish
+              </>
+            ) : (
+              <>
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </>
+            )
+          ) : (
+            <>
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </div>
     </footer>
   );
 }
-
-

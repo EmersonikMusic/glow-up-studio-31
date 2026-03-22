@@ -8,74 +8,120 @@ interface ResultScreenProps {
 }
 
 export default function ResultScreen({ score, total, onRestart }: ResultScreenProps) {
-  const percentage = Math.round((score / total) * 100);
+  const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
   const rank =
     percentage >= 90
-      ? { label: "Genius!", color: "hsl(340 70% 60%)" }
+      ? { label: "Genius!", color: "hsl(340 70% 60%)", glow: "hsl(340 70% 60% / 0.35)" }
       : percentage >= 70
-      ? { label: "Expert!", color: "hsl(42 100% 55%)" }
+      ? { label: "Expert!", color: "hsl(42 100% 55%)", glow: "hsl(42 100% 55% / 0.35)" }
       : percentage >= 50
-      ? { label: "Scholar!", color: "hsl(160 65% 50%)" }
-      : { label: "Explorer!", color: "hsl(210 75% 60%)" };
+      ? { label: "Scholar!", color: "hsl(160 65% 50%)", glow: "hsl(160 65% 50% / 0.35)" }
+      : { label: "Explorer!", color: "hsl(210 75% 60%)", glow: "hsl(210 75% 60% / 0.35)" };
+
+  const starsFilled = Math.round((percentage / 100) * 3);
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-8 px-6 py-8 animate-slide-in-up">
-      {/* Character */}
-      <div className="relative">
-        <div
-          className="w-32 h-32 rounded-full flex items-center justify-center animate-float"
-          style={{ background: "radial-gradient(circle, hsl(200 60% 60% / 0.3) 0%, transparent 70%)" }}
-        >
-          <img
-            src={olivia}
-            alt="Olivia"
-            className="w-32 h-32 object-contain drop-shadow-2xl"
-          />
-        </div>
-      </div>
-
-      {/* Score */}
-      <div className="text-center">
-        <div
-          className="text-6xl font-black mb-2 animate-bounce-in"
-          style={{ color: rank.color, fontFamily: "'Fredoka One', sans-serif" }}
-        >
-          {rank.label}
-        </div>
-        <p className="text-muted-foreground text-lg">
-          You scored{" "}
-          <span className="text-game-gold font-bold text-xl">{score}</span> out of{" "}
-          <span className="font-bold text-xl">{total}</span> correct
-        </p>
-        <p className="text-muted-foreground text-sm mt-1">{percentage}% accuracy</p>
-      </div>
-
-      {/* Stars */}
-      <div className="flex gap-2">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Star
-            key={i}
-            className="w-8 h-8 transition-all"
-            fill={i < Math.round((percentage / 100) * 3) ? rank.color : "transparent"}
-            stroke={rank.color}
-            style={{ animationDelay: `${i * 150}ms` }}
-          />
-        ))}
-      </div>
-
-      {/* Restart button */}
-      <button
-        onClick={onRestart}
-        className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-200 hover:scale-105 active:scale-95 animate-pulse-gold"
+    <div className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up">
+      {/* Card */}
+      <div
+        className="w-full max-w-md rounded-3xl overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
-          color: "hsl(240 45% 16%)",
-          boxShadow: "0 6px 24px hsl(42 100% 55% / 0.4)",
+          background: "hsl(var(--game-card))",
+          border: "1.5px solid hsl(var(--game-card-border))",
+          boxShadow: `0 16px 64px hsl(240 45% 10% / 0.6), 0 0 0 1px hsl(0 0% 100% / 0.04)`,
         }}
       >
-        <RotateCcw className="w-5 h-5" />
-        Play Again
-      </button>
+        {/* Top accent stripe */}
+        <div
+          className="h-1.5 w-full"
+          style={{ background: `linear-gradient(90deg, ${rank.color}, transparent)` }}
+        />
+
+        <div className="px-8 py-8 flex flex-col items-center gap-6">
+          {/* Character + glow */}
+          <div className="relative flex items-center justify-center">
+            <div
+              className="absolute w-32 h-32 rounded-full"
+              style={{
+                background: `radial-gradient(circle, ${rank.glow} 0%, transparent 70%)`,
+                filter: "blur(16px)",
+              }}
+            />
+            <img
+              src={olivia}
+              alt="Olivia"
+              className="relative z-10 w-28 h-28 object-contain drop-shadow-2xl animate-float"
+            />
+          </div>
+
+          {/* Rank label */}
+          <div className="text-center">
+            <div
+              className="text-5xl font-black mb-1 animate-bounce-in"
+              style={{ color: rank.color, fontFamily: "'Fredoka One', sans-serif" }}
+            >
+              {rank.label}
+            </div>
+            <p className="text-muted-foreground text-sm">
+              That's a solid run, trivia nerd.
+            </p>
+          </div>
+
+          {/* Stats grid */}
+          <div
+            className="w-full grid grid-cols-3 gap-2 rounded-2xl overflow-hidden"
+            style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}
+          >
+            {[
+              { label: "Correct", value: score, color: "hsl(160 65% 55%)" },
+              { label: "Accuracy", value: `${percentage}%`, color: rank.color },
+              { label: "Total", value: total, color: "hsl(var(--muted-foreground))" },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="flex flex-col items-center gap-1 py-4">
+                <span
+                  className="text-2xl font-black tabular-nums"
+                  style={{ color }}
+                >
+                  {value}
+                </span>
+                <span className="text-[10px] font-black tracking-widest uppercase text-muted-foreground">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Stars */}
+          <div className="flex gap-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Star
+                key={i}
+                className="w-8 h-8 transition-all duration-300"
+                fill={i < starsFilled ? rank.color : "transparent"}
+                stroke={i < starsFilled ? rank.color : "hsl(var(--muted-foreground))"}
+                style={{
+                  filter: i < starsFilled ? `drop-shadow(0 0 8px ${rank.glow})` : "none",
+                  animationDelay: `${i * 150}ms`,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={onRestart}
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-base tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            style={{
+              background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
+              color: "hsl(240 45% 16%)",
+              boxShadow: "0 6px 24px hsl(42 100% 55% / 0.4)",
+            }}
+          >
+            <RotateCcw className="w-5 h-5" />
+            Play Again
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
