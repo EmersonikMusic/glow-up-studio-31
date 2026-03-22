@@ -20,8 +20,16 @@ const DEFAULT_SETTINGS: GameSettings = {
   selectedEras: ["1990s", "2000s", "2010s", "2020s"],
 };
 
+function pickRandomQuestions(pool: typeof questions, count: number) {
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [activeQuestions, setActiveQuestions] = useState(() =>
+    pickRandomQuestions(questions, DEFAULT_SETTINGS.numQuestions)
+  );
   const [selected, setSelected] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<GameState>("start");
@@ -33,8 +41,8 @@ export default function TriviaGame() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const currentQuestion = questions[questionIndex];
-  const isLast = questionIndex === questions.length - 1;
+  const currentQuestion = activeQuestions[questionIndex];
+  const isLast = questionIndex === activeQuestions.length - 1;
 
   // Clear question timer
   const clearTimer = useCallback(() => {
@@ -122,13 +130,15 @@ export default function TriviaGame() {
 
   const handleStart = useCallback(() => {
     clearAnswerTimer();
+    const picked = pickRandomQuestions(questions, settings.numQuestions);
+    setActiveQuestions(picked);
     setQuestionIndex(0);
     setSelected(null);
     setScore(0);
     setAnimKey((k) => k + 1);
     setGameState("playing");
     startCountdown(settings.timePerQuestion);
-  }, [settings.timePerQuestion, startCountdown, clearAnswerTimer]);
+  }, [settings.numQuestions, settings.timePerQuestion, startCountdown, clearAnswerTimer]);
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -208,12 +218,12 @@ export default function TriviaGame() {
       {/* Header */}
       <GameHeader
         score={score}
-        questionIndex={gameState === "finished" ? questions.length : questionIndex}
-        totalQuestions={questions.length}
+        questionIndex={gameState === "finished" ? activeQuestions.length : questionIndex}
+        totalQuestions={activeQuestions.length}
       />
 
       {gameState === "finished" ? (
-        <ResultScreen score={score} total={questions.length} onRestart={handleRestart} />
+        <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
         <>
           {/* Main content */}
@@ -238,7 +248,7 @@ export default function TriviaGame() {
           <GameFooter
             question={currentQuestion}
             questionIndex={questionIndex}
-            totalQuestions={questions.length}
+            totalQuestions={activeQuestions.length}
             canAdvance={gameState === "answered"}
             isLast={isLast}
             onNext={handleNext}
