@@ -101,10 +101,9 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 Who are we?
               </h2>
               <p
-                className="text-sm leading-relaxed"
-                style={{ color: "hsl(0 0% 100%)" }}
-              >
-                Here at{" "}
+              className="text-sm leading-relaxed text-white"
+            >
+              Here at{" "}
                 <span className="font-black">
                   Triviolivia
                 </span>
