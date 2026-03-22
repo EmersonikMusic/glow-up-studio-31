@@ -35,7 +35,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
           boxShadow: "0 24px 80px hsl(240 45% 10% / 0.7)",
         }}
       >
-        {/* Close button — X in gold circle */}
+        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
@@ -45,20 +45,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
           }}
           aria-label="Close"
         >
-          {/* SVG X icon matching btn-startgame style */}
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M2 2L14 14M14 2L2 14"
-              stroke="hsl(240 45% 16%)"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 2L14 14M14 2L2 14" stroke="hsl(240 45% 16%)" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
         </button>
 
@@ -92,46 +80,30 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         {/* Scrollable body */}
         <ScrollArea className="max-h-[55vh]">
           <div className="px-8 py-7 flex flex-col gap-6 game-text-white">
+
             {/* Who are we */}
             <div>
-              <h2
-                className="text-xs font-black tracking-[0.18em] uppercase mb-3"
-                style={{ color: "hsl(185 70% 55%)" }}
-              >
+              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Who are we?
               </h2>
-              <p
-                className="text-sm leading-relaxed !text-white"
-              >
-                Here at{" "}
-                <span className="font-black">
-                  Triviolivia
-                </span>
-                , we are a team of trivia fans who love learning, writing, and playing trivia.
-                We believe that learning should be entertaining and stimulating. Our platform
-                is designed for trivia experts, young learners, and everyone in between.
+              <p className="text-sm leading-relaxed">
+                We are a team of trivia fans who love learning, writing, and playing trivia. Here at{" "}
+                <span className="font-black">Triviolivia</span>, we believe that learning should be
+                entertaining and stimulating. Our platform is designed for trivia experts, young
+                learners, and everyone in between.
               </p>
             </div>
 
-            {/* Divider */}
             <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
 
             {/* How do I play */}
             <div>
-              <h2
-                className="text-xs font-black tracking-[0.18em] uppercase mb-3"
-                style={{ color: "hsl(185 70% 55%)" }}
-              >
+              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 How do I play?
               </h2>
-              <p
-                className="text-sm leading-relaxed !text-white"
-              >
-                Press{" "}
-                <span className="font-black">
-                  START GAME
-                </span>{" "}
-                to play a game with today's unlocked categories, or{" "}
+              <p className="text-sm leading-relaxed">
+                Press <span className="font-black">START GAME</span> to play a game with today's
+                unlocked categories, or{" "}
                 <a
                   href="#"
                   className="font-black underline underline-offset-2 transition-opacity duration-150 hover:opacity-80"
@@ -143,44 +115,85 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </p>
             </div>
 
-            {/* Divider */}
             <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
 
-            {/* Contact / links section */}
+            {/* What sets us apart */}
             <div>
-              <h2
-                className="text-xs font-black tracking-[0.18em] uppercase mb-3"
-                style={{ color: "hsl(185 70% 55%)" }}
-              >
-                Get in touch
+              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                What sets us apart?
               </h2>
-              <p className="text-sm leading-relaxed !text-white">
-                Questions or feedback? Reach us at{" "}
-                <a
-                  href="mailto:hello@triviolivia.com"
-                  className="font-black underline underline-offset-2 transition-opacity duration-150 hover:opacity-80"
-                  style={{ color: "hsl(185 70% 55%)" }}
-                >
-                  hello@triviolivia.com
-                </a>
-                .
+              <p className="text-sm leading-relaxed mb-4">
+                <span className="font-black">Triviolivia</span> is not just another trivia game.
+                Triviolivia is a free and fully customizable source of endless trivia questions and
+                answers across <span className="font-black">25 categories</span>,{" "}
+                <span className="font-black">5 difficulty levels</span>, and{" "}
+                <span className="font-black">12 time periods</span>. 1500 ways to play. Let us handle
+                the questions. How you use them is up to you.
+              </p>
+              <ul className="flex flex-col gap-2">
+                {[
+                  "Need some fresh questions for your dated trivia board game?",
+                  "Want to make better use of your kid's screen time?",
+                  "Did you forget to prepare for hosting bar trivia night?",
+                  "Learning English?",
+                  "Are you a trivia wizard but not into politics, theater, or math?",
+                  "Music, movie, and video game expert but only after the year 2000?",
+                  "Love sports trivia?",
+                  "Hate sports trivia?",
+                  "Want to see if you know more about technology than your cousin knows about history?",
+                  "Want a balanced trivia showdown between your five year old brainiac and her boomer grandpa?",
+                  "Training for a Jeopardy run?",
+                  "Tired of AI hallucination questions?",
+                  "Want to just eventually know everything?",
+                ].map((item, i) => (
+                  <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
+                    <span style={{ color: "hsl(185 70% 55%)" }} className="mt-0.5 shrink-0">—</span>
+                    <span>
+                      {item}{" "}
+                      <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>We got you.</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+
+            {/* How do I contribute */}
+            <div>
+              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                How do I contribute?
+              </h2>
+              <p className="text-sm leading-relaxed">
+                Our meticulously crafted and curated questions are designed to entertain, educate,
+                challenge, and spark curiosity. We are always adding to our database and we're always
+                looking for new questions.{" "}
+                <span className="font-black">Show us what you got!</span> If your submitted questions
+                survive our rigorous quality control process, they will be added to our database and
+                you will be credited as the author of the question, or you can remain anonymous.
               </p>
             </div>
 
-            {/* Dot row */}
-            <div className="flex items-center justify-center gap-2 pt-1 pb-2">
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="rounded-full"
-                  style={{
-                    width: i === 1 ? 10 : 6,
-                    height: i === 1 ? 10 : 6,
-                    background: i === 1 ? "hsl(185 70% 55%)" : "hsl(var(--game-card-border))",
-                  }}
-                />
-              ))}
+            <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+
+            {/* What next */}
+            <div>
+              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                What next?
+              </h2>
+              <p className="text-sm leading-relaxed font-black">
+                Go play. Good luck. Have fun. Nerd up!
+              </p>
             </div>
+
+            {/* Sign-off */}
+            <div className="pt-1 pb-2">
+              <p className="text-sm leading-relaxed italic" style={{ color: "hsl(185 70% 55%)" }}>
+                With love,<br />
+                <span className="font-black not-italic">The Triviolivia Team</span>
+              </p>
+            </div>
+
           </div>
         </ScrollArea>
 
