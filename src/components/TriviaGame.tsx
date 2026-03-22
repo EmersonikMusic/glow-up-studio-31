@@ -130,13 +130,15 @@ export default function TriviaGame() {
 
   const handleStart = useCallback(() => {
     clearAnswerTimer();
+    const picked = pickRandomQuestions(questions, settings.numQuestions);
+    setActiveQuestions(picked);
     setQuestionIndex(0);
     setSelected(null);
     setScore(0);
     setAnimKey((k) => k + 1);
     setGameState("playing");
     startCountdown(settings.timePerQuestion);
-  }, [settings.timePerQuestion, startCountdown, clearAnswerTimer]);
+  }, [settings.numQuestions, settings.timePerQuestion, startCountdown, clearAnswerTimer]);
 
   const handleSelect = useCallback(
     (id: string) => {
