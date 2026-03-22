@@ -195,7 +195,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Footer CTA */}
         <div
