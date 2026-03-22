@@ -224,15 +224,14 @@ export default function TriviaGame() {
               countdown={countdown}
               totalTime={settings.timePerQuestion}
               answered={gameState === "answered"}
+              correctAnswer={
+                gameState === "answered"
+                  ? currentQuestion.answers.find((a) => a.id === currentQuestion.correctId)?.text
+                  : undefined
+              }
+              answerCountdown={answerCountdown}
+              totalAnswerTime={settings.timePerAnswer}
             />
-            {gameState === "answered" && (
-              <AnswerGrid
-                answers={currentQuestion.answers}
-                selected={selected}
-                correctId={currentQuestion.correctId}
-                onSelect={handleSelect}
-              />
-            )}
           </main>
 
           {/* Footer */}
