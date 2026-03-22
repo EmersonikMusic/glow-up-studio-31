@@ -173,6 +173,14 @@ export default function TriviaGame() {
               totalTime={settings.timePerQuestion}
               answered={gameState === "answered"}
             />
+            {gameState === "answered" && (
+              <AnswerGrid
+                answers={currentQuestion.answers}
+                selected={selected}
+                correctId={currentQuestion.correctId}
+                onSelect={handleSelect}
+              />
+            )}
           </main>
 
           {/* Footer */}
