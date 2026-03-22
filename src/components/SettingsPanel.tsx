@@ -115,7 +115,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
   );
 }
 
-export default function SettingsPanel({ open, onClose, onAbout, onApply }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
   const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
