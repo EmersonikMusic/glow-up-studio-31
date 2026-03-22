@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Settings } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
 import startBtn from "@/assets/btn-startgame.svg";
 import SettingsPanel from "./SettingsPanel";
