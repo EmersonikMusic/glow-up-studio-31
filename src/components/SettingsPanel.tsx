@@ -21,6 +21,7 @@ export interface GameSettings {
 
 interface SettingsPanelProps {
   open: boolean;
+  onToggle: () => void;
   onClose: () => void;
   onAbout?: () => void;
   onApply?: (settings: GameSettings) => void;
