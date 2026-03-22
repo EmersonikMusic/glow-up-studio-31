@@ -1,5 +1,4 @@
 import { Question } from "@/data/questions";
-import olivia from "@/assets/olivia-character.png";
 
 interface QuestionCardProps {
   question: Question;
@@ -25,15 +24,14 @@ export default function QuestionCard({
   const progress = totalTime > 0 ? countdown / totalTime : 0;
   const isUrgent = countdown <= 5 && !answered;
 
-  // Answer countdown progress
   const answerProgress =
     answerCountdown !== null && answerCountdown !== undefined && totalAnswerTime > 0
       ? answerCountdown / totalAnswerTime
       : 1;
 
-  // Arc drawing for circular countdown
-  const size = 48;
-  const strokeWidth = 3.5;
+  // Arc drawing
+  const size = 56;
+  const strokeWidth = 4;
   const r = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * r;
 
@@ -54,121 +52,151 @@ export default function QuestionCard({
     : "hsl(185 70% 65%)";
 
   return (
-    <div className="relative flex items-stretch gap-4 px-6 md:px-8">
-      {/* Question card */}
-      <div
-        key={animKey}
-        className="flex-1 flex flex-col rounded-2xl animate-slide-in-up"
-        style={{
-          background: "hsl(var(--game-card))",
-          border: "1.5px solid hsl(var(--game-card-border))",
-          boxShadow: "0 8px 40px hsl(240 45% 10% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
-          minHeight: answered ? 100 : 220,
-          padding: answered ? "1.25rem 2rem" : "2rem 2.5rem",
-          transition: "min-height 0.4s ease, padding 0.4s ease",
-        }}
-      >
-        {/* Countdown row — question timer OR answer timer */}
-        <div className="flex items-center gap-3 mb-4 self-start">
-          {/* Circular arc timer */}
-          <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-            {/* Background ring */}
-            <svg
-              width={size}
-              height={size}
-              style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}
-            >
-              <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={r}
-                fill="none"
-                stroke="hsl(240 35% 22%)"
-                strokeWidth={strokeWidth}
-              />
-              <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={r}
-                fill="none"
-                stroke={timerColor}
-                strokeWidth={strokeWidth}
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={dashOffset}
-                style={{ transition: "stroke-dashoffset 0.9s linear, stroke 0.3s ease" }}
-              />
-            </svg>
-            {/* Number */}
-            <span
-              className="relative z-10 font-black tabular-nums leading-none"
-              style={{
-                fontSize: "0.95rem",
-                color: timerTextColor,
-                transition: "color 0.3s ease",
-              }}
-            >
-              {timerValue}
-            </span>
-          </div>
+    <div
+      key={animKey}
+      className="w-full rounded-2xl flex flex-col gap-5 animate-slide-in-up"
+      style={{
+        background: "hsl(var(--game-card))",
+        border: "1.5px solid hsl(var(--game-card-border))",
+        boxShadow: "0 8px 40px hsl(240 45% 10% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
+        padding: "clamp(1.25rem, 4vw, 2rem)",
+      }}
+    >
+      {/* Timer row */}
+      <div className="flex items-center gap-3">
+        {/* Circular arc timer */}
+        <div className="relative flex items-center justify-center flex-shrink-0" style={{ width: size, height: size }}>
+          <svg
+            width={size}
+            height={size}
+            style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}
+          >
+            <circle
+              cx={size / 2} cy={size / 2} r={r}
+              fill="none" stroke="hsl(240 35% 22%)" strokeWidth={strokeWidth}
+            />
+            <circle
+              cx={size / 2} cy={size / 2} r={r}
+              fill="none"
+              stroke={timerColor}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={dashOffset}
+              style={{ transition: "stroke-dashoffset 0.9s linear, stroke 0.3s ease" }}
+            />
+          </svg>
+          <span
+            className="relative z-10 font-black tabular-nums leading-none"
+            style={{ fontSize: "1rem", color: timerTextColor, transition: "color 0.3s ease" }}
+          >
+            {timerValue}
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-0.5">
           <span
             className="text-[10px] font-black tracking-widest uppercase"
             style={{ color: "hsl(var(--muted-foreground))" }}
           >
-            seconds
+            {answered ? "answer in" : "seconds left"}
           </span>
+          {/* Thin progress bar under the label */}
+          <div
+            className="h-1 rounded-full overflow-hidden"
+            style={{ width: 80, background: "hsl(240 35% 22%)" }}
+          >
+            <div
+              className="h-full rounded-full"
+              style={{
+                width: `${(answered ? answerProgress : progress) * 100}%`,
+                background: timerColor,
+                transition: "width 0.9s linear, background 0.3s ease",
+              }}
+            />
+          </div>
         </div>
 
-        {/* Question text — shrinks and dims when answered */}
-        <div className={`flex items-center ${answered ? "justify-start" : "justify-center"} flex-1`}>
-          <p
-            className="leading-relaxed font-semibold"
+        {/* Category + difficulty badge — pushed right */}
+        <div className="ml-auto flex items-center gap-2">
+          <span
+            className="hidden sm:inline text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-lg"
             style={{
-              fontFamily: "'Nunito', sans-serif",
-              textWrap: "balance",
-              color: answered ? "hsl(0 0% 50%)" : "hsl(0 0% 97%)",
-              fontSize: answered ? "0.8rem" : "clamp(1.1rem, 2vw, 1.5rem)",
-              transition: "font-size 0.4s ease, color 0.4s ease",
+              background: "hsl(240 42% 15%)",
+              color: "hsl(var(--muted-foreground))",
+              border: "1px solid hsl(var(--game-card-border))",
             }}
           >
-            {question.text}
-          </p>
+            {question.category}
+          </span>
         </div>
+      </div>
 
-        {/* Correct answer reveal */}
-        {answered && correctAnswer && (
-          <div
-            className="mt-4 px-5 py-3 rounded-xl font-black text-xl animate-answer-reveal"
+      {/* Divider */}
+      <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+
+      {/* Question text */}
+      <p
+        className="leading-relaxed font-semibold"
+        style={{
+          fontFamily: "'Nunito', sans-serif",
+          textWrap: "balance",
+          color: answered ? "hsl(0 0% 55%)" : "hsl(0 0% 97%)",
+          fontSize: answered
+            ? "clamp(0.8rem, 1.5vw, 0.95rem)"
+            : "clamp(1.1rem, 2.5vw, 1.6rem)",
+          transition: "font-size 0.4s ease, color 0.4s ease",
+          lineHeight: 1.45,
+        }}
+      >
+        {question.text}
+      </p>
+
+      {/* Correct answer reveal */}
+      {answered && correctAnswer && (
+        <div
+          className="rounded-xl px-5 py-4 animate-answer-reveal"
+          style={{
+            background: "hsl(var(--game-correct))",
+            boxShadow: "0 0 0 2px hsl(140 65% 60%), 0 4px 20px hsl(140 60% 40% / 0.35)",
+          }}
+        >
+          <p
+            className="text-[10px] font-black tracking-widest uppercase mb-1"
+            style={{ color: "hsl(140 60% 80%)" }}
+          >
+            Correct Answer
+          </p>
+          <p
+            className="font-black leading-tight"
             style={{
-              background: "hsl(var(--game-correct))",
               color: "hsl(0 0% 100%)",
-              boxShadow: "0 0 0 2px hsl(140 65% 60%), 0 4px 20px hsl(140 60% 40% / 0.35)",
+              fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
               letterSpacing: "-0.01em",
             }}
           >
             {correctAnswer}
-          </div>
-        )}
-      </div>
+          </p>
+        </div>
+      )}
 
-      {/* Olivia character — overlapping right side on md+ */}
-      <div className="hidden md:flex flex-col items-center justify-end flex-shrink-0 w-36 relative">
+      {/* Time's up indicator when timer expired without answer */}
+      {answered && !correctAnswer && (
         <div
-          className="absolute inset-0 rounded-full animate-float"
+          className="rounded-xl px-5 py-3 animate-answer-reveal"
           style={{
-            background: "radial-gradient(circle at center, hsl(200 60% 70% / 0.25) 0%, transparent 70%)",
-            top: "auto",
-            height: "160px",
-            bottom: 0,
+            background: "hsl(var(--game-wrong) / 0.25)",
+            border: "1px solid hsl(var(--game-wrong) / 0.5)",
           }}
-        />
-        <img
-          src={olivia}
-          alt="Olivia the explorer"
-          className="relative z-10 w-36 h-36 object-contain animate-float drop-shadow-2xl"
-          style={{ filter: "drop-shadow(0 8px 24px hsl(200 60% 50% / 0.4))" }}
-        />
-      </div>
+        >
+          <p
+            className="text-sm font-black"
+            style={{ color: "hsl(0 70% 70%)" }}
+          >
+            Time's up!
+          </p>
+        </div>
+      )}
     </div>
   );
 }
