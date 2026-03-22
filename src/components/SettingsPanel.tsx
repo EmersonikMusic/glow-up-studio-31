@@ -115,18 +115,18 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
 }
 
 export default function SettingsPanel({ open, onClose, onAbout, onApply }: SettingsPanelProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
-  const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
+  const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
   const [numQuestions, setNumQuestions] = useState(10);
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
 
-  // Section collapsed state — Categories open by default
-  const [catOpen, setCatOpen] = useState(true);
+  // Section collapsed state — Game Settings open by default
+  const [catOpen, setCatOpen] = useState(false);
   const [diffOpen, setDiffOpen] = useState(false);
   const [eraOpen, setEraOpen] = useState(false);
-  const [gameOpen, setGameOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(true);
 
   // Item-level expand (show more rows within section)
   const [catExpanded, setCatExpanded] = useState(false);
