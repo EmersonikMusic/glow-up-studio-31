@@ -91,7 +91,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
         {/* Scrollable body */}
         <ScrollArea className="max-h-[55vh]">
-          <div className="px-8 py-7 flex flex-col gap-6" style={{ color: "white" }}>
+          <div className="px-8 py-7 flex flex-col gap-6 game-text-white">
             {/* Who are we */}
             <div>
               <h2
