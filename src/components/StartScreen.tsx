@@ -77,11 +77,11 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
         <img
           src={mascotImg}
           alt="TrivOlivia mascot"
-          className="w-full h-auto object-contain drop-shadow-xl animate-fade-in"
+          className="w-full h-auto object-contain drop-shadow-xl"
           style={{
             maxHeight: "clamp(260px, 50vh, 500px)",
             maxWidth: "clamp(180px, 24vw, 320px)",
-            animationDelay: "300ms",
+            animation: "fade-in 0.6s 300ms both, float 3s 900ms ease-in-out infinite",
           }}
           draggable={false}
         />

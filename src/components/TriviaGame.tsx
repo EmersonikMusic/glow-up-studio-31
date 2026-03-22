@@ -255,7 +255,12 @@ export default function TriviaGame() {
               src={mascotImg}
               alt="TrivOlivia mascot"
               className="w-full h-auto object-contain drop-shadow-xl"
-              style={{ maxHeight: "clamp(220px, 40vh, 420px)", maxWidth: "clamp(160px, 22vw, 300px)" }}
+              style={{
+                maxHeight: "clamp(220px, 40vh, 420px)",
+                maxWidth: "clamp(160px, 22vw, 300px)",
+                animation: "float 3s ease-in-out infinite",
+                animationPlayState: paused ? "paused" : "running",
+              }}
             />
           </div>
         </main>
