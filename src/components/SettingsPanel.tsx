@@ -300,7 +300,7 @@ export default function SettingsPanel({ open, onClose, onAbout, onApply }: Setti
                     <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
                   </div>
                   <div className="step-slider-wrap">
-                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} className="step-slider w-full" />
+                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
                     <div className="step-slider-dots">
                       {[5,10,15,20,25,30].map((v) => (
                         <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerQuestion >= v ? 1 : 0.35 }} />
