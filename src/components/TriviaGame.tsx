@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { questions } from "@/data/questions";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
+import AnswerGrid from "./AnswerGrid";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
@@ -172,6 +173,14 @@ export default function TriviaGame() {
               totalTime={settings.timePerQuestion}
               answered={gameState === "answered"}
             />
+            {gameState === "answered" && (
+              <AnswerGrid
+                answers={currentQuestion.answers}
+                selected={selected}
+                correctId={currentQuestion.correctId}
+                onSelect={handleSelect}
+              />
+            )}
           </main>
 
           {/* Footer */}

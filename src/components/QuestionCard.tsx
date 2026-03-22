@@ -25,15 +25,17 @@ export default function QuestionCard({ question, animKey, countdown, totalTime, 
       {/* Question card */}
       <div
         key={animKey}
-        className="flex-1 flex flex-col rounded-2xl p-8 md:p-10 animate-slide-in-up"
+        className="flex-1 flex flex-col rounded-2xl animate-slide-in-up"
         style={{
           background: "hsl(var(--game-card))",
           border: "1.5px solid hsl(var(--game-card-border))",
           boxShadow: "0 8px 40px hsl(240 45% 10% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
-          minHeight: 220,
+          minHeight: answered ? 80 : 220,
+          padding: answered ? "1.25rem 2rem" : "2rem 2.5rem",
+          transition: "min-height 0.4s ease, padding 0.4s ease",
         }}
       >
-        {/* Countdown row */}
+        {/* Countdown row — only while playing */}
         {!answered && (
           <div className="flex items-center gap-3 mb-5 self-start">
             {/* Circular arc timer */}
@@ -86,14 +88,16 @@ export default function QuestionCard({ question, animKey, countdown, totalTime, 
           </div>
         )}
 
-        {/* Question text — centred vertically when answered */}
-        <div className="flex flex-1 items-center justify-center">
+        {/* Question text — shrinks and aligns left when answered */}
+        <div className={`flex flex-1 items-center ${answered ? "justify-start" : "justify-center"}`}>
           <p
-            className="text-center text-xl md:text-2xl font-semibold leading-relaxed"
+            className="text-center leading-relaxed font-semibold"
             style={{
               fontFamily: "'Nunito', sans-serif",
               textWrap: "balance",
-              color: "hsl(0 0% 97%)",
+              color: answered ? "hsl(0 0% 65%)" : "hsl(0 0% 97%)",
+              fontSize: answered ? "0.875rem" : "clamp(1.1rem, 2vw, 1.5rem)",
+              transition: "font-size 0.4s ease, color 0.4s ease",
             }}
           >
             {question.text}
