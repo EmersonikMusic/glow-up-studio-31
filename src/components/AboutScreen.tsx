@@ -154,7 +154,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               >
                 Get in touch
               </h2>
-              <p className="text-sm leading-relaxed" style={{ color: "hsl(0 0% 100%)" }}>
+              <p className="text-sm leading-relaxed !text-white">
                 Questions or feedback? Reach us at{" "}
                 <a
                   href="mailto:hello@triviolivia.com"
