@@ -141,7 +141,7 @@ export default function TriviaGame() {
 
   const handleStart = useCallback(() => {
     clearAnswerTimer();
-    const picked = pickRandomQuestions(questions, settings.numQuestions);
+    const picked = pickRandomQuestions(questions, settings);
     setActiveQuestions(picked);
     setQuestionIndex(0);
     setSelected(null);
