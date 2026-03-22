@@ -44,6 +44,8 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [countdown, setCountdown] = useState<number>(DEFAULT_SETTINGS.timePerQuestion);
   const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
