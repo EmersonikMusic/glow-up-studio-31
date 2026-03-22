@@ -125,8 +125,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 How do I play?
               </h2>
               <p
-                className="text-sm leading-relaxed"
-                style={{ color: "hsl(0 0% 100%)" }}
+                className="text-sm leading-relaxed !text-white"
               >
                 Press{" "}
                 <span className="font-black">
