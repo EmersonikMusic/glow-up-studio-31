@@ -48,7 +48,7 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
               }}
             />
             <img
-              src={olivia}
+              src={mascotImg}
               alt="Olivia"
               className="relative z-10 w-28 h-28 object-contain drop-shadow-2xl animate-float"
             />
