@@ -93,7 +93,7 @@ export default function QuestionCard({
             className="relative z-10 font-black tabular-nums leading-none"
             style={{ fontSize: "1rem", color: timerTextColor, transition: "color 0.3s ease" }}
           >
-            {timerValue}
+            {paused ? <Pause className="w-4 h-4" /> : timerValue}
           </span>
         </div>
 
@@ -102,7 +102,7 @@ export default function QuestionCard({
             className="text-[10px] font-black tracking-widest uppercase"
             style={{ color: "hsl(var(--muted-foreground))" }}
           >
-            {answered ? "answer in" : "seconds left"}
+            {paused ? "paused" : answered ? "answer in" : "seconds left"}
           </span>
           {/* Thin progress bar under the label */}
           <div
