@@ -243,7 +243,7 @@ export default function TriviaGame() {
 
           {/* Right column — 30%: mascot (sidebar closed) or empty space (sidebar open) */}
           <div
-            className="flex-none flex flex-col items-center justify-end overflow-hidden"
+            className="flex-none flex flex-col items-center justify-center overflow-hidden self-stretch"
             style={{
               width: "30%",
               transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
