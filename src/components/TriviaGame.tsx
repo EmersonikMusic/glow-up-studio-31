@@ -221,9 +221,9 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="flex items-end py-6 px-4 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
-          {/* Game area — always 70% */}
-          <div className="flex-none flex flex-col justify-center" style={{ width: "70%" }}>
+        <main className="flex items-center self-stretch py-6 px-4 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
+          {/* Game area — always 70%, min 50vh, vertically centred */}
+          <div className="flex-none flex flex-col justify-center min-h-[50vh]" style={{ width: "70%" }}>
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
