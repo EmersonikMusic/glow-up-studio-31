@@ -1,4 +1,4 @@
-import { X, ChevronDown } from "lucide-react";
+import { ChevronDown, Settings } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import iconCategoriesActive from "@/assets/icon-categories-active.svg";
