@@ -7,6 +7,7 @@ import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import type { GameSettings } from "./SettingsPanel";
+import mascotImg from "@/assets/Mascot.svg";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
@@ -215,22 +216,38 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="flex flex-col justify-center gap-5 py-6 px-4 sm:px-6 md:px-8 w-full max-w-3xl mx-auto">
-          <QuestionCard
-            question={currentQuestion}
-            animKey={animKey}
-            countdown={countdown}
-            totalTime={settings.timePerQuestion}
-            answered={gameState === "answered"}
-            correctAnswer={
-              gameState === "answered"
-                ? currentQuestion.answers.find((a) => a.id === currentQuestion.correctId)?.text
-                : undefined
-            }
-            answerCountdown={answerCountdown}
-            totalAnswerTime={settings.timePerAnswer}
-            paused={paused}
-          />
+        <main className="flex items-end justify-center gap-4 py-6 px-4 sm:px-6 md:px-8 w-full max-w-5xl mx-auto">
+          {/* Question + answer card — takes all remaining width */}
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <QuestionCard
+              question={currentQuestion}
+              animKey={animKey}
+              countdown={countdown}
+              totalTime={settings.timePerQuestion}
+              answered={gameState === "answered"}
+              correctAnswer={
+                gameState === "answered"
+                  ? currentQuestion.answers.find((a) => a.id === currentQuestion.correctId)?.text
+                  : undefined
+              }
+              answerCountdown={answerCountdown}
+              totalAnswerTime={settings.timePerAnswer}
+              paused={paused}
+            />
+          </div>
+
+          {/* Mascot column — hidden on small screens */}
+          <div
+            className="hidden md:flex flex-col items-center justify-end flex-shrink-0"
+            style={{ width: "clamp(160px, 18vw, 240px)" }}
+          >
+            <img
+              src={mascotImg}
+              alt="TrivOlivia mascot"
+              className="w-full h-auto object-contain drop-shadow-xl"
+              style={{ maxHeight: "clamp(220px, 30vh, 360px)" }}
+            />
+          </div>
         </main>
       )}
 
