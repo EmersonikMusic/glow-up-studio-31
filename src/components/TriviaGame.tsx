@@ -28,8 +28,10 @@ export default function TriviaGame() {
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [countdown, setCountdown] = useState<number>(DEFAULT_SETTINGS.timePerQuestion);
+  const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentQuestion = questions[questionIndex];
   const isLast = questionIndex === questions.length - 1;
