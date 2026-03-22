@@ -186,35 +186,36 @@ export default function SettingsPanel({ open, onClose, onAbout, onApply }: Setti
         onClick={onClose}
       />
 
-      {/* Sliding panel — overflow visible so gear tab protrudes left */}
+      {/* Gear tab — independent fixed element, always visible */}
+      <button
+        onClick={onClose}
+        className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-l-2xl hover:brightness-110 active:scale-95"
+        style={{
+          top: "50%",
+          right: open ? "min(400px, 92vw)" : 0,
+          transform: "translateY(-50%)",
+          transition: "right 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+          background: "hsl(var(--game-card))",
+          border: "1px solid hsl(var(--game-card-border))",
+          borderRight: "none",
+          boxShadow: "-4px 0 16px hsl(240 45% 10% / 0.4)",
+        }}
+        aria-label={open ? "Close settings" : "Open settings"}
+      >
+        <Settings
+          className="w-5 h-5 transition-transform duration-500"
+          style={{
+            color: "hsl(var(--game-gold))",
+            transform: open ? "rotate(60deg)" : "rotate(0deg)",
+          }}
+        />
+      </button>
+
+      {/* Sliding panel */}
       <div
         className="fixed inset-y-0 right-0 z-40 flex"
-        style={{ width: "min(400px, 92vw)", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)", overflow: "visible" }}
+        style={{ width: "min(400px, 92vw)", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
-        {/* Gear tab — sits left of panel body, slides with it */}
-        <button
-          onClick={onClose}
-          className="absolute flex items-center justify-center w-11 h-11 rounded-l-2xl transition-all duration-200 hover:brightness-110 active:scale-95"
-          style={{
-            top: "50%",
-            left: "-2.75rem",
-            transform: "translateY(-50%)",
-            background: "hsl(var(--game-card))",
-            border: "1px solid hsl(var(--game-card-border))",
-            borderRight: "none",
-            boxShadow: "-4px 0 16px hsl(240 45% 10% / 0.4)",
-          }}
-          aria-label={open ? "Close settings" : "Open settings"}
-        >
-          <Settings
-            className="w-5 h-5 transition-transform duration-500"
-            style={{
-              color: "hsl(var(--game-gold))",
-              transform: open ? "rotate(60deg)" : "rotate(0deg)",
-            }}
-          />
-        </button>
-
         {/* Panel body */}
         <div
           className="flex-1 overflow-y-auto"
