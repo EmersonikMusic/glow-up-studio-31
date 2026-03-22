@@ -91,7 +91,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
         {/* Scrollable body */}
         <ScrollArea className="max-h-[55vh]">
-          <div className="px-8 py-7 flex flex-col gap-6">
+          <div className="px-8 py-7 flex flex-col gap-6 game-text-white">
             {/* Who are we */}
             <div>
               <h2
@@ -101,8 +101,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 Who are we?
               </h2>
               <p
-                className="text-sm leading-relaxed"
-                style={{ color: "hsl(0 0% 100%)" }}
+                className="text-sm leading-relaxed !text-white"
               >
                 Here at{" "}
                 <span className="font-black">
@@ -126,8 +125,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 How do I play?
               </h2>
               <p
-                className="text-sm leading-relaxed"
-                style={{ color: "hsl(0 0% 100%)" }}
+                className="text-sm leading-relaxed !text-white"
               >
                 Press{" "}
                 <span className="font-black">
@@ -156,7 +154,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               >
                 Get in touch
               </h2>
-              <p className="text-sm leading-relaxed" style={{ color: "hsl(0 0% 100%)" }}>
+              <p className="text-sm leading-relaxed !text-white">
                 Questions or feedback? Reach us at{" "}
                 <a
                   href="mailto:hello@triviolivia.com"
