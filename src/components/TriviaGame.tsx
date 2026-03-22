@@ -20,8 +20,16 @@ const DEFAULT_SETTINGS: GameSettings = {
   selectedEras: ["1990s", "2000s", "2010s", "2020s"],
 };
 
+function pickRandomQuestions(pool: typeof questions, count: number) {
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [activeQuestions, setActiveQuestions] = useState(() =>
+    pickRandomQuestions(questions, DEFAULT_SETTINGS.numQuestions)
+  );
   const [selected, setSelected] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<GameState>("start");
@@ -33,8 +41,8 @@ export default function TriviaGame() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const currentQuestion = questions[questionIndex];
-  const isLast = questionIndex === questions.length - 1;
+  const currentQuestion = activeQuestions[questionIndex];
+  const isLast = questionIndex === activeQuestions.length - 1;
 
   // Clear question timer
   const clearTimer = useCallback(() => {
