@@ -15,8 +15,8 @@ const DEFAULT_SETTINGS: GameSettings = {
   timePerQuestion: 5,
   timePerAnswer: 5,
   selectedCategories: [],
-  selectedDifficulties: ["Average", "Hard"],
-  selectedEras: ["1990s", "2000s", "2010s", "2020s"],
+  selectedDifficulties: [],
+  selectedEras: [],
 };
 
 function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {

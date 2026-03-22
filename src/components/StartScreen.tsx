@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Settings } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
 import startBtn from "@/assets/btn-startgame.svg";
 import SettingsPanel from "./SettingsPanel";
@@ -34,21 +33,6 @@ export default function StartScreen({ onStart, onAbout, onApply }: StartScreenPr
           filter: "blur(60px)",
         }}
       />
-
-      {/* Gear button — top right */}
-      <button
-        onClick={() => setPanelOpen(true)}
-        className="absolute top-5 right-5 z-20 flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 hover:bg-secondary active:scale-95"
-        aria-label="Open settings"
-      >
-        <Settings
-          className="w-6 h-6 transition-transform duration-500"
-          style={{
-            color: "hsl(var(--game-gold))",
-            transform: panelOpen ? "rotate(60deg)" : "rotate(0deg)",
-          }}
-        />
-      </button>
 
       {/* Logo */}
       <div className="w-full max-w-3xl px-6 animate-fade-in" style={{ animationDelay: "0ms" }}>

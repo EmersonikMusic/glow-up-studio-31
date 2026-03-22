@@ -1,4 +1,4 @@
-import { X, ChevronDown } from "lucide-react";
+import { ChevronDown, Settings } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import iconCategoriesActive from "@/assets/icon-categories-active.svg";
@@ -115,18 +115,18 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
 }
 
 export default function SettingsPanel({ open, onClose, onAbout, onApply }: SettingsPanelProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(["Average", "Hard"]);
-  const [selectedEras, setSelectedEras] = useState<string[]>(["1990s", "2000s", "2010s", "2020s"]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
+  const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
   const [numQuestions, setNumQuestions] = useState(10);
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
 
-  // Section collapsed state — Categories open by default
-  const [catOpen, setCatOpen] = useState(true);
+  // Section collapsed state — Game Settings open by default
+  const [catOpen, setCatOpen] = useState(false);
   const [diffOpen, setDiffOpen] = useState(false);
   const [eraOpen, setEraOpen] = useState(false);
-  const [gameOpen, setGameOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(true);
 
   // Item-level expand (show more rows within section)
   const [catExpanded, setCatExpanded] = useState(false);
@@ -186,21 +186,36 @@ export default function SettingsPanel({ open, onClose, onAbout, onApply }: Setti
         onClick={onClose}
       />
 
+      {/* Gear tab — independent fixed element, always visible */}
+      <button
+        onClick={onClose}
+        className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-l-2xl hover:brightness-110 active:scale-95"
+        style={{
+          top: "50%",
+          right: open ? "min(400px, 92vw)" : 0,
+          transform: "translateY(-50%)",
+          transition: "right 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+          background: "hsl(var(--game-card))",
+          border: "1px solid hsl(var(--game-card-border))",
+          borderRight: "none",
+          boxShadow: "-4px 0 16px hsl(240 45% 10% / 0.4)",
+        }}
+        aria-label={open ? "Close settings" : "Open settings"}
+      >
+        <Settings
+          className="w-5 h-5 transition-transform duration-500"
+          style={{
+            color: "hsl(var(--game-gold))",
+            transform: open ? "rotate(60deg)" : "rotate(0deg)",
+          }}
+        />
+      </button>
+
       {/* Sliding panel */}
       <div
         className="fixed inset-y-0 right-0 z-40 flex"
         style={{ width: "min(400px, 92vw)", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
-        {/* Close tab */}
-        <button
-          onClick={onClose}
-          className="absolute -left-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 rounded-l-2xl transition-all duration-200 hover:brightness-110 active:scale-95"
-          style={{ background: "hsl(var(--game-card))", border: "1px solid hsl(var(--game-card-border))", borderRight: "none", boxShadow: "-4px 0 16px hsl(240 45% 10% / 0.4)" }}
-          aria-label="Close settings"
-        >
-          <X className="w-5 h-5 text-game-gold" />
-        </button>
-
         {/* Panel body */}
         <div
           className="flex-1 overflow-y-auto"
