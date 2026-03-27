@@ -193,7 +193,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-l-2xl hover:brightness-110 active:scale-95"
         style={{
           top: "50%",
-          right: open ? "30%" : 0,
+          right: open ? "min(100%, 30%)" : 0,
           transform: "translateY(-50%)",
           transition: "right 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
           background: "hsl(var(--game-card))",
@@ -212,10 +212,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         />
       </button>
 
-      {/* Sliding panel */}
+      {/* Sliding panel — full width on mobile, 30% on desktop */}
       <div
-        className="fixed inset-y-0 right-0 z-40 flex"
-        style={{ width: "30%", transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
+        className="fixed inset-y-0 right-0 z-40 flex w-full md:w-[30%]"
+        style={{ transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
         {/* Panel body */}
         <div

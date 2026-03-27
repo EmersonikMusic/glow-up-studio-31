@@ -35,8 +35,8 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
         }}
       />
 
-      {/* Game area — 70% */}
-      <div className="flex flex-col items-center justify-center flex-none" style={{ width: "70%", padding: "2rem 3rem" }}>
+      {/* Game area — full width on mobile, 70% on desktop */}
+      <div className="flex flex-col items-center justify-center flex-none w-full md:w-[70%] px-4 py-8 sm:px-8 md:px-12">
         {/* Logo */}
         <div className="w-full max-w-2xl animate-fade-in" style={{ animationDelay: "0ms" }}>
           <img
@@ -57,15 +57,15 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
           <img
             src={startBtn}
             alt="Start Game"
-            className="h-20 w-auto drop-shadow-xl"
+            className="h-16 sm:h-20 w-auto drop-shadow-xl"
             draggable={false}
           />
         </button>
       </div>
 
-      {/* Right column — 30%: mascot fades when sidebar is open */}
+      {/* Right column — hidden on mobile, 30% on desktop */}
       <div
-        className="flex-none flex flex-col items-center justify-end overflow-hidden"
+        className="hidden md:flex flex-none flex-col items-center justify-end overflow-hidden"
         style={{
           width: "30%",
           paddingBottom: "2rem",
