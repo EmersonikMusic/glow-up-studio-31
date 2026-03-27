@@ -36,7 +36,7 @@ export default function GameFooter({
 }: GameFooterProps) {
 
   return (
-    <footer className="px-4 sm:px-6 md:px-8 pb-6 pt-2 w-full max-w-3xl mx-auto">
+    <footer className="px-3 sm:px-6 md:px-8 pb-4 sm:pb-6 pt-2 w-full max-w-3xl mx-auto">
 
       {/* Bottom bar: metadata pill | play-pause | finish */}
       <div className="flex items-center gap-3">
