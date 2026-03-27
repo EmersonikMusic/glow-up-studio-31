@@ -179,6 +179,239 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     onClose();
   };
 
+  const isMobile = useIsMobile();
+
+  // --- Drag-to-dismiss for mobile bottom sheet ---
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const dragStartY = useRef<number | null>(null);
+  const dragOffset = useRef(0);
+
+  const onDragStart = useCallback((clientY: number) => {
+    dragStartY.current = clientY;
+    dragOffset.current = 0;
+    if (sheetRef.current) sheetRef.current.style.transition = "none";
+  }, []);
+
+  const onDragMove = useCallback((clientY: number) => {
+    if (dragStartY.current === null) return;
+    const delta = Math.max(0, clientY - dragStartY.current);
+    dragOffset.current = delta;
+    if (sheetRef.current) sheetRef.current.style.transform = `translateY(${delta}px)`;
+  }, []);
+
+  const onDragEnd = useCallback(() => {
+    if (sheetRef.current) sheetRef.current.style.transition = "";
+    if (dragOffset.current > 120) {
+      onClose();
+    } else if (sheetRef.current) {
+      sheetRef.current.style.transform = "";
+    }
+    dragStartY.current = null;
+    dragOffset.current = 0;
+  }, [onClose]);
+
+  const panelContent = (
+    <>
+      {/* Nav links */}
+      <div className="flex items-center justify-end gap-5 px-5 pt-4 pb-3">
+        <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">LOGIN</button>
+        <button
+          className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+          onClick={onAbout}
+        >ABOUT US</button>
+      </div>
+      <div className="px-5 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+
+      {/* Title */}
+      <div className="px-5 py-4">
+        <h2
+          className="text-3xl font-black leading-none tracking-tight uppercase"
+          style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
+        >
+          CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
+        </h2>
+      </div>
+      <div className="px-5 mb-3"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+
+      {/* ── CATEGORIES ── */}
+      <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+        <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
+        <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+          <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
+          {catsVisible.map((cat) => (
+            <ToggleRow key={cat} label={cat} active={selectedCategories.includes(cat)} onClick={() => toggleCategory(cat)} />
+          ))}
+          <div className="flex flex-col overflow-hidden" style={{ maxHeight: catExpanded ? `${catsExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+            {catsExtra.map((cat) => (
+              <ToggleRow key={cat} label={cat} active={selectedCategories.includes(cat)} onClick={() => toggleCategory(cat)} />
+            ))}
+          </div>
+          <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
+        </div>
+      </section>
+
+      {/* ── DIFFICULTY ── */}
+      <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+        <SectionHeader icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
+        <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+          <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
+          {difficulties.map((diff) => (
+            <ToggleRow key={diff} label={diff} active={selectedDifficulties.includes(diff)} onClick={() => toggleDiff(diff)} />
+          ))}
+        </div>
+      </section>
+
+      {/* ── ERAS ── */}
+      <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+        <SectionHeader icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
+        <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+          <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
+          {erasVisible.map((era) => (
+            <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
+          ))}
+          <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraExpanded ? `${erasExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+            {erasExtra.map((era) => (
+              <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
+            ))}
+          </div>
+          <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
+        </div>
+      </section>
+
+      {/* ── GAME SETTINGS ── */}
+      <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
+        <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
+        <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+          <div className="px-5 py-5 flex flex-col gap-6">
+            {/* Questions */}
+            <div>
+              <div className="flex items-baseline gap-1.5 mb-3">
+                <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
+                <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
+              </div>
+              <div className="step-slider-wrap">
+                <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
+                <div className="step-slider-dots">
+                  {[10,20,30,40,50].map((v) => (
+                    <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: numQuestions >= v ? 1 : 0.35 }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Seconds/Question */}
+            <div>
+              <div className="flex items-baseline gap-1.5 mb-3">
+                <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
+                <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
+              </div>
+              <div className="step-slider-wrap">
+                <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
+                <div className="step-slider-dots">
+                  {[5,10,15,20,25,30].map((v) => (
+                    <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerQuestion >= v ? 1 : 0.35 }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Seconds/Answer */}
+            <div>
+              <div className="flex items-baseline gap-1.5 mb-3">
+                <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
+                <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
+              </div>
+              <div className="step-slider-wrap">
+                <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
+                <div className="step-slider-dots">
+                  {[5,10,15,20,25,30].map((v) => (
+                    <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerAnswer >= v ? 1 : 0.35 }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Apply button */}
+      <div className="px-3 pb-6">
+        <button
+          onClick={handleApply}
+          className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          style={{ background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))", color: "hsl(240 45% 16%)", boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)" }}
+        >
+          Apply Settings
+        </button>
+      </div>
+    </>
+  );
+
+  // ── MOBILE: Bottom sheet ──
+  if (isMobile) {
+    return (
+      <>
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 z-30 transition-opacity duration-300"
+          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
+          onClick={onClose}
+        />
+
+        {/* Gear FAB — bottom-right corner */}
+        <button
+          onClick={onToggle}
+          className="fixed z-50 flex items-center justify-center w-12 h-12 rounded-full shadow-lg active:scale-90"
+          style={{
+            bottom: 20,
+            right: 20,
+            background: "hsl(var(--game-card))",
+            border: "1px solid hsl(var(--game-card-border))",
+            boxShadow: "0 4px 20px hsl(240 45% 10% / 0.5)",
+            transition: "opacity 0.2s",
+            opacity: open ? 0 : 1,
+            pointerEvents: open ? "none" : "auto",
+          }}
+          aria-label="Open settings"
+        >
+          <Settings className="w-5 h-5" style={{ color: "hsl(var(--game-gold))" }} />
+        </button>
+
+        {/* Bottom sheet */}
+        <div
+          ref={sheetRef}
+          className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          style={{
+            maxHeight: "85vh",
+            background: "hsl(var(--game-card))",
+            border: "1px solid hsl(var(--game-card-border))",
+            borderBottom: "none",
+            boxShadow: "0 -8px 48px hsl(240 45% 10% / 0.7)",
+            transform: open ? "translateY(0)" : "translateY(100%)",
+            transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          {/* Drag handle */}
+          <div
+            className="flex items-center justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
+            onTouchStart={(e) => onDragStart(e.touches[0].clientY)}
+            onTouchMove={(e) => onDragMove(e.touches[0].clientY)}
+            onTouchEnd={onDragEnd}
+            onMouseDown={(e) => { onDragStart(e.clientY); const onMove = (ev: MouseEvent) => onDragMove(ev.clientY); const onUp = () => { onDragEnd(); window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); }; window.addEventListener("mousemove", onMove); window.addEventListener("mouseup", onUp); }}
+          >
+            <div className="w-10 h-1 rounded-full" style={{ background: "hsl(var(--muted-foreground) / 0.4)" }} />
+          </div>
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto overscroll-contain pb-safe">
+            {panelContent}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ── DESKTOP: Side panel (unchanged) ──
   return (
     <>
       {/* Backdrop */}
@@ -188,7 +421,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onClick={onClose}
       />
 
-      {/* Gear tab — independent fixed element, always visible */}
+      {/* Gear tab */}
       <button
         onClick={onToggle}
         className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-l-2xl hover:brightness-110 active:scale-95"
@@ -213,148 +446,16 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         />
       </button>
 
-      {/* Sliding panel — full width on mobile, 30% on desktop */}
+      {/* Sliding panel */}
       <div
-        className="fixed inset-y-0 right-0 z-40 flex w-full md:w-[30%]"
+        className="fixed inset-y-0 right-0 z-40 flex w-[30%]"
         style={{ transform: open ? "translateX(0)" : "translateX(100%)", transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
-        {/* Panel body */}
         <div
           className="flex-1 overflow-y-auto"
           style={{ background: "hsl(var(--game-card))", borderLeft: "1px solid hsl(var(--game-card-border))", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)", display: "flex", flexDirection: "column" }}
         >
-          {/* Nav links */}
-          <div className="flex items-center justify-end gap-5 px-5 pt-4 pb-3">
-            <button className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors">LOGIN</button>
-            <button
-              className="text-xs font-black tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-              onClick={onAbout}
-            >ABOUT US</button>
-          </div>
-          <div className="px-5 mb-2"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
-
-          {/* Title */}
-          <div className="px-5 py-4">
-            <h2
-              className="text-3xl font-black leading-none tracking-tight uppercase"
-              style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
-            >
-              CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
-            </h2>
-          </div>
-          <div className="px-5 mb-3"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
-
-          {/* ── CATEGORIES ── */}
-          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
-            <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
-              {catsVisible.map((cat) => (
-                <ToggleRow key={cat} label={cat} active={selectedCategories.includes(cat)} onClick={() => toggleCategory(cat)} />
-              ))}
-              <div className="flex flex-col overflow-hidden" style={{ maxHeight: catExpanded ? `${catsExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-                {catsExtra.map((cat) => (
-                  <ToggleRow key={cat} label={cat} active={selectedCategories.includes(cat)} onClick={() => toggleCategory(cat)} />
-                ))}
-              </div>
-              <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
-            </div>
-          </section>
-
-          {/* ── DIFFICULTY ── */}
-          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
-            <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
-              {difficulties.map((diff) => (
-                <ToggleRow key={diff} label={diff} active={selectedDifficulties.includes(diff)} onClick={() => toggleDiff(diff)} />
-              ))}
-            </div>
-          </section>
-
-          {/* ── ERAS ── */}
-          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
-            <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
-              {erasVisible.map((era) => (
-                <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
-              ))}
-              <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraExpanded ? `${erasExtra.length * EXTRA_ROW_H}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-                {erasExtra.map((era) => (
-                  <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
-                ))}
-              </div>
-              <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
-            </div>
-          </section>
-
-          {/* ── GAME SETTINGS ── */}
-          <section className="mx-3 mb-2 rounded-2xl flex flex-col" style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}>
-            <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
-            <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-              <div className="px-5 py-5 flex flex-col gap-6">
-                {/* Questions — step 10: 10,20,30,40,50 */}
-                <div>
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-lg font-black" style={{ color: "#fff" }}>{numQuestions}</span>
-                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>Questions</span>
-                  </div>
-                  <div className="step-slider-wrap">
-                    <input type="range" min={10} max={50} step={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
-                    <div className="step-slider-dots">
-                      {[10,20,30,40,50].map((v) => (
-                        <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: numQuestions >= v ? 1 : 0.35 }} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seconds/Question — step 5: 5,10,15,20,25,30 */}
-                <div>
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerQuestion}s</span>
-                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Question</span>
-                  </div>
-                  <div className="step-slider-wrap">
-                    <input type="range" min={5} max={30} step={5} value={timePerQuestion} onChange={(e) => setTimePerQuestion(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
-                    <div className="step-slider-dots">
-                      {[5,10,15,20,25,30].map((v) => (
-                        <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerQuestion >= v ? 1 : 0.35 }} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seconds/Answer — step 5: 5,10,15,20,25,30 */}
-                <div>
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-lg font-black" style={{ color: "#fff" }}>{timePerAnswer}s</span>
-                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>/ Answer</span>
-                  </div>
-                  <div className="step-slider-wrap">
-                    <input type="range" min={5} max={30} step={5} value={timePerAnswer} onChange={(e) => setTimePerAnswer(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} className="step-slider w-full" />
-                    <div className="step-slider-dots">
-                      {[5,10,15,20,25,30].map((v) => (
-                        <div key={v} className="rounded-full flex-shrink-0" style={{ width: 5, height: 5, background: "#fff", opacity: timePerAnswer >= v ? 1 : 0.35 }} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Apply button */}
-          <div className="px-3 pb-6">
-            <button
-              onClick={handleApply}
-              className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))", color: "hsl(240 45% 16%)", boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)" }}
-            >
-              Apply Settings
-            </button>
-          </div>
+          {panelContent}
         </div>
       </div>
     </>
