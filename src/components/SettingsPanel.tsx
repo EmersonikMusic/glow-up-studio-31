@@ -1,6 +1,7 @@
 import { ChevronDown, Settings } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
+import { useIsMobile } from "@/hooks/use-mobile";
 import iconCategoriesActive from "@/assets/icon-categories-active.svg";
 import iconCategoriesInactive from "@/assets/icon-categories-inactive.svg";
 import iconDifficultyActive from "@/assets/icon-difficulty-active.svg";
