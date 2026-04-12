@@ -361,10 +361,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         {/* Gear FAB — bottom-right corner */}
         <button
           onClick={onToggle}
-          className="fixed z-50 flex items-center justify-center w-12 h-12 rounded-full shadow-lg active:scale-90"
+          className="fixed z-50 flex items-center justify-center w-11 h-11 rounded-full shadow-lg active:scale-90"
           style={{
-            bottom: 20,
-            right: 20,
+            bottom: 14,
+            right: 12,
             background: "hsl(var(--game-card))",
             border: "1px solid hsl(var(--game-card-border))",
             boxShadow: "0 4px 20px hsl(240 45% 10% / 0.5)",
@@ -374,7 +374,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           }}
           aria-label="Open settings"
         >
-          <Settings className="w-5 h-5" style={{ color: "hsl(var(--game-gold))" }} />
+          <Settings className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
         </button>
 
         {/* Bottom sheet */}

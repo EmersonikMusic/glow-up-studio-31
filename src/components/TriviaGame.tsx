@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { questions } from "@/data/questions";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
@@ -35,6 +36,7 @@ function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
 }
 
 export default function TriviaGame() {
+  const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState(() =>
     pickRandomQuestions(questions, DEFAULT_SETTINGS)
@@ -47,7 +49,7 @@ export default function TriviaGame() {
   const [countdown, setCountdown] = useState<number>(DEFAULT_SETTINGS.timePerQuestion);
   const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -172,7 +174,7 @@ export default function TriviaGame() {
     setSelected(null);
     setScore(0);
     setGameState("start");
-    setPanelOpen(true);
+    setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer]);
 
@@ -221,9 +223,9 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="flex items-center h-full py-4 sm:py-6 px-4 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
+        <main className="flex items-center md:items-stretch h-full py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
           {/* Game area — 100% on mobile, 70% on desktop */}
-          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%]">
+          <div className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
