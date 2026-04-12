@@ -12,8 +12,6 @@ interface GameFooterProps {
   totalQuestionTime: number;
   answerCountdown: number | null;
   totalAnswerTime: number;
-  selected: string | null;
-  onSelect: (id: string) => void;
   paused: boolean;
   onTogglePause: () => void;
 }
@@ -44,16 +42,14 @@ export default function GameFooter({
   const isAnswerPhase = answerCountdown !== null;
 
   return (
-    <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full md:w-[70%] pr-16 sm:pr-6 md:pr-8">
-
-      {/* Bottom bar: metadata pill | play-pause | finish */}
-      <div className="flex items-center gap-3">
-        {/* Metadata pill */}
+    <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full">
+      <div className="flex items-center gap-3 w-full md:w-[70%]">
+        {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 grid grid-cols-[auto_auto_1fr] sm:flex sm:flex-row items-center gap-x-2 gap-y-0 rounded-full px-4 py-2.5 text-xs font-semibold overflow-hidden"
+          className="relative flex-1 flex items-center gap-x-2 rounded-full px-4 py-2.5 text-xs font-semibold overflow-hidden min-w-0"
           style={{ background: "hsl(var(--game-progress))" }}
         >
-          {/* Time bar — CSS animation synced to full timer duration */}
+          {/* Animated time bar */}
           <div
             key={`${questionIndex}-${isAnswerPhase ? "answer" : "question"}`}
             className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
@@ -65,28 +61,35 @@ export default function GameFooter({
               animationPlayState: paused ? "paused" : "running",
             }}
           />
-          <span className="text-muted-foreground tabular-nums">Q{questionIndex + 1}/{totalQuestions}</span>
-          <span className="opacity-40">·</span>
-          <span className="text-muted-foreground truncate">{question.category}</span>
-          <span className="opacity-40 hidden sm:inline">·</span>
+
+          {/* Content — all relative z-10 to sit above the bar */}
+          <span className="relative z-10 text-muted-foreground tabular-nums whitespace-nowrap">
+            Q{questionIndex + 1}/{totalQuestions}
+          </span>
+          <span className="relative z-10 opacity-40">·</span>
+          <span className="relative z-10 text-muted-foreground truncate">{question.category}</span>
+          <span className="relative z-10 opacity-40 hidden sm:inline">·</span>
           <span
-            className="font-black hidden sm:inline"
+            className="relative z-10 font-black hidden sm:inline whitespace-nowrap"
             style={{ color: difficultyColor[question.difficulty] ?? "hsl(var(--muted-foreground))" }}
           >
             {question.difficulty}
           </span>
-          <span className="opacity-40 hidden md:inline">·</span>
-          <span className="hidden md:inline text-muted-foreground truncate">{question.era}</span>
-          <span className="opacity-40">·</span>
-          <span
-            className="text-muted-foreground tabular-nums font-black"
-            style={{ color: isAnswerPhase ? "hsl(185 70% 55%)" : "hsl(var(--muted-foreground))" }}
-          >
-            {isAnswerPhase ? (answerCountdown ?? 0) : countdown}s
+          <span className="relative z-10 opacity-40 hidden md:inline">·</span>
+          <span className="relative z-10 hidden md:inline text-muted-foreground truncate">{question.era}</span>
+
+          {/* Timer — pushed right, always visible */}
+          <span className="relative z-10 ml-auto flex-shrink-0">
+            <span
+              className="tabular-nums font-black"
+              style={{ color: isAnswerPhase ? "hsl(185 70% 55%)" : "hsl(var(--muted-foreground))" }}
+            >
+              {isAnswerPhase ? (answerCountdown ?? 0) : countdown}s
+            </span>
           </span>
         </div>
 
-        {/* Play / Pause — always visible during question AND answer phases */}
+        {/* Pause / Play */}
         <button
           onClick={onTogglePause}
           className="relative flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
@@ -100,7 +103,7 @@ export default function GameFooter({
           {paused ? <Play className="w-4 h-4 ml-0.5" /> : <Pause className="w-4 h-4" />}
         </button>
 
-        {/* Finish button — only on last question once answer is revealed */}
+        {/* Finish button */}
         {canAdvance && isLast && (
           <button
             onClick={onNext}

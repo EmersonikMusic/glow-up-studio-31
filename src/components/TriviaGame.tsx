@@ -213,7 +213,12 @@ export default function TriviaGame() {
       />
 
       {/* Row 1: Header */}
-      <GameHeader />
+      <GameHeader
+        score={score}
+        showScore={gameState !== "finished"}
+        onSettingsToggle={() => setPanelOpen((v) => !v)}
+        settingsOpen={panelOpen}
+      />
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
@@ -289,8 +294,7 @@ export default function TriviaGame() {
           totalQuestionTime={settings.timePerQuestion}
           answerCountdown={answerCountdown}
           totalAnswerTime={settings.timePerAnswer}
-          selected={selected}
-          onSelect={handleSelect}
+          
           paused={paused}
           onTogglePause={handleTogglePause}
         />

@@ -1,6 +1,6 @@
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
 import startBtn from "@/assets/btn-startgame.svg";
-import mascotImg from "@/assets/Mascot.svg";
+import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "./SettingsPanel";
 
@@ -16,7 +16,7 @@ interface StartScreenProps {
 export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPanelToggle, onPanelClose }: StartScreenProps) {
   return (
     <div
-      className="min-h-screen flex relative overflow-hidden"
+      className="min-h-screen flex flex-col relative overflow-hidden"
       style={{ background: "hsl(var(--game-bg))" }}
     >
       {/* Ambient blobs */}
@@ -35,46 +35,53 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
         }}
       />
 
-      {/* Game area — full width on mobile, 70% on desktop */}
-      <div className="flex flex-col items-center justify-center flex-none w-full md:w-[70%] px-4 py-8 sm:px-8 md:px-12">
-        {/* Logo */}
-        <div className="w-full max-w-2xl animate-fade-in" style={{ animationDelay: "0ms" }}>
-          <img
-            src={logo}
-            alt="Triviolivia — Earth's Deepest Trivia Source"
-            className="w-full h-auto"
-            draggable={false}
-          />
+      {/* Header with settings gear and about */}
+      <GameHeader
+        onSettingsToggle={onPanelToggle}
+        onAbout={onAbout}
+        settingsOpen={panelOpen}
+      />
+
+      {/* Main content area */}
+      <div className="flex flex-1 relative">
+        {/* Game area — full width on mobile, 70% on desktop */}
+        <div className="flex flex-col items-center justify-center flex-none w-full md:w-[70%] px-4 py-8 sm:px-8 md:px-12">
+          {/* Logo */}
+          <div className="w-full max-w-2xl animate-fade-in" style={{ animationDelay: "0ms" }}>
+            <img
+              src={logo}
+              alt="Triviolivia — Earth's Deepest Trivia Source"
+              className="w-full h-auto"
+              draggable={false}
+            />
+          </div>
+
+          {/* Start button */}
+          <button
+            onClick={onStart}
+            className="mt-8 transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
+            style={{ animationDelay: "180ms" }}
+            aria-label="Start Game"
+          >
+            <img
+              src={startBtn}
+              alt="Start Game"
+              className="h-16 sm:h-20 w-auto drop-shadow-xl"
+              draggable={false}
+            />
+          </button>
         </div>
 
-        {/* Start button */}
-        <button
-          onClick={onStart}
-          className="mt-8 transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
-          style={{ animationDelay: "180ms" }}
-          aria-label="Start Game"
-        >
-          <img
-            src={startBtn}
-            alt="Start Game"
-            className="h-16 sm:h-20 w-auto drop-shadow-xl"
-            draggable={false}
-          />
-        </button>
-      </div>
-
-      {/* Right column — hidden on mobile, 30% on desktop */}
-      <div
-        className="hidden md:flex flex-none flex-col items-center justify-end overflow-hidden"
-        style={{
-          width: "30%",
-          paddingBottom: "2rem",
-          transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
-          opacity: panelOpen ? 0 : 1,
-          pointerEvents: panelOpen ? "none" : "auto",
-        }}
-      >
-        {/* Mascot hidden on start screen — only shown during gameplay */}
+        {/* Right column — hidden on mobile, 30% on desktop (empty placeholder for layout) */}
+        <div
+          className="hidden md:flex flex-none flex-col items-center justify-end overflow-hidden"
+          style={{
+            width: "30%",
+            transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+            opacity: panelOpen ? 0 : 1,
+            pointerEvents: panelOpen ? "none" : "auto",
+          }}
+        />
       </div>
 
       {/* Settings panel */}
