@@ -1,4 +1,4 @@
-import { Trophy, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 
 interface GameHeaderProps {
