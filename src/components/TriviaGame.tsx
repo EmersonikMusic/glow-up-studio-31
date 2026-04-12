@@ -36,6 +36,7 @@ function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
 }
 
 export default function TriviaGame() {
+  const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState(() =>
     pickRandomQuestions(questions, DEFAULT_SETTINGS)
@@ -48,7 +49,7 @@ export default function TriviaGame() {
   const [countdown, setCountdown] = useState<number>(DEFAULT_SETTINGS.timePerQuestion);
   const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
