@@ -54,7 +54,7 @@ export default function GameFooter({
             key={`${questionIndex}-${isAnswerPhase ? "answer" : "question"}`}
             className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
             style={{
-              background: "linear-gradient(90deg, hsl(185 70% 50% / 0.45), hsl(185 70% 65% / 0.3))",
+              background: "rgba(0, 0, 0, 0.3)",
               animation: isAnswerPhase
                 ? `bar-fill ${totalAnswerTime}s linear forwards`
                 : `bar-deplete ${totalQuestionTime}s linear forwards`,
