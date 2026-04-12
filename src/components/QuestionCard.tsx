@@ -65,7 +65,7 @@ export default function QuestionCard({
           <div className="h-px animate-answer-reveal" style={{ background: "hsl(var(--game-card-border))" }} />
 
           <p
-            className="leading-relaxed font-semibold animate-answer-reveal"
+            className="leading-relaxed font-semibold animate-answer-reveal text-left w-full"
             style={{
               fontFamily: "'Nunito', sans-serif",
               textWrap: "balance",
