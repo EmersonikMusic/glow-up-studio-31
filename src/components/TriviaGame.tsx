@@ -221,13 +221,7 @@ export default function TriviaGame() {
       ) : (
         <main className="relative flex items-center md:items-stretch h-full py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
           {/* Game area — 100% on mobile, 70% on desktop */}
-          <div
-            className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%] rounded-2xl"
-            style={{
-              border: "1px solid rgba(125, 223, 232, 0.15)",
-              padding: "clamp(0.5rem, 1.5vw, 1rem)",
-            }}
-          >
+          <div className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
