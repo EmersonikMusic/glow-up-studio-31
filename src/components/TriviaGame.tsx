@@ -216,6 +216,7 @@ export default function TriviaGame() {
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
         onAbout={() => setGameState("about")}
+        onLogin={() => setShowLogin(true)}
         settingsOpen={panelOpen}
       />
 
@@ -324,6 +325,9 @@ export default function TriviaGame() {
         onClose={() => setPanelOpen(false)}
         onApply={handleApply}
       />
+
+      {/* Login modal */}
+      {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
     </div>
   );
 }
