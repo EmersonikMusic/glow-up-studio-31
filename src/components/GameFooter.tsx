@@ -37,14 +37,6 @@ export default function GameFooter({
   onTogglePause,
 }: GameFooterProps) {
 
-  const timePct =
-    answerCountdown !== null && totalAnswerTime > 0
-      ? (answerCountdown / totalAnswerTime) * 100
-      : totalAnswerTime > 0 && selected === null
-        ? (answerCountdown ?? totalAnswerTime) / totalAnswerTime * 100
-        : 100;
-
-  // During question phase use question countdown; during answer phase use answer countdown
   const barPct =
     answerCountdown !== null
       ? (answerCountdown / totalAnswerTime) * 100
