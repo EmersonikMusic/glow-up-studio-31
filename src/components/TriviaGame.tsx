@@ -263,10 +263,7 @@ export default function TriviaGame() {
                 src={mascotImg}
                 alt="TrivOlivia mascot"
                 className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
-                style={{
-                  marginBottom: "-2%",
-                  clipPath: "inset(0 0 0 0 round 0 0 50% 50%)",
-                }}
+                style={{ marginBottom: "-2%" }}
                 draggable={false}
               />
             </div>
