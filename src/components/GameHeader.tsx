@@ -42,7 +42,7 @@ export default function GameHeader({
           {onSettingsToggle && (
             <button
               onClick={onSettingsToggle}
-              className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
+              className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95 bg-black opacity-40"
               style={{
                 background: "hsl(var(--game-card))",
                 border: "1px solid hsl(var(--game-card-border))",
