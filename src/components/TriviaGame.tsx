@@ -245,7 +245,7 @@ export default function TriviaGame() {
             }}
           >
             <div
-              className="relative flex items-end justify-center overflow-hidden rounded-full"
+              className="relative flex items-end justify-center"
               style={{
                 width: "clamp(180px, 24vw, 320px)",
                 height: "clamp(180px, 24vw, 320px)",
@@ -256,16 +256,17 @@ export default function TriviaGame() {
               {/* Teal circle */}
               <div
                 className="absolute inset-0 rounded-full"
-                style={{
-                  background: "hsl(195 40% 82%)",
-                }}
+                style={{ background: "rgb(125, 223, 232)" }}
               />
-              {/* Mascot clipped to not overflow bottom half of circle */}
+              {/* Mascot — overflows top, clipped at bottom via container */}
               <img
                 src={mascotImg}
                 alt="TrivOlivia mascot"
                 className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
-                style={{ marginBottom: "-2%" }}
+                style={{
+                  marginBottom: "-2%",
+                  clipPath: "inset(0 0 0 0 round 0 0 50% 50%)",
+                }}
                 draggable={false}
               />
             </div>
@@ -273,7 +274,7 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — bottom-right overlay, visible only on small screens */}
           <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center overflow-hidden rounded-full"
+            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
             style={{
               width: "clamp(110px, 32vw, 160px)",
               height: "clamp(110px, 32vw, 160px)",
@@ -283,9 +284,7 @@ export default function TriviaGame() {
           >
             <div
               className="absolute inset-0 rounded-full"
-              style={{
-                background: "hsl(195 40% 82%)",
-              }}
+              style={{ background: "rgb(125, 223, 232)" }}
             />
             <img
               src={mascotImg}
