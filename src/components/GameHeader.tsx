@@ -45,7 +45,7 @@ export default function GameHeader({
               className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95 bg-black opacity-40"
               style={{
                 background: "hsl(var(--game-card))",
-                border: "1px solid hsl(var(--game-card-border))",
+                border: "1.5px solid rgba(125, 223, 232, 0.25)",
               }}
               aria-label={settingsOpen ? "Close settings" : "Open settings"}
             >
