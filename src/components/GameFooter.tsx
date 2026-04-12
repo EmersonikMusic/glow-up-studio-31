@@ -1,4 +1,4 @@
-import { Pause, Play, CheckCircle2 } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import { Question } from "@/data/questions";
 
 interface GameFooterProps {
@@ -104,22 +104,6 @@ export default function GameFooter({
           {paused ? <Play className="w-4 h-4 ml-0.5" /> : <Pause className="w-4 h-4" />}
         </button>
 
-        {/* Finish button */}
-        {canAdvance && isLast && (
-          <button
-            onClick={onNext}
-            className="relative flex items-center gap-1.5 flex-shrink-0 px-4 py-2.5 rounded-full font-black text-xs tracking-wider uppercase transition-all duration-200 active:scale-95"
-            style={{
-              background: "linear-gradient(135deg, hsl(280 60% 58%), hsl(280 60% 44%))",
-              color: "hsl(0 0% 100%)",
-              boxShadow: "0 4px 16px hsl(280 60% 50% / 0.45)",
-              cursor: "pointer",
-            }}
-            aria-label="Finish quiz"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            Finish
-          </button>
         )}
       </div>
     </footer>
