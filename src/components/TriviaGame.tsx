@@ -284,7 +284,7 @@ export default function TriviaGame() {
             <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
+                background: "hsl(195 40% 82%)",
               }}
             />
             <img
