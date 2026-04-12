@@ -294,6 +294,8 @@ export default function TriviaGame() {
           canAdvance={gameState === "answered"}
           isLast={isLast}
           onNext={handleNext}
+          countdown={countdown}
+          totalQuestionTime={settings.timePerQuestion}
           answerCountdown={answerCountdown}
           totalAnswerTime={settings.timePerAnswer}
           selected={selected}
