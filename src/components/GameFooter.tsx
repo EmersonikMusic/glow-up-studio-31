@@ -44,7 +44,7 @@ export default function GameFooter({
   const isAnswerPhase = answerCountdown !== null;
 
   return (
-    <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full max-w-3xl mx-auto pr-16 sm:pr-6 md:pr-8">
+    <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full md:w-[70%] pr-16 sm:pr-6 md:pr-8">
 
       {/* Bottom bar: metadata pill | play-pause | finish */}
       <div className="flex items-center gap-3">

@@ -213,11 +213,7 @@ export default function TriviaGame() {
       />
 
       {/* Row 1: Header */}
-      <GameHeader
-        score={score}
-        questionIndex={gameState === "finished" ? activeQuestions.length - 1 : questionIndex}
-        totalQuestions={activeQuestions.length}
-      />
+      <GameHeader />
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
