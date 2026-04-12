@@ -229,17 +229,12 @@ export default function TriviaGame() {
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
-              countdown={countdown}
-              totalTime={settings.timePerQuestion}
               answered={gameState === "answered"}
               correctAnswer={
                 gameState === "answered"
                   ? currentQuestion.answers.find((a) => a.id === currentQuestion.correctId)?.text
                   : undefined
               }
-              answerCountdown={answerCountdown}
-              totalAnswerTime={settings.timePerAnswer}
-              paused={paused}
             />
           </div>
 
