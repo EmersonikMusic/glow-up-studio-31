@@ -43,7 +43,7 @@ export default function QuestionCard({
 
       {/* Question text */}
       <p
-        className="leading-relaxed font-semibold"
+        className="leading-relaxed font-semibold text-left w-full"
         style={{
           fontFamily: "'Nunito', sans-serif",
           textWrap: "balance",
