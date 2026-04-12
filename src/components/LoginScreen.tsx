@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogIn, Mail, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { LogIn, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 
 export default function LoginScreen({ onClose }: { onClose: () => void }) {
