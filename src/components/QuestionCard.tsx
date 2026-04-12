@@ -1,59 +1,18 @@
 import { Question } from "@/data/questions";
-import { Pause } from "lucide-react";
 
 interface QuestionCardProps {
   question: Question;
   animKey: number;
-  countdown: number;
-  totalTime: number;
   answered: boolean;
   correctAnswer?: string;
-  answerCountdown?: number | null;
-  totalAnswerTime?: number;
-  paused?: boolean;
 }
 
 export default function QuestionCard({
   question,
   animKey,
-  countdown,
-  totalTime,
   answered,
   correctAnswer,
-  answerCountdown,
-  totalAnswerTime = 5,
-  paused = false,
 }: QuestionCardProps) {
-  const progress = totalTime > 0 ? countdown / totalTime : 0;
-  const isUrgent = countdown <= 5 && !answered;
-
-  const answerProgress =
-    answerCountdown !== null && answerCountdown !== undefined && totalAnswerTime > 0
-      ? answerCountdown / totalAnswerTime
-      : 1;
-
-  // Arc drawing
-  const size = 56;
-  const strokeWidth = 4;
-  const r = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * r;
-
-  const dashOffset = answered
-    ? circumference * (1 - answerProgress)
-    : circumference * (1 - progress);
-
-  const timerValue = answered ? (answerCountdown ?? 0) : countdown;
-  const timerColor = answered
-    ? "hsl(185 70% 50%)"
-    : isUrgent
-    ? "hsl(0 80% 60%)"
-    : "hsl(185 70% 50%)";
-  const timerTextColor = answered
-    ? "hsl(185 70% 65%)"
-    : isUrgent
-    ? "hsl(0 80% 65%)"
-    : "hsl(185 70% 65%)";
-
   return (
     <div
       key={animKey}
