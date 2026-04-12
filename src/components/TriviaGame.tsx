@@ -189,15 +189,18 @@ export default function TriviaGame() {
 
   if (gameState === "start") {
     return (
-      <StartScreen
-        onStart={handleStart}
-        onAbout={() => setGameState("about")}
-        onLogin={() => setShowLogin(true)}
-        onApply={handleApply}
-        panelOpen={panelOpen}
-        onPanelToggle={() => setPanelOpen((v) => !v)}
-        onPanelClose={() => setPanelOpen(false)}
-      />
+      <>
+        <StartScreen
+          onStart={handleStart}
+          onAbout={() => setGameState("about")}
+          onLogin={() => setShowLogin(true)}
+          onApply={handleApply}
+          panelOpen={panelOpen}
+          onPanelToggle={() => setPanelOpen((v) => !v)}
+          onPanelClose={() => setPanelOpen(false)}
+        />
+        {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      </>
     );
   }
 
