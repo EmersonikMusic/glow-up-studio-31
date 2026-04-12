@@ -31,6 +31,8 @@ export default function GameFooter({
   canAdvance,
   isLast,
   onNext,
+  answerCountdown,
+  totalAnswerTime,
   paused,
   onTogglePause,
 }: GameFooterProps) {
