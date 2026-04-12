@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { questions } from "@/data/questions";
+import { categoryColors } from "@/data/categoryColors";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
@@ -197,20 +198,16 @@ export default function TriviaGame() {
     );
   }
 
+  const bgGradient = currentQuestion ? categoryColors[currentQuestion.category] : undefined;
+
   return (
     <div
       className="min-h-screen grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
-      style={{ background: "hsl(var(--game-bg))" }}
+      style={{
+        background: bgGradient || "hsl(var(--game-bg))",
+        transition: "background 0.6s ease",
+      }}
     >
-      {/* Ambient blobs */}
-      <div
-        className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(280 60% 50% / 0.12) 0%, transparent 70%)", filter: "blur(40px)" }}
-      />
-      <div
-        className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(210 70% 50% / 0.1) 0%, transparent 70%)", filter: "blur(40px)" }}
-      />
 
       {/* Row 1: Header */}
       <GameHeader
