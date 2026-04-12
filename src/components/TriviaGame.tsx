@@ -221,7 +221,7 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="flex items-center h-full py-4 sm:py-6 px-4 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
+        <main className="flex items-stretch h-full py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-hidden">
           {/* Game area — 100% on mobile, 70% on desktop */}
           <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%]">
             <QuestionCard
