@@ -244,32 +244,55 @@ export default function TriviaGame() {
               pointerEvents: panelOpen ? "none" : "auto",
             }}
           >
-            <img
-              src={mascotImg}
-              alt="TrivOlivia mascot"
-              className="w-full h-auto object-contain drop-shadow-xl"
+            <div
+              className="relative flex items-end justify-center"
               style={{
-                maxHeight: "clamp(220px, 40vh, 420px)",
-                maxWidth: "clamp(160px, 22vw, 300px)",
+                width: "clamp(180px, 24vw, 320px)",
+                height: "clamp(180px, 24vw, 320px)",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
               }}
-            />
+            >
+              {/* Teal circle */}
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
+                  boxShadow: "0 0 40px hsl(185 70% 55% / 0.15)",
+                }}
+              />
+              {/* Mascot clipped to not overflow bottom half of circle */}
+              <img
+                src={mascotImg}
+                alt="TrivOlivia mascot"
+                className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
+                style={{ marginBottom: "-2%" }}
+                draggable={false}
+              />
+            </div>
           </div>
 
           {/* Mobile mascot — bottom-right overlay, visible only on small screens */}
           <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10"
+            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
             style={{
-              width: "clamp(100px, 30vw, 150px)",
+              width: "clamp(110px, 32vw, 160px)",
+              height: "clamp(110px, 32vw, 160px)",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
           >
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
+              }}
+            />
             <img
               src={mascotImg}
               alt="TrivOlivia mascot"
-              className="w-full h-auto object-contain drop-shadow-xl"
+              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
+              style={{ marginBottom: "-2%" }}
               draggable={false}
             />
           </div>
