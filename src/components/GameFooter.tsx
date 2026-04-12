@@ -54,10 +54,10 @@ export default function GameFooter({
         >
           {/* Time-depleting bar behind content */}
           <div
-            className="absolute inset-0 rounded-full pointer-events-none"
+            className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
             style={{
               width: `${barPct}%`,
-              background: "linear-gradient(90deg, hsl(185 70% 50% / 0.25), hsl(185 70% 65% / 0.18))",
+              background: "linear-gradient(90deg, hsl(185 70% 50% / 0.45), hsl(185 70% 65% / 0.3))",
               transition: "width 1s linear",
             }}
           />
