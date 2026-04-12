@@ -257,8 +257,7 @@ export default function TriviaGame() {
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
-                  boxShadow: "0 0 40px hsl(185 70% 55% / 0.15)",
+                  background: "hsl(195 40% 82%)",
                 }}
               />
               {/* Mascot clipped to not overflow bottom half of circle */}
