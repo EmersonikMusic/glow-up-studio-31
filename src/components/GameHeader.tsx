@@ -46,9 +46,9 @@ export default function GameHeader({
             <button
               onClick={onAbout}
               className="hidden sm:block text-[11px] font-black tracking-widest uppercase transition-colors"
-              style={{ color: "rgba(255, 255, 255, 0.5)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255, 255, 255, 0.5)")}
+              style={{ color: "hsl(185 70% 55%)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(185 70% 70%)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(185 70% 55%)")}
             >
               About
             </button>
@@ -73,7 +73,7 @@ export default function GameHeader({
                 }}
                 aria-label="Log out"
               >
-                <LogOut className="w-4 h-4" style={{ color: "rgba(255,255,255,0.6)" }} />
+                <LogOut className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               </button>
             </div>
           ) : (
@@ -83,10 +83,10 @@ export default function GameHeader({
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
-                color: "rgba(255,255,255,0.7)",
+                color: "hsl(185 70% 55%)",
               }}
             >
-              <LogIn className="w-3.5 h-3.5" />
+              <LogIn className="w-3.5 h-3.5" style={{ color: "hsl(var(--game-gold))" }} />
               <span className="hidden sm:inline">Login</span>
             </button>
           )}
