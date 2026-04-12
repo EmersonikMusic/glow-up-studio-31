@@ -245,7 +245,7 @@ export default function TriviaGame() {
             }}
           >
             <div
-              className="relative flex items-end justify-center"
+              className="relative flex items-end justify-center overflow-hidden rounded-full"
               style={{
                 width: "clamp(180px, 24vw, 320px)",
                 height: "clamp(180px, 24vw, 320px)",
