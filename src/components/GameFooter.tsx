@@ -41,10 +41,10 @@ export default function GameFooter({
   onTogglePause,
 }: GameFooterProps) {
 
-  // During question phase, deplete based on question countdown; during answer phase, use answer countdown
+  // Question phase: deplete left-to-right; Answer phase: fill back up
   const barPct =
     answerCountdown !== null
-      ? (answerCountdown / totalAnswerTime) * 100
+      ? ((totalAnswerTime - answerCountdown) / totalAnswerTime) * 100
       : (countdown / totalQuestionTime) * 100;
 
   return (
