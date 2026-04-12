@@ -8,6 +8,8 @@ interface GameFooterProps {
   canAdvance: boolean;
   isLast: boolean;
   onNext: () => void;
+  countdown: number;
+  totalQuestionTime: number;
   answerCountdown: number | null;
   totalAnswerTime: number;
   selected: string | null;
@@ -31,16 +33,19 @@ export default function GameFooter({
   canAdvance,
   isLast,
   onNext,
+  countdown,
+  totalQuestionTime,
   answerCountdown,
   totalAnswerTime,
   paused,
   onTogglePause,
 }: GameFooterProps) {
 
+  // During question phase, deplete based on question countdown; during answer phase, use answer countdown
   const barPct =
     answerCountdown !== null
       ? (answerCountdown / totalAnswerTime) * 100
-      : 100;
+      : (countdown / totalQuestionTime) * 100;
 
   return (
     <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full max-w-3xl mx-auto pr-16 sm:pr-6 md:pr-8">
