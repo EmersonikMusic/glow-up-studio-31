@@ -245,7 +245,7 @@ export default function TriviaGame() {
             }}
           >
             <div
-              className="relative flex items-end justify-center"
+              className="relative flex items-end justify-center overflow-hidden rounded-full"
               style={{
                 width: "clamp(180px, 24vw, 320px)",
                 height: "clamp(180px, 24vw, 320px)",
@@ -257,8 +257,7 @@ export default function TriviaGame() {
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
-                  boxShadow: "0 0 40px hsl(185 70% 55% / 0.15)",
+                  background: "hsl(195 40% 82%)",
                 }}
               />
               {/* Mascot clipped to not overflow bottom half of circle */}
@@ -274,7 +273,7 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — bottom-right overlay, visible only on small screens */}
           <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
+            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center overflow-hidden rounded-full"
             style={{
               width: "clamp(110px, 32vw, 160px)",
               height: "clamp(110px, 32vw, 160px)",
@@ -285,7 +284,7 @@ export default function TriviaGame() {
             <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
+                background: "hsl(195 40% 82%)",
               }}
             />
             <img
