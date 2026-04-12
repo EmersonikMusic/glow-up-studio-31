@@ -9,6 +9,7 @@ import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import SettingsPanel from "./SettingsPanel";
+import LoginScreen from "./LoginScreen";
 import type { GameSettings } from "./SettingsPanel";
 import mascotImg from "@/assets/Mascot.svg";
 
@@ -51,6 +52,7 @@ export default function TriviaGame() {
   const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [showLogin, setShowLogin] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
