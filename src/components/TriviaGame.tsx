@@ -212,6 +212,7 @@ export default function TriviaGame() {
       {/* Row 1: Header */}
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
+        onAbout={() => setGameState("about")}
         settingsOpen={panelOpen}
       />
 
