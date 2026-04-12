@@ -42,10 +42,11 @@ export default function GameHeader({
           {onSettingsToggle && (
             <button
               onClick={onSettingsToggle}
-              className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95 bg-black opacity-40"
+              className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95 backdrop-blur-md"
               style={{
-                background: "hsl(var(--game-card))",
-                border: "1.5px solid rgba(125, 223, 232, 0.25)",
+                background: "rgba(0, 0, 0, 0.35)",
+                border: "1px solid rgba(125, 223, 232, 0.2)",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
               }}
               aria-label={settingsOpen ? "Close settings" : "Open settings"}
             >
