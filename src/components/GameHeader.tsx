@@ -1,17 +1,22 @@
-import { Settings } from "lucide-react";
+import { Settings, LogIn, LogOut, User } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
   onAbout?: () => void;
+  onLogin?: () => void;
   settingsOpen?: boolean;
 }
 
 export default function GameHeader({
   onSettingsToggle,
   onAbout,
+  onLogin,
   settingsOpen = false,
 }: GameHeaderProps) {
+  const { user, logout } = useAuth();
+
   return (
     <header
       className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md"
@@ -41,13 +46,48 @@ export default function GameHeader({
             <button
               onClick={onAbout}
               className="hidden sm:block text-[11px] font-black tracking-widest uppercase transition-colors"
-              style={{
-                color: "rgba(255, 255, 255, 0.5)",
-              }}
+              style={{ color: "rgba(255, 255, 255, 0.5)" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255, 255, 255, 0.5)")}
             >
               About
+            </button>
+          )}
+
+          {/* Auth: username or login button */}
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span
+                className="hidden sm:flex items-center gap-1.5 text-[11px] font-black tracking-wider uppercase"
+                style={{ color: "hsl(42 100% 60%)" }}
+              >
+                <User className="w-3.5 h-3.5" />
+                {user.username}
+              </span>
+              <button
+                onClick={logout}
+                className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                }}
+                aria-label="Log out"
+              >
+                <LogOut className="w-4 h-4" style={{ color: "rgba(255,255,255,0.6)" }} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onLogin}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wider uppercase transition-all duration-200 hover:brightness-110 active:scale-95"
+              style={{
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                color: "rgba(255,255,255,0.7)",
+              }}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Login</span>
             </button>
           )}
 
