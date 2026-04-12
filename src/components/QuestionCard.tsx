@@ -25,19 +25,6 @@ export default function QuestionCard({
         gap: 0,
       }}
     >
-      {/* Category badge */}
-      <div className="flex items-center justify-end w-full mb-4">
-        <span
-          className="hidden sm:inline text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-lg"
-          style={{
-            background: "hsl(240 42% 15%)",
-            color: "hsl(var(--muted-foreground))",
-            border: "1px solid hsl(var(--game-card-border))",
-          }}
-        >
-          {question.category}
-        </span>
-      </div>
 
       {/* Question text */}
       <p
