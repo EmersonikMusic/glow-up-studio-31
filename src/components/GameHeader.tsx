@@ -1,17 +1,13 @@
-import { Trophy, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 
 interface GameHeaderProps {
-  score?: number;
-  showScore?: boolean;
   onSettingsToggle?: () => void;
   onAbout?: () => void;
   settingsOpen?: boolean;
 }
 
 export default function GameHeader({
-  score = 0,
-  showScore = false,
   onSettingsToggle,
   onAbout,
   settingsOpen = false,
@@ -31,20 +27,6 @@ export default function GameHeader({
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Score pill — only during gameplay */}
-          {showScore && (
-            <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold flex-shrink-0 animate-fade-in"
-              style={{
-                background: "hsl(var(--game-card))",
-                border: "1px solid hsl(var(--game-card-border))",
-              }}
-            >
-              <Trophy className="w-3.5 h-3.5" style={{ color: "hsl(var(--game-gold))" }} />
-              <span style={{ color: "hsl(var(--game-gold))" }}>{score}</span>
-              <span className="text-muted-foreground">pts</span>
-            </div>
-          )}
 
           {/* About link — subtle, desktop only */}
           {onAbout && (

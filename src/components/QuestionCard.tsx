@@ -49,8 +49,8 @@ export default function QuestionCard({
           textWrap: "balance",
           color: answered ? "hsl(0 0% 55%)" : "hsl(0 0% 97%)",
           fontSize: answered
-            ? "clamp(0.8rem, 1.5vw, 0.95rem)"
-            : "clamp(1.1rem, 2.5vw, 1.6rem)",
+            ? "clamp(1rem, 2vw, 1.2rem)"
+            : "clamp(1.4rem, 3.5vw, 2.2rem)",
           transition: "font-size 0.4s ease, color 0.4s ease",
           lineHeight: 1.45,
         }}
@@ -70,7 +70,7 @@ export default function QuestionCard({
               fontFamily: "'Nunito', sans-serif",
               textWrap: "balance",
               color: "hsl(0 0% 97%)",
-              fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)",
+              fontSize: "clamp(1.4rem, 3.5vw, 2.2rem)",
               lineHeight: 1.45,
             }}
           >
