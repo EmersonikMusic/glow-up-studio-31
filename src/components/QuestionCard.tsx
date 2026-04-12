@@ -16,11 +16,11 @@ export default function QuestionCard({
   return (
     <div
       key={animKey}
-      className="w-full rounded-2xl flex flex-col justify-center items-start gap-4 sm:gap-5 animate-slide-in-up md:h-full"
+      className="w-full rounded-2xl flex flex-col justify-center items-start gap-4 sm:gap-5 animate-slide-in-up md:h-full backdrop-blur-xl"
       style={{
-        background: "rgba(0, 0, 0, 0.4)",
-        border: "1.5px solid hsl(var(--game-card-border))",
-        boxShadow: "0 8px 40px hsl(240 45% 10% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
+        background: "rgba(0, 0, 0, 0.45)",
+        border: "1px solid rgba(125, 223, 232, 0.12)",
+        boxShadow: "0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
         padding: "clamp(1rem, 4vw, 2.5rem)",
       }}
     >
