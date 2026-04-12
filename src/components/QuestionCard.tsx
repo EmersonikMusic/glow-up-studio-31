@@ -19,8 +19,8 @@ export default function QuestionCard({
       className="w-full rounded-2xl flex flex-col justify-center items-start gap-4 sm:gap-5 animate-slide-in-up md:h-full backdrop-blur-xl"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
-        border: "1px solid rgba(125, 223, 232, 0.12)",
-        boxShadow: "0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
+        border: "1.5px solid rgba(255, 255, 255, 0.18)",
+        boxShadow: "0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25)",
         padding: "clamp(1rem, 4vw, 2.5rem)",
       }}
     >

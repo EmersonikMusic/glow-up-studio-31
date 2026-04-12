@@ -47,7 +47,7 @@ export default function GameFooter({
         {/* Metadata pill with integrated timer */}
         <div
           className="relative flex-1 flex items-center gap-x-2 rounded-full px-4 py-2.5 text-xs font-semibold overflow-hidden min-w-0 backdrop-blur-md"
-          style={{ background: "rgba(0, 0, 0, 0.35)", border: "1px solid rgba(125, 223, 232, 0.15)" }}
+          style={{ background: "rgba(0, 0, 0, 0.35)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}
           <div
@@ -95,7 +95,7 @@ export default function GameFooter({
           className="relative flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110 backdrop-blur-md"
           style={{
             background: "rgba(0, 0, 0, 0.35)",
-            border: "1px solid rgba(125, 223, 232, 0.2)",
+            border: "1.5px solid rgba(255, 255, 255, 0.18)",
             color: "hsl(185 70% 55%)",
             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
           }}
