@@ -9,6 +9,7 @@ import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import SettingsPanel from "./SettingsPanel";
+import LoginScreen from "./LoginScreen";
 import type { GameSettings } from "./SettingsPanel";
 import mascotImg from "@/assets/Mascot.svg";
 
@@ -51,6 +52,7 @@ export default function TriviaGame() {
   const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [showLogin, setShowLogin] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -187,14 +189,18 @@ export default function TriviaGame() {
 
   if (gameState === "start") {
     return (
-      <StartScreen
-        onStart={handleStart}
-        onAbout={() => setGameState("about")}
-        onApply={handleApply}
-        panelOpen={panelOpen}
-        onPanelToggle={() => setPanelOpen((v) => !v)}
-        onPanelClose={() => setPanelOpen(false)}
-      />
+      <>
+        <StartScreen
+          onStart={handleStart}
+          onAbout={() => setGameState("about")}
+          onLogin={() => setShowLogin(true)}
+          onApply={handleApply}
+          panelOpen={panelOpen}
+          onPanelToggle={() => setPanelOpen((v) => !v)}
+          onPanelClose={() => setPanelOpen(false)}
+        />
+        {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      </>
     );
   }
 
@@ -213,6 +219,7 @@ export default function TriviaGame() {
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
         onAbout={() => setGameState("about")}
+        onLogin={() => setShowLogin(true)}
         settingsOpen={panelOpen}
       />
 
@@ -321,6 +328,9 @@ export default function TriviaGame() {
         onClose={() => setPanelOpen(false)}
         onApply={handleApply}
       />
+
+      {/* Login modal */}
+      {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
     </div>
   );
 }

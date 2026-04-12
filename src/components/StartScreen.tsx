@@ -7,13 +7,14 @@ import type { GameSettings } from "./SettingsPanel";
 interface StartScreenProps {
   onStart: () => void;
   onAbout: () => void;
+  onLogin: () => void;
   onApply: (settings: GameSettings) => void;
   panelOpen: boolean;
   onPanelToggle: () => void;
   onPanelClose: () => void;
 }
 
-export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPanelToggle, onPanelClose }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelOpen, onPanelToggle, onPanelClose }: StartScreenProps) {
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
@@ -39,6 +40,7 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
       <GameHeader
         onSettingsToggle={onPanelToggle}
         onAbout={onAbout}
+        onLogin={onLogin}
         settingsOpen={panelOpen}
       />
 
