@@ -44,8 +44,14 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
 
       {/* Main content area */}
       <div className="flex flex-1 relative">
-        {/* Game area — full width on mobile, 70% on desktop */}
-        <div className="flex flex-col items-center justify-center flex-none w-full md:w-[70%] px-4 py-8 sm:px-8 md:px-12">
+        {/* Game area — centers content, shrinks when settings panel opens */}
+        <div
+          className="flex flex-col items-center justify-center w-full px-4 py-8 sm:px-8 md:px-12"
+          style={{
+            transition: "width 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+            width: panelOpen ? "70%" : "100%",
+          }}
+        >
           {/* Logo */}
           <div className="w-full max-w-2xl animate-fade-in" style={{ animationDelay: "0ms" }}>
             <img
@@ -71,17 +77,6 @@ export default function StartScreen({ onStart, onAbout, onApply, panelOpen, onPa
             />
           </button>
         </div>
-
-        {/* Right column — hidden on mobile, 30% on desktop (empty placeholder for layout) */}
-        <div
-          className="hidden md:flex flex-none flex-col items-center justify-end overflow-hidden"
-          style={{
-            width: "30%",
-            transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
-            opacity: panelOpen ? 0 : 1,
-            pointerEvents: panelOpen ? "none" : "auto",
-          }}
-        />
       </div>
 
       {/* Settings panel */}
