@@ -77,6 +77,13 @@ export default function GameFooter({
           </span>
           <span className="opacity-40 hidden md:inline">·</span>
           <span className="hidden md:inline text-muted-foreground truncate">{question.era}</span>
+          <span className="opacity-40">·</span>
+          <span
+            className="text-muted-foreground tabular-nums font-black"
+            style={{ color: isAnswerPhase ? "hsl(185 70% 55%)" : "hsl(var(--muted-foreground))" }}
+          >
+            {isAnswerPhase ? (answerCountdown ?? 0) : countdown}s
+          </span>
         </div>
 
         {/* Play / Pause — always visible during question AND answer phases */}
