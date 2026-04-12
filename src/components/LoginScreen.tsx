@@ -142,7 +142,6 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
                 background: "rgba(255, 255, 255, 0.06)",
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 color: "rgba(255,255,255,0.9)",
-                ringColor: "hsl(42 100% 55%)",
               }}
             />
           )}
@@ -157,7 +156,6 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
               background: "rgba(255, 255, 255, 0.06)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
               color: "rgba(255,255,255,0.9)",
-              ringColor: "hsl(42 100% 55%)",
             }}
           />
           <div className="relative">
@@ -172,7 +170,6 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
                 background: "rgba(255, 255, 255, 0.06)",
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 color: "rgba(255,255,255,0.9)",
-                ringColor: "hsl(42 100% 55%)",
               }}
             />
             <button
