@@ -103,8 +103,6 @@ export default function GameFooter({
         >
           {paused ? <Play className="w-4 h-4 ml-0.5" /> : <Pause className="w-4 h-4" />}
         </button>
-
-        )}
       </div>
     </footer>
   );
