@@ -274,17 +274,25 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — bottom-right overlay, visible only on small screens */}
           <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10"
+            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
             style={{
-              width: "clamp(100px, 30vw, 150px)",
+              width: "clamp(110px, 32vw, 160px)",
+              height: "clamp(110px, 32vw, 160px)",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
           >
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: "radial-gradient(circle, hsl(185 70% 75% / 0.35) 0%, hsl(185 70% 55% / 0.18) 70%, transparent 100%)",
+              }}
+            />
             <img
               src={mascotImg}
               alt="TrivOlivia mascot"
-              className="w-full h-auto object-contain drop-shadow-xl"
+              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
+              style={{ marginBottom: "-2%" }}
               draggable={false}
             />
           </div>
