@@ -174,7 +174,7 @@ export default function TriviaGame() {
     setSelected(null);
     setScore(0);
     setGameState("start");
-    setPanelOpen(true);
+    setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer]);
 
