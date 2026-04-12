@@ -273,7 +273,7 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — bottom-right overlay, visible only on small screens */}
           <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
+            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center overflow-hidden rounded-full"
             style={{
               width: "clamp(110px, 32vw, 160px)",
               height: "clamp(110px, 32vw, 160px)",
