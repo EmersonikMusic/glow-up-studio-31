@@ -18,7 +18,7 @@ export default function QuestionCard({
       key={animKey}
       className="w-full rounded-2xl flex flex-col justify-center gap-4 sm:gap-5 animate-slide-in-up md:h-full"
       style={{
-        background: "hsl(var(--game-card))",
+        background: "rgba(0, 0, 0, 0.4)",
         border: "1.5px solid hsl(var(--game-card-border))",
         boxShadow: "0 8px 40px hsl(240 45% 10% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.06)",
         padding: "clamp(1rem, 4vw, 2.5rem)",
