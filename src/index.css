@@ -221,3 +221,13 @@
 }
 
 
+/* Footer bar animations */
+@keyframes bar-deplete {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+@keyframes bar-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+

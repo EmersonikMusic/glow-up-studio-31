@@ -41,11 +41,7 @@ export default function GameFooter({
   onTogglePause,
 }: GameFooterProps) {
 
-  // Question phase: deplete left-to-right; Answer phase: fill back up
-  const barPct =
-    answerCountdown !== null
-      ? ((totalAnswerTime - answerCountdown) / totalAnswerTime) * 100
-      : (countdown / totalQuestionTime) * 100;
+  const isAnswerPhase = answerCountdown !== null;
 
   return (
     <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full max-w-3xl mx-auto pr-16 sm:pr-6 md:pr-8">
@@ -57,13 +53,16 @@ export default function GameFooter({
           className="relative flex-1 grid grid-cols-[auto_auto_1fr] sm:flex sm:flex-row items-center gap-x-2 gap-y-0 rounded-full px-4 py-2.5 text-xs font-semibold overflow-hidden"
           style={{ background: "hsl(var(--game-progress))" }}
         >
-          {/* Time-depleting bar behind content */}
+          {/* Time bar — CSS animation synced to full timer duration */}
           <div
+            key={`${questionIndex}-${isAnswerPhase ? "answer" : "question"}`}
             className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
             style={{
-              width: `${barPct}%`,
               background: "linear-gradient(90deg, hsl(185 70% 50% / 0.45), hsl(185 70% 65% / 0.3))",
-              transition: "width 1s linear",
+              animation: isAnswerPhase
+                ? `bar-fill ${totalAnswerTime}s linear forwards`
+                : `bar-deplete ${totalQuestionTime}s linear forwards`,
+              animationPlayState: paused ? "paused" : "running",
             }}
           />
           <span className="text-muted-foreground tabular-nums">Q{questionIndex + 1}/{totalQuestions}</span>
