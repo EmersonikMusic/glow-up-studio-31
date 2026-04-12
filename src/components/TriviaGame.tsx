@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { questions } from "@/data/questions";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
