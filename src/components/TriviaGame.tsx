@@ -169,7 +169,21 @@ export default function TriviaGame() {
   useEffect(() => () => { clearTimer(); clearAnswerTimer(); }, [clearTimer, clearAnswerTimer]);
 
   if (gameState === "about") {
-    return <AboutScreen onClose={() => setGameState("start")} />;
+    return (
+      <>
+        <StartScreen
+          onStart={handleStart}
+          onAbout={() => setGameState("about")}
+          onLogin={() => setShowLogin(true)}
+          onApply={handleApply}
+          panelOpen={panelOpen}
+          onPanelToggle={() => setPanelOpen((v) => !v)}
+          onPanelClose={() => setPanelOpen(false)}
+        />
+        <AboutScreen onClose={() => setGameState("start")} />
+        {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      </>
+    );
   }
 
   if (gameState === "start") {
