@@ -216,7 +216,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       <div className="px-5 pt-4 pb-3 md:px-6 md:pt-6 md:pb-5">
         <h2
           className="text-xl md:text-3xl font-black leading-none tracking-tight uppercase"
-          style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
+          style={{ fontFamily: "'Russo One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
         >
           CUSTOMIZE YOUR GAME EXPERIENCE
         </h2>
@@ -330,7 +330,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onClick={handleApply}
           className="group relative w-full py-4 rounded-full font-black text-sm tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
           style={{
-            fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+            fontFamily: "'Russo One', 'Nunito', sans-serif",
             background: "linear-gradient(180deg, #fee62d 0%, #f3903f 50%, #e93e3a 100%)",
             border: "2px solid rgba(255, 255, 255, 0.4)",
             boxShadow: "0 4px 12px rgba(233, 62, 58, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3)",

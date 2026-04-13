@@ -71,7 +71,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             className="group relative mt-10 px-12 py-4 rounded-full font-black text-lg tracking-[0.18em] uppercase transition-all duration-200 animate-fade-in hover:scale-105 active:scale-[0.98] overflow-hidden"
             style={{
               animationDelay: "180ms",
-              fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+              fontFamily: "'Russo One', 'Nunito', sans-serif",
               background: "linear-gradient(180deg, #fee62d 0%, #f3903f 50%, #e93e3a 100%)",
               border: "2px solid rgba(255, 255, 255, 0.4)",
               boxShadow: "0 4px 12px rgba(233, 62, 58, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3)",

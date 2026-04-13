@@ -42,7 +42,7 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
           <div className="text-center space-y-3">
             <div
               className="text-4xl sm:text-5xl font-black animate-bounce-in"
-              style={{ color: "hsl(42 100% 55%)", fontFamily: "'Fredoka One', sans-serif" }}
+              style={{ color: "hsl(42 100% 55%)", fontFamily: "'Russo One', sans-serif" }}
             >
               Trivia Complete!
             </div>
@@ -60,7 +60,7 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
             onClick={onRestart}
             className="group relative w-full flex items-center justify-center gap-2 py-4 rounded-full font-black text-sm tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
             style={{
-              fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+              fontFamily: "'Russo One', 'Nunito', sans-serif",
               background: "linear-gradient(180deg, #fee62d 0%, #f3903f 50%, #e93e3a 100%)",
               border: "2px solid rgba(255, 255, 255, 0.4)",
               boxShadow: "0 4px 12px rgba(233, 62, 58, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
