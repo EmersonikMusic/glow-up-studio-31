@@ -1,10 +1,13 @@
 import { ArrowLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AboutScreenProps {
   onClose: () => void;
 }
 
 export default function AboutScreen({ onClose }: AboutScreenProps) {
+  const isMobile = useIsMobile();
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
@@ -26,18 +29,21 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         }}
       />
 
-      {/* Card — liquid glass */}
+      {/* Card — full-screen on mobile, centered card on desktop */}
       <div
-        className="relative z-10 rounded-3xl overflow-hidden animate-slide-in-up mx-4 backdrop-blur-xl"
+        className={`relative z-10 overflow-hidden animate-slide-in-up backdrop-blur-xl flex flex-col ${
+          isMobile
+            ? "fixed inset-0 rounded-none"
+            : "rounded-3xl mx-4"
+        }`}
         style={{
-          width: "70vw",
-          minWidth: "300px",
+          ...(!isMobile && { width: "70vw", minWidth: "300px" }),
           background: "rgba(0, 0, 0, 0.45)",
-          border: "1.5px solid rgba(255, 255, 255, 0.18)",
-          boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
+          border: isMobile ? "none" : "1.5px solid rgba(255, 255, 255, 0.18)",
+          boxShadow: isMobile ? "none" : "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
-        {/* Close button — matches gear icon style */}
+        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
@@ -51,7 +57,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </button>
 
         {/* Header */}
-        <div className="px-8 pt-10 pb-6" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+        <div className="px-6 md:px-8 pt-10 pb-6 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <p className="text-sm font-black tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
             Welcome to your
           </p>
@@ -73,8 +79,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </div>
 
         {/* Scrollable body */}
-        <div className="about-scroll-area max-h-[55vh] overflow-y-scroll">
-          <div className="px-8 py-7 flex flex-col gap-6 game-text-white">
+        <div className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
+          <div className="px-6 md:px-8 py-7 flex flex-col gap-6 game-text-white">
             {/* Who are we */}
             <div>
               <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
@@ -191,8 +197,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
           </div>
         </div>
 
-        {/* Footer CTA — gold gradient */}
-        <div className="px-8 pb-8 pt-4" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+        {/* Footer CTA */}
+        <div className="px-6 md:px-8 pb-8 pt-4 shrink-0" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <button
             onClick={onClose}
             className="cta-glass w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200"
