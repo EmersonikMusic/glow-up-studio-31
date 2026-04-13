@@ -118,11 +118,12 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
           {/* CTA — gold gradient matching rest of UI */}
           <button
             onClick={onRestart}
-            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-base tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             style={{
-              background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
-              color: "hsl(240 45% 16%)",
-              boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)",
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1.5px solid rgba(255, 255, 255, 0.18)",
+              color: "hsl(42 100% 62%)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
             }}
           >
             <RotateCcw className="w-5 h-5" />

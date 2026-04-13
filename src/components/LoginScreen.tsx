@@ -184,9 +184,10 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             disabled={isLoading}
             className="w-full py-3 rounded-xl font-black text-sm tracking-widest uppercase transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 mt-1"
             style={{
-              background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
-              color: "hsl(240 45% 16%)",
-              boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)",
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1.5px solid rgba(255, 255, 255, 0.18)",
+              color: "hsl(42 100% 62%)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
             }}
           >
             <span className="flex items-center justify-center gap-2">
