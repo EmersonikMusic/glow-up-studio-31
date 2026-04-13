@@ -82,7 +82,7 @@ export default function GameFooter({
           <span className="absolute right-4 z-10 flex-shrink-0">
             <span
               className="tabular-nums font-black"
-              style={{ color: isAnswerPhase ? "hsl(185 70% 55%)" : "hsl(var(--muted-foreground))" }}
+              style={{ color: "hsl(185 70% 55%)" }}
             >
               {isAnswerPhase ? (answerCountdown ?? 0) : countdown}s
             </span>
