@@ -13,18 +13,19 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   const handleClose = useCallback(() => {
     if (exiting) return;
     setExiting(true);
-    setTimeout(() => onClose(), isMobile ? 380 : 300);
+    setTimeout(() => onClose(), isMobile ? 350 : 300);
   }, [onClose, isMobile, exiting]);
+
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
       style={{
         background: "hsl(var(--game-bg))",
         willChange: "transform, opacity",
+        pointerEvents: exiting ? "none" : "auto",
         transition: isMobile ? "transform 0.35s cubic-bezier(0.4, 0, 1, 1)" : "opacity 0.3s ease",
-        ...(isMobile
-          ? { transform: exiting ? "translateX(-100%)" : "translateX(0)", boxShadow: "8px 0 48px rgba(0, 0, 0, 0.5)", visibility: exiting ? "hidden" as const : "visible" as const, transitionProperty: "transform, visibility", transitionDelay: "0s, 0.35s" }
-          : { opacity: exiting ? 0 : 1 }),
+        transform: isMobile ? (exiting ? "translateX(-100%)" : "translateX(0)") : "translateX(0)",
+        opacity: !isMobile && exiting ? 0 : 1,
       }}
     >
       {/* Ambient blobs */}
@@ -47,14 +48,16 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
       <div
         className={`relative z-10 overflow-hidden animate-slide-in-up backdrop-blur-xl flex flex-col ${
           isMobile
-            ? "fixed inset-0 rounded-none"
+            ? "absolute inset-0 rounded-none"
             : "rounded-3xl mx-4"
         }`}
         style={{
           ...(!isMobile && { width: "70vw", minWidth: "300px" }),
           background: "rgba(0, 0, 0, 0.45)",
           border: isMobile ? "none" : "1.5px solid rgba(255, 255, 255, 0.18)",
-          boxShadow: isMobile ? "none" : "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
+          boxShadow: isMobile
+            ? "12px 0 48px rgba(0, 0, 0, 0.5)"
+            : "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
         {/* Close button */}
