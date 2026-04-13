@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState, useCallback } from "react";
 
 interface AboutScreenProps {
   onClose: () => void;
@@ -7,7 +8,12 @@ interface AboutScreenProps {
 
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
+  const [exiting, setExiting] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setExiting(true);
+    setTimeout(() => onClose(), 300);
+  }, [onClose]);
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
