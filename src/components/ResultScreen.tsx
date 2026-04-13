@@ -1,25 +1,11 @@
-import { RotateCcw, Star } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import mascotImg from "@/assets/Mascot.svg";
 
 interface ResultScreenProps {
-  score: number;
-  total: number;
   onRestart: () => void;
 }
 
-export default function ResultScreen({ score, total, onRestart }: ResultScreenProps) {
-  const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
-  const rank =
-    percentage >= 90
-      ? { label: "Genius!", color: "hsl(340 70% 60%)", glow: "hsl(340 70% 60% / 0.35)" }
-      : percentage >= 70
-      ? { label: "Expert!", color: "hsl(42 100% 55%)", glow: "hsl(42 100% 55% / 0.35)" }
-      : percentage >= 50
-      ? { label: "Scholar!", color: "hsl(160 65% 50%)", glow: "hsl(160 65% 50% / 0.35)" }
-      : { label: "Explorer!", color: "hsl(210 75% 60%)", glow: "hsl(210 75% 60% / 0.35)" };
-
-  const starsFilled = Math.round((percentage / 100) * 3);
-
+export default function ResultScreen({ onRestart }: ResultScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up">
       {/* Glassmorphism card */}
@@ -34,88 +20,56 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
         {/* Top accent stripe */}
         <div
           className="h-1.5 w-full"
-          style={{ background: `linear-gradient(90deg, ${rank.color}, transparent)` }}
+          style={{ background: "linear-gradient(90deg, hsl(42 100% 55%), transparent)" }}
         />
 
-        <div className="px-8 py-8 flex flex-col items-center gap-6">
-          {/* Character + glow */}
+        <div className="px-8 py-10 flex flex-col items-center gap-8">
+          {/* Character + glow - larger for balance */}
           <div className="relative flex items-center justify-center">
             <div
-              className="absolute w-32 h-32 rounded-full"
+              className="absolute w-40 h-40 rounded-full"
               style={{
-                background: `radial-gradient(circle, ${rank.glow} 0%, transparent 70%)`,
-                filter: "blur(16px)",
+                background: "radial-gradient(circle, hsl(42 100% 55% / 0.35) 0%, transparent 70%)",
+                filter: "blur(20px)",
               }}
             />
             <img
               src={mascotImg}
               alt="Olivia"
-              className="relative z-10 w-28 h-28 object-contain drop-shadow-2xl animate-float"
+              className="relative z-10 w-32 h-32 object-contain drop-shadow-2xl animate-float"
             />
           </div>
 
-          {/* Rank label */}
-          <div className="text-center">
+          {/* Main heading */}
+          <div className="text-center space-y-3">
             <div
-              className="text-5xl font-black mb-1 animate-bounce-in"
-              style={{ color: rank.color, fontFamily: "'Fredoka One', sans-serif" }}
+              className="text-4xl sm:text-5xl font-black animate-bounce-in"
+              style={{ color: "hsl(42 100% 55%)", fontFamily: "'Fredoka One', sans-serif" }}
             >
-              {rank.label}
+              Trivia Complete!
             </div>
-            <p className="text-muted-foreground text-sm">
-              That's a solid run, trivia nerd.
+            <p className="text-muted-foreground text-base max-w-xs mx-auto leading-relaxed">
+              Great job exploring the world of trivia! Ready for another round?
             </p>
           </div>
 
-          {/* Stats grid — inner glassmorphism */}
+          {/* Decorative divider */}
+          <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
+
+          {/* Fun facts or encouraging message */}
           <div
-            className="w-full grid grid-cols-3 gap-px rounded-2xl overflow-hidden"
+            className="w-full rounded-2xl p-5 text-center"
             style={{
-              background: "rgba(255, 255, 255, 0.08)",
+              background: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
             }}
           >
-            {[
-              { label: "Correct", value: score, color: "hsl(160 65% 55%)" },
-              { label: "Accuracy", value: `${percentage}%`, color: rank.color },
-              { label: "Total", value: total, color: "hsl(var(--muted-foreground))" },
-            ].map(({ label, value, color }) => (
-              <div
-                key={label}
-                className="flex flex-col items-center gap-1 py-4"
-                style={{ background: "rgba(0, 0, 0, 0.3)" }}
-              >
-                <span
-                  className="text-2xl font-black tabular-nums"
-                  style={{ color }}
-                >
-                  {value}
-                </span>
-                <span className="text-[10px] font-black tracking-widest uppercase text-muted-foreground">
-                  {label}
-                </span>
-              </div>
-            ))}
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              "Every question is a journey into the unknown. The more you play, the more you discover!"
+            </p>
           </div>
 
-          {/* Stars */}
-          <div className="flex gap-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Star
-                key={i}
-                className="w-8 h-8 transition-all duration-500"
-                fill={i < starsFilled ? rank.color : "transparent"}
-                stroke={i < starsFilled ? rank.color : "hsl(var(--muted-foreground))"}
-                style={{
-                  filter: i < starsFilled ? `drop-shadow(0 0 8px ${rank.glow})` : "none",
-                  animationDelay: `${i * 150}ms`,
-                  transform: i < starsFilled ? "scale(1.1)" : "scale(1)",
-                }}
-              />
-            ))}
-          </div>
-
-          {/* CTA — gold gradient matching rest of UI */}
+          {/* CTA */}
           <button
             onClick={onRestart}
             className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
