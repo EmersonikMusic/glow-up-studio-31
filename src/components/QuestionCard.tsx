@@ -26,19 +26,20 @@ export default function QuestionCard({
       }}
     >
 
-      {/* Question text */}
+      {/* Question text — smooth shrink via CSS scale transform instead of font-size */}
       <p
         className="leading-relaxed font-semibold text-center w-full"
         style={{
           fontFamily: "'Nunito', sans-serif",
           textWrap: "balance",
           color: answered ? "hsl(0 0% 60%)" : "hsl(0 0% 97%)",
-          fontSize: answered
-            ? "clamp(0.85rem, 1.5vw, 1rem)"
-            : "clamp(1.4rem, 3.5vw, 2.2rem)",
-          transition: "font-size 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          fontSize: "clamp(1.4rem, 3.5vw, 2.2rem)",
+          transition: "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease",
+          transform: answered ? "scale(0.65)" : "scale(1)",
+          transformOrigin: "center center",
+          opacity: answered ? 0.7 : 1,
           lineHeight: 1.5,
-          marginBottom: answered ? "0" : "0",
+          marginBottom: 0,
         }}
       >
         {question.text}
