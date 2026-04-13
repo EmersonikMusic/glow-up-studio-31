@@ -224,7 +224,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       <div className="px-5 md:px-6 mb-3 md:mb-4"><div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} /></div>
 
       {/* ── CATEGORIES ── */}
-      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
         <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
         <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
           <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
@@ -241,7 +241,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* ── DIFFICULTY ── */}
-      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
         <SectionHeader icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />} label="Difficulty" open={diffOpen} onToggle={() => setDiffOpen((v) => !v)} />
         <div className="flex flex-col overflow-hidden" style={{ maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
           <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
@@ -252,7 +252,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* ── ERAS ── */}
-      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
         <SectionHeader icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />} label="Eras" open={eraOpen} onToggle={() => setEraOpen((v) => !v)} />
         <div className="flex flex-col overflow-hidden" style={{ maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
           <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
@@ -269,7 +269,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* ── GAME SETTINGS ── */}
-      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
         <SectionHeader icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />} label="Game Settings" open={gameOpen} onToggle={() => setGameOpen((v) => !v)} />
         <div className="overflow-hidden" style={{ maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
           <div className="px-5 py-5 flex flex-col gap-6">
@@ -353,7 +353,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           style={{
             maxHeight: "92vh",
-            background: "rgba(0, 0, 0, 0.4)",
+            background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
@@ -401,7 +401,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       >
         <div
           className="flex-1 overflow-y-auto"
-          style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(24px)", borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)", boxShadow: "-8px 0 48px rgba(0, 0, 0, 0.5)", display: "flex", flexDirection: "column" }}
+          style={{ background: "rgba(0, 0, 0, 0.25)", backdropFilter: "blur(24px)", borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)", boxShadow: "-8px 0 48px rgba(0, 0, 0, 0.5)", display: "flex", flexDirection: "column" }}
         >
           {panelContent}
         </div>
