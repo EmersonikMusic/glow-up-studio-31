@@ -16,7 +16,7 @@ export default function QuestionCard({
   return (
     <div
       key={animKey}
-      className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up md:h-full backdrop-blur-xl"
+      className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up min-h-[60vh] md:min-h-0 md:h-full backdrop-blur-xl"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
@@ -33,7 +33,7 @@ export default function QuestionCard({
           fontFamily: "'Nunito', sans-serif",
           textWrap: "balance",
           color: answered ? "hsl(0 0% 60%)" : "hsl(0 0% 97%)",
-          fontSize: "clamp(1.4rem, 3.5vw, 2.2rem)",
+          fontSize: "clamp(1.6rem, 4.5vw, 2.4rem)",
           transition: "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease",
           transform: answered ? "scale(0.65)" : "scale(1)",
           transformOrigin: "center center",
@@ -64,7 +64,7 @@ export default function QuestionCard({
               fontFamily: "'Nunito', sans-serif",
               textWrap: "balance",
               color: "hsl(0 0% 97%)",
-              fontSize: "clamp(1.4rem, 3.5vw, 2.2rem)",
+              fontSize: "clamp(1.6rem, 4.5vw, 2.4rem)",
               lineHeight: 1.45,
             }}
           >
