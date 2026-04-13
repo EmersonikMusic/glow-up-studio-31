@@ -4,7 +4,6 @@ import { questions } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
-import AnswerGrid from "./AnswerGrid";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
@@ -44,7 +43,6 @@ export default function TriviaGame() {
   const [activeQuestions, setActiveQuestions] = useState(() =>
     pickRandomQuestions(questions, DEFAULT_SETTINGS)
   );
-  const [selected, setSelected] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
@@ -115,7 +113,6 @@ export default function TriviaGame() {
         setGameState("finished");
       } else {
         setQuestionIndex((prev) => prev + 1);
-        setSelected(null);
         setGameState("playing");
         setAnimKey((k) => k + 1);
         startCountdown(settings.timePerQuestion);
@@ -138,23 +135,11 @@ export default function TriviaGame() {
     const picked = pickRandomQuestions(questions, settings);
     setActiveQuestions(picked);
     setQuestionIndex(0);
-    setSelected(null);
     setScore(0);
     setAnimKey((k) => k + 1);
     setGameState("playing");
     startCountdown(settings.timePerQuestion);
   }, [settings, startCountdown, clearAnswerTimer]);
-
-  const handleSelect = useCallback(
-    (id: string) => {
-      if (gameState !== "playing") return;
-      clearTimer();
-      setSelected(id);
-      if (id === currentQuestion.correctId) setScore((prev) => prev + 1);
-      setGameState("answered");
-    },
-    [gameState, currentQuestion?.correctId, clearTimer]
-  );
 
   const handleNext = useCallback(() => {
     if (gameState !== "answered") return;
@@ -163,7 +148,6 @@ export default function TriviaGame() {
       setGameState("finished");
     } else {
       setQuestionIndex((prev) => prev + 1);
-      setSelected(null);
       setGameState("playing");
       setAnimKey((k) => k + 1);
       startCountdown(settings.timePerQuestion);
@@ -175,7 +159,6 @@ export default function TriviaGame() {
     clearAnswerTimer();
     setPaused(false);
     setQuestionIndex(0);
-    setSelected(null);
     setScore(0);
     setGameState("start");
     setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
@@ -228,9 +211,9 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="relative flex flex-col md:flex-row items-stretch h-full py-3 sm:py-4 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
-          {/* Game area — question + answers */}
-          <div className="flex flex-col justify-center md:h-full w-full md:w-[70%] md:flex-none gap-3 sm:gap-4">
+        <main className="relative flex items-center md:items-stretch h-full py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
+          {/* Game area */}
+          <div className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -241,26 +224,6 @@ export default function TriviaGame() {
                   : undefined
               }
             />
-
-            {/* Answer buttons — visible during playing, fade out after answer reveal */}
-            {gameState === "playing" && (
-              <AnswerGrid
-                answers={currentQuestion.answers}
-                selected={selected}
-                correctId={currentQuestion.correctId}
-                onSelect={handleSelect}
-              />
-            )}
-
-            {/* Answer buttons — show result state after answering */}
-            {gameState === "answered" && (
-              <AnswerGrid
-                answers={currentQuestion.answers}
-                selected={selected}
-                correctId={currentQuestion.correctId}
-                onSelect={() => {}}
-              />
-            )}
           </div>
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
@@ -295,6 +258,29 @@ export default function TriviaGame() {
               />
             </div>
           </div>
+
+          {/* Mobile mascot — bottom-right overlay */}
+          <div
+            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
+            style={{
+              width: "clamp(110px, 32vw, 160px)",
+              height: "clamp(110px, 32vw, 160px)",
+              animation: "float 3s ease-in-out infinite",
+              animationPlayState: paused ? "paused" : "running",
+            }}
+          >
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{ background: "rgb(125, 223, 232)" }}
+            />
+            <img
+              src={mascotImg}
+              alt="TrivOlivia mascot"
+              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
+              style={{ marginBottom: "-2%" }}
+              draggable={false}
+            />
+          </div>
         </main>
       )}
 
@@ -316,7 +302,7 @@ export default function TriviaGame() {
         />
       )}
 
-      {/* Settings panel — slides over the right 30% */}
+      {/* Settings panel */}
       <SettingsPanel
         open={panelOpen}
         onToggle={() => setPanelOpen((v) => !v)}
