@@ -65,13 +65,18 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             />
           </div>
 
-          {/* Start button — glassmorphism style matching UI */}
+          {/* Start button — fun game style with red-to-yellow gradient */}
           <button
             onClick={onStart}
-            className="cta-glass mt-8 px-10 py-4 rounded-2xl font-black text-sm tracking-[0.15em] uppercase transition-all duration-200 animate-fade-in backdrop-blur-md"
+            className="mt-10 px-14 py-5 rounded-full font-black text-lg tracking-wider uppercase transition-all duration-200 animate-fade-in hover:scale-105 active:scale-95"
             style={{
               animationDelay: "180ms",
               fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+              background: "linear-gradient(180deg, #fee62d 0%, #fdd51b 8%, #fdca0f 16%, #fdc70c 24%, #f3903f 40%, #ed683c 60%, #e93e3a 100%)",
+              border: "3px solid #8B2E2E",
+              boxShadow: "0 6px 0 #8B2E2E, 0 8px 16px rgba(233, 62, 58, 0.4)",
+              color: "white",
+              textShadow: "2px 2px 0 #8B2E2E, -1px -1px 0 #8B2E2E, 1px -1px 0 #8B2E2E, -1px 1px 0 #8B2E2E, 1px 1px 0 #8B2E2E",
             }}
             aria-label="Start Game"
           >
