@@ -45,7 +45,7 @@ export default function GameHeader({
           {onAbout && (
             <button
               onClick={onAbout}
-              className="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-full transition-all duration-200 hover:border-[hsl(185_70%_55%)] hover:shadow-[0_0_12px_hsl(185_70%_55%_/_0.25)] active:scale-95"
+              className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -65,17 +65,18 @@ export default function GameHeader({
 
           {/* Auth: username or login button */}
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {/* Username — show on all sizes when logged in */}
               <span
-                className="hidden sm:flex items-center gap-1.5 text-[11px] font-black tracking-wider uppercase"
+                className="flex items-center gap-1 text-[10px] sm:text-[11px] font-black tracking-wider uppercase truncate max-w-[80px] sm:max-w-none"
                 style={{ color: "hsl(42 100% 60%)" }}
               >
-                <User className="w-3.5 h-3.5" />
-                {user.username}
+                <User className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{user.username}</span>
               </span>
               <button
                 onClick={logout}
-                className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
+                className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
                 style={{
                   background: "rgba(255, 255, 255, 0.08)",
                   border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -88,7 +89,7 @@ export default function GameHeader({
           ) : (
             <button
               onClick={onLogin}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wider uppercase transition-all duration-200 hover:border-[hsl(185_70%_55%)] hover:shadow-[0_0_12px_hsl(185_70%_55%_/_0.25)] active:scale-95"
+              className="nav-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -104,7 +105,7 @@ export default function GameHeader({
           {onSettingsToggle && (
             <button
               onClick={onSettingsToggle}
-              className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
+              className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
