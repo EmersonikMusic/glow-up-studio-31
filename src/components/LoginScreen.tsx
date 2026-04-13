@@ -182,13 +182,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 rounded-xl font-black text-sm tracking-widest uppercase transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 mt-1"
-            style={{
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1.5px solid rgba(255, 255, 255, 0.18)",
-              color: "hsl(42 100% 62%)",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
-            }}
+            className="cta-glass w-full py-3 rounded-xl font-black text-sm tracking-widest uppercase transition-all disabled:opacity-50 mt-1"
           >
             <span className="flex items-center justify-center gap-2">
               <LogIn className="w-4 h-4" />
