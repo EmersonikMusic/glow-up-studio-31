@@ -209,7 +209,7 @@ export default function TriviaGame() {
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
-        <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
+        <ResultScreen onRestart={handleRestart} />
       ) : (
         <main className="relative flex items-center md:items-stretch h-full py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
