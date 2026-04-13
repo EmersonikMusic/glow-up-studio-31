@@ -221,7 +221,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
         </h2>
       </div>
-      <div className="px-5 mb-4"><div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} /></div>
+      <div className="px-5 mb-4"><div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} /></div>
 
       {/* ── CATEGORIES ── */}
       <section className="mx-3 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
