@@ -12,8 +12,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
   const handleClose = useCallback(() => {
     setExiting(true);
-    setTimeout(() => onClose(), 300);
-  }, [onClose]);
+    setTimeout(() => onClose(), isMobile ? 350 : 300);
+  }, [onClose, isMobile]);
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-opacity duration-300"
