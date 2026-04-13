@@ -15,6 +15,7 @@ interface StartScreenProps {
 }
 
 export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelOpen, onPanelToggle, onPanelClose }: StartScreenProps) {
+  const isMobile = useIsMobile();
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
