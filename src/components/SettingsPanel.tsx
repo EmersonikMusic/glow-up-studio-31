@@ -353,7 +353,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           style={{
             maxHeight: "85vh",
-            background: "rgba(0, 0, 0, 0.4)",
+            background: "rgba(0, 0, 0, 0.5)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
@@ -401,7 +401,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       >
         <div
           className="flex-1 overflow-y-auto"
-          style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(24px)", borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)", display: "flex", flexDirection: "column" }}
+          style={{ background: "rgba(0, 0, 0, 0.5)", backdropFilter: "blur(24px)", borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)", display: "flex", flexDirection: "column" }}
         >
           {panelContent}
         </div>

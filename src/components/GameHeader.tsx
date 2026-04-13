@@ -45,7 +45,7 @@ export default function GameHeader({
           {onAbout && (
             <button
               onClick={onAbout}
-              className="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
+              className="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-full transition-all duration-200 hover:border-[hsl(185_70%_55%)] hover:shadow-[0_0_12px_hsl(185_70%_55%_/_0.25)] active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -88,7 +88,7 @@ export default function GameHeader({
           ) : (
             <button
               onClick={onLogin}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wider uppercase transition-all duration-200 hover:brightness-110 active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wider uppercase transition-all duration-200 hover:border-[hsl(185_70%_55%)] hover:shadow-[0_0_12px_hsl(185_70%_55%_/_0.25)] active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -113,6 +113,7 @@ export default function GameHeader({
             >
               <Settings
                 className="w-4 h-4 transition-transform duration-500"
+                strokeWidth={2.5}
                 style={{
                   color: "hsl(var(--game-gold))",
                   transform: settingsOpen ? "rotate(60deg)" : "rotate(0deg)",
