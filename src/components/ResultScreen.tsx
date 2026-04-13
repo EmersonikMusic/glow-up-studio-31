@@ -26,7 +26,7 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
       <div
         className="w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
         style={{
-          background: "rgba(0, 0, 0, 0.4)",
+          background: "rgba(0, 0, 0, 0.45)",
           border: "1.5px solid rgba(255, 255, 255, 0.18)",
           boxShadow: "0 16px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
@@ -67,7 +67,7 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
             </p>
           </div>
 
-          {/* Stats grid — glassmorphism inner card */}
+          {/* Stats grid — inner glassmorphism */}
           <div
             className="w-full grid grid-cols-3 gap-px rounded-2xl overflow-hidden"
             style={{
@@ -115,15 +115,14 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
             ))}
           </div>
 
-          {/* CTA — matches glass button style */}
+          {/* CTA — gold gradient matching rest of UI */}
           <button
             onClick={onRestart}
             className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-base tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             style={{
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1.5px solid rgba(255, 255, 255, 0.18)",
-              color: "hsl(185 70% 55%)",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
+              background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
+              color: "hsl(240 45% 16%)",
+              boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)",
             }}
           >
             <RotateCcw className="w-5 h-5" />

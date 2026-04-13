@@ -1,5 +1,4 @@
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
-import startBtn from "@/assets/btn-startgame.svg";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "./SettingsPanel";
@@ -64,19 +63,21 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             />
           </div>
 
-          {/* Start button */}
+          {/* Start button — glassmorphism style matching UI */}
           <button
             onClick={onStart}
-            className="mt-8 transition-transform duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in"
-            style={{ animationDelay: "180ms" }}
+            className="mt-8 px-10 py-4 rounded-2xl font-black text-base tracking-[0.15em] uppercase transition-all duration-200 hover:scale-[1.04] active:scale-[0.97] animate-fade-in backdrop-blur-md"
+            style={{
+              animationDelay: "180ms",
+              background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
+              color: "hsl(240 45% 16%)",
+              boxShadow: "0 8px 32px hsl(42 100% 55% / 0.4), 0 0 0 1px hsl(42 100% 55% / 0.2)",
+              fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+              letterSpacing: "0.15em",
+            }}
             aria-label="Start Game"
           >
-            <img
-              src={startBtn}
-              alt="Start Game"
-              className="h-16 sm:h-20 w-auto drop-shadow-xl"
-              draggable={false}
-            />
+            Start Game
           </button>
         </div>
       </div>

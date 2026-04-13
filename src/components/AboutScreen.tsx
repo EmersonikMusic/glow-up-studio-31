@@ -1,4 +1,4 @@
-import btnClose from "@/assets/btn-close.svg";
+import { ArrowLeft } from "lucide-react";
 
 interface AboutScreenProps {
   onClose: () => void;
@@ -26,29 +26,32 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         }}
       />
 
-      {/* Card — 70vw wide, min 300px */}
+      {/* Card — liquid glass */}
       <div
-        className="relative z-10 rounded-3xl overflow-hidden animate-slide-in-up mx-4"
+        className="relative z-10 rounded-3xl overflow-hidden animate-slide-in-up mx-4 backdrop-blur-xl"
         style={{
           width: "70vw",
           minWidth: "300px",
-          background: "hsl(var(--game-card))",
-          border: "1px solid hsl(var(--game-card-border))",
-          boxShadow: "0 24px 80px hsl(240 45% 10% / 0.7)",
+          background: "rgba(0, 0, 0, 0.45)",
+          border: "1.5px solid rgba(255, 255, 255, 0.18)",
+          boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
-        {/* Close button — uses uploaded SVG asset */}
+        {/* Close button — matches gear icon style */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 transition-all duration-200 hover:brightness-110 active:scale-95"
+          className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
           aria-label="Close"
-          style={{ width: 44, height: 44 }}
+          style={{
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+          }}
         >
-          <img src={btnClose} alt="Close" className="w-full h-full" />
+          <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
         </button>
 
         {/* Header */}
-        <div className="px-8 pt-10 pb-6" style={{ borderBottom: "1px solid hsl(var(--game-card-border))" }}>
+        <div className="px-8 pt-10 pb-6" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <p className="text-sm font-black tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
             Welcome to your
           </p>
@@ -84,7 +87,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </p>
             </div>
 
-            <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
             {/* How do I play */}
             <div>
@@ -104,7 +107,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </p>
             </div>
 
-            <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
             {/* What sets us apart */}
             <div>
@@ -136,7 +139,6 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   "Want to just eventually know everything?",
                 ].map((item, i) => (
                   <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
-                    {/* Teal bullet point */}
                     <span
                       className="shrink-0 mt-[5px] w-2 h-2 rounded-full"
                       style={{ background: "hsl(185 70% 55%)" }}
@@ -152,7 +154,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </ul>
             </div>
 
-            <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
             {/* How do I contribute */}
             <div>
@@ -168,7 +170,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </p>
             </div>
 
-            <div className="h-px" style={{ background: "hsl(var(--game-card-border))" }} />
+            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
             {/* What next */}
             <div>
@@ -189,8 +191,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
           </div>
         </div>
 
-        {/* Footer CTA */}
-        <div className="px-8 pb-8 pt-4" style={{ borderTop: "1px solid hsl(var(--game-card-border))" }}>
+        {/* Footer CTA — gold gradient */}
+        <div className="px-8 pb-8 pt-4" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <button
             onClick={onClose}
             className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"

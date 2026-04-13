@@ -39,31 +39,36 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const inputStyle = {
+    background: "rgba(0, 0, 0, 0.3)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    color: "rgba(255,255,255,0.9)",
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0, 0, 0, 0.7)", backdropFilter: "blur(8px)" }}
+      style={{ background: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(12px)" }}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl overflow-hidden animate-scale-in"
+        className="relative w-full max-w-sm rounded-2xl overflow-hidden animate-scale-in backdrop-blur-xl"
         style={{
-          background: "rgba(0, 0, 0, 0.6)",
-          border: "1.5px solid rgba(255, 255, 255, 0.15)",
-          boxShadow: "0 24px 64px rgba(0, 0, 0, 0.5)",
-          backdropFilter: "blur(24px)",
+          background: "rgba(0, 0, 0, 0.45)",
+          border: "1.5px solid rgba(255, 255, 255, 0.18)",
+          boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-full transition-all hover:brightness-125 active:scale-95"
-            style={{ background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
+            className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:brightness-125 active:scale-95"
+            style={{ background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.15)" }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "rgba(255,255,255,0.6)" }} />
+            <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
           </button>
           <img src={toLogoSm} alt="TrivOlivia" className="h-6 w-auto" draggable={false} />
-          <div className="w-8" />
+          <div className="w-9" />
         </div>
 
         {/* Title */}
@@ -92,7 +97,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             disabled={isLoading}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
             style={{
-              background: "rgba(255, 255, 255, 0.08)",
+              background: "rgba(0, 0, 0, 0.3)",
               border: "1px solid rgba(255, 255, 255, 0.12)",
               color: "rgba(255,255,255,0.85)",
             }}
@@ -110,7 +115,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             disabled={isLoading}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
             style={{
-              background: "rgba(255, 255, 255, 0.08)",
+              background: "rgba(0, 0, 0, 0.3)",
               border: "1px solid rgba(255, 255, 255, 0.12)",
               color: "rgba(255,255,255,0.85)",
             }}
@@ -137,12 +142,8 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-all focus:ring-2"
-              style={{
-                background: "rgba(255, 255, 255, 0.06)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "rgba(255,255,255,0.9)",
-              }}
+              className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-all focus:ring-2 focus:ring-[hsl(42_100%_55%_/_0.4)]"
+              style={inputStyle}
             />
           )}
           <input
@@ -151,12 +152,8 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-all focus:ring-2"
-            style={{
-              background: "rgba(255, 255, 255, 0.06)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              color: "rgba(255,255,255,0.9)",
-            }}
+            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-all focus:ring-2 focus:ring-[hsl(42_100%_55%_/_0.4)]"
+            style={inputStyle}
           />
           <div className="relative">
             <input
@@ -165,12 +162,8 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-all focus:ring-2 pr-10"
-              style={{
-                background: "rgba(255, 255, 255, 0.06)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "rgba(255,255,255,0.9)",
-              }}
+              className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-all focus:ring-2 focus:ring-[hsl(42_100%_55%_/_0.4)] pr-10"
+              style={inputStyle}
             />
             <button
               type="button"
@@ -193,7 +186,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             style={{
               background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
               color: "hsl(240 45% 16%)",
-              boxShadow: "0 4px 16px hsl(42 100% 55% / 0.3)",
+              boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)",
             }}
           >
             <span className="flex items-center justify-center gap-2">

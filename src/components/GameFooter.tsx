@@ -89,19 +89,21 @@ export default function GameFooter({
           </span>
         </div>
 
-        {/* Pause / Play */}
+        {/* Pause / Play — matches gear icon style */}
         <button
           onClick={onTogglePause}
-          className="relative flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110 backdrop-blur-md"
+          className="flex items-center justify-center flex-shrink-0 w-9 h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
           style={{
-            background: "rgba(0, 0, 0, 0.35)",
-            border: "1.5px solid rgba(255, 255, 255, 0.18)",
-            color: "hsl(185 70% 55%)",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
           }}
           aria-label={paused ? "Resume" : "Pause"}
         >
-          {paused ? <Play className="w-4 h-4 ml-0.5" /> : <Pause className="w-4 h-4" />}
+          {paused ? (
+            <Play className="w-4 h-4 ml-0.5" style={{ color: "hsl(var(--game-gold))" }} />
+          ) : (
+            <Pause className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+          )}
         </button>
       </div>
     </footer>

@@ -228,7 +228,7 @@ export default function TriviaGame() {
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
-            className="hidden md:flex flex-none flex-col items-center justify-center overflow-hidden self-stretch"
+            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch"
             style={{
               width: "30%",
               transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",

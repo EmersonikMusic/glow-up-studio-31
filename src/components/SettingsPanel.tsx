@@ -324,16 +324,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         </div>
       </section>
 
-      {/* Apply button */}
+      {/* Apply button — gold accent */}
       <div className="px-3 pt-4 pb-8">
         <button
           onClick={handleApply}
-          className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+          className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           style={{
-            background: "rgba(0, 0, 0, 0.35)",
-            border: "1.5px solid rgba(255, 255, 255, 0.18)",
-            color: "hsl(185 70% 55%)",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
+            background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
+            color: "hsl(240 45% 16%)",
+            boxShadow: "0 6px 24px hsl(42 100% 55% / 0.35)",
           }}
         >
           Apply Settings
