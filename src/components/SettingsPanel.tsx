@@ -325,7 +325,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-4 pb-8">
+      <div className="px-5 pt-4 pb-10 md:pb-8">
         <button
           onClick={handleApply}
           className="cta-glass w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200"
@@ -352,7 +352,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           ref={sheetRef}
           className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           style={{
-            maxHeight: "85vh",
+            maxHeight: "92vh",
             background: "rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
