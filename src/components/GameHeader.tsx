@@ -1,5 +1,6 @@
-import { Settings, LogIn, LogOut, User, Info } from "lucide-react";
+import { LogIn, LogOut, User, Info } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
+import settingsIcon from "@/assets/icon-settings.svg";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface GameHeaderProps {
@@ -112,11 +113,11 @@ export default function GameHeader({
               }}
               aria-label={settingsOpen ? "Close settings" : "Open settings"}
             >
-              <Settings
-                className="w-4 h-4 transition-transform duration-500"
-                strokeWidth={2.5}
+              <img
+                src={settingsIcon}
+                alt="Settings"
+                className="w-5 h-5 transition-transform duration-500"
                 style={{
-                  color: "hsl(var(--game-gold))",
                   transform: settingsOpen ? "rotate(60deg)" : "rotate(0deg)",
                 }}
               />
