@@ -58,13 +58,7 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
           {/* CTA */}
           <button
             onClick={onRestart}
-            className="group w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            style={{
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1.5px solid rgba(255, 255, 255, 0.18)",
-              color: "hsl(42 100% 62%)",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
-            }}
+            className="cta-glass group w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-200"
           >
             <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
             Play Again
