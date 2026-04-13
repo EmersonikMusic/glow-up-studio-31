@@ -213,7 +213,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const panelContent = (
     <>
       {/* Title */}
-      <div className="px-5 pt-6 pb-5">
+      <div className="px-6 pt-6 pb-5">
         <h2
           className="text-3xl font-black leading-none tracking-tight uppercase"
           style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
@@ -221,10 +221,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
         </h2>
       </div>
-      <div className="px-5 mb-4"><div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} /></div>
+      <div className="px-6 mb-4"><div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} /></div>
 
       {/* ── CATEGORIES ── */}
-      <section className="mx-3 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+      <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
         <SectionHeader icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />} label="Categories" open={catOpen} onToggle={() => setCatOpen((v) => !v)} />
         <div className="flex flex-col overflow-hidden" style={{ maxHeight: catOpen ? `${SECTION_MAX}px` : "0px", transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
           <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
@@ -325,7 +325,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-3 pt-4 pb-8">
+      <div className="px-5 pt-4 pb-8">
         <button
           onClick={handleApply}
           className="cta-glass w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200"
