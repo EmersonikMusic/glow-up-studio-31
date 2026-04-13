@@ -20,11 +20,6 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
           boxShadow: "0 16px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
-        {/* Top accent stripe */}
-        <div
-          className="h-1.5 w-full"
-          style={{ background: "linear-gradient(90deg, hsl(42 100% 55%), transparent)" }}
-        />
 
         <div className="px-8 py-10 flex flex-col items-center gap-8">
           {/* Character + glow - larger for balance */}
@@ -59,18 +54,6 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
           {/* Decorative divider */}
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
-          {/* Fun facts or encouraging message */}
-          <div
-            className="w-full rounded-2xl p-5 text-center"
-            style={{
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-            }}
-          >
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              "Every question is a journey into the unknown. The more you play, the more you discover!"
-            </p>
-          </div>
 
           {/* CTA */}
           <button
@@ -83,7 +66,7 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
               boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
             }}
           >
-            <RotateCcw className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-180" />
+            <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
             Play Again
           </button>
         </div>
