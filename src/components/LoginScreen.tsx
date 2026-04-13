@@ -76,7 +76,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
           <h2
             className="text-xl font-black uppercase tracking-wider"
             style={{
-              fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+              fontFamily: "'Russo One', 'Nunito', sans-serif",
               background: "linear-gradient(160deg, hsl(42 100% 62%), hsl(35 90% 48%))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
