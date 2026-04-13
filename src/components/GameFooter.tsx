@@ -46,7 +46,7 @@ export default function GameFooter({
       <div className="flex items-center gap-3 w-full md:w-[70%]">
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 py-2.5 text-xs font-semibold overflow-hidden min-w-0 backdrop-blur-md"
+          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-10 py-2.5 text-xs font-semibold overflow-hidden min-w-0 backdrop-blur-md"
           style={{ background: "rgba(0, 0, 0, 0.35)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}
@@ -78,8 +78,8 @@ export default function GameFooter({
           <span className="relative z-10 opacity-40 hidden md:inline">·</span>
           <span className="relative z-10 hidden md:inline text-muted-foreground truncate">{question.era}</span>
 
-          {/* Timer — pushed right, always visible */}
-          <span className="relative z-10 ml-auto flex-shrink-0">
+          {/* Timer — absolute right */}
+          <span className="absolute right-4 z-10 flex-shrink-0">
             <span
               className="tabular-nums font-black"
               style={{ color: isAnswerPhase ? "hsl(185 70% 55%)" : "hsl(var(--muted-foreground))" }}
