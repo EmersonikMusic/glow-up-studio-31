@@ -17,11 +17,11 @@ interface GameFooterProps {
 }
 
 const difficultyColor: Record<string, string> = {
-  Casual: "hsl(160 65% 50%)",
-  Easy: "hsl(160 65% 50%)",
-  Average: "hsl(42 100% 55%)",
-  Hard: "hsl(28 90% 52%)",
-  Genius: "hsl(340 70% 60%)",
+  Casual: "hsl(0 0% 100%)",
+  Easy: "hsl(0 0% 100%)",
+  Average: "hsl(0 0% 100%)",
+  Hard: "hsl(0 0% 100%)",
+  Genius: "hsl(0 0% 100%)",
 };
 
 export default function GameFooter({
