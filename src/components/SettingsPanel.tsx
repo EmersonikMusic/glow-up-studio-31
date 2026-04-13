@@ -55,7 +55,7 @@ function SectionHeader({ icon, label, open, onToggle }: {
   return (
     <button
       onClick={onToggle}
-      className="flex items-center gap-3 w-full shrink-0 transition-colors hover:bg-[hsl(240_42%_18%)] rounded-2xl"
+      className="flex items-center gap-3 w-full shrink-0 transition-colors hover:bg-[rgba(0,0,0,0.2)] rounded-2xl"
       style={{ padding: "14px 20px" }}
     >
       {icon}
@@ -74,7 +74,7 @@ function SectionHeader({ icon, label, open, onToggle }: {
 function ToggleRow({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <div
-      className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[hsl(240_42%_18%)]"
+      className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)]"
       style={{ borderBottom: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
       onClick={onClick}
     >
@@ -93,7 +93,7 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
   return (
     <button
       onClick={onToggle}
-      className="flex items-center justify-center w-full transition-colors hover:bg-[hsl(240_42%_18%)] rounded-b-2xl active:scale-95"
+      className="flex items-center justify-center w-full transition-colors hover:bg-[rgba(0,0,0,0.2)] rounded-b-2xl active:scale-95"
       style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
       aria-label={expanded ? "Show less" : "Show more"}
     >
@@ -357,7 +357,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
-            boxShadow: "0 -8px 48px hsl(240 45% 10% / 0.7)",
+            boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
             transform: open ? "translateY(0)" : "translateY(100%)",
             transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
@@ -401,7 +401,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       >
         <div
           className="flex-1 overflow-y-auto"
-          style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(24px)", borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)", boxShadow: "-8px 0 48px hsl(240 45% 10% / 0.7)", display: "flex", flexDirection: "column" }}
+          style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(24px)", borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)", boxShadow: "-8px 0 48px rgba(0, 0, 0, 0.5)", display: "flex", flexDirection: "column" }}
         >
           {panelContent}
         </div>
