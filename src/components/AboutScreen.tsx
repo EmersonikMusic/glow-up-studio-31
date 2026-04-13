@@ -16,8 +16,14 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   }, [onClose, isMobile]);
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-opacity duration-300"
-      style={{ background: "hsl(var(--game-bg))", opacity: exiting ? 0 : 1 }}
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      style={{
+        background: "hsl(var(--game-bg))",
+        transition: isMobile ? "transform 0.35s cubic-bezier(0.4, 0, 1, 1)" : "opacity 0.3s ease",
+        ...(isMobile
+          ? { transform: exiting ? "translateX(-100%)" : "translateX(0)", boxShadow: "8px 0 48px rgba(0, 0, 0, 0.5)" }
+          : { opacity: exiting ? 0 : 1 }),
+      }}
     >
       {/* Ambient blobs */}
       <div
