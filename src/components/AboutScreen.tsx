@@ -11,17 +11,19 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   const [exiting, setExiting] = useState(false);
 
   const handleClose = useCallback(() => {
+    if (exiting) return;
     setExiting(true);
-    setTimeout(() => onClose(), isMobile ? 350 : 300);
-  }, [onClose, isMobile]);
+    setTimeout(() => onClose(), isMobile ? 380 : 300);
+  }, [onClose, isMobile, exiting]);
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
       style={{
         background: "hsl(var(--game-bg))",
+        willChange: "transform, opacity",
         transition: isMobile ? "transform 0.35s cubic-bezier(0.4, 0, 1, 1)" : "opacity 0.3s ease",
         ...(isMobile
-          ? { transform: exiting ? "translateX(-100%)" : "translateX(0)", boxShadow: "8px 0 48px rgba(0, 0, 0, 0.5)" }
+          ? { transform: exiting ? "translateX(-100%)" : "translateX(0)", boxShadow: "8px 0 48px rgba(0, 0, 0, 0.5)", visibility: exiting ? "hidden" as const : "visible" as const, transitionProperty: "transform, visibility", transitionDelay: "0s, 0.35s" }
           : { opacity: exiting ? 0 : 1 }),
       }}
     >
