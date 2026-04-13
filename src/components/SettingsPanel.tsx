@@ -81,7 +81,7 @@ function ToggleRow({ label, active, onClick }: { label: string; active: boolean;
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
       <span
         className="text-xs font-black tracking-widest uppercase transition-colors"
-        style={{ color: active ? "hsl(185 70% 70%)" : "hsl(var(--muted-foreground))" }}
+        style={{ color: active ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))" }}
       >
         {label}
       </span>
