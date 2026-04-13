@@ -231,7 +231,7 @@
   to   { width: 100%; }
 }
 
-/* CTA button border animation */
+/* CTA button */
 .cta-glass {
   position: relative;
   background: linear-gradient(135deg, hsl(42 100% 55%), hsl(35 90% 42%));
@@ -240,12 +240,22 @@
   font-family: 'Fredoka One', 'Nunito', sans-serif;
   font-weight: 900;
   box-shadow: 0 4px 16px hsl(42 100% 55% / 0.25);
-  transition: border-color 0.4s ease, box-shadow 0.4s ease, filter 0.3s ease;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
 }
-.cta-glass:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 24px hsl(42 100% 55% / 0.35), 0 0 0 1px hsl(42 100% 55% / 0.2);
+@media (hover: hover) and (pointer: fine) {
+  .cta-glass:hover {
+    border-color: hsl(42 100% 72%);
+    box-shadow: 0 6px 20px hsl(42 100% 55% / 0.3);
+  }
 }
 .cta-glass:active {
   transform: scale(0.98);
+}
+
+/* Header nav button hover — desktop only */
+@media (hover: hover) and (pointer: fine) {
+  .nav-btn:hover {
+    border-color: hsl(185 70% 55%) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
 }
