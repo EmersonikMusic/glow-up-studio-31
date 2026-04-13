@@ -188,7 +188,7 @@ export default function TriviaGame() {
     );
   }
 
-  const bgGradient = currentQuestion ? categoryColors[currentQuestion.category] : undefined;
+  const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
 
   return (
     <div
