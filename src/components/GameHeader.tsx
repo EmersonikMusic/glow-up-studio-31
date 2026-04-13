@@ -116,7 +116,7 @@ export default function GameHeader({
               <img
                 src={settingsIcon}
                 alt="Settings"
-                className="w-5 h-5 transition-transform duration-500"
+                className="w-5 h-5 transition-transform duration-500 md:hover:rotate-45"
                 style={{
                   transform: settingsOpen ? "rotate(60deg)" : "rotate(0deg)",
                 }}
