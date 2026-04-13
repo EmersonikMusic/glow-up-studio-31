@@ -1,4 +1,4 @@
-import { Trophy, RotateCcw, Star } from "lucide-react";
+import { RotateCcw, Star } from "lucide-react";
 import mascotImg from "@/assets/Mascot.svg";
 
 interface ResultScreenProps {
@@ -22,13 +22,13 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
 
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up">
-      {/* Card */}
+      {/* Glassmorphism card */}
       <div
-        className="w-full max-w-md rounded-3xl overflow-hidden"
+        className="w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
         style={{
-          background: "hsl(var(--game-card))",
-          border: "1.5px solid hsl(var(--game-card-border))",
-          boxShadow: `0 16px 64px hsl(240 45% 10% / 0.6), 0 0 0 1px hsl(0 0% 100% / 0.04)`,
+          background: "rgba(0, 0, 0, 0.4)",
+          border: "1.5px solid rgba(255, 255, 255, 0.18)",
+          boxShadow: "0 16px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
         {/* Top accent stripe */}
@@ -67,17 +67,24 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
             </p>
           </div>
 
-          {/* Stats grid */}
+          {/* Stats grid — glassmorphism inner card */}
           <div
-            className="w-full grid grid-cols-3 gap-2 rounded-2xl overflow-hidden"
-            style={{ background: "hsl(240 42% 15%)", border: "1px solid hsl(var(--game-card-border))" }}
+            className="w-full grid grid-cols-3 gap-px rounded-2xl overflow-hidden"
+            style={{
+              background: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
           >
             {[
               { label: "Correct", value: score, color: "hsl(160 65% 55%)" },
               { label: "Accuracy", value: `${percentage}%`, color: rank.color },
               { label: "Total", value: total, color: "hsl(var(--muted-foreground))" },
             ].map(({ label, value, color }) => (
-              <div key={label} className="flex flex-col items-center gap-1 py-4">
+              <div
+                key={label}
+                className="flex flex-col items-center gap-1 py-4"
+                style={{ background: "rgba(0, 0, 0, 0.3)" }}
+              >
                 <span
                   className="text-2xl font-black tabular-nums"
                   style={{ color }}
@@ -96,25 +103,27 @@ export default function ResultScreen({ score, total, onRestart }: ResultScreenPr
             {Array.from({ length: 3 }).map((_, i) => (
               <Star
                 key={i}
-                className="w-8 h-8 transition-all duration-300"
+                className="w-8 h-8 transition-all duration-500"
                 fill={i < starsFilled ? rank.color : "transparent"}
                 stroke={i < starsFilled ? rank.color : "hsl(var(--muted-foreground))"}
                 style={{
                   filter: i < starsFilled ? `drop-shadow(0 0 8px ${rank.glow})` : "none",
                   animationDelay: `${i * 150}ms`,
+                  transform: i < starsFilled ? "scale(1.1)" : "scale(1)",
                 }}
               />
             ))}
           </div>
 
-          {/* CTA */}
+          {/* CTA — matches glass button style */}
           <button
             onClick={onRestart}
             className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-base tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             style={{
-              background: "linear-gradient(135deg, hsl(42 100% 58%), hsl(35 90% 45%))",
-              color: "hsl(240 45% 16%)",
-              boxShadow: "0 6px 24px hsl(42 100% 55% / 0.4)",
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1.5px solid rgba(255, 255, 255, 0.18)",
+              color: "hsl(185 70% 55%)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
             }}
           >
             <RotateCcw className="w-5 h-5" />
