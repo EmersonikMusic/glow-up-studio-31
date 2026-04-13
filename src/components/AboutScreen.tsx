@@ -51,7 +51,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
       >
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
           aria-label="Close"
           style={{
@@ -206,7 +206,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         {/* Footer CTA */}
         <div className="px-6 md:px-8 pb-8 pt-4 shrink-0" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="group relative w-full py-4 rounded-full font-black text-sm tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
             style={{
               fontFamily: "'Fredoka One', 'Nunito', sans-serif",
