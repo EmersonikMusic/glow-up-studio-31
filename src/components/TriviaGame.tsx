@@ -12,6 +12,7 @@ import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
 import type { GameSettings } from "./SettingsPanel";
 import mascotImg from "@/assets/Mascot.svg";
+import { getMascotForCategory } from "@/data/categoryMascots";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
@@ -250,9 +251,9 @@ export default function TriviaGame() {
                 style={{ background: "rgb(125, 223, 232)" }}
               />
               <img
-                src={mascotImg}
+                src={getMascotForCategory(currentQuestion.category)}
                 alt="TrivOlivia mascot"
-                className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
+                className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl transition-opacity duration-300"
                 style={{ marginBottom: "-2%" }}
                 draggable={false}
               />
