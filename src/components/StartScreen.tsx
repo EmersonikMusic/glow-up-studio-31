@@ -1,4 +1,5 @@
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
+import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "./SettingsPanel";
