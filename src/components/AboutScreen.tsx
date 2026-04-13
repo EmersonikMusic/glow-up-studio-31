@@ -16,8 +16,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   }, [onClose]);
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
-      style={{ background: "hsl(var(--game-bg))" }}
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-opacity duration-300"
+      style={{ background: "hsl(var(--game-bg))", opacity: exiting ? 0 : 1 }}
     >
       {/* Ambient blobs */}
       <div
