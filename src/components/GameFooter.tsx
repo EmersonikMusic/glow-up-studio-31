@@ -94,15 +94,15 @@ export default function GameFooter({
           onClick={onTogglePause}
           className="flex items-center justify-center flex-shrink-0 w-9 h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
           style={{
-            background: "rgba(255, 255, 255, 0.08)",
-            border: "1px solid rgba(255, 255, 255, 0.15)",
+            background: "rgba(0, 0, 0, 0.35)",
+            border: "1.5px solid rgba(255, 255, 255, 0.18)",
           }}
           aria-label={paused ? "Resume" : "Pause"}
         >
           {paused ? (
-            <Play className="w-4 h-4 ml-0.5" style={{ color: "hsl(var(--game-gold))" }} />
+            <Play className="w-4 h-4 ml-0.5" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           ) : (
-            <Pause className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+            <Pause className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           )}
         </button>
       </div>
