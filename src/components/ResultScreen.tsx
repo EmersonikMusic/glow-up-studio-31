@@ -7,7 +7,10 @@ interface ResultScreenProps {
 
 export default function ResultScreen({ onRestart }: ResultScreenProps) {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up">
+    <div
+      className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up"
+      style={{ background: "hsl(var(--game-bg))" }}
+    >
       {/* Glassmorphism card */}
       <div
         className="w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
