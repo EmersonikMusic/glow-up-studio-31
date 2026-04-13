@@ -4,6 +4,7 @@ import { questions } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
+import AnswerGrid from "./AnswerGrid";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
@@ -227,9 +228,9 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen score={score} total={activeQuestions.length} onRestart={handleRestart} />
       ) : (
-        <main className="relative flex items-center md:items-stretch h-full py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
-          {/* Game area — 100% on mobile, 70% on desktop */}
-          <div className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]">
+        <main className="relative flex flex-col md:flex-row items-stretch h-full py-3 sm:py-4 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
+          {/* Game area — question + answers */}
+          <div className="flex flex-col justify-center md:h-full w-full md:w-[70%] md:flex-none gap-3 sm:gap-4">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -240,9 +241,29 @@ export default function TriviaGame() {
                   : undefined
               }
             />
+
+            {/* Answer buttons — visible during playing, fade out after answer reveal */}
+            {gameState === "playing" && (
+              <AnswerGrid
+                answers={currentQuestion.answers}
+                selected={selected}
+                correctId={currentQuestion.correctId}
+                onSelect={handleSelect}
+              />
+            )}
+
+            {/* Answer buttons — show result state after answering */}
+            {gameState === "answered" && (
+              <AnswerGrid
+                answers={currentQuestion.answers}
+                selected={selected}
+                correctId={currentQuestion.correctId}
+                onSelect={() => {}}
+              />
+            )}
           </div>
 
-          {/* Right column — hidden on mobile, 30% on desktop */}
+          {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
             className="hidden md:flex flex-none flex-col items-center justify-center overflow-hidden self-stretch"
             style={{
@@ -255,18 +276,16 @@ export default function TriviaGame() {
             <div
               className="relative flex items-end justify-center"
               style={{
-                width: "clamp(180px, 24vw, 320px)",
-                height: "clamp(180px, 24vw, 320px)",
+                width: "clamp(140px, 18vw, 240px)",
+                height: "clamp(140px, 18vw, 240px)",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
               }}
             >
-              {/* Teal circle */}
               <div
                 className="absolute inset-0 rounded-full"
                 style={{ background: "rgb(125, 223, 232)" }}
               />
-              {/* Mascot — overflows top, clipped at bottom via container */}
               <img
                 src={mascotImg}
                 alt="TrivOlivia mascot"
@@ -275,29 +294,6 @@ export default function TriviaGame() {
                 draggable={false}
               />
             </div>
-          </div>
-
-          {/* Mobile mascot — bottom-right overlay, visible only on small screens */}
-          <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
-            style={{
-              width: "clamp(110px, 32vw, 160px)",
-              height: "clamp(110px, 32vw, 160px)",
-              animation: "float 3s ease-in-out infinite",
-              animationPlayState: paused ? "paused" : "running",
-            }}
-          >
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{ background: "rgb(125, 223, 232)" }}
-            />
-            <img
-              src={mascotImg}
-              alt="TrivOlivia mascot"
-              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl"
-              style={{ marginBottom: "-2%" }}
-              draggable={false}
-            />
           </div>
         </main>
       )}
@@ -315,7 +311,6 @@ export default function TriviaGame() {
           totalQuestionTime={settings.timePerQuestion}
           answerCountdown={answerCountdown}
           totalAnswerTime={settings.timePerAnswer}
-          
           paused={paused}
           onTogglePause={handleTogglePause}
         />

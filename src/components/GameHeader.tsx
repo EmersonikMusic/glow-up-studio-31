@@ -1,4 +1,4 @@
-import { Settings, LogIn, LogOut, User } from "lucide-react";
+import { Settings, LogIn, LogOut, User, Info } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -39,18 +39,27 @@ export default function GameHeader({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
 
-          {/* About link */}
+          {/* About — icon on mobile, text on desktop */}
           {onAbout && (
             <button
               onClick={onAbout}
-              className="hidden sm:block text-[11px] font-black tracking-widest uppercase transition-colors"
-              style={{ color: "hsl(185 70% 55%)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(185 70% 70%)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(185 70% 55%)")}
+              className="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-full transition-all duration-200 hover:brightness-110 active:scale-95"
+              style={{
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                color: "hsl(185 70% 55%)",
+              }}
+              aria-label="About"
             >
-              About
+              <Info className="w-4 h-4 sm:hidden" style={{ color: "hsl(var(--game-gold))" }} />
+              <span
+                className="hidden sm:block text-[11px] font-black tracking-widest uppercase"
+                style={{ color: "hsl(185 70% 55%)" }}
+              >
+                About
+              </span>
             </button>
           )}
 
