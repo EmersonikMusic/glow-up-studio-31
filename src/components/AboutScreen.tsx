@@ -195,13 +195,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         <div className="px-8 pb-8 pt-4" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <button
             onClick={onClose}
-            className="w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            style={{
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1.5px solid rgba(255, 255, 255, 0.18)",
-              color: "hsl(42 100% 62%)",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
-            }}
+            className="cta-glass w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200"
           >
             Back to Game
           </button>
