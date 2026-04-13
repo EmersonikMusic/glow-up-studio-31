@@ -41,9 +41,10 @@ function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
 export default function TriviaGame() {
   const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [activeQuestions, setActiveQuestions] = useState(() =>
     pickRandomQuestions(questions, DEFAULT_SETTINGS)
   );
-  const [selected, setSelected] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
   const [score, setScore] = useState(0);
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
