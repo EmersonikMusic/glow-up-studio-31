@@ -4,7 +4,7 @@ import { questions } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
-import AnswerGrid from "./AnswerGrid";
+
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
@@ -41,7 +41,6 @@ function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
 export default function TriviaGame() {
   const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [activeQuestions, setActiveQuestions] = useState(() =>
     pickRandomQuestions(questions, DEFAULT_SETTINGS)
   );
   const [selected, setSelected] = useState<string | null>(null);
