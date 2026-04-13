@@ -1,4 +1,5 @@
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
+import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "./SettingsPanel";
@@ -14,6 +15,7 @@ interface StartScreenProps {
 }
 
 export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelOpen, onPanelToggle, onPanelClose }: StartScreenProps) {
+  const isMobile = useIsMobile();
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
@@ -50,7 +52,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
           className="flex flex-col items-center justify-center w-full px-4 py-8 sm:px-8 md:px-12"
           style={{
             transition: "width 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
-            width: panelOpen ? "70%" : "100%",
+            width: !isMobile && panelOpen ? "70%" : "100%",
           }}
         >
           {/* Logo */}
