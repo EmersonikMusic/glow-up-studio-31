@@ -201,9 +201,23 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         <div className="px-6 md:px-8 pb-8 pt-4 shrink-0" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <button
             onClick={onClose}
-            className="cta-glass w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200"
+            className="group relative w-full py-4 rounded-full font-black text-sm tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
+            style={{
+              fontFamily: "'Fredoka One', 'Nunito', sans-serif",
+              background: "linear-gradient(180deg, #fee62d 0%, #f3903f 50%, #e93e3a 100%)",
+              border: "2px solid rgba(255, 255, 255, 0.4)",
+              boxShadow: "0 4px 12px rgba(233, 62, 58, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
+              color: "hsl(35 80% 25%)",
+            }}
           >
-            Back to Game
+            {/* Shine overlay */}
+            <span 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{
+                background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)",
+              }}
+            />
+            <span className="relative z-10">Back to Game</span>
           </button>
         </div>
       </div>
