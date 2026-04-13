@@ -63,20 +63,20 @@ export default function GameFooter({
           />
 
           {/* Content — all relative z-10 to sit above the bar */}
-          <span className="relative z-10 text-muted-foreground tabular-nums whitespace-nowrap">
+          <span className="relative z-10 text-white tabular-nums whitespace-nowrap">
             Q{questionIndex + 1}/{totalQuestions}
           </span>
-          <span className="relative z-10 opacity-40">·</span>
-          <span className="relative z-10 text-muted-foreground truncate">{question.category}</span>
-          <span className="relative z-10 opacity-40 hidden sm:inline">·</span>
+          <span className="relative z-10 opacity-50 text-white">·</span>
+          <span className="relative z-10 text-white truncate">{question.category}</span>
+          <span className="relative z-10 opacity-50 text-white hidden sm:inline">·</span>
           <span
             className="relative z-10 font-black hidden sm:inline whitespace-nowrap"
             style={{ color: difficultyColor[question.difficulty] ?? "hsl(var(--muted-foreground))" }}
           >
             {question.difficulty}
           </span>
-          <span className="relative z-10 opacity-40 hidden md:inline">·</span>
-          <span className="relative z-10 hidden md:inline text-muted-foreground truncate">{question.era}</span>
+          <span className="relative z-10 opacity-50 text-white hidden md:inline">·</span>
+          <span className="relative z-10 hidden md:inline text-white truncate">{question.era}</span>
 
           {/* Timer — absolute right */}
           <span className="absolute right-4 z-10 flex-shrink-0">
