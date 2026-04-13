@@ -213,15 +213,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const panelContent = (
     <>
       {/* Title */}
-      <div className="px-6 pt-6 pb-5">
+      <div className="px-5 pt-4 pb-3 md:px-6 md:pt-6 md:pb-5">
         <h2
-          className="text-3xl font-black leading-none tracking-tight uppercase"
+          className="text-xl md:text-3xl font-black leading-none tracking-tight uppercase"
           style={{ fontFamily: "'Fredoka One', 'Nunito', sans-serif", background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1.1 }}
         >
-          CUSTOMIZE<br />YOUR GAME<br />EXPERIENCE
+          CUSTOMIZE YOUR GAME EXPERIENCE
         </h2>
       </div>
-      <div className="px-6 mb-4"><div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} /></div>
+      <div className="px-5 md:px-6 mb-3 md:mb-4"><div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} /></div>
 
       {/* ── CATEGORIES ── */}
       <section className="mx-5 mb-3 rounded-2xl flex flex-col" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
