@@ -325,7 +325,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-4 pb-8">
+      <div className="px-5 pt-4 pb-10 md:pb-8">
         <button
           onClick={handleApply}
           className="cta-glass w-full py-3.5 rounded-xl font-black text-sm tracking-widest uppercase transition-all duration-200"
