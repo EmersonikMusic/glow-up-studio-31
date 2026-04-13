@@ -65,22 +65,28 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             />
           </div>
 
-          {/* Start button — fun game style with red-to-yellow gradient */}
+          {/* Start button — sleek game style with gradient and shine */}
           <button
             onClick={onStart}
-            className="mt-10 px-14 py-5 rounded-full font-black text-lg tracking-wider uppercase transition-all duration-200 animate-fade-in hover:scale-105 active:scale-95"
+            className="group relative mt-10 px-12 py-4 rounded-full font-black text-base tracking-[0.2em] uppercase transition-all duration-200 animate-fade-in hover:scale-105 active:scale-[0.98] overflow-hidden"
             style={{
               animationDelay: "180ms",
               fontFamily: "'Fredoka One', 'Nunito', sans-serif",
-              background: "linear-gradient(180deg, #fee62d 0%, #fdd51b 8%, #fdca0f 16%, #fdc70c 24%, #f3903f 40%, #ed683c 60%, #e93e3a 100%)",
-              border: "3px solid #8B2E2E",
-              boxShadow: "0 6px 0 #8B2E2E, 0 8px 16px rgba(233, 62, 58, 0.4)",
-              color: "white",
-              textShadow: "2px 2px 0 #8B2E2E, -1px -1px 0 #8B2E2E, 1px -1px 0 #8B2E2E, -1px 1px 0 #8B2E2E, 1px 1px 0 #8B2E2E",
+              background: "linear-gradient(180deg, #fee62d 0%, #f3903f 50%, #e93e3a 100%)",
+              border: "2px solid rgba(255, 255, 255, 0.4)",
+              boxShadow: "0 4px 12px rgba(233, 62, 58, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
+              color: "hsl(240 45% 16%)",
             }}
             aria-label="Start Game"
           >
-            Start Game
+            {/* Shine overlay */}
+            <span 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{
+                background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)",
+              }}
+            />
+            <span className="relative z-10">Start Game</span>
           </button>
         </div>
       </div>
