@@ -12,6 +12,7 @@ import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
 import type { GameSettings } from "./SettingsPanel";
 import mascotImg from "@/assets/Mascot.svg";
+import { getMascotForCategory } from "@/data/categoryMascots";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
