@@ -299,7 +299,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
             lineHeight: 1.1,
-            textalign: "centre",
+            textAlign: "center",
           }}
         >
           CUSTOMIZE YOUR EXPERIENCE
