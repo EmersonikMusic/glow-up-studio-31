@@ -111,7 +111,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
           <button
             onClick={onStart}
             disabled={loading}
-            className="mt-8 h-12 px-10 rounded-full border-2 border-[#57215b] bg-[linear-gradient(180deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)] hover:bg-[hsl(185,70%,55%)] hover:bg-none text-white text-xl font-['Fredoka_One'] tracking-[0.18em] uppercase shadow-lg shadow-black/30 transition-colors duration-200 inline-flex items-center justify-center gap-2 animate-fade-in disabled:opacity-60 disabled:cursor-not-allowed"
+            className="nav-btn mt-8 h-14 px-10 rounded-full border-2 border-[#57215b] bg-[linear-gradient(0deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)] text-white text-xl font-['Fredoka_One'] tracking-[0.18em] uppercase shadow-lg shadow-black/30 transition-all duration-200 inline-flex items-center justify-center gap-2 animate-fade-in disabled:opacity-60 disabled:cursor-not-allowed active:scale-95"
             style={{ textShadow: "0 2px 3px rgba(87,33,91,0.6)", animationDelay: "180ms" }}
             aria-label={loading ? "Loading questions" : "Start Game"}
           >
