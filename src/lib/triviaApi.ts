@@ -20,8 +20,13 @@ export const ERA_IDS: Record<string, number> = {
   "2000s": 10, "2010s": 11, "2020s": 12,
 };
 
-const API_BASE = "https://www.triviolivia.com/api/questions";
+const API_BASE = "https://www.triviolivia.com/api/questions/";
 const FETCH_TIMEOUT_MS = 20_000;
+
+// Reverse lookup: era ID → era name
+const ID_TO_ERA: Record<number, string> = Object.fromEntries(
+  Object.entries(ERA_IDS).map(([name, id]) => [id, name]),
+);
 
 // ── Raw API shape ───────────────────────────────────────────────────────────
 interface RawApiQuestion {
@@ -30,6 +35,7 @@ interface RawApiQuestion {
   category_name?: string;
   difficulty_name?: string;
   era_name?: string;
+  eras?: number[];
   author?: string;
   id?: number;
 }
@@ -39,7 +45,9 @@ let synthId = 1;
 function adaptQuestion(raw: RawApiQuestion): Question {
   const category = (raw.category_name ?? "Miscellaneous") as Category;
   const difficulty = (raw.difficulty_name ?? "Average") as Difficulty;
-  const era = (raw.era_name ?? "2020s") as Era;
+  const eraFromIds =
+    raw.eras && raw.eras.length > 0 ? ID_TO_ERA[raw.eras[0]] : undefined;
+  const era = (eraFromIds ?? raw.era_name ?? "2020s") as Era;
 
   return {
     id: raw.id ?? synthId++,
