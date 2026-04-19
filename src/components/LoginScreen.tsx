@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogIn, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
+import PrimaryCTA from "@/components/PrimaryCTA";
 
 export default function LoginScreen({ onClose }: { onClose: () => void }) {
   const { login, loginWithGoogle, loginWithApple, signup, isLoading } = useAuth();
@@ -62,7 +63,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:brightness-125 active:scale-95"
+            className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
             style={{ background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.15)" }}
           >
             <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
@@ -179,14 +180,10 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             <p className="text-xs font-semibold text-center" style={{ color: "hsl(0 70% 60%)" }}>{error}</p>
           )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="btn-gameshow w-full py-3 text-sm tracking-widest uppercase mt-1 flex items-center justify-center gap-2"
-          >
+          <PrimaryCTA type="submit" disabled={isLoading} className="w-full mt-1">
             <LogIn className="w-4 h-4" />
             {isLoading ? "Loading..." : mode === "login" ? "Sign In" : "Create Account"}
-          </button>
+          </PrimaryCTA>
 
           <button
             type="button"
