@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback } from "react";
+import PrimaryCTA from "./PrimaryCTA";
 
 interface AboutScreenProps {
   onClose: () => void;
@@ -63,7 +64,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
+          className="nav-btn absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
           aria-label="Close"
           style={{
             background: "rgba(255, 255, 255, 0.08)",
@@ -107,26 +108,6 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 We are a team of trivia fans who love learning, writing, and playing trivia. Here at{" "}
                 <span className="font-black">Triviolivia</span>, we believe that learning should be entertaining and
                 stimulating. Our platform is designed for trivia experts, young learners, and everyone in between.
-              </p>
-            </div>
-
-            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
-
-            {/* How do I play */}
-            <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
-                How do I play?
-              </h2>
-              <p className="text-sm leading-relaxed">
-                Press <span className="font-black">START GAME</span> to play a game with today's unlocked categories, or{" "}
-                <a
-                  href="#"
-                  className="font-black underline underline-offset-2 transition-opacity duration-150 hover:opacity-80"
-                  style={{ color: "hsl(185 70% 55%)" }}
-                >
-                  create an account
-                </a>{" "}
-                to unlock them all for free!
               </p>
             </div>
 
@@ -215,13 +196,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </div>
 
         {/* Footer CTA */}
-        <div className="px-6 md:px-8 pb-8 pt-4 shrink-0" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
-          <button
-            onClick={handleClose}
-            className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"
-          >
+        <div className="px-6 md:px-8 pb-8 pt-4 shrink-0 flex justify-center" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+          <PrimaryCTA onClick={handleClose} aria-label="Back to Game">
             Back to Game
-          </button>
+          </PrimaryCTA>
         </div>
       </div>
     </div>

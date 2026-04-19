@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback } from "react";
+import PrimaryCTA from "./PrimaryCTA";
 
 interface HowToPlayScreenProps {
   onClose: () => void;
@@ -61,7 +62,7 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
+          className="nav-btn absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
           aria-label="Close"
           style={{
             background: "rgba(255, 255, 255, 0.08)",
@@ -161,13 +162,10 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
         </div>
 
         {/* Footer CTA */}
-        <div className="px-6 md:px-8 pb-8 pt-4 shrink-0" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
-          <button
-            onClick={handleClose}
-            className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"
-          >
+        <div className="px-6 md:px-8 pb-8 pt-4 shrink-0 flex justify-center" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+          <PrimaryCTA onClick={handleClose} aria-label="Back to Game">
             Back to Game
-          </button>
+          </PrimaryCTA>
         </div>
       </div>
     </div>

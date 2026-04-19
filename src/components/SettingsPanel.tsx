@@ -2,6 +2,7 @@ import { ChevronDown, ArrowLeft } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
+import PrimaryCTA from "./PrimaryCTA";
 import iconCategoriesActive from "@/assets/icon-categories-active.svg";
 import iconCategoriesInactive from "@/assets/icon-categories-inactive.svg";
 import iconDifficultyActive from "@/assets/icon-difficulty-active.svg";
@@ -553,13 +554,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-3 pb-3 md:pb-3">
-        <button
-          onClick={handleApply}
-          className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"
-        >
+      <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
+        <PrimaryCTA onClick={handleApply} aria-label={applyLabel}>
           {applyLabel}
-        </button>
+        </PrimaryCTA>
       </div>
     </>
   );
