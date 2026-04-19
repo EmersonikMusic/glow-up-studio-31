@@ -193,6 +193,7 @@ export default function TriviaGame() {
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
+          loading={loading}
         />
         <AboutScreen onClose={() => setGameState("start")} />
         {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
@@ -211,6 +212,7 @@ export default function TriviaGame() {
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
+          loading={loading}
         />
         {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
       </>
