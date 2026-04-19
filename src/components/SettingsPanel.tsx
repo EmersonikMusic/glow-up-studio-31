@@ -72,8 +72,8 @@ const eras = [
 ];
 
 const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
-const EXTRA_ROW_H = 46;
-const SECTION_MAX = 2000;
+
+type SectionKey = "categories" | "difficulty" | "eras" | "game" | null;
 
 function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
   return (
