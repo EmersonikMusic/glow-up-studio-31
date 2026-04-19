@@ -44,15 +44,15 @@ export default function GameHeader({
           {/* Username pill — only when logged in, sits left of Logout */}
           {user && (
             <span
-              className="flex items-center gap-1.5 text-[12px] sm:text-[11px] font-black tracking-wider uppercase truncate max-w-[120px] sm:max-w-[240px] rounded-full px-3 py-1.5"
+              className="flex items-center gap-1.5 h-9 px-4 text-xs font-bold tracking-wider uppercase truncate max-w-[120px] sm:max-w-[240px] rounded-full"
               style={{
-                color: "hsl(42 100% 60%)",
+                color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
               }}
             >
-              <User className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="truncate">{user.username}</span>
+              <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(185 70% 55%)" }} />
+              <span className="truncate">{user.username.slice(0, 20)}</span>
             </span>
           )}
           {/* Login or Logout */}
