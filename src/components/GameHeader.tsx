@@ -52,7 +52,7 @@ export default function GameHeader({
               }}
             >
               <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(185 70% 55%)" }} />
-              <span className="truncate">{user.username.slice(0, 20)}</span>
+              <span>{user.username.slice(0, 20)}</span>
             </span>
           )}
           {/* Login or Logout */}
