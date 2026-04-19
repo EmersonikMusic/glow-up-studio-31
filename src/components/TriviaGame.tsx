@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { questions } from "@/data/questions";
+import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
+import { fetchAndStartGame } from "@/lib/triviaApi";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
@@ -16,27 +18,27 @@ import { getMascotForCategory } from "@/data/categoryMascots";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
+const ALL_CATEGORIES = [
+  "Art", "Economy", "Food & Drink", "Games", "Geography", "History",
+  "Human Body", "Language", "Law", "Literature", "Math", "Miscellaneous",
+  "Movies", "Music", "Nature", "Performing Arts", "Philosophy", "Politics",
+  "Pop Culture", "Science", "Sports", "Technology", "Television", "Theology",
+  "Video Games",
+];
+const ALL_DIFFICULTIES = ["Casual", "Easy", "Average", "Hard", "Genius"];
+const ALL_ERAS = [
+  "Pre-1500", "1500-1800", "1800-1900", "1900-1950", "1950s", "1960s",
+  "1970s", "1980s", "1990s", "2000s", "2010s", "2020s",
+];
+
 const DEFAULT_SETTINGS: GameSettings = {
   numQuestions: 10,
   timePerQuestion: 5,
   timePerAnswer: 5,
-  selectedCategories: [],
-  selectedDifficulties: [],
-  selectedEras: [],
+  selectedCategories: [...ALL_CATEGORIES],
+  selectedDifficulties: [...ALL_DIFFICULTIES],
+  selectedEras: [...ALL_ERAS],
 };
-
-function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
-  const { numQuestions, selectedCategories, selectedDifficulties, selectedEras } = settings;
-  const filtered = pool.filter((q) => {
-    const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(q.category);
-    const difficultyMatch = selectedDifficulties.length === 0 || selectedDifficulties.includes(q.difficulty);
-    const eraMatch = selectedEras.length === 0 || selectedEras.includes(q.era);
-    return categoryMatch && difficultyMatch && eraMatch;
-  });
-  const pool2 = filtered.length > 0 ? filtered : pool;
-  const shuffled = [...pool2].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(numQuestions, shuffled.length));
-}
 
 export default function TriviaGame() {
   const isMobile = useIsMobile();
