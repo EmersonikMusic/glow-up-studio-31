@@ -30,8 +30,8 @@ interface SettingsPanelProps {
 
 const categories = [
   "Art",
-  "Economics",
-  "Food",
+  "Economy",
+  "Food & Drink",
   "Games",
   "Geography",
   "History",
@@ -44,6 +44,7 @@ const categories = [
   "Movies",
   "Music",
   "Nature",
+  "Performing Arts",
   "Philosophy",
   "Politics",
   "Pop Culture",
@@ -51,7 +52,6 @@ const categories = [
   "Sports",
   "Technology",
   "Television",
-  "Theater",
   "Theology",
   "Video Games",
 ];

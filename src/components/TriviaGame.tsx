@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { questions } from "@/data/questions";
+import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
+import { fetchAndStartGame } from "@/lib/triviaApi";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
@@ -16,35 +18,34 @@ import { getMascotForCategory } from "@/data/categoryMascots";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
+const ALL_CATEGORIES = [
+  "Art", "Economy", "Food & Drink", "Games", "Geography", "History",
+  "Human Body", "Language", "Law", "Literature", "Math", "Miscellaneous",
+  "Movies", "Music", "Nature", "Performing Arts", "Philosophy", "Politics",
+  "Pop Culture", "Science", "Sports", "Technology", "Television", "Theology",
+  "Video Games",
+];
+const ALL_DIFFICULTIES = ["Casual", "Easy", "Average", "Hard", "Genius"];
+const ALL_ERAS = [
+  "Pre-1500", "1500-1800", "1800-1900", "1900-1950", "1950s", "1960s",
+  "1970s", "1980s", "1990s", "2000s", "2010s", "2020s",
+];
+
 const DEFAULT_SETTINGS: GameSettings = {
   numQuestions: 10,
   timePerQuestion: 5,
   timePerAnswer: 5,
-  selectedCategories: [],
-  selectedDifficulties: [],
-  selectedEras: [],
+  selectedCategories: [...ALL_CATEGORIES],
+  selectedDifficulties: [...ALL_DIFFICULTIES],
+  selectedEras: [...ALL_ERAS],
 };
-
-function pickRandomQuestions(pool: typeof questions, settings: GameSettings) {
-  const { numQuestions, selectedCategories, selectedDifficulties, selectedEras } = settings;
-  const filtered = pool.filter((q) => {
-    const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(q.category);
-    const difficultyMatch = selectedDifficulties.length === 0 || selectedDifficulties.includes(q.difficulty);
-    const eraMatch = selectedEras.length === 0 || selectedEras.includes(q.era);
-    return categoryMatch && difficultyMatch && eraMatch;
-  });
-  const pool2 = filtered.length > 0 ? filtered : pool;
-  const shuffled = [...pool2].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(numQuestions, shuffled.length));
-}
 
 export default function TriviaGame() {
   const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [activeQuestions, setActiveQuestions] = useState(() =>
-    pickRandomQuestions(questions, DEFAULT_SETTINGS)
-  );
+  const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
@@ -129,18 +130,31 @@ export default function TriviaGame() {
     setSettings(newSettings);
   }, []);
 
-  const handleStart = useCallback(() => {
+  const handleStart = useCallback(async () => {
+    if (loading) return;
     clearAnswerTimer();
-    setPaused(false);
-    setPanelOpen(false);
-    const picked = pickRandomQuestions(questions, settings);
-    setActiveQuestions(picked);
-    setQuestionIndex(0);
-    setScore(0);
-    setAnimKey((k) => k + 1);
-    setGameState("playing");
-    startCountdown(settings.timePerQuestion);
-  }, [settings, startCountdown, clearAnswerTimer]);
+    setLoading(true);
+    try {
+      const data = await fetchAndStartGame(settings);
+      if (!data.length) {
+        toast.error("No questions matched your filters. Try widening them.");
+        return;
+      }
+      setActiveQuestions(data);
+      setQuestionIndex(0);
+      setScore(0);
+      setAnimKey((k) => k + 1);
+      setPaused(false);
+      setPanelOpen(false);
+      setGameState("playing");
+      startCountdown(settings.timePerQuestion);
+    } catch (err) {
+      console.error("fetchAndStartGame failed:", err);
+      toast.error("Couldn't load questions. Check your connection or try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, settings, startCountdown, clearAnswerTimer]);
 
   const handleNext = useCallback(() => {
     if (gameState !== "answered") return;
@@ -179,6 +193,7 @@ export default function TriviaGame() {
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
+          loading={loading}
         />
         <AboutScreen onClose={() => setGameState("start")} />
         {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
@@ -197,6 +212,7 @@ export default function TriviaGame() {
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
+          loading={loading}
         />
         {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
       </>
