@@ -401,7 +401,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />}
           label="Game Settings"
           open={gameOpen}
-          onToggle={() => setGameOpen((v) => !v)}
+          onToggle={() => toggleSection("game")}
         />
         <div
           className="grid"
