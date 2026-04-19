@@ -29,8 +29,10 @@ export default function GameHeader({
       }}
     >
       <div className="flex items-center justify-between">
-        {/* Left: Logo */}
-        <div className="flex items-center flex-shrink-0 select-none">
+        {/* Left: Logo — hidden on mobile when logged in to free space for username */}
+        <div
+          className={`items-center flex-shrink-0 select-none ${user ? "hidden sm:flex" : "flex"}`}
+        >
           <img
             src={toLogoSm}
             alt="Trivolivia"
@@ -40,7 +42,7 @@ export default function GameHeader({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
 
           {/* About — icon on mobile, text on desktop */}
           {onAbout && (
@@ -67,10 +69,14 @@ export default function GameHeader({
           {/* Auth: username or login button */}
           {user ? (
             <div className="flex items-center gap-1.5">
-              {/* Username — show on all sizes when logged in */}
+              {/* Username pill — fits up to ~20 chars on mobile */}
               <span
-                className="flex items-center gap-1 text-[10px] sm:text-[11px] font-black tracking-wider uppercase truncate max-w-[80px] sm:max-w-none"
-                style={{ color: "hsl(42 100% 60%)" }}
+                className="flex items-center gap-1 text-[12px] sm:text-[11px] font-black tracking-wider uppercase truncate max-w-[160px] sm:max-w-none rounded-full px-2.5 py-1"
+                style={{
+                  color: "hsl(42 100% 60%)",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                }}
               >
                 <User className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="truncate">{user.username}</span>
