@@ -231,29 +231,59 @@
   to   { width: 100%; }
 }
 
-/* Game-show CTA button — chunky pressable tile */
+/* Game-show CTA button — chunky pressable pill (orange→yellow gradient w/ deep purple stroke) */
 .btn-gameshow {
-  background: hsl(var(--game-gold));
-  color: hsl(var(--game-bg));
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-radius: 1rem;
-  box-shadow: 0 4px 0 0 hsl(var(--game-gold-dark)), 0 6px 14px rgba(0, 0, 0, 0.25);
-  font-family: 'Russo One', 'Nunito', sans-serif;
+  position: relative;
+  background: linear-gradient(180deg, #FDC70C 0%, #F3903F 55%, #ED683C 100%);
+  color: #ffffff;
+  -webkit-text-stroke: 2px #57215B;
+  paint-order: stroke fill;
+  border: 3px solid #57215B;
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 0 rgba(87, 33, 91, 0.25),
+    0 6px 0 #481D51,
+    0 10px 22px rgba(0, 0, 0, 0.4);
+  font-family: 'Fredoka One', 'Russo One', 'Nunito', sans-serif;
   font-weight: 900;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+  text-shadow: 0 2px 0 rgba(87, 33, 91, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.2s ease;
+  overflow: hidden;
+}
+.btn-gameshow::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 14px;
+  width: 22px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.6);
+  filter: blur(2px);
+  pointer-events: none;
 }
 @media (hover: hover) and (pointer: fine) {
   .btn-gameshow:hover {
-    background: hsl(42 100% 62%);
-    box-shadow: 0 6px 0 0 hsl(var(--game-gold-dark)), 0 8px 18px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -3px 0 rgba(87, 33, 91, 0.25),
+      0 8px 0 #481D51,
+      0 14px 26px rgba(0, 0, 0, 0.45);
   }
 }
 .btn-gameshow:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 0 hsl(var(--game-gold-dark)), 0 3px 8px rgba(0, 0, 0, 0.25);
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 rgba(87, 33, 91, 0.25),
+    0 2px 0 #481D51,
+    0 4px 10px rgba(0, 0, 0, 0.35);
 }
 .btn-gameshow:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
