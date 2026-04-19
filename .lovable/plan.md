@@ -1,41 +1,38 @@
 
-## Plan: Header + Start screen refinements
+## Plan: Username placement + tagline visibility + logo visibility rules
 
-### 1. Header layout (GameHeader.tsx)
-Restore logo as persistent left anchor on desktop; username sits beside it when logged in.
+### 1. Logo visibility (GameHeader.tsx)
+Logo shows on **all viewports except mobile-when-logged-in**.
 
-- **Desktop/Tablet (≥sm):** `Logo → Username (if logged in) → Login/Logout → About → Settings`
-- **Mobile (<sm):** `Username (if logged in, else empty spacer) → Login/Logout → About → Settings` (logo hidden)
+- Logged out: logo always visible (mobile, tablet, desktop)
+- Logged in: logo hidden on mobile (`<sm`), visible on tablet+ (`≥sm`)
 
-Implementation: left slot is an always-rendered flex container holding `Logo` (`hidden sm:block`) + `Username pill` (only when `user`, with `sm:ml-2`). Empty slot on mobile-logged-out keeps `justify-between` working.
+Implementation: drop the static `hidden sm:block` class. Compute visibility dynamically — `className={user ? "h-8 w-auto hidden sm:block" : "h-8 w-auto block"}`.
 
-### 2. Restore text labels on About + Login/Logout (≥sm)
-About, Login, and Logout become **icon + label pills on sm and up**, icon-only circles on mobile. Settings stays a circle.
+### 2. Username pill placement (GameHeader.tsx)
+Move the username pill out of the left slot into the right-side action group, positioned **immediately left of the Logout button** on **all viewports** (mobile, tablet, desktop).
 
-Each button: `w-9 h-9 sm:w-auto sm:px-4 rounded-full` with `<span className="hidden sm:inline ml-1.5 text-xs font-bold uppercase tracking-wider">`. Same gold icon/text and translucent bg/border — no other styling changes.
+**Final order:**
+- Logged in: `Logo (per rule above) … [right group: Username → Logout → About → Settings]`
+- Logged out: `Logo … [right group: Login → About → Settings]`
 
-### 3. Tagline color fix (StartScreen.tsx)
-- Spelling already correct (`"Earth's Deepest Trivia Source"` — uppercased via CSS).
-- Change SVG `fill` from gold (`hsl(42 100% 55%)`) to settings turquoise: `hsl(185 70% 55%)`.
+Implementation:
+- Remove username pill from left container (left becomes logo-only).
+- Insert username pill as first child of the right-side actions div, before Logout. Keep current pill styling (gold text, user icon, rounded-full, translucent bg/border).
+- Tighten `max-w-[120px]` on mobile so the pill + 3 buttons fit at 390px when logo is hidden.
 
-### 4. Start Game CTA — sleeker rounded rectangle (index.css)
-Refine `.btn-gameshow` away from coin/casino vibe:
-- `border-radius: 14px` (was `9999px`)
-- Remove `::after` shine highlight
-- Flatter gradient: `linear-gradient(180deg, #FDB833 0%, #F39220 100%)`
-- Thinner border: `2px solid #57215B`
-- Lighter depth: `0 4px 0 #481D51, 0 8px 18px rgba(0,0,0,0.3)`
-- Inset highlight opacity → `0.35`
-- Text stroke → `1.5px`
-- Hover/active lift+press scaled to new depth
+### 3. Tagline letter clipping fix (StartScreen.tsx)
+The "E" in EARTH and "E" in SOURCE are clipped because the arc path endpoints (`30` and `570` of 600 viewBox) sit too close to the edges and the drop-shadow filter region is too tight.
 
-Button sizing in StartScreen unchanged (`px-14 py-5 text-xl`).
+Fix:
+- Widen arc inset: change path from `M 30 42 Q 300 12 570 42` → `M 60 44 Q 300 16 540 44`.
+- Expand filter region: `x="-5%" y="-20%" width="110%" height="160%"`.
+- Reduce `font-size` `26px` → `24px` and `letter-spacing` `0.2em` → `0.16em` so full string fits with margin.
 
 ### Files touched
-- `src/components/GameHeader.tsx` — restore desktop logo, username next to logo, icon+label pills for About/Login/Logout on ≥sm
-- `src/components/StartScreen.tsx` — tagline fill → turquoise
-- `src/index.css` — rewrite `.btn-gameshow` as sleeker rounded rectangle
+- `src/components/GameHeader.tsx` — logo visibility rule, move username pill into right group
+- `src/components/StartScreen.tsx` — adjust tagline arc, filter, font-size, letter-spacing
 
 ### Out of scope
-- No changes to Settings panel, AboutScreen, or game flow
-- No other styling adjustments
+- No color/spelling changes to tagline
+- No CTA button, Settings, or other styling changes
