@@ -404,28 +404,32 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setEraOpen((v) => !v)}
         />
         <div
-          className="flex flex-col overflow-hidden"
+          className="grid"
           style={{
-            maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: eraOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
-          {erasVisible.map((era) => (
-            <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
-          ))}
-          <div
-            className="flex flex-col overflow-hidden"
-            style={{
-              maxHeight: eraExpanded ? `${erasExtra.length * EXTRA_ROW_H}px` : "0px",
-              transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            {erasExtra.map((era) => (
+          <div className="min-h-0 overflow-hidden flex flex-col">
+            <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
+            {erasVisible.map((era) => (
               <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
             ))}
+            <div
+              className="grid"
+              style={{
+                gridTemplateRows: eraExpanded ? "1fr" : "0fr",
+                transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <div className="min-h-0 overflow-hidden flex flex-col">
+                {erasExtra.map((era) => (
+                  <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
+                ))}
+              </div>
+            </div>
+            <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
           </div>
-          <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
         </div>
       </section>
 
