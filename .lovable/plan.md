@@ -1,47 +1,41 @@
 
-## Plan: Start screen + header polish (revised)
+## Plan: Header + Start screen refinements
 
-### 1. Replace start screen logo
-Copy `user-uploads://img-TO-logo-full-desktop-2.svg` → `src/assets/img-TO-logo-full-desktop-v2.svg` and update the import in `StartScreen.tsx`. Old file stays in place.
+### 1. Header layout (GameHeader.tsx)
+Restore logo as persistent left anchor on desktop; username sits beside it when logged in.
 
-### 2. Header: reorder + restyle auth controls
-**New order, left → right:**
-- Logged in: `Username → Logout → About → Settings`
-- Logged out: `(empty logo slot) → About → Login → Settings`
+- **Desktop/Tablet (≥sm):** `Logo → Username (if logged in) → Login/Logout → About → Settings`
+- **Mobile (<sm):** `Username (if logged in, else empty spacer) → Login/Logout → About → Settings` (logo hidden)
 
-Changes in `GameHeader.tsx`:
-- Move username pill out of the right-side group into the **left slot** (replacing the empty placeholder). On mobile when logged in, this fills the spacer slot; right-aligned icons stay right-aligned.
-- Reorder right-side actions: Logout comes immediately after username (visually grouped as identity controls), then About, then Settings.
-- Restyle Login as a 36px round icon button (LogIn icon, gold tint, same bg/border as About/Logout/Settings). Drop the "Login" text label, keep `aria-label="Login"`.
-- Logout stays round — just reposition next to username.
-- Username pill keeps current styling (gold text, user icon) with right margin for breathing room.
+Implementation: left slot is an always-rendered flex container holding `Logo` (`hidden sm:block`) + `Username pill` (only when `user`, with `sm:ml-2`). Empty slot on mobile-logged-out keeps `justify-between` working.
 
-Result: all right-side controls are uniform 36px circles; username + logout cluster on the left as the identity group.
+### 2. Restore text labels on About + Login/Logout (≥sm)
+About, Login, and Logout become **icon + label pills on sm and up**, icon-only circles on mobile. Settings stays a circle.
 
-### 3. Restyle "START GAME" CTA
-Rebuild `.btn-gameshow` in `index.css` to match the reference (rounded pill, orange→yellow gradient, deep purple stroke, 3D depth):
-- Background: `linear-gradient(180deg, #FDC70C 0%, #F3903F 55%, #ED683C 100%)`
-- Border: `3px solid #57215B`
-- Border-radius: `9999px` (full pill)
-- Box-shadow: inset top highlight + chunky drop (`0 6px 0 #481D51, 0 10px 20px rgba(0,0,0,0.4)`)
-- Text: white Fredoka One, tracking-wider, with purple text-stroke via `-webkit-text-stroke: 2px #57215B; paint-order: stroke fill`
-- Hover: lift `translateY(-2px)`, brighten. Active: press `translateY(2px)`, reduce shadow
-- Subtle `::after` shine in top-right corner
+Each button: `w-9 h-9 sm:w-auto sm:px-4 rounded-full` with `<span className="hidden sm:inline ml-1.5 text-xs font-bold uppercase tracking-wider">`. Same gold icon/text and translucent bg/border — no other styling changes.
 
-Update `StartScreen.tsx` button: bump size to `px-14 py-5 text-xl`, keep loading spinner state.
+### 3. Tagline color fix (StartScreen.tsx)
+- Spelling already correct (`"Earth's Deepest Trivia Source"` — uppercased via CSS).
+- Change SVG `fill` from gold (`hsl(42 100% 55%)`) to settings turquoise: `hsl(185 70% 55%)`.
 
-### 4. Curved tagline under logo
-Add "EARTH'S DEEPEST TRIVIA SOURCE" directly under the logo in `StartScreen.tsx` using inline SVG `<textPath>` on a shallow concave-up arc that mirrors the logo's bottom curve.
-- Fredoka One, gold (`hsl(var(--game-gold))`), uppercase, letter-spacing `0.2em`
-- ~18px desktop / ~13px mobile, drop-shadow filter for depth
-- Fades in at ~90ms (between logo at 0ms and CTA at 180ms)
+### 4. Start Game CTA — sleeker rounded rectangle (index.css)
+Refine `.btn-gameshow` away from coin/casino vibe:
+- `border-radius: 14px` (was `9999px`)
+- Remove `::after` shine highlight
+- Flatter gradient: `linear-gradient(180deg, #FDB833 0%, #F39220 100%)`
+- Thinner border: `2px solid #57215B`
+- Lighter depth: `0 4px 0 #481D51, 0 8px 18px rgba(0,0,0,0.3)`
+- Inset highlight opacity → `0.35`
+- Text stroke → `1.5px`
+- Hover/active lift+press scaled to new depth
+
+Button sizing in StartScreen unchanged (`px-14 py-5 text-xl`).
 
 ### Files touched
-- `src/components/StartScreen.tsx` — new logo import, curved tagline SVG, larger CTA
-- `src/components/GameHeader.tsx` — move username to left, reorder right group as Logout → About → Settings, restyle Login as round icon
-- `src/index.css` — rewrite `.btn-gameshow`
-- `src/assets/img-TO-logo-full-desktop-v2.svg` — new file from upload
+- `src/components/GameHeader.tsx` — restore desktop logo, username next to logo, icon+label pills for About/Login/Logout on ≥sm
+- `src/components/StartScreen.tsx` — tagline fill → turquoise
+- `src/index.css` — rewrite `.btn-gameshow` as sleeker rounded rectangle
 
 ### Out of scope
-- No changes to AboutScreen, Settings, or game flow
-- Old logo file retained
+- No changes to Settings panel, AboutScreen, or game flow
+- No other styling adjustments
