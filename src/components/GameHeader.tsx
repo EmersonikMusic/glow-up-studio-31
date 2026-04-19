@@ -29,19 +29,22 @@ export default function GameHeader({
       }}
     >
       <div className="flex items-center justify-between gap-2">
-        {/* Left slot: Logo (desktop) + Username (when logged in) */}
+        {/* Left slot: Logo (hidden on mobile only when logged in) */}
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
-          {/* Logo — hidden on mobile to save space */}
           <img
             src={toLogoSm}
             alt="Trivolivia"
-            className="h-8 w-auto hidden sm:block"
+            className={user ? "h-8 w-auto hidden sm:block" : "h-8 w-auto block"}
             draggable={false}
           />
-          {/* Username pill — only when logged in */}
+        </div>
+
+        {/* Right: Username → Login/Logout → About → Settings */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Username pill — only when logged in, sits left of Logout */}
           {user && (
             <span
-              className="flex items-center gap-1.5 text-[12px] sm:text-[11px] font-black tracking-wider uppercase truncate max-w-[180px] sm:max-w-[240px] rounded-full px-3 py-1.5"
+              className="flex items-center gap-1.5 text-[12px] sm:text-[11px] font-black tracking-wider uppercase truncate max-w-[120px] sm:max-w-[240px] rounded-full px-3 py-1.5"
               style={{
                 color: "hsl(42 100% 60%)",
                 background: "rgba(255, 255, 255, 0.08)",
@@ -52,10 +55,6 @@ export default function GameHeader({
               <span className="truncate">{user.username}</span>
             </span>
           )}
-        </div>
-
-        {/* Right: Login/Logout → About → Settings */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Login or Logout */}
           {user ? (
             <button

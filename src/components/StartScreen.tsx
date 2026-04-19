@@ -82,10 +82,10 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
                 {/* Concave-up arc mirroring the logo's bottom curve */}
                 <path
                   id="tagline-arc"
-                  d="M 30 42 Q 300 12 570 42"
+                  d="M 60 44 Q 300 16 540 44"
                   fill="none"
                 />
-                <filter id="tagline-shadow" x="-10%" y="-10%" width="120%" height="140%">
+                <filter id="tagline-shadow" x="-5%" y="-20%" width="110%" height="160%">
                   <feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.45" />
                 </filter>
               </defs>
@@ -94,8 +94,8 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
                 style={{
                   fontFamily: "'Fredoka One', 'Russo One', sans-serif",
                   fontWeight: 900,
-                  fontSize: "26px",
-                  letterSpacing: "0.2em",
+                  fontSize: "24px",
+                  letterSpacing: "0.16em",
                   textTransform: "uppercase",
                 }}
                 filter="url(#tagline-shadow)"
