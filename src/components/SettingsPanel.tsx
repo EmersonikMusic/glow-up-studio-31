@@ -321,30 +321,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setCatOpen((v) => !v)}
         />
         <div
-          className="grid overflow-hidden"
+          className="grid"
           style={{
             gridTemplateRows: catOpen ? "1fr" : "0fr",
             transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
           <div className="min-h-0 overflow-hidden flex flex-col">
-          <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
-          {catsVisible.map((cat) => (
-            <ToggleRow
-              key={cat}
-              label={cat}
-              active={selectedCategories.includes(cat)}
-              onClick={() => toggleCategory(cat)}
-            />
-          ))}
-          <div
-            className="flex flex-col overflow-hidden"
-            style={{
-              maxHeight: catExpanded ? `${catsExtra.length * EXTRA_ROW_H}px` : "0px",
-              transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            {catsExtra.map((cat) => (
+            <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
+            {catsVisible.map((cat) => (
               <ToggleRow
                 key={cat}
                 label={cat}
@@ -352,8 +337,26 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 onClick={() => toggleCategory(cat)}
               />
             ))}
+            <div
+              className="grid"
+              style={{
+                gridTemplateRows: catExpanded ? "1fr" : "0fr",
+                transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <div className="min-h-0 overflow-hidden flex flex-col">
+                {catsExtra.map((cat) => (
+                  <ToggleRow
+                    key={cat}
+                    label={cat}
+                    active={selectedCategories.includes(cat)}
+                    onClick={() => toggleCategory(cat)}
+                  />
+                ))}
+              </div>
+            </div>
+            <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
           </div>
-          <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
         </div>
       </section>
 
