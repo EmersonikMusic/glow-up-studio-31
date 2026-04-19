@@ -1,4 +1,4 @@
-import { ChevronDown, Settings } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -72,8 +72,8 @@ const eras = [
 ];
 
 const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
-const EXTRA_ROW_H = 46;
-const SECTION_MAX = 2000;
+
+type SectionKey = "categories" | "difficulty" | "eras" | "game" | null;
 
 function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
   return (
@@ -138,7 +138,17 @@ function SectionHeader({
   );
 }
 
-function ToggleRow({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function ToggleRow({
+  label,
+  active,
+  onClick,
+  preserveCase = false,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  preserveCase?: boolean;
+}) {
   return (
     <div
       className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)]"
@@ -147,39 +157,12 @@ function ToggleRow({ label, active, onClick }: { label: string; active: boolean;
     >
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
       <span
-        className="text-xs font-black tracking-widest uppercase transition-colors"
+        className={`text-xs font-black tracking-widest transition-colors ${preserveCase ? "normal-case" : "uppercase"}`}
         style={{ color: active ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))" }}
       >
         {label}
       </span>
     </div>
-  );
-}
-
-function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
-  return (
-    <button
-      onClick={onToggle}
-      className="flex items-center justify-center w-full transition-colors hover:bg-[rgba(0,0,0,0.2)] rounded-b-2xl active:scale-95"
-      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
-      aria-label={expanded ? "Show less" : "Show more"}
-    >
-      {expanded ? (
-        <span className="text-[10px] font-black tracking-[0.2em] uppercase" style={{ color: "hsl(185 70% 55%)" }}>
-          Show less ↑
-        </span>
-      ) : (
-        <div className="flex items-center gap-[5px]">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="rounded-full flex-shrink-0"
-              style={{ width: "6px", height: "6px", background: "hsl(185 70% 55%)" }}
-            />
-          ))}
-        </div>
-      )}
-    </button>
   );
 }
 
@@ -191,16 +174,14 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
 
-  // Section collapsed state — Game Settings open by default
-  const [catOpen, setCatOpen] = useState(false);
-  const [diffOpen, setDiffOpen] = useState(false);
-  const [eraOpen, setEraOpen] = useState(false);
-  const [gameOpen, setGameOpen] = useState(true);
-
-  // Item-level expand (show more rows within section)
-  const [catExpanded, setCatExpanded] = useState(false);
-  const [diffExpanded, setDiffExpanded] = useState(false);
-  const [eraExpanded, setEraExpanded] = useState(false);
+  // Single open section — accordion behavior. Game Settings open by default.
+  const [openSection, setOpenSection] = useState<SectionKey>("game");
+  const toggleSection = (key: Exclude<SectionKey, null>) =>
+    setOpenSection((cur) => (cur === key ? null : key));
+  const catOpen = openSection === "categories";
+  const diffOpen = openSection === "difficulty";
+  const eraOpen = openSection === "eras";
+  const gameOpen = openSection === "game";
 
   // --- Categories ---
   const allCatsSelected = categories.every((c) => selectedCategories.includes(c));
@@ -215,8 +196,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     const on = selectedCategories.includes(cat);
     setSelectedCategories(on ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
   };
-  const catsVisible = categories.slice(0, 5);
-  const catsExtra = categories.slice(5);
 
   // --- Difficulties ---
   const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
@@ -245,10 +224,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     const on = selectedEras.includes(era);
     setSelectedEras(on ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
   };
-  const diffsVisible = difficulties.slice(0, 5);
-  const diffsExtra = difficulties.slice(5);
-  const erasVisible = eras.slice(0, 5);
-  const erasExtra = eras.slice(5);
 
   const handleApply = () => {
     onApply?.({ numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras });
@@ -318,7 +293,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />}
           label="Categories"
           open={catOpen}
-          onToggle={() => setCatOpen((v) => !v)}
+          onToggle={() => toggleSection("categories")}
         />
         <div
           className="grid"
@@ -327,9 +302,13 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <div className="min-h-0 overflow-hidden flex flex-col">
-            <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
-            {catsVisible.map((cat) => (
+          <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
+            <ToggleRow
+              label={allCatsSelected ? "Deselect All" : "Select All"}
+              active={allCatsSelected}
+              onClick={toggleAllCategories}
+            />
+            {categories.map((cat) => (
               <ToggleRow
                 key={cat}
                 label={cat}
@@ -337,39 +316,20 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 onClick={() => toggleCategory(cat)}
               />
             ))}
-            <div
-              className="grid"
-              style={{
-                gridTemplateRows: catExpanded ? "1fr" : "0fr",
-                transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-            >
-              <div className="min-h-0 overflow-hidden flex flex-col">
-                {catsExtra.map((cat) => (
-                  <ToggleRow
-                    key={cat}
-                    label={cat}
-                    active={selectedCategories.includes(cat)}
-                    onClick={() => toggleCategory(cat)}
-                  />
-                ))}
-              </div>
-            </div>
-            <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
           </div>
         </div>
       </section>
 
-      {/* ── DIFFICULTY ── */}
+      {/* ── DIFFICULTIES ── */}
       <section
         className="mx-5 mb-3 rounded-2xl flex flex-col"
         style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
       >
         <SectionHeader
           icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />}
-          label="Difficulty"
+          label="Difficulties"
           open={diffOpen}
-          onToggle={() => setDiffOpen((v) => !v)}
+          onToggle={() => toggleSection("difficulty")}
         />
         <div
           className="grid"
@@ -378,8 +338,12 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <div className="min-h-0 overflow-hidden flex flex-col">
-            <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
+          <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
+            <ToggleRow
+              label={allDiffsSelected ? "Deselect All" : "Select All"}
+              active={allDiffsSelected}
+              onClick={toggleAllDiffs}
+            />
             {difficulties.map((diff) => (
               <ToggleRow
                 key={diff}
@@ -401,7 +365,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />}
           label="Eras"
           open={eraOpen}
-          onToggle={() => setEraOpen((v) => !v)}
+          onToggle={() => toggleSection("eras")}
         />
         <div
           className="grid"
@@ -410,30 +374,25 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <div className="min-h-0 overflow-hidden flex flex-col">
-            <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
-            {erasVisible.map((era) => (
-              <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
+          <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
+            <ToggleRow
+              label={allErasSelected ? "Deselect All" : "Select All"}
+              active={allErasSelected}
+              onClick={toggleAllEras}
+            />
+            {eras.map((era) => (
+              <ToggleRow
+                key={era}
+                label={era}
+                active={selectedEras.includes(era)}
+                onClick={() => toggleEra(era)}
+                preserveCase={/^\d{4}s$/.test(era)}
+              />
             ))}
-            <div
-              className="grid"
-              style={{
-                gridTemplateRows: eraExpanded ? "1fr" : "0fr",
-                transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-            >
-              <div className="min-h-0 overflow-hidden flex flex-col">
-                {erasExtra.map((era) => (
-                  <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
-                ))}
-              </div>
-            </div>
-            <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
           </div>
         </div>
       </section>
 
-      {/* ── GAME SETTINGS ── */}
       <section
         className="mx-5 mb-3 rounded-2xl flex flex-col"
         style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
@@ -442,7 +401,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />}
           label="Game Settings"
           open={gameOpen}
-          onToggle={() => setGameOpen((v) => !v)}
+          onToggle={() => toggleSection("game")}
         />
         <div
           className="grid"
