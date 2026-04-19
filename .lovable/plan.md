@@ -1,37 +1,48 @@
 
-## Plan: Verify filter exclusion works end-to-end
+## Plan: Invert filter semantics — send EXCLUDED IDs
 
-### Goal
-Confirm that when the user toggles OFF a category, difficulty, or era in Settings, the API never returns questions tagged with those values during gameplay.
+### The change
+In `src/lib/triviaApi.ts` → `buildUrl`, flip from "send selected IDs" to "send deselected IDs".
 
-### How verification will work
-This is a **runtime behavior check**, not a code change. I need to drive the live preview and inspect network traffic.
+For each of category / difficulty / era:
+1. Compute `excluded = all IDs − selected IDs` (using the existing `*_IDS` dictionaries as the universe).
+2. If `excluded.length > 0` → append `category=<comma-joined>` (or `difficulty=` / `era=`).
+3. If `excluded.length === 0` (everything selected) → omit the param entirely.
 
-**Steps I'll run (after approval, in default mode):**
+Edge case — user deselects EVERYTHING in a group:
+- `selected = []` → `excluded = all IDs` → URL contains `category=1,2,3,...,33` (every ID), backend returns nothing.
+- This matches the new contract literally and surfaces the empty result via the existing "No questions matched your filters" toast. No extra guard needed.
 
-1. **Static audit first** (free, no browser):
-   - Re-read `SettingsPanel.tsx` to confirm toggling a chip removes its name from `selectedCategories` / `selectedDifficulties` / `selectedEras` and that "Apply" pushes the new state up via `onApply`.
-   - Re-read `triviaApi.ts` `buildUrl` to confirm the "narrowed selection" rule: param is sent **only when** `0 < selected.length < ALL_*_COUNT`. Confirm the ID maps cover every label the panel can emit (catch typos like a label "Pre 1500" vs key `"Pre-1500"`).
+### Example
+With the full category list, only "Science" deselected:
+```
+?questions=10&category=18
+```
+With Science + Games deselected:
+```
+?questions=10&category=4,18
+```
+All categories selected, only "Easy" difficulty deselected:
+```
+?questions=10&difficulty=2
+```
 
-2. **Live test in browser** (3 scenarios via `browser--navigate_to_sandbox` + `browser--act` + `browser--list_network_requests`):
-   - **A. Single category kept**: toggle off all categories except "Science", Apply, Start. Inspect outgoing `GET /api/questions?...` URL → expect `category=18` only. Fetch response, confirm every returned `category_name === "Science"`.
-   - **B. Single difficulty kept**: leave categories full, toggle off all difficulties except "Easy", Start. Expect `difficulty=2` only; every response item `difficulty_name === "Easy"`.
-   - **C. Era exclusion**: toggle off "2020s" only (keep other 11 eras), Start. Expect `era=1,2,3,4,5,6,7,8,9,10,11` (no `12`). Era isn't returned per question by the API, so this leg can only be verified by URL inspection — I'll call that out in the report.
+### Code shape (replaces the 3 selection blocks in buildUrl)
+```ts
+const allCatIds = Object.values(CATEGORY_IDS);
+const selectedCatIds = new Set(
+  settings.selectedCategories
+    .map((n) => CATEGORY_IDS[n])
+    .filter((v): v is number => typeof v === "number")
+);
+const excludedCats = allCatIds.filter((id) => !selectedCatIds.has(id));
+if (excludedCats.length > 0) params.append("category", excludedCats.join(","));
+```
+Same pattern for difficulty and era. The `ALL_*_COUNT` constants are no longer needed and get removed.
 
-3. **Edge cases to also confirm**:
-   - All toggled OFF → "Apply" disabled OR Start blocked (current code: empty array would send no param, which means "no filter" = unintended. Worth flagging.)
-   - All toggled ON → no `category`/`difficulty`/`era` param sent (default behavior).
-
-4. **CORS caveat**: Last session showed `TypeError: Failed to fetch` from missing `Access-Control-Allow-Origin`. If CORS is still blocking, the browser test will surface the error toast and I won't be able to inspect response bodies — only the request URL. I'll report exactly that and the URL-level verification will still tell us whether the filter logic is correct on the client side.
-
-### Deliverable
-A short report covering, per scenario:
-- Outgoing URL (proves client filter logic),
-- Sample of returned `category_name` / `difficulty_name` values (proves backend honors filter),
-- Any mismatch or bug found.
-
-If a bug surfaces (e.g. an "all off" foot-gun, or a label/ID mismatch), I'll list the fix and ask whether to apply it.
+### Files touched
+- `src/lib/triviaApi.ts` — rewrite the 3 filter blocks inside `buildUrl`, drop the unused count constants.
 
 ### Out of scope
-- No code changes in this pass unless verification finds a defect.
-- Era response-body verification (API doesn't return era).
+- No changes to `SettingsPanel`, `TriviaGame`, or the adapter — selection state stays as "what the user wants included".
+- No client-side post-filter safety net.
