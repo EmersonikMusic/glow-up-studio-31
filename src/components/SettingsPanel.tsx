@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -26,6 +26,8 @@ interface SettingsPanelProps {
   onClose: () => void;
   onAbout?: () => void;
   onApply?: (settings: GameSettings) => void;
+  gameInProgress?: boolean;
+  currentSettings?: GameSettings;
 }
 
 const categories = [
@@ -166,7 +168,7 @@ function ToggleRow({
   );
 }
 
-export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply, gameInProgress = false, currentSettings }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
   const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
@@ -261,10 +263,39 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     dragOffset.current = 0;
   }, [onClose]);
 
+  const arraysEqual = (a: string[], b: string[]) => {
+    if (a.length !== b.length) return false;
+    const sa = [...a].sort();
+    const sb = [...b].sort();
+    return sa.every((v, i) => v === sb[i]);
+  };
+
+  const hasChanges = currentSettings
+    ? numQuestions !== currentSettings.numQuestions ||
+      timePerQuestion !== currentSettings.timePerQuestion ||
+      timePerAnswer !== currentSettings.timePerAnswer ||
+      !arraysEqual(selectedCategories, currentSettings.selectedCategories) ||
+      !arraysEqual(selectedDifficulties, currentSettings.selectedDifficulties) ||
+      !arraysEqual(selectedEras, currentSettings.selectedEras)
+    : false;
+
+  const applyLabel = gameInProgress && hasChanges ? "Apply New Game Settings" : "Apply Settings";
+
   const panelContent = (
     <>
+      {/* Back button */}
+      <div className="px-5 pt-4 md:px-6 md:pt-5">
+        <button
+          onClick={onClose}
+          className="inline-flex items-center gap-1 text-xs font-black tracking-widest uppercase text-white/70 hover:text-[hsl(185_70%_55%)] transition-colors rounded-md px-2 py-1 -ml-2"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Back
+        </button>
+      </div>
+
       {/* Title */}
-      <div className="px-5 pt-4 pb-3 md:px-6 md:pt-6 md:pb-5">
+      <div className="px-5 pt-2 pb-3 md:px-6 md:pt-3 md:pb-5">
         <h2
           className="text-xl md:text-3xl font-black leading-none tracking-tight uppercase"
           style={{
@@ -280,7 +311,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           CUSTOMIZE YOUR EXPERIENCE
         </h2>
       </div>
-      <div className="px-5 md:px-6 mb-3 md:mb-4">
+      <div className="px-5 md:px-6 mb-3 md:mb-5">
         <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
       </div>
 
@@ -521,7 +552,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onClick={handleApply}
           className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"
         >
-          Apply Settings
+          {applyLabel}
         </button>
       </div>
     </>
