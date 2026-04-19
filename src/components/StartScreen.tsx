@@ -74,7 +74,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             aria-hidden="true"
           >
             <svg
-              viewBox="0 0 600 60"
+              viewBox="-20 0 640 60"
               className="w-full h-auto"
               preserveAspectRatio="xMidYMid meet"
             >
@@ -82,10 +82,10 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
                 {/* Concave-up arc mirroring the logo's bottom curve */}
                 <path
                   id="tagline-arc"
-                  d="M 60 44 Q 300 16 540 44"
+                  d="M 30 46 Q 300 14 570 46"
                   fill="none"
                 />
-                <filter id="tagline-shadow" x="-5%" y="-20%" width="110%" height="160%">
+                <filter id="tagline-shadow" x="-20%" y="-50%" width="140%" height="200%">
                   <feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.45" />
                 </filter>
               </defs>
