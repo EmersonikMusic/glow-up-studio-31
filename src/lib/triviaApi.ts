@@ -20,10 +20,6 @@ export const ERA_IDS: Record<string, number> = {
   "2000s": 10, "2010s": 11, "2020s": 12,
 };
 
-const ALL_CATEGORY_COUNT = Object.keys(CATEGORY_IDS).length;
-const ALL_DIFFICULTY_COUNT = Object.keys(DIFFICULTY_IDS).length;
-const ALL_ERA_COUNT = Object.keys(ERA_IDS).length;
-
 const API_BASE = "https://www.triviolivia.com/api/questions";
 const FETCH_TIMEOUT_MS = 20_000;
 
@@ -68,30 +64,37 @@ function shuffle<T>(arr: T[]): T[] {
   return out;
 }
 
-// ── Build URL — only append filter params when the user narrowed selection ──
+// ── Build URL — backend expects EXCLUDED IDs (deselected items) ─────────────
+function buildExcluded(
+  selectedNames: string[],
+  dict: Record<string, number>,
+): number[] {
+  const allIds = Object.values(dict);
+  const selectedIds = new Set(
+    selectedNames
+      .map((n) => dict[n])
+      .filter((v): v is number => typeof v === "number"),
+  );
+  return allIds.filter((id) => !selectedIds.has(id));
+}
+
 function buildUrl(settings: GameSettings): string {
   const params = new URLSearchParams();
   params.append("questions", String(settings.numQuestions || 10));
 
-  const cats = settings.selectedCategories
-    .map((name) => CATEGORY_IDS[name])
-    .filter((v): v is number => typeof v === "number");
-  if (cats.length > 0 && cats.length < ALL_CATEGORY_COUNT) {
-    params.append("category", cats.join(","));
+  const excludedCats = buildExcluded(settings.selectedCategories, CATEGORY_IDS);
+  if (excludedCats.length > 0) {
+    params.append("category", excludedCats.join(","));
   }
 
-  const diffs = settings.selectedDifficulties
-    .map((name) => DIFFICULTY_IDS[name])
-    .filter((v): v is number => typeof v === "number");
-  if (diffs.length > 0 && diffs.length < ALL_DIFFICULTY_COUNT) {
-    params.append("difficulty", diffs.join(","));
+  const excludedDiffs = buildExcluded(settings.selectedDifficulties, DIFFICULTY_IDS);
+  if (excludedDiffs.length > 0) {
+    params.append("difficulty", excludedDiffs.join(","));
   }
 
-  const eras = settings.selectedEras
-    .map((name) => ERA_IDS[name])
-    .filter((v): v is number => typeof v === "number");
-  if (eras.length > 0 && eras.length < ALL_ERA_COUNT) {
-    params.append("era", eras.join(","));
+  const excludedEras = buildExcluded(settings.selectedEras, ERA_IDS);
+  if (excludedEras.length > 0) {
+    params.append("era", excludedEras.join(","));
   }
 
   return `${API_BASE}?${params.toString()}`;
