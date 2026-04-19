@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronLeft } from "lucide-react";
+import { ChevronDown, ArrowLeft } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -288,10 +288,14 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         <div className="px-5 pt-4 md:px-6 md:pt-5">
           <button
             onClick={onClose}
-            className="inline-flex items-center gap-1 text-xs font-black tracking-widest uppercase text-white/70 hover:text-[hsl(185_70%_55%)] transition-colors rounded-md px-2 py-1 -ml-2"
+            aria-label="Back"
+            className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
+            style={{
+              background: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+            }}
           >
-            <ChevronLeft className="w-4 h-4" />
-            Back
+            <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
           </button>
         </div>
       )}
@@ -549,7 +553,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-3 pb-6 md:pb-5">
+      <div className="px-5 pt-3 pb-3 md:pb-3">
         <button
           onClick={handleApply}
           className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"

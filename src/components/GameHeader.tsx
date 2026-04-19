@@ -29,14 +29,12 @@ export default function GameHeader({
       }}
     >
       <div className="flex items-center justify-between">
-        {/* Left: Logo — hidden on mobile when logged in to free space for username */}
-        <div
-          className={`items-center flex-shrink-0 select-none ${user ? "hidden sm:flex" : "flex"}`}
-        >
+        {/* Left: Logo — keep slot in DOM on mobile when logged in to preserve right-aligned actions */}
+        <div className="flex items-center flex-shrink-0 select-none">
           <img
             src={toLogoSm}
             alt="Trivolivia"
-            className="h-8 w-auto"
+            className={`h-8 w-auto ${user ? "hidden sm:block" : "block"}`}
             draggable={false}
           />
         </div>
