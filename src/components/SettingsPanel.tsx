@@ -372,21 +372,23 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setDiffOpen((v) => !v)}
         />
         <div
-          className="flex flex-col overflow-hidden"
+          className="grid"
           style={{
-            maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: diffOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
-          {difficulties.map((diff) => (
-            <ToggleRow
-              key={diff}
-              label={diff}
-              active={selectedDifficulties.includes(diff)}
-              onClick={() => toggleDiff(diff)}
-            />
-          ))}
+          <div className="min-h-0 overflow-hidden flex flex-col">
+            <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
+            {difficulties.map((diff) => (
+              <ToggleRow
+                key={diff}
+                label={diff}
+                active={selectedDifficulties.includes(diff)}
+                onClick={() => toggleDiff(diff)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
