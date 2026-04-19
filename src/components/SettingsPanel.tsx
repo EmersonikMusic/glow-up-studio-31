@@ -321,12 +321,13 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setCatOpen((v) => !v)}
         />
         <div
-          className="flex flex-col overflow-hidden"
+          className="grid overflow-hidden"
           style={{
-            maxHeight: catOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: catOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
+          <div className="min-h-0 overflow-hidden flex flex-col">
           <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
           {catsVisible.map((cat) => (
             <ToggleRow
