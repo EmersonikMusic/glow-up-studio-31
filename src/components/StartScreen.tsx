@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop.svg";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
@@ -12,9 +13,10 @@ interface StartScreenProps {
   panelOpen: boolean;
   onPanelToggle: () => void;
   onPanelClose: () => void;
+  loading?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelOpen, onPanelToggle, onPanelClose }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   return (
     <div
@@ -68,11 +70,19 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
           {/* Start button — chunky game-show CTA */}
           <button
             onClick={onStart}
-            className="btn-gameshow mt-10 px-12 py-4 text-lg tracking-[0.18em] uppercase animate-fade-in"
+            disabled={loading}
+            className="btn-gameshow mt-10 px-12 py-4 text-lg tracking-[0.18em] uppercase animate-fade-in inline-flex items-center justify-center gap-2"
             style={{ animationDelay: "180ms" }}
-            aria-label="Start Game"
+            aria-label={loading ? "Loading questions" : "Start Game"}
           >
-            Start Game
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                <span>Loading…</span>
+              </>
+            ) : (
+              "Start Game"
+            )}
           </button>
         </div>
       </div>
