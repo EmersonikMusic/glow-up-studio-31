@@ -552,6 +552,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
               </div>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
