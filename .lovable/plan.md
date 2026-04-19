@@ -1,62 +1,47 @@
 
+## Plan: Start screen + header polish (revised)
 
-## Plan: 3 settings/header polish fixes
+### 1. Replace start screen logo
+Copy `user-uploads://img-TO-logo-full-desktop-2.svg` → `src/assets/img-TO-logo-full-desktop-v2.svg` and update the import in `StartScreen.tsx`. Old file stays in place.
 
-### 1. Tighten gap below "Apply Settings" button (desktop drawer)
-The Apply button container has `pt-3 pb-6 md:pb-5` (line 552). User reports the bottom gap is still bigger than the top gap above Categories. Make it visually balanced:
-- `px-5 pt-3 pb-6 md:pb-5` → `px-5 pt-3 pb-3 md:pb-3`
+### 2. Header: reorder + restyle auth controls
+**New order, left → right:**
+- Logged in: `Username → Logout → About → Settings`
+- Logged out: `(empty logo slot) → About → Login → Settings`
 
-This matches the `mb-3` spacing used between accordion sections, so the Apply button sits with the same rhythm as the section cards above it.
+Changes in `GameHeader.tsx`:
+- Move username pill out of the right-side group into the **left slot** (replacing the empty placeholder). On mobile when logged in, this fills the spacer slot; right-aligned icons stay right-aligned.
+- Reorder right-side actions: Logout comes immediately after username (visually grouped as identity controls), then About, then Settings.
+- Restyle Login as a 36px round icon button (LogIn icon, gold tint, same bg/border as About/Logout/Settings). Drop the "Login" text label, keep `aria-label="Login"`.
+- Logout stays round — just reposition next to username.
+- Username pill keeps current styling (gold text, user icon) with right margin for breathing room.
 
-### 2. Keep header actions right-aligned when logged in (mobile)
-**Root cause** (`GameHeader.tsx` lines 38–47): when `user` is truthy and viewport < `sm`, the logo container gets `hidden`, removing it from the DOM. With only one child left inside `flex justify-between`, the actions group collapses to the left.
+Result: all right-side controls are uniform 36px circles; username + logout cluster on the left as the identity group.
 
-**Fix**: keep an invisible placeholder in the logo's slot on mobile so `justify-between` still pushes actions to the right. Replace the conditional `hidden sm:flex` on the logo container with always-rendered, and inside it conditionally render the `<img>` only on `sm:` and above. The empty `<div>` keeps the flex slot occupied.
+### 3. Restyle "START GAME" CTA
+Rebuild `.btn-gameshow` in `index.css` to match the reference (rounded pill, orange→yellow gradient, deep purple stroke, 3D depth):
+- Background: `linear-gradient(180deg, #FDC70C 0%, #F3903F 55%, #ED683C 100%)`
+- Border: `3px solid #57215B`
+- Border-radius: `9999px` (full pill)
+- Box-shadow: inset top highlight + chunky drop (`0 6px 0 #481D51, 0 10px 20px rgba(0,0,0,0.4)`)
+- Text: white Fredoka One, tracking-wider, with purple text-stroke via `-webkit-text-stroke: 2px #57215B; paint-order: stroke fill`
+- Hover: lift `translateY(-2px)`, brighten. Active: press `translateY(2px)`, reduce shadow
+- Subtle `::after` shine in top-right corner
 
-```tsx
-<div className="items-center flex-shrink-0 select-none flex">
-  <img
-    src={toLogoSm}
-    alt="Trivolivia"
-    className={`h-8 w-auto ${user ? "hidden sm:block" : "block"}`}
-    draggable={false}
-  />
-</div>
-```
+Update `StartScreen.tsx` button: bump size to `px-14 py-5 text-xl`, keep loading spinner state.
 
-Result: logged-in mobile users see an empty left slot + right-aligned username/logout/settings — identical alignment to the logged-out state. No layout shift on login/logout.
-
-### 3. Match Settings drawer Back button to AboutScreen's back arrow
-AboutScreen uses (line 64–74): a 36px circular pill button with `ArrowLeft` icon (gold), translucent white bg, white border. Currently SettingsPanel uses a text-style "‹ Back" pill.
-
-Replace the desktop-only Back block in SettingsPanel (lines 287–297) with the same circular icon button as AboutScreen — but positioned top-left of the drawer rather than absolute top-right:
-
-```tsx
-{!isMobile && (
-  <div className="px-5 pt-4 md:px-6 md:pt-5">
-    <button
-      onClick={onClose}
-      aria-label="Back"
-      className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:brightness-125 active:scale-95"
-      style={{
-        background: "rgba(255, 255, 255, 0.08)",
-        border: "1px solid rgba(255, 255, 255, 0.15)",
-      }}
-    >
-      <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
-    </button>
-  </div>
-)}
-```
-
-Swap the `ChevronLeft` import for `ArrowLeft` (keep `ChevronDown` as-is).
+### 4. Curved tagline under logo
+Add "EARTH'S DEEPEST TRIVIA SOURCE" directly under the logo in `StartScreen.tsx` using inline SVG `<textPath>` on a shallow concave-up arc that mirrors the logo's bottom curve.
+- Fredoka One, gold (`hsl(var(--game-gold))`), uppercase, letter-spacing `0.2em`
+- ~18px desktop / ~13px mobile, drop-shadow filter for depth
+- Fades in at ~90ms (between logo at 0ms and CTA at 180ms)
 
 ### Files touched
-- `src/components/SettingsPanel.tsx` — swap Back button styling + icon, tighten Apply button bottom padding.
-- `src/components/GameHeader.tsx` — keep logo slot in DOM on mobile when logged in; only hide the img.
+- `src/components/StartScreen.tsx` — new logo import, curved tagline SVG, larger CTA
+- `src/components/GameHeader.tsx` — move username to left, reorder right group as Logout → About → Settings, restyle Login as round icon
+- `src/index.css` — rewrite `.btn-gameshow`
+- `src/assets/img-TO-logo-full-desktop-v2.svg` — new file from upload
 
 ### Out of scope
-- No changes to AboutScreen.
-- No changes to mobile bottom-sheet behavior.
-- No content/copy changes.
-
+- No changes to AboutScreen, Settings, or game flow
+- Old logo file retained
