@@ -153,8 +153,8 @@ function ToggleRow({
 }) {
   return (
     <div
-      className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)]"
-      style={{ borderBottom: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
+      className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)] border-b border-[hsl(var(--game-card-border))]"
+      style={{ padding: "12px 20px", minHeight: "44px" }}
       onClick={onClick}
     >
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
@@ -283,19 +283,21 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
   const panelContent = (
     <>
-      {/* Back button */}
-      <div className="px-5 pt-4 md:px-6 md:pt-5">
-        <button
-          onClick={onClose}
-          className="inline-flex items-center gap-1 text-xs font-black tracking-widest uppercase text-white/70 hover:text-[hsl(185_70%_55%)] transition-colors rounded-md px-2 py-1 -ml-2"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
-        </button>
-      </div>
+      {/* Back button (desktop only) */}
+      {!isMobile && (
+        <div className="px-5 pt-4 md:px-6 md:pt-5">
+          <button
+            onClick={onClose}
+            className="inline-flex items-center gap-1 text-xs font-black tracking-widest uppercase text-white/70 hover:text-[hsl(185_70%_55%)] transition-colors rounded-md px-2 py-1 -ml-2"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </button>
+        </div>
+      )}
 
       {/* Title */}
-      <div className="px-5 pt-2 pb-3 md:px-6 md:pt-3 md:pb-5">
+      <div className="px-5 pt-2 pb-2 md:px-6 md:pt-2 md:pb-3">
         <h2
           className="text-xl md:text-3xl font-black leading-none tracking-tight uppercase"
           style={{
@@ -311,7 +313,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           CUSTOMIZE YOUR EXPERIENCE
         </h2>
       </div>
-      <div className="px-5 md:px-6 mb-3 md:mb-5">
+      <div className="px-5 md:px-6 mb-2 md:mb-3">
         <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
       </div>
 
@@ -442,7 +444,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           }}
         >
           <div className="min-h-0 overflow-hidden">
-          <div className="px-5 py-5 flex flex-col gap-6">
+          <div className="px-5 py-4 flex flex-col gap-5">
             {/* Questions */}
             <div>
               <div className="flex items-baseline gap-1.5 mb-3">
@@ -547,7 +549,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-4 pb-10 md:pb-8">
+      <div className="px-5 pt-3 pb-6 md:pb-5">
         <button
           onClick={handleApply}
           className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"
