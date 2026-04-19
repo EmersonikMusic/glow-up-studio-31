@@ -9,6 +9,7 @@ interface StartScreenProps {
   onStart: () => void;
   onAbout: () => void;
   onLogin: () => void;
+  onHowToPlay: () => void;
   onApply: (settings: GameSettings) => void;
   panelOpen: boolean;
   onPanelToggle: () => void;
@@ -16,7 +17,7 @@ interface StartScreenProps {
   loading?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   return (
     <div
@@ -123,6 +124,15 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             ) : (
               "Start Game"
             )}
+          </button>
+
+          {/* How Do I Play link */}
+          <button
+            onClick={onHowToPlay}
+            className="mt-3 text-xs underline underline-offset-4 text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
+            style={{ animationDelay: "240ms" }}
+          >
+            How Do I Play?
           </button>
         </div>
       </div>
