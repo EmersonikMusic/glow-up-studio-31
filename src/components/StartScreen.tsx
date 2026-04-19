@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import logo from "@/assets/img-TO-logo-full-desktop.svg";
+import logo from "@/assets/img-TO-logo-full-desktop-v2.svg";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
@@ -67,11 +67,51 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             />
           </div>
 
+          {/* Curved tagline */}
+          <div
+            className="w-full max-w-xl mt-2 animate-fade-in"
+            style={{ animationDelay: "90ms" }}
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 600 60"
+              className="w-full h-auto"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <defs>
+                {/* Concave-up arc mirroring the logo's bottom curve */}
+                <path
+                  id="tagline-arc"
+                  d="M 30 42 Q 300 12 570 42"
+                  fill="none"
+                />
+                <filter id="tagline-shadow" x="-10%" y="-10%" width="120%" height="140%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.45" />
+                </filter>
+              </defs>
+              <text
+                fill="hsl(42 100% 55%)"
+                style={{
+                  fontFamily: "'Fredoka One', 'Russo One', sans-serif",
+                  fontWeight: 900,
+                  fontSize: "26px",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                }}
+                filter="url(#tagline-shadow)"
+              >
+                <textPath href="#tagline-arc" startOffset="50%" textAnchor="middle">
+                  Earth's Deepest Trivia Source
+                </textPath>
+              </text>
+            </svg>
+          </div>
+
           {/* Start button — chunky game-show CTA */}
           <button
             onClick={onStart}
             disabled={loading}
-            className="btn-gameshow mt-10 px-12 py-4 text-lg tracking-[0.18em] uppercase animate-fade-in inline-flex items-center justify-center gap-2"
+            className="btn-gameshow mt-8 px-14 py-5 text-xl tracking-[0.18em] uppercase animate-fade-in inline-flex items-center justify-center gap-2"
             style={{ animationDelay: "180ms" }}
             aria-label={loading ? "Loading questions" : "Start Game"}
           >
