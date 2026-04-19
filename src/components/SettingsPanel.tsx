@@ -26,6 +26,8 @@ interface SettingsPanelProps {
   onClose: () => void;
   onAbout?: () => void;
   onApply?: (settings: GameSettings) => void;
+  gameInProgress?: boolean;
+  currentSettings?: GameSettings;
 }
 
 const categories = [
