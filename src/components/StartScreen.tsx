@@ -90,7 +90,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
                 </filter>
               </defs>
               <text
-                fill="hsl(42 100% 55%)"
+                fill="hsl(185 70% 55%)"
                 style={{
                   fontFamily: "'Fredoka One', 'Russo One', sans-serif",
                   fontWeight: 900,
