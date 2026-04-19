@@ -168,7 +168,7 @@ function ToggleRow({
   );
 }
 
-export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply, gameInProgress = false, currentSettings }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
   const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
