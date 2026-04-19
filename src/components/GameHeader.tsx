@@ -44,7 +44,7 @@ export default function GameHeader({
           {/* Username pill — only when logged in, sits left of Logout */}
           {user && (
             <span
-              className="flex items-center gap-1.5 h-9 px-4 text-xs font-bold tracking-wider uppercase truncate max-w-[120px] sm:max-w-[240px] rounded-full"
+              className="flex items-center gap-1.5 h-9 px-4 text-xs font-bold tracking-wider uppercase truncate max-w-[200px] sm:max-w-[260px] rounded-full"
               style={{
                 color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",
