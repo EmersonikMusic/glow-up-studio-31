@@ -1,21 +1,29 @@
 
-## Plan: Unify Sign In modal CTA + close-button hovers
+## Plan: Fix "Failed to fetch" on game start
 
-### 1. Sign In button → PrimaryCTA
-In `src/components/LoginScreen.tsx`, replace the existing submit `<button class="btn-gameshow ...">` with `<PrimaryCTA type="submit" disabled={isLoading} className="w-full">`. Keep the `LogIn` icon and dynamic label ("Loading..." / "Sign In" / "Create Account") as children. Import `PrimaryCTA` at the top.
+### Root cause
+`src/lib/triviaApi.ts` calls `https://www.triviolivia.com/api/questions?...` (no trailing slash). The server responds **301 → `/api/questions/?...`**. The browser fails the cross-origin redirect with `TypeError: Failed to fetch`. Verified via curl: the trailing-slash URL returns `200` with proper `access-control-allow-origin` for the preview origin.
 
-### 2. Modal back/close buttons — unified turquoise-outline hover
-Standardize the small circular back/close button on three modals to match the header pills' `.nav-btn` hover (turquoise outline + subtle bg lift):
+### Fix (single file: `src/lib/triviaApi.ts`)
 
-- **`src/components/LoginScreen.tsx`** — the top-left `<ArrowLeft>` back button currently uses inline `background`/`border` styles with a `hover:brightness-125`. Add the `nav-btn` class and remove the brightness hover so the global `.nav-btn:hover` rule takes over (matching About/HowToPlay close buttons).
-- **`src/components/SettingsPanel.tsx`** — read the file to find its close/back button. If it's not already using `.nav-btn`, add it and strip any conflicting hover (glow/brightness) so it matches.
-- **`src/components/AboutScreen.tsx` & `src/components/HowToPlayScreen.tsx`** — already use `.nav-btn` per the previous change; leave as-is (reference baseline).
+**1. Add trailing slash to base URL**
+```ts
+const API_BASE = "https://www.triviolivia.com/api/questions/";
+```
+And in `buildUrl`, change `${API_BASE}?${params}` → `${API_BASE}?${params}` (works as-is once the slash is in `API_BASE`).
 
-I'll read `LoginScreen.tsx` (already visible), `SettingsPanel.tsx`, and `index.css` (`.nav-btn:hover` rule) before editing to confirm exact class swaps and avoid breaking layout.
-
-### Files touched
-- Edit: `src/components/LoginScreen.tsx` (CTA swap, back-button hover)
-- Edit: `src/components/SettingsPanel.tsx` (close-button hover only — confirm after read)
+**2. Adapt to current API response shape**
+Live response uses `eras: number[]` (array of era IDs), not `era_name: string`. Update `RawApiQuestion` and `adaptQuestion`:
+- Add `eras?: number[]` to the interface (keep `era_name?` as fallback for safety).
+- Build a reverse lookup `ID_TO_ERA` from the existing `ERA_IDS` dict.
+- In `adaptQuestion`: pick the first id from `raw.eras` (if present) → map to era name; else use `raw.era_name`; else `"2020s"`.
 
 ### Out of scope
-- No changes to PrimaryCTA itself, modal layouts, form logic, or any other component.
+- The unrelated `FadeIcon` ref warning in `SettingsPanel` console (cosmetic, no functional impact).
+- No changes to gameplay flow, settings, or any UI component — game-state machine and timers in `TriviaGame.tsx` are intact and were working before; the only break is the network call.
+
+### Verification after fix
+End-to-end: open Settings → adjust questions/categories → Apply → Start Game → answer reveals on timer → pause works → finish → Play Again returns to start.
+
+### Files touched
+- `src/lib/triviaApi.ts` (URL + adapter only)
