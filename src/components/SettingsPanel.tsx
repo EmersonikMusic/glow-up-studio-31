@@ -321,29 +321,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setCatOpen((v) => !v)}
         />
         <div
-          className="flex flex-col overflow-hidden"
+          className="grid"
           style={{
-            maxHeight: catOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: catOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
-          {catsVisible.map((cat) => (
-            <ToggleRow
-              key={cat}
-              label={cat}
-              active={selectedCategories.includes(cat)}
-              onClick={() => toggleCategory(cat)}
-            />
-          ))}
-          <div
-            className="flex flex-col overflow-hidden"
-            style={{
-              maxHeight: catExpanded ? `${catsExtra.length * EXTRA_ROW_H}px` : "0px",
-              transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            {catsExtra.map((cat) => (
+          <div className="min-h-0 overflow-hidden flex flex-col">
+            <ToggleRow label="All Categories" active={allCatsSelected} onClick={toggleAllCategories} />
+            {catsVisible.map((cat) => (
               <ToggleRow
                 key={cat}
                 label={cat}
@@ -351,8 +337,26 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 onClick={() => toggleCategory(cat)}
               />
             ))}
+            <div
+              className="grid"
+              style={{
+                gridTemplateRows: catExpanded ? "1fr" : "0fr",
+                transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <div className="min-h-0 overflow-hidden flex flex-col">
+                {catsExtra.map((cat) => (
+                  <ToggleRow
+                    key={cat}
+                    label={cat}
+                    active={selectedCategories.includes(cat)}
+                    onClick={() => toggleCategory(cat)}
+                  />
+                ))}
+              </div>
+            </div>
+            <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
           </div>
-          <ExpandButton expanded={catExpanded} onToggle={() => setCatExpanded((v) => !v)} />
         </div>
       </section>
 
@@ -368,21 +372,23 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setDiffOpen((v) => !v)}
         />
         <div
-          className="flex flex-col overflow-hidden"
+          className="grid"
           style={{
-            maxHeight: diffOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: diffOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
-          {difficulties.map((diff) => (
-            <ToggleRow
-              key={diff}
-              label={diff}
-              active={selectedDifficulties.includes(diff)}
-              onClick={() => toggleDiff(diff)}
-            />
-          ))}
+          <div className="min-h-0 overflow-hidden flex flex-col">
+            <ToggleRow label="All Difficulties" active={allDiffsSelected} onClick={toggleAllDiffs} />
+            {difficulties.map((diff) => (
+              <ToggleRow
+                key={diff}
+                label={diff}
+                active={selectedDifficulties.includes(diff)}
+                onClick={() => toggleDiff(diff)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -398,28 +404,32 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setEraOpen((v) => !v)}
         />
         <div
-          className="flex flex-col overflow-hidden"
+          className="grid"
           style={{
-            maxHeight: eraOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: eraOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
-          <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
-          {erasVisible.map((era) => (
-            <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
-          ))}
-          <div
-            className="flex flex-col overflow-hidden"
-            style={{
-              maxHeight: eraExpanded ? `${erasExtra.length * EXTRA_ROW_H}px` : "0px",
-              transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            {erasExtra.map((era) => (
+          <div className="min-h-0 overflow-hidden flex flex-col">
+            <ToggleRow label="All Eras" active={allErasSelected} onClick={toggleAllEras} />
+            {erasVisible.map((era) => (
               <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
             ))}
+            <div
+              className="grid"
+              style={{
+                gridTemplateRows: eraExpanded ? "1fr" : "0fr",
+                transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <div className="min-h-0 overflow-hidden flex flex-col">
+                {erasExtra.map((era) => (
+                  <ToggleRow key={era} label={era} active={selectedEras.includes(era)} onClick={() => toggleEra(era)} />
+                ))}
+              </div>
+            </div>
+            <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
           </div>
-          <ExpandButton expanded={eraExpanded} onToggle={() => setEraExpanded((v) => !v)} />
         </div>
       </section>
 
@@ -435,12 +445,13 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onToggle={() => setGameOpen((v) => !v)}
         />
         <div
-          className="overflow-hidden"
+          className="grid"
           style={{
-            maxHeight: gameOpen ? `${SECTION_MAX}px` : "0px",
-            transition: "max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            gridTemplateRows: gameOpen ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
+          <div className="min-h-0 overflow-hidden">
           <div className="px-5 py-5 flex flex-col gap-6">
             {/* Questions */}
             <div>
@@ -540,6 +551,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </section>
