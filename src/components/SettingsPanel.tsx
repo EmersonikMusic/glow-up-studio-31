@@ -1,4 +1,4 @@
-import { ChevronDown, Settings } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -174,16 +174,14 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
 
-  // Section collapsed state — Game Settings open by default
-  const [catOpen, setCatOpen] = useState(false);
-  const [diffOpen, setDiffOpen] = useState(false);
-  const [eraOpen, setEraOpen] = useState(false);
-  const [gameOpen, setGameOpen] = useState(true);
-
-  // Item-level expand (show more rows within section)
-  const [catExpanded, setCatExpanded] = useState(false);
-  const [diffExpanded, setDiffExpanded] = useState(false);
-  const [eraExpanded, setEraExpanded] = useState(false);
+  // Single open section — accordion behavior. Game Settings open by default.
+  const [openSection, setOpenSection] = useState<SectionKey>("game");
+  const toggleSection = (key: Exclude<SectionKey, null>) =>
+    setOpenSection((cur) => (cur === key ? null : key));
+  const catOpen = openSection === "categories";
+  const diffOpen = openSection === "difficulty";
+  const eraOpen = openSection === "eras";
+  const gameOpen = openSection === "game";
 
   // --- Categories ---
   const allCatsSelected = categories.every((c) => selectedCategories.includes(c));
@@ -198,8 +196,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     const on = selectedCategories.includes(cat);
     setSelectedCategories(on ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
   };
-  const catsVisible = categories.slice(0, 5);
-  const catsExtra = categories.slice(5);
 
   // --- Difficulties ---
   const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
@@ -228,10 +224,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     const on = selectedEras.includes(era);
     setSelectedEras(on ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
   };
-  const diffsVisible = difficulties.slice(0, 5);
-  const diffsExtra = difficulties.slice(5);
-  const erasVisible = eras.slice(0, 5);
-  const erasExtra = eras.slice(5);
 
   const handleApply = () => {
     onApply?.({ numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras });
