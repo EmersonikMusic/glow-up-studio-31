@@ -339,6 +339,8 @@ export default function TriviaGame() {
         onToggle={() => setPanelOpen((v) => !v)}
         onClose={() => setPanelOpen(false)}
         onApply={handleApply}
+        gameInProgress={gameState === "playing" || gameState === "answered"}
+        currentSettings={settings}
       />
 
       {/* Login modal */}

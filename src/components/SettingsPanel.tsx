@@ -552,7 +552,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           onClick={handleApply}
           className="btn-gameshow w-full py-4 text-sm tracking-[0.18em] uppercase"
         >
-          Apply Settings
+          {applyLabel}
         </button>
       </div>
     </>
