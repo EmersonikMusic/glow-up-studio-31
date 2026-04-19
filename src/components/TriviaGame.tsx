@@ -10,6 +10,7 @@ import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
+import HowToPlayScreen from "./HowToPlayScreen";
 import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
 import type { GameSettings } from "./SettingsPanel";
@@ -54,6 +55,7 @@ export default function TriviaGame() {
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [showLogin, setShowLogin] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -189,6 +191,7 @@ export default function TriviaGame() {
           onStart={handleStart}
           onAbout={() => setGameState("about")}
           onLogin={() => setShowLogin(true)}
+          onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
@@ -197,6 +200,7 @@ export default function TriviaGame() {
         />
         <AboutScreen onClose={() => setGameState("start")} />
         {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+        {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
       </>
     );
   }
@@ -208,6 +212,7 @@ export default function TriviaGame() {
           onStart={handleStart}
           onAbout={() => setGameState("about")}
           onLogin={() => setShowLogin(true)}
+          onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
@@ -215,6 +220,7 @@ export default function TriviaGame() {
           loading={loading}
         />
         {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+        {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
       </>
     );
   }
