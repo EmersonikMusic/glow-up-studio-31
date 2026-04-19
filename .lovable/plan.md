@@ -1,27 +1,36 @@
 
-## Plan: Refine Start Game CTA — height, gradient direction, hover
+## Plan: Add "How Do I Play?" link + modal
 
-### Changes (StartScreen.tsx, CTA button only)
+### 1. New component: `HowToPlayScreen.tsx`
+Mirror `AboutScreen.tsx` exactly (same modal shell, animation, close button, typography, glassmorphism). Only the content differs.
 
-**1. Equal padding (taller button)**
-- Current: `h-12 px-10` → height 48px, horizontal padding 40px each side. Vertical text padding ≈ 12px (top/bottom inside 48px with 20px text). Asymmetric.
-- New: `h-14 px-10` → height 56px gives ~18px vertical padding, closer to horizontal feel. (Going to `h-16` would feel chunky for a pill; `h-14` is the sweet spot.)
+**Content sections** (headings + short paragraphs):
+- **Customize Your Game** — pick categories & eras, set difficulty, choose number of questions per game, and the speed at which they rotate.
+- **How to Play** — apply your settings and start. Each question displays for the time you chose. Try to answer before the timer runs out — the answer reveals when time is up.
+- **Pause Anytime** — you can pause the game at any time.
+- **Changing Settings Mid-Game** — open the settings panel, choose new settings, and apply. Note: this starts a new game.
 
-**2. Reverse gradient (red at bottom)**
-- Current: `linear-gradient(180deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)` — red top, yellow bottom.
-- New: flip the angle to `0deg` (or equivalently reverse stops). Using `0deg` is the cleanest:
-  - `bg-[linear-gradient(0deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)]`
-  - Result: yellow top → red bottom.
+Before writing, I'll read `AboutScreen.tsx` to copy its exact modal structure (overlay, container classes, close button SVG, animation classes, heading font).
 
-**3. Match header pill hover**
-- Inspecting `GameHeader.tsx` Login/About buttons: they have `bg: rgba(255,255,255,0.08)`, `border: 1px solid rgba(255,255,255,0.15)`, `transition-all duration-200 active:scale-95`. They rely on the global `.nav-btn` class for hover styling — no explicit Tailwind hover classes in the JSX.
-- Need to read `index.css` to see what `.nav-btn:hover` actually does, then mirror it on the CTA. (Currently the CTA hovers to solid turquoise which is NOT what the header pills do.)
+### 2. Wire modal state in `Index.tsx`
+- Read `Index.tsx` to confirm how `AboutScreen` is currently toggled (likely a `showAbout` boolean + `onAbout` handler passed to `StartScreen`).
+- Add a parallel `showHowToPlay` state and an `onHowToPlay` handler.
+- Render `<HowToPlayScreen open={showHowToPlay} onClose={...} />` alongside `AboutScreen`.
 
-### Need to verify before finalizing
-Read `src/index.css` for the `.nav-btn:hover` rule so the CTA hover matches exactly (likely a subtle bg lightening + border brightening, not a full color swap).
+### 3. Add link in `StartScreen.tsx`
+- Add a new prop `onHowToPlay: () => void` to `StartScreenProps`.
+- Render a `<button>` directly below the Start Game CTA:
+  - Text: "How Do I Play?"
+  - Classes: `mt-3 text-xs underline underline-offset-4 text-[hsl(185_70%_55%)] hover:text-[hsl(45_90%_55%)] transition-colors animate-fade-in`
+  - `text-xs` = 12px (well above the 9px minimum, still small/secondary).
+  - Turquoise matches the tagline color already in use; gold hover matches the existing gold accent token.
+  - `animationDelay: "240ms"` so it fades in just after the CTA.
 
 ### Files touched
-- `src/components/StartScreen.tsx` — CTA `className` only (height, gradient angle, hover classes/style)
+- **New**: `src/components/HowToPlayScreen.tsx`
+- **Edit**: `src/components/StartScreen.tsx` (add prop + link)
+- **Edit**: `src/pages/Index.tsx` (state + render modal + pass prop)
 
 ### Out of scope
-- No changes to border, font, text-shadow, loading state, animation, or any other element.
+- No changes to AboutScreen, header, CTA button, settings panel, or any gameplay logic.
+- No new fonts or design tokens.
