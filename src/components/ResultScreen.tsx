@@ -1,5 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import mascotImg from "@/assets/Mascot.svg";
+import PrimaryCTA from "./PrimaryCTA";
 
 interface ResultScreenProps {
   onRestart: () => void;
@@ -56,13 +57,10 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
 
 
           {/* CTA */}
-          <button
-            onClick={onRestart}
-            className="btn-gameshow group w-full flex items-center justify-center gap-2 py-4 text-sm tracking-[0.18em] uppercase"
-          >
+          <PrimaryCTA onClick={onRestart} className="group" aria-label="Play Again">
             <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
             Play Again
-          </button>
+          </PrimaryCTA>
         </div>
       </div>
     </div>
