@@ -182,12 +182,10 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={isLoading}
-            className="cta-glass w-full py-3 rounded-xl font-black text-sm tracking-widest uppercase transition-all disabled:opacity-50 mt-1"
+            className="btn-gameshow w-full py-3 text-sm tracking-widest uppercase mt-1 flex items-center justify-center gap-2"
           >
-            <span className="flex items-center justify-center gap-2">
-              <LogIn className="w-4 h-4" />
-              {isLoading ? "Loading..." : mode === "login" ? "Sign In" : "Create Account"}
-            </span>
+            <LogIn className="w-4 h-4" />
+            {isLoading ? "Loading..." : mode === "login" ? "Sign In" : "Create Account"}
           </button>
 
           <button
