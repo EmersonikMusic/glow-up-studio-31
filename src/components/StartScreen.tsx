@@ -107,12 +107,12 @@ export default function StartScreen({ onStart, onAbout, onLogin, onApply, panelO
             </svg>
           </div>
 
-          {/* Start button — chunky game-show CTA */}
+          {/* Start button — logo-aligned CTA */}
           <button
             onClick={onStart}
             disabled={loading}
-            className="btn-gameshow mt-8 px-14 py-5 text-xl tracking-[0.18em] uppercase animate-fade-in inline-flex items-center justify-center gap-2"
-            style={{ animationDelay: "180ms" }}
+            className="mt-8 h-12 px-10 rounded-full border-2 border-[#57215b] bg-[linear-gradient(180deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)] hover:bg-[hsl(185,70%,55%)] hover:bg-none text-white text-xl font-['Fredoka_One'] tracking-[0.18em] uppercase shadow-lg shadow-black/30 transition-colors duration-200 inline-flex items-center justify-center gap-2 animate-fade-in disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ textShadow: "0 2px 3px rgba(87,33,91,0.6)", animationDelay: "180ms" }}
             aria-label={loading ? "Loading questions" : "Start Game"}
           >
             {loading ? (
