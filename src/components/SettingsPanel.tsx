@@ -138,7 +138,17 @@ function SectionHeader({
   );
 }
 
-function ToggleRow({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function ToggleRow({
+  label,
+  active,
+  onClick,
+  preserveCase = false,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  preserveCase?: boolean;
+}) {
   return (
     <div
       className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)]"
@@ -147,39 +157,12 @@ function ToggleRow({ label, active, onClick }: { label: string; active: boolean;
     >
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
       <span
-        className="text-xs font-black tracking-widest uppercase transition-colors"
+        className={`text-xs font-black tracking-widest transition-colors ${preserveCase ? "normal-case" : "uppercase"}`}
         style={{ color: active ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))" }}
       >
         {label}
       </span>
     </div>
-  );
-}
-
-function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
-  return (
-    <button
-      onClick={onToggle}
-      className="flex items-center justify-center w-full transition-colors hover:bg-[rgba(0,0,0,0.2)] rounded-b-2xl active:scale-95"
-      style={{ borderTop: "1px solid hsl(var(--game-card-border))", padding: "12px 20px", minHeight: "44px" }}
-      aria-label={expanded ? "Show less" : "Show more"}
-    >
-      {expanded ? (
-        <span className="text-[10px] font-black tracking-[0.2em] uppercase" style={{ color: "hsl(185 70% 55%)" }}>
-          Show less ↑
-        </span>
-      ) : (
-        <div className="flex items-center gap-[5px]">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="rounded-full flex-shrink-0"
-              style={{ width: "6px", height: "6px", background: "hsl(185 70% 55%)" }}
-            />
-          ))}
-        </div>
-      )}
-    </button>
   );
 }
 
