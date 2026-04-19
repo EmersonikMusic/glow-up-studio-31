@@ -43,10 +43,9 @@ const DEFAULT_SETTINGS: GameSettings = {
 export default function TriviaGame() {
   const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [activeQuestions, setActiveQuestions] = useState(() =>
-    pickRandomQuestions(questions, DEFAULT_SETTINGS)
-  );
+  const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
@@ -131,18 +130,31 @@ export default function TriviaGame() {
     setSettings(newSettings);
   }, []);
 
-  const handleStart = useCallback(() => {
+  const handleStart = useCallback(async () => {
+    if (loading) return;
     clearAnswerTimer();
-    setPaused(false);
-    setPanelOpen(false);
-    const picked = pickRandomQuestions(questions, settings);
-    setActiveQuestions(picked);
-    setQuestionIndex(0);
-    setScore(0);
-    setAnimKey((k) => k + 1);
-    setGameState("playing");
-    startCountdown(settings.timePerQuestion);
-  }, [settings, startCountdown, clearAnswerTimer]);
+    setLoading(true);
+    try {
+      const data = await fetchAndStartGame(settings);
+      if (!data.length) {
+        toast.error("No questions matched your filters. Try widening them.");
+        return;
+      }
+      setActiveQuestions(data);
+      setQuestionIndex(0);
+      setScore(0);
+      setAnimKey((k) => k + 1);
+      setPaused(false);
+      setPanelOpen(false);
+      setGameState("playing");
+      startCountdown(settings.timePerQuestion);
+    } catch (err) {
+      console.error("fetchAndStartGame failed:", err);
+      toast.error("Couldn't load questions. Check your connection or try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, settings, startCountdown, clearAnswerTimer]);
 
   const handleNext = useCallback(() => {
     if (gameState !== "answered") return;
