@@ -1,21 +1,48 @@
 
-## Plan: Stop clipping the leading/trailing "E" in the tagline
+## Plan: Restyle Start Game CTA to match logo aesthetic
 
-### Root cause
-The SVG itself uses `viewBox="0 0 600 60"` and `preserveAspectRatio="xMidYMid meet"`. The text path runs from x=60 → x=540 with `font-size: 24px` and `letter-spacing: 0.16em`. The drop-shadow filter region is `x="-5%" y="-20%" width="110%" height="160%"` — but `filter` regions clip glyphs that render outside that region. Because the textPath is centered on a 480px arc and the rendered string is wider than 480px once kerning + shadow are added, the first "E" of EARTH and last "E" of SOURCE fall outside the filter's horizontal region and get masked away.
+### Current state
+The Start Game button uses `.btn-gameshow` (likely a thick, multi-color game-show style with heavy purple stroke on text). User wants it visually aligned with the logo's warm gradient (red → orange → yellow per `btn-startgame.svg` / logo) but with:
+- A **sleeker outline** like the Login/About pills (`h-9 px-4`, `rounded-full`, thin border, glassy bg).
+- The **same turquoise hover** the header pills use.
+- **Legible text**: drop the purple `-webkit-text-stroke`, switch to a cleaner display font.
 
-### Fix (StartScreen.tsx, lines ~76–105)
-1. **Widen the filter region** so it cannot clip glyphs:
-   - `x="-20%" y="-50%" width="140%" height="200%"` (generous on both axes; covers shadow + any glyph overflow).
-2. **Give the textPath more arc length** so the string is not forced past the path endpoints:
-   - Path: `d="M 30 46 Q 300 14 570 46"` (endpoints at x=30 and x=570 inside the 600 viewBox).
-3. **Add horizontal breathing room in the SVG itself** in case glyphs still extend past the path ends:
-   - Change `viewBox` from `0 0 600 60` → `-20 0 640 60` so x=-20…620 is renderable.
-4. **Verify** with the browser tool at 390px (current viewport): screenshot the start screen and confirm both the leading "E" in EARTH and trailing "E" in SOURCE render fully. Re-check at 768px and 1280px.
+### Reference colors (from logo SVG)
+Linear gradient top→bottom: `#e93e3a` (red) → `#ed683c` → `#f3903f` (orange) → `#fdc70c` (gold) → `#fff33b` (yellow). Outline color in logo: `#57215b` (deep purple) — but user wants a sleeker outline, so we'll use a thin 1–2px purple border instead of the logo's chunky 20px stroke.
+
+### Changes (StartScreen.tsx, CTA button only)
+Replace the `btn-gameshow` className with inline Tailwind + a small inline style for the gradient:
+
+- **Shape**: `rounded-full px-10 h-12` (taller than header pills since it's the primary CTA, but same rounded-full silhouette).
+- **Background**: `linear-gradient(180deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)` (mirrors logo gradient).
+- **Border**: `border-2 border-[#57215b]` — thin, sleek purple outline echoing logo stroke color.
+- **Shadow**: subtle `shadow-lg shadow-black/30` for depth without the chunky drop-shadow.
+- **Text**: 
+  - Font: `font-['Fredoka_One']` (already used for headings per memory) — clean, rounded, highly legible.
+  - Color: solid white `text-white` (no purple text-stroke).
+  - Subtle dark text-shadow for readability over the bright gradient: `textShadow: "0 2px 3px rgba(87, 33, 91, 0.6)"`.
+  - Keep `text-xl tracking-[0.18em] uppercase`.
+- **Hover**: turquoise transition matching header pills — on hover, swap background to the turquoise accent `hsl(185 70% 55%)` and keep border purple. Use `hover:bg-[hsl(185_70%_55%)] hover:bg-none` (the `bg-none` is needed to clear the gradient since Tailwind hover can't override inline `background`).
+  - Implementation note: drive both default + hover via Tailwind classes (no inline `background`), using a custom `bg-[linear-gradient(...)]` arbitrary value so `hover:bg-[hsl(...)]` cleanly replaces it.
+- **Loading state**: keep the `Loader2` spinner + "Loading…" label; styling inherits.
+- **Animation**: keep `animate-fade-in` and the existing `animationDelay: 180ms`.
+
+### Final className sketch
+```
+rounded-full h-12 px-10 border-2 border-[#57215b]
+bg-[linear-gradient(180deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)]
+hover:bg-[hsl(185,70%,55%)] hover:bg-none
+text-white text-xl font-['Fredoka_One'] tracking-[0.18em] uppercase
+shadow-lg shadow-black/30 transition-colors duration-200
+inline-flex items-center justify-center gap-2 animate-fade-in
+disabled:opacity-60 disabled:cursor-not-allowed
+```
+Plus inline `style={{ textShadow: "0 2px 3px rgba(87,33,91,0.6)", animationDelay: "180ms" }}`.
 
 ### Files touched
-- `src/components/StartScreen.tsx` — viewBox, arc path, filter region only
+- `src/components/StartScreen.tsx` — CTA button className + style only
 
 ### Out of scope
-- No font-size, letter-spacing, color, or copy changes
-- No header / username pill changes
+- No changes to `.btn-gameshow` class definition (left in place; just unused here).
+- No header, tagline, logo, or layout changes.
+- No new font imports — Fredoka One is already loaded per the existing tagline/heading usage.
