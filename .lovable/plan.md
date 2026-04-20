@@ -1,60 +1,79 @@
 
 
-## Plan: Fix "Play Again" to fully reset game like first Start
+## Plan: Refactor + Typography Consolidation
 
-### Problem
-On the Result screen, clicking "Play Again" calls `handleRestart`, which sets `gameState` back to `"start"`. The user then sees the Start screen and must click "Start Game" again — which should trigger a fresh fetch + countdown. But the report says the countdown timer and animation aren't resetting.
+Combines the previously approved refactor with a new typography pass. Zero behavior changes; visual changes limited to fonts.
 
-Looking at `handleRestart` in `TriviaGame.tsx`:
+### Part A — Refactor (unchanged from prior plan)
+
+1. **NEW** `src/data/gameOptions.ts` — `ALL_CATEGORIES`, `ALL_DIFFICULTIES`, `ALL_ERAS`, `GameSettings`, `DEFAULT_SETTINGS` (single source of truth; remove duplicates from `TriviaGame.tsx` + `SettingsPanel.tsx`).
+2. **NEW** `src/hooks/useCountdown.ts` — pausable interval hook used twice in `TriviaGame` (question + answer countdowns).
+3. **MOD** `src/components/TriviaGame.tsx` — extract `runFetchAndStart` (shared by `handleStart`/`handleApply`) and `advanceOrFinish` (shared by `handleNext` + answer-timeout effect). Remove unused `isMobile` import.
+4. **MOD** `src/components/SettingsPanel.tsx` — extract local `FilterSection` (Categories/Difficulties/Eras) and `StepSlider` (3 numeric sliders). Byte-identical rendered markup.
+
+### Part B — Typography Consolidation
+
+Goal: every text element uses one of three font roles. No more ad-hoc `font-['Russo One']`, `font-['Fredoka One']`, `Nunito`, etc.
+
+#### B1. Load Rubik + Quicksand, drop unused families
+**`index.html`** — replace the current Google Fonts link:
+```html
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+```
+Remove Fredoka One, Russo One, Nunito.
+
+#### B2. Add semantic font tokens
+**`tailwind.config.ts`** — extend `theme.fontFamily`:
 ```ts
-const handleRestart = useCallback(() => {
-  clearTimer();
-  clearAnswerTimer();
-  setPaused(false);
-  setQuestionIndex(0);
-  setScore(0);
-  setGameState("start");
-  setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
-  setAnimKey((k) => k + 1);
-}, [clearTimer, clearAnswerTimer]);
+fontFamily: {
+  heading: ['Rubik', 'system-ui', 'sans-serif'],     // weight 800
+  subheading: ['Rubik', 'system-ui', 'sans-serif'],  // weight 700
+  body: ['Quicksand', 'system-ui', 'sans-serif'],    // weight 600
+}
 ```
 
-Issues:
-1. `countdown` state is **not reset** — it's left at whatever value it had when the previous game ended (often `0`). When the user starts the next game, `handleStart` calls `deferCountdown(...)` which waits ~350ms before `startCountdown` runs. During that gap, the footer reads the stale `countdown=0`, so the timer/progress bar appears stuck/empty until the deferred call kicks in.
-2. `answerCountdown` similarly not reset to `null`.
-3. `activeQuestions` is left populated from the previous game — minor, but means a stale `currentQuestion` could briefly flash.
+**`src/index.css`** — set body default to Quicksand 600; remove old `font-family: 'Nunito', 'Russo One'` from `body`. Update `.btn-gameshow` and `.cta-glass` `font-family` to Rubik 800. Update `.about-scroll-area`/any other typography rules to use the new stack.
 
-### Fix (single file: `src/components/TriviaGame.tsx`)
-Update `handleRestart` to reset all gameplay state to the same baseline the component had on first mount:
+#### B3. Apply roles across components
+Sweep these files and replace inline font classes with the new tokens:
 
-```ts
-const handleRestart = useCallback(() => {
-  clearTimer();
-  clearAnswerTimer();
-  setPaused(false);
-  setQuestionIndex(0);
-  setScore(0);
-  setActiveQuestions([]);
-  setCountdown(settings.timePerQuestion); // reset to full
-  setAnswerCountdown(null);
-  setGameState("start");
-  setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
-  setAnimKey((k) => k + 1);
-}, [clearTimer, clearAnswerTimer, settings.timePerQuestion]);
-```
+| Role | Class | Where (examples) |
+|---|---|---|
+| **Heading** (Rubik 800) | `font-heading font-extrabold` | Page H1s, screen titles ("Results", "Game Over"), result score number, primary CTAs (`PrimaryCTA`, `btn-gameshow`, Start Game, Play Again, Apply New Game Settings, Next/Submit in QuestionCard) |
+| **Subheading** (Rubik 700) | `font-subheading font-bold` | "Customize Your Game" header in `SettingsPanel`, section labels ("Categories", "Difficulties", "Eras", "Questions", "Time per Question"), About Us section titles, How To Play step titles, dialog titles (AlertDialog "Restart with new settings?") |
+| **Body** (Quicksand 600) | `font-body font-semibold` (default via body) | Question text, answer choices, About paragraphs, How To Play paragraphs, footer pill text (Q#/category/difficulty/timer), settings descriptions, slider value labels |
+| **Secondary CTA** (Quicksand 600/700) | `font-body font-semibold` | Header nav buttons (Login/Logout, About), "How Do I Play?" button under Start Game, Cancel button in dialogs, footer pause/play label if any |
 
-Why this matches first-Start behavior:
-- On first mount, `countdown` is initialized to `DEFAULT_SETTINGS.timePerQuestion` and `answerCountdown` is `null`. After restart we reset to the **current** `settings.timePerQuestion` (which respects any user customization).
-- `activeQuestions = []` clears the stale question so the footer/card don't render leftover content during the brief transition.
-- `setAnimKey` already bumps the question card animation; combined with the cleared questions, the next Start fetch + `deferCountdown` will produce a clean fade-in identical to the very first game.
+Files to sweep (search-and-replace inline `font-['...']` and `font-family` styles):
+- `src/components/PrimaryCTA.tsx` → heading
+- `src/components/StartScreen.tsx` → CTA = heading; "How Do I Play?" = secondary
+- `src/components/ResultScreen.tsx` → title = heading; body = body
+- `src/components/QuestionCard.tsx` → question + answers = body; Next button = heading
+- `src/components/SettingsPanel.tsx` → "Customize Your Game" = subheading; section labels = subheading; option rows = body; Apply button = heading
+- `src/components/AboutScreen.tsx` → title = heading; section headers = subheading; paragraphs = body
+- `src/components/HowToPlayScreen.tsx` → same pattern as AboutScreen
+- `src/components/GameHeader.tsx` → nav buttons = secondary (body)
+- `src/components/GameFooter.tsx` → pill text = body
+- `src/components/LoginScreen.tsx` → title = heading; labels = subheading; inputs = body; submit = heading
+- `src/index.css` `.btn-gameshow`, `.cta-glass` → Rubik 800
 
-### Files touched
-- `src/components/TriviaGame.tsx` — extend `handleRestart` (~3 added lines, 1 dep added).
+#### B4. Remove dead font references
+After the sweep, grep for `Fredoka`, `Russo`, `Nunito` and delete any remaining occurrences.
+
+### Files touched (combined)
+- **NEW**: `src/data/gameOptions.ts`, `src/hooks/useCountdown.ts`
+- **MOD**: `index.html`, `tailwind.config.ts`, `src/index.css`, `src/components/TriviaGame.tsx`, `src/components/SettingsPanel.tsx`, `src/components/PrimaryCTA.tsx`, `src/components/StartScreen.tsx`, `src/components/ResultScreen.tsx`, `src/components/QuestionCard.tsx`, `src/components/AboutScreen.tsx`, `src/components/HowToPlayScreen.tsx`, `src/components/GameHeader.tsx`, `src/components/GameFooter.tsx`, `src/components/LoginScreen.tsx`
 
 ### Out of scope
-- No changes to `handleStart`, `ResultScreen`, footer, or timers themselves.
-- No change to the deferred countdown logic — it already works on first Start.
+- No layout/spacing/color changes. No game logic changes. No new dependencies.
+- Mobile bottom-sheet drag, timers, fetch logic, mascot logic — all untouched.
 
 ### Verification
-Play a full game to the Result screen → click "Play Again" → Start screen appears with settings panel open (desktop) → click "Start Game" → new question loads, countdown bar starts full and ticks down smoothly, mascot animates — identical to the very first game of the session.
+- Build passes; no TS errors.
+- Visual sweep at 1178px and mobile: every heading uses Rubik 800; subheadings Rubik 700; all body Quicksand 600; secondary CTAs Quicksand. No Fredoka/Russo/Nunito anywhere in the rendered output (DevTools computed font check).
+- Functional sweep: full game → mid-game settings change w/ confirm dialog → Play Again → countdown resets full. Filters and sliders behave identically.
+
+### Tradeoffs
+- Tailwind `font-heading`/`font-subheading`/`font-body` tokens keep future edits centralized; if the brand changes a role, edit `tailwind.config.ts` only.
+- Refactor and font pass land together — single review, one round of regression testing.
 
