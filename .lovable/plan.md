@@ -1,28 +1,20 @@
 
-## Plan: Widen tablet portrait Settings drawer
+## Plan: Footer pill text tweaks
 
-### Issue
-Desktop SettingsPanel uses `w-[30%]` which on a 768px tablet portrait = ~230px wide — narrower than the `min-h-14 px-10` "Apply Settings" CTA, causing it to clip or look cramped.
+### Changes — `src/components/GameFooter.tsx` only
 
-### Fix
-`src/components/SettingsPanel.tsx` (desktop branch, ~line 538): change the panel width from `w-[30%]` to a responsive value that scales with breakpoint:
+1. **Remove "Q" prefix** (line ~70): change `Q{questionIndex + 1}/{totalQuestions}` → `{questionIndex + 1}/{totalQuestions}`.
 
-```
-w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]
-```
-
-- **Tablet portrait (768–1023px)**: ~422px — comfortably fits "Apply Settings" with padding.
-- **lg (1024–1279px)**: ~410px.
-- **xl (1280px+)**: ~410–480px capped — close to the original 30% feel on large desktops.
-- `max-w-[480px]` prevents it from getting absurdly wide on ultrawide monitors.
-
-The mobile bottom-sheet branch (under `useIsMobile`, <768px) is untouched.
+2. **Lowercase the "s" in timer** (lines ~62 + ~85): the pill currently has `uppercase` Tailwind class on the container and timer span, which forces the "s" to render as "S". Wrap the literal `s` in a span with `normal-case` so it stays lowercase while the number stays as-is:
+   ```
+   {isAnswerPhase ? (answerCountdown ?? 0) : countdown}<span className="normal-case">s</span>
+   ```
 
 ### Files touched
-- `src/components/SettingsPanel.tsx` — single className change on the sliding panel wrapper.
+- `src/components/GameFooter.tsx`
 
 ### Out of scope
-No content, padding, or styling changes inside the drawer.
+No layout, color, padding, or timer logic changes.
 
 ### Verification
-At 768×1024 (tablet portrait): drawer is ~420px wide, "Apply Settings" CTA fits on one line with breathing room on both sides. At 1440px desktop: drawer width visually similar to before.
+Start a game: footer pill shows `1/10 · CATEGORY · DIFFICULTY` and timer reads e.g. `12s` (lowercase s). Answer phase timer also shows lowercase s.
