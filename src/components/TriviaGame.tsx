@@ -225,10 +225,13 @@ export default function TriviaGame() {
     setPaused(false);
     setQuestionIndex(0);
     setScore(0);
+    setActiveQuestions([]);
+    setCountdown(settings.timePerQuestion);
+    setAnswerCountdown(null);
     setGameState("start");
     setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
     setAnimKey((k) => k + 1);
-  }, [clearTimer, clearAnswerTimer]);
+  }, [clearTimer, clearAnswerTimer, settings.timePerQuestion]);
 
   useEffect(() => () => { clearTimer(); clearAnswerTimer(); }, [clearTimer, clearAnswerTimer]);
 
