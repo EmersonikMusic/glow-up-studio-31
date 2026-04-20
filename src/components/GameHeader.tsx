@@ -21,6 +21,41 @@ export default function GameHeader({
 }: GameHeaderProps) {
   const { user, logout } = useAuth();
 
+  const fsSupported =
+    typeof document !== "undefined" &&
+    !!(
+      document.documentElement.requestFullscreen ||
+      (document.documentElement as any).webkitRequestFullscreen
+    );
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (!fsSupported) return;
+    const sync = () => {
+      const fsEl =
+        document.fullscreenElement || (document as any).webkitFullscreenElement;
+      setIsFullscreen(!!fsEl);
+    };
+    document.addEventListener("fullscreenchange", sync);
+    document.addEventListener("webkitfullscreenchange", sync);
+    sync();
+    return () => {
+      document.removeEventListener("fullscreenchange", sync);
+      document.removeEventListener("webkitfullscreenchange", sync);
+    };
+  }, [fsSupported]);
+
+  const toggleFullscreen = () => {
+    const el = document.documentElement as any;
+    const doc = document as any;
+    const fsEl = document.fullscreenElement || doc.webkitFullscreenElement;
+    if (!fsEl) {
+      el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
+    } else {
+      doc.exitFullscreen?.() || doc.webkitExitFullscreen?.();
+    }
+  };
+
   return (
     <header
       className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md"
