@@ -64,7 +64,7 @@ export default function GameFooter({
 
           {/* Content — all relative z-10 to sit above the bar */}
           <span className="relative z-10 text-white tabular-nums whitespace-nowrap uppercase">
-            Q{questionIndex + 1}/{totalQuestions}
+            {questionIndex + 1}/{totalQuestions}
           </span>
           <span className="relative z-10 opacity-50 text-white">·</span>
           <span className="relative z-10 text-white truncate uppercase">{question.category}</span>
@@ -81,7 +81,7 @@ export default function GameFooter({
               className="tabular-nums font-subheading font-bold uppercase"
               style={{ color: "hsl(185 70% 55%)" }}
             >
-              {isAnswerPhase ? (answerCountdown ?? 0) : countdown}s
+              {isAnswerPhase ? (answerCountdown ?? 0) : countdown}<span className="normal-case">s</span>
             </span>
           </span>
         </div>
