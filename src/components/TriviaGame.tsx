@@ -128,13 +128,23 @@ export default function TriviaGame() {
     setPaused((prev) => !prev);
   }, []);
 
+  // Defer countdown until the new question card is painted on screen
+  const deferCountdown = useCallback((seconds: number) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => startCountdown(seconds), 350);
+      });
+    });
+  }, [startCountdown]);
+
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
     const wasInGame =
       gameStateRef.current === "playing" || gameStateRef.current === "answered";
     if (!wasInGame) return;
 
-    // Seamless restart with new settings
+    // Close drawer immediately so it slides out during the fetch
+    setPanelOpen(false);
     clearTimer();
     clearAnswerTimer();
     setLoading(true);
@@ -149,19 +159,19 @@ export default function TriviaGame() {
       setScore(0);
       setAnimKey((k) => k + 1);
       setPaused(false);
-      setPanelOpen(false);
       setGameState("playing");
-      startCountdown(newSettings.timePerQuestion);
+      deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again.");
     } finally {
       setLoading(false);
     }
-  }, [clearTimer, clearAnswerTimer, startCountdown]);
+  }, [clearTimer, clearAnswerTimer, deferCountdown]);
 
   const handleStart = useCallback(async () => {
     if (loading) return;
+    setPanelOpen(false);
     clearAnswerTimer();
     setLoading(true);
     try {
@@ -175,16 +185,15 @@ export default function TriviaGame() {
       setScore(0);
       setAnimKey((k) => k + 1);
       setPaused(false);
-      setPanelOpen(false);
       setGameState("playing");
-      startCountdown(settings.timePerQuestion);
+      deferCountdown(settings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again.");
     } finally {
       setLoading(false);
     }
-  }, [loading, settings, startCountdown, clearAnswerTimer]);
+  }, [loading, settings, deferCountdown, clearAnswerTimer]);
 
   const handleNext = useCallback(() => {
     if (gameState !== "answered") return;
@@ -293,7 +302,7 @@ export default function TriviaGame() {
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
-            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch"
+            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch md:-mr-6 lg:-mr-8"
             style={{
               width: "30%",
               transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",

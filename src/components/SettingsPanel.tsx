@@ -3,6 +3,17 @@ import { useState, useRef, useCallback } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PrimaryCTA from "./PrimaryCTA";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import iconCategoriesActive from "@/assets/icon-categories-active.svg";
 import iconCategoriesInactive from "@/assets/icon-categories-inactive.svg";
 import iconDifficultyActive from "@/assets/icon-difficulty-active.svg";
@@ -555,9 +566,29 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
       {/* Apply button */}
       <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
-        <PrimaryCTA onClick={handleApply} aria-label={applyLabel}>
-          {applyLabel}
-        </PrimaryCTA>
+        {gameInProgress && hasChanges ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <PrimaryCTA aria-label={applyLabel}>{applyLabel}</PrimaryCTA>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Restart with new settings?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Your current game will end and a new game will start with the updated settings.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleApply}>Restart Game</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <PrimaryCTA onClick={handleApply} aria-label={applyLabel}>
+            {applyLabel}
+          </PrimaryCTA>
+        )}
       </div>
     </>
   );
