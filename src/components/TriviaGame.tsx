@@ -101,6 +101,17 @@ export default function TriviaGame() {
   useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
 
+  // Auto-pause when settings panel opens during an active game
+  useEffect(() => {
+    if (
+      panelOpen &&
+      (gameStateRef.current === "playing" || gameStateRef.current === "answered") &&
+      !pausedRef.current
+    ) {
+      setPaused(true);
+    }
+  }, [panelOpen]);
+
   useEffect(() => {
     if (countdown === 0 && gameState === "playing") setGameState("answered");
   }, [countdown, gameState]);
