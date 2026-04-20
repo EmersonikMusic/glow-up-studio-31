@@ -373,7 +373,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           CUSTOMIZE YOUR EXPERIENCE
         </h2>
       </div>
-      <div className="px-5 md:px-6 mb-4">
+      <div className="px-5 md:px-6 mb-2 md:mb-3">
         <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
       </div>
 
@@ -468,7 +468,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-1 pb-4 flex justify-center">
+      <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
         {gameInProgress && hasChanges ? (
           <>
             <PrimaryCTA onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
@@ -581,21 +581,19 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
       {/* Sliding panel */}
       <div
-        className="fixed top-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        className="fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
         style={{
-          maxHeight: "100vh",
           transform: open ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
         <div
-          className="flex-1 overflow-y-auto rounded-bl-3xl"
+          className="flex-1 overflow-y-auto"
           style={{
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)",
-            borderBottom: "1.5px solid rgba(255, 255, 255, 0.18)",
-            boxShadow: "-8px 8px 48px rgba(0, 0, 0, 0.5)",
+            boxShadow: "-8px 0 48px rgba(0, 0, 0, 0.5)",
             display: "flex",
             flexDirection: "column",
           }}
