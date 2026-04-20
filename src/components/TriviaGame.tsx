@@ -98,6 +98,22 @@ export default function TriviaGame() {
     setPaused((prev) => !prev);
   }, []);
 
+  // Spacebar toggles pause/play during active gameplay (desktop power-user shortcut).
+  // Skips when focus is in a text input/contenteditable so future inputs don't break.
+  useEffect(() => {
+    if (gameState !== "playing" && gameState !== "answered") return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return;
+      const t = e.target as HTMLElement | null;
+      const tag = t?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
+      e.preventDefault();
+      setPaused((p) => !p);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [gameState]);
+
   // Defer the question countdown until after the question card is painted.
   // Two rAF + small timeout keeps the bar animation perfectly aligned with
   // the slide-in transition on the card.

@@ -338,7 +338,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       !arraysEqual(selectedEras, currentSettings.selectedEras)
     : false;
 
-  const applyLabel = gameInProgress && hasChanges ? "Apply New Game Settings" : "Apply Settings";
+  const applyLabel = "Apply Settings";
 
   const panelContent = (
     <>
@@ -484,8 +484,23 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="font-body font-semibold">Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleApply} className="font-heading font-extrabold">Restart Game</AlertDialogAction>
+                <AlertDialogCancel asChild>
+                  <button
+                    className="nav-btn rounded-full px-6 h-11 font-body font-bold uppercase tracking-wider transition-all duration-200 active:scale-95"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.08)",
+                      border: "1px solid rgba(255, 255, 255, 0.15)",
+                      color: "hsl(var(--game-gold))",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </AlertDialogCancel>
+                <AlertDialogAction asChild>
+                  <PrimaryCTA onClick={handleApply} className="h-11 px-8 text-base">
+                    Restart Game
+                  </PrimaryCTA>
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

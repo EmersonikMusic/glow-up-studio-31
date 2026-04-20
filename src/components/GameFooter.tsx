@@ -46,7 +46,7 @@ export default function GameFooter({
       <div className="flex items-center gap-3 w-full md:w-[70%]">
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 backdrop-blur-md"
+          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 backdrop-blur-md uppercase"
           style={{ background: "rgba(0, 0, 0, 0.35)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}
@@ -63,22 +63,22 @@ export default function GameFooter({
           />
 
           {/* Content — all relative z-10 to sit above the bar */}
-          <span className="relative z-10 text-white tabular-nums whitespace-nowrap">
+          <span className="relative z-10 text-white tabular-nums whitespace-nowrap uppercase">
             Q{questionIndex + 1}/{totalQuestions}
           </span>
           <span className="relative z-10 opacity-50 text-white">·</span>
-          <span className="relative z-10 text-white truncate">{question.category}</span>
-          <span className="relative z-10 opacity-50 text-white hidden sm:inline">·</span>
+          <span className="relative z-10 text-white truncate uppercase">{question.category}</span>
+          <span className="relative z-10 opacity-50 text-white">·</span>
           <span
-            className="relative z-10 font-subheading font-bold hidden sm:inline whitespace-nowrap"
+            className="relative z-10 font-subheading font-bold whitespace-nowrap uppercase"
             style={{ color: difficultyColor[question.difficulty] ?? "hsl(var(--muted-foreground))" }}
           >
             {question.difficulty}
           </span>
           {/* Timer — absolute right */}
-          <span className="absolute right-4 z-10 flex-shrink-0">
+          <span className="absolute right-3 z-10 flex-shrink-0">
             <span
-              className="tabular-nums font-subheading font-bold"
+              className="tabular-nums font-subheading font-bold uppercase"
               style={{ color: "hsl(185 70% 55%)" }}
             >
               {isAnswerPhase ? (answerCountdown ?? 0) : countdown}s
