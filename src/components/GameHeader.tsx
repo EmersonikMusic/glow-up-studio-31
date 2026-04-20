@@ -7,6 +7,7 @@ interface GameHeaderProps {
   onSettingsToggle?: () => void;
   onAbout?: () => void;
   onLogin?: () => void;
+  onHome?: () => void;
   settingsOpen?: boolean;
 }
 
@@ -14,6 +15,7 @@ export default function GameHeader({
   onSettingsToggle,
   onAbout,
   onLogin,
+  onHome,
   settingsOpen = false,
 }: GameHeaderProps) {
   const { user, logout } = useAuth();
@@ -31,12 +33,20 @@ export default function GameHeader({
       <div className="flex items-center justify-between gap-2">
         {/* Left slot: Logo (hidden on mobile only when logged in) */}
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
-          <img
-            src={toLogoSm}
-            alt="Trivolivia"
-            className={user ? "h-8 w-auto hidden sm:block" : "h-8 w-auto block"}
-            draggable={false}
-          />
+          <button
+            type="button"
+            onClick={onHome}
+            disabled={!onHome}
+            aria-label="Return to start screen"
+            className={`${user ? "hidden sm:block" : "block"} rounded transition-transform duration-200 active:scale-95 disabled:cursor-default disabled:active:scale-100 md:hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--game-gold))]`}
+          >
+            <img
+              src={toLogoSm}
+              alt="Trivolivia — return to start"
+              className="h-8 w-auto"
+              draggable={false}
+            />
+          </button>
         </div>
 
         {/* Right: Username → Login/Logout → About → Settings */}

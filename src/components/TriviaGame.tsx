@@ -244,6 +244,7 @@ export default function TriviaGame() {
         onSettingsToggle={() => setPanelOpen((v) => !v)}
         onAbout={() => setGameState("about")}
         onLogin={() => setShowLogin(true)}
+        onHome={handleRestart}
         settingsOpen={panelOpen}
       />
 
