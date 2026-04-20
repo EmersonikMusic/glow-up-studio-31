@@ -1,4 +1,5 @@
-import { LogIn, LogOut, User, Info } from "lucide-react";
+import { LogIn, LogOut, User, Info, Maximize2, Minimize2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
 import { useAuth } from "@/contexts/AuthContext";
