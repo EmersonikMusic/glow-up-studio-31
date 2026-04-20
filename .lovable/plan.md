@@ -1,53 +1,48 @@
 
 
-## Plan: Six targeted UI/UX polish changes
+## Plan: CTA consistency + liquid-glass About/HowToPlay
 
-### 1. Remove mobile tap-highlight ("transparent purple line")
-`src/index.css` — add to base layer:
-```css
-* { -webkit-tap-highlight-color: transparent; }
+### 1. Unify PrimaryCTA sizing — fits on one line, grows if it must
+
+`src/components/PrimaryCTA.tsx`:
+- Replace fixed `h-14` with `min-h-14` + `py-2` so the button keeps its shape when content fits one line, but grows in height (preserving vertical padding) if it ever wraps to two lines.
+- Keep `px-10` horizontal padding but add `whitespace-nowrap` as the default (single-line by default — covers "Start Game", "Play Again", "Apply Settings", "Back to Game", "Restart Game"). Anywhere a future caller needs wrap, they can pass `whitespace-normal` via `className`.
+- Result: every PrimaryCTA across the app shares the exact same height/padding/typography.
+
+### 2. Remove the size override on the dialog "Restart Game" CTA
+
+`src/components/SettingsPanel.tsx` (line 500):
+- Drop `className="h-11 px-8 text-base"` from the `<PrimaryCTA>` inside `AlertDialogAction`. It will then match the standard PrimaryCTA height/padding (same as Play Again, Apply Settings, Back to Game).
+- Cancel button (line 488–497): bump from `h-11` → `min-h-14` `py-2` and align font-size with the secondary nav-btn pill so its height matches the new Restart Game button — they sit side by side.
+- No text-wrap needed: "Restart Game" and "Cancel" both fit one line.
+
+### 3. Apply mobile-drawer "liquid glass" look to About + HowToPlay (and confirm desktop drawer already matches)
+
+The mobile **SettingsPanel** drawer style is:
 ```
-Eliminates the translucent purple/pink flash on every interactive element (toggles, section headers, sliders) when tapping in the mobile settings menu. No effect on desktop.
+background: rgba(0, 0, 0, 0.25)
+backdropFilter: blur(24px)
+border: 1.5px solid rgba(255, 255, 255, 0.18)
+```
+The desktop SettingsPanel drawer already uses the same values — **no change needed there.**
 
-### 2. Remove dynamic Apply CTA label swap
-`src/components/SettingsPanel.tsx` (line 341): remove the conditional `applyLabel`. Always render `"Apply Settings"`. The confirmation dialog already communicates the restart, so the swapped label is redundant.
-
-### 3. Sync confirmation dialog button styling
-`src/components/SettingsPanel.tsx` — in the AlertDialog footer (lines 486–489):
-- **Restart Game**: replace the plain `AlertDialogAction` with one wrapping/rendering `<PrimaryCTA>` (same gradient, Rubik 800, gold shadow as the "Play Again" button on the result screen). Use `asChild` on `AlertDialogAction`.
-- **Cancel**: replace plain `AlertDialogCancel` styling with the header "About" pill look — `nav-btn` class + rounded-full + `rgba(255,255,255,0.08)` bg, `rgba(255,255,255,0.15)` border, `font-body font-bold uppercase tracking-wider` text in `hsl(var(--game-gold))`. Use `asChild` to attach to a styled `<button>`.
-
-No changes to `alert-dialog.tsx` primitives; styling lives in the consumer.
-
-### 4. Fix mobile footer pill — show Difficulty
-`src/components/GameFooter.tsx`:
-- Currently the "·" and Difficulty span are `hidden sm:inline` (lines 73, 75). Remove `hidden sm:inline` so they render at all sizes.
-- Reduce horizontal padding on the pill from `px-10` → `px-4 sm:px-10` so content fits on 390px-wide viewports.
-- Reduce the right-anchored timer offset from `right-4` → `right-3` to free a few more pixels.
-- Keep `truncate` on category to absorb any remaining overflow.
-
-### 5. Uppercase footer pill metadata
-`src/components/GameFooter.tsx`: add `uppercase` to the pill content classes (Q#, category, difficulty, timer span). Single-class addition per span; no other change.
-
-### 6. Spacebar pause/play (desktop)
-`src/components/TriviaGame.tsx`: add a `useEffect` that listens to `keydown` on `window`:
-- Trigger only when `gameState === "playing" || gameState === "answered"`.
-- Trigger only when `e.code === "Space"` (and not when focus is in an input/textarea/contenteditable — guards against typing in future inputs; the existing slider already calls `stopPropagation` on keydown so it won't fire there).
-- `e.preventDefault()` to suppress page scroll, then call `setPaused((p) => !p)`.
-- Cleanup listener on unmount / dep change.
-
-Effect deps: `[gameState]` (reads/sets via setter callback so no stale `paused`).
+`src/components/AboutScreen.tsx` and `src/components/HowToPlayScreen.tsx`:
+- Change the card `background` from `rgba(0, 0, 0, 0.45)` → `rgba(0, 0, 0, 0.25)` (both mobile and desktop branches).
+- Add explicit inline `backdropFilter: "blur(24px)"` (the existing `backdrop-blur-xl` Tailwind class is roughly 24px; replacing with the inline value keeps it identical to the drawer for visual parity and removes any class/inline ambiguity).
+- Keep mobile border = none (full-screen takeover, same as drawer's lack of side borders) but ensure desktop border stays `1.5px solid rgba(255, 255, 255, 0.18)` (already correct).
+- Box-shadow stays as-is (depth cue is intentional).
 
 ### Files touched
-- `src/index.css` — 1-line tap-highlight rule.
-- `src/components/SettingsPanel.tsx` — drop label swap; restyle dialog buttons.
-- `src/components/GameFooter.tsx` — show Difficulty on mobile, tighten padding, uppercase text.
-- `src/components/TriviaGame.tsx` — add spacebar listener effect (~10 lines).
+- `src/components/PrimaryCTA.tsx`
+- `src/components/SettingsPanel.tsx` (dialog buttons only)
+- `src/components/AboutScreen.tsx`
+- `src/components/HowToPlayScreen.tsx`
 
 ### Out of scope
-Anything else. No layout, color token, timer, fetch, or game-state changes beyond what's listed.
+No changes to colors, copy, layout, animations, drawer behavior, or any other component.
 
 ### Verification
-Mobile (390px): open Settings → tap any toggle → no purple flash. Footer pill shows `Q1/10 · CATEGORY · DIFFICULTY` and timer all uppercase, all visible.
-Desktop: start game → press Space → pause icon flips to play, timer freezes; press Space again → resumes. Open Settings mid-game with changes → click Apply Settings → dialog appears with gradient "Restart Game" CTA + glassy gold "Cancel" pill matching the header.
+- Resize from 1440px → 390px: every PrimaryCTA ("Start Game", "Apply Settings", "Play Again", "Back to Game", "Restart Game", Login submit) renders at the same height, single line, identical padding.
+- Open mid-game settings → make a change → click Apply Settings → dialog shows Restart Game (gradient) and Cancel (glass pill) at matching heights.
+- Open About and How Do I Play on desktop and mobile: card background looks like the settings drawer (lighter translucent black with strong blur), not the previous near-opaque dark.
 
