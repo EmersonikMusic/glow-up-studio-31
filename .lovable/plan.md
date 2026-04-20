@@ -1,83 +1,47 @@
 
-## Plan: Fix slider focus shadow + seamless re-start with new settings
+## Plan: Confirm-restart dialog, smooth load delay, footer cleanup, mascot centering
 
-### 1. UI fix — slider drop shadow on interaction
-The custom `.step-slider` thumb has a `box-shadow: 0 2px 10px rgba(0,0,0,0.5)`. When the user clicks/focuses the range input, the browser adds its own default focus outline/shadow on top, causing the "odd" change. There are no `:hover/:active/:focus` rules defined for `.step-slider` thumbs.
+### 1. Confirmation dialog before mid-game restart (`SettingsPanel.tsx`)
+Wrap the Apply button so that when `gameInProgress && hasChanges`, clicking it opens an `AlertDialog` first instead of calling `handleApply` directly.
+- Use existing `@/components/ui/alert-dialog`.
+- Title: "Restart with new settings?" Description: "Your current game will end and a new game will start with the updated settings."
+- Cancel → close dialog, panel stays open. Confirm → call `onApply(...)` and `onClose()` (current behavior).
+- When not in-game (or no changes), Apply behaves exactly as today (no dialog).
 
-**Edit `src/index.css`** — add focus/active rules so the shadow stays identical across all states:
+### 2. Settings drawer slides out immediately + countdown waits for question to render (`TriviaGame.tsx`)
+Currently `handleApply` awaits the fetch before calling `setPanelOpen(false)` and `setGameState("playing")`, so the drawer appears stuck during the network call and the timer can start the same frame the question paints.
 
-```css
-.step-slider:focus,
-.step-slider:focus-visible,
-.step-slider:active {
-  outline: none;
-  box-shadow: none;
-}
-.step-slider::-webkit-slider-thumb:hover,
-.step-slider::-webkit-slider-thumb:active,
-.step-slider:focus::-webkit-slider-thumb {
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5); /* same as default */
-}
-.step-slider::-moz-range-thumb:hover,
-.step-slider::-moz-range-thumb:active,
-.step-slider:focus::-moz-range-thumb {
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
+Fix:
+- Call `setPanelOpen(false)` **immediately** (before the await) so the drawer starts sliding out right away.
+- Keep `setLoading(true)` during the fetch (existing toast/loading still applies).
+- After `setActiveQuestions(data)` and `setGameState("playing")`, **defer** `startCountdown(...)` so it only begins once the question is on screen:
+  - Use a small delay that covers the panel slide-out + first paint: `requestAnimationFrame` → `requestAnimationFrame` → `setTimeout(..., 350)` (≈ matches the existing panel transition + ensures the new question text is fully visible before the bar starts depleting).
+- Apply the same "wait for paint" pattern to `handleStart` for consistency, so the very first game also doesn't start the bar before the card is on screen.
+
+No changes to timer logic, scoring, or the fetch itself.
+
+### 3. Remove Era from footer pill (`GameFooter.tsx`)
+Delete the trailing era separator + era span (lines that render `· {question.era}`):
+```tsx
+<span className="relative z-10 opacity-50 text-white hidden md:inline">·</span>
+<span className="relative z-10 hidden md:inline text-white truncate">{question.era}</span>
 ```
+Keep Q#/total · category · difficulty · timer.
 
-This locks the thumb shadow to the default value in every state and removes the browser focus outline on the input itself. No layout/color changes.
+### 4. Visually center mascot on desktop (`TriviaGame.tsx`)
+Currently the mascot column is `w-[30%]` with `items-center justify-center`, which centers within the 30% column — but visually it can read off-center because the round bg is bounded by a fixed clamp size and the question card is a tall card on the left.
 
-### 2. Functionality — "Apply New Game Settings" mid-game restart
-Currently the Apply button's label correctly switches to "Apply New Game Settings" when `gameInProgress && hasChanges`, but `handleApply` in `TriviaGame.tsx` only calls `setSettings(newSettings)` — it doesn't restart the game. So the new settings sit unused until the player finishes manually.
-
-**Edit `src/components/TriviaGame.tsx`** — make `handleApply` restart the game when one is already in progress:
-
-```ts
-const handleApply = useCallback(async (newSettings: GameSettings) => {
-  setSettings(newSettings);
-  const wasInGame = gameStateRef.current === "playing" || gameStateRef.current === "answered";
-  if (!wasInGame) return;
-
-  // Seamless restart with new settings
-  clearTimer();
-  clearAnswerTimer();
-  setLoading(true);
-  try {
-    const data = await fetchAndStartGame(newSettings);
-    if (!data.length) {
-      toast.error("No questions matched your filters. Try widening them.");
-      return;
-    }
-    setActiveQuestions(data);
-    setQuestionIndex(0);
-    setScore(0);
-    setAnimKey((k) => k + 1);
-    setPaused(false);
-    setPanelOpen(false);
-    setGameState("playing");
-    startCountdown(newSettings.timePerQuestion);
-  } catch (err) {
-    console.error("fetchAndStartGame failed:", err);
-    toast.error("Couldn't load questions. Check your connection or try again.");
-  } finally {
-    setLoading(false);
-  }
-}, [clearTimer, clearAnswerTimer, startCountdown]);
-```
-
-Notes:
-- Reuses `gameStateRef` (already maintained) so we don't add `gameState` to deps and re-create the callback every render.
-- Closes the settings panel on success — same UX as the initial Start.
-- Uses the freshly-passed `newSettings` for the fetch + countdown to avoid stale-state issues.
-- If not in a game, behaves exactly as today (just stores settings).
+Tighten centering by:
+- Removing the float wrapper's reliance on column width and instead centering the round mascot within the **available right area** between the card and the screen edge using `flex justify-center items-center` (already present) **plus** ensuring no padding on the right column. Confirm `main` has `px-2 sm:px-6 md:px-8` — the right column inherits that, which pushes the mascot left of true center. Add `md:pr-0` to the right column wrapper (or remove its share of horizontal padding) so the mascot is centered between the card's right edge and the viewport's right edge.
+- No size changes to the mascot itself.
 
 ### Files touched
-- `src/index.css` — add focus/active rules for `.step-slider`.
-- `src/components/TriviaGame.tsx` — extend `handleApply` to restart in-game.
+- `src/components/SettingsPanel.tsx` — wrap Apply in AlertDialog when in-game + dirty.
+- `src/components/TriviaGame.tsx` — close panel before await; delay countdown until paint; right-column padding tweak for mascot centering.
+- `src/components/GameFooter.tsx` — remove era separator + span.
 
 ### Out of scope
-- No changes to `SettingsPanel` (label logic already correct).
-- No changes to gameplay timers, scoring, or other UI.
+- No changes to slider visuals, timers' duration, fetch logic, or other components.
 
 ### Verification
-End-to-end: start a game → open Settings mid-game → change # questions or filters → button shows "Apply New Game Settings" → click → panel closes, new game begins seamlessly with new settings, timers respect new durations. Also: drag any slider — thumb shadow stays identical when idle, hovered, and dragged.
+End-to-end: start a game → open Settings mid-game → change a slider → click "Apply New Game Settings" → confirm in dialog → drawer slides out instantly, brief loading, new question appears, then countdown starts cleanly. Footer shows only Q#, category, difficulty, timer. On desktop, mascot sits visually centered between the card edge and the right edge of the screen.
