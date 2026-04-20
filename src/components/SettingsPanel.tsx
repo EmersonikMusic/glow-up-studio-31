@@ -373,7 +373,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           CUSTOMIZE YOUR EXPERIENCE
         </h2>
       </div>
-      <div className="px-5 md:px-6 mb-2 md:mb-3">
+      <div className="px-5 md:px-6 mb-4">
         <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
       </div>
 
@@ -468,7 +468,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
+      <div className="px-5 pt-1 pb-4 flex justify-center">
         {gameInProgress && hasChanges ? (
           <>
             <PrimaryCTA onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
