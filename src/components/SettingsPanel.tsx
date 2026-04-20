@@ -5,14 +5,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import PrimaryCTA from "./PrimaryCTA";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import iconCategoriesActive from "@/assets/icon-categories-active.svg";
 import iconCategoriesInactive from "@/assets/icon-categories-inactive.svg";
@@ -283,6 +280,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [numQuestions, setNumQuestions] = useState(10);
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Single open section — accordion behavior. Game Settings open by default.
   const [openSection, setOpenSection] = useState<SectionKey>("game");
@@ -472,20 +470,21 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Apply button */}
       <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
         {gameInProgress && hasChanges ? (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <PrimaryCTA aria-label={applyLabel}>{applyLabel}</PrimaryCTA>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="font-subheading font-bold">Restart with new settings?</AlertDialogTitle>
-                <AlertDialogDescription className="font-body font-semibold">
-                  Your current game will end and a new game will start with the updated settings.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel asChild>
+          <>
+            <PrimaryCTA onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
+              {applyLabel}
+            </PrimaryCTA>
+            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="font-subheading font-bold">Restart with new settings?</AlertDialogTitle>
+                  <AlertDialogDescription className="font-body font-semibold">
+                    Your current game will end and a new game will start with the updated settings.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
                   <button
+                    onClick={() => setConfirmOpen(false)}
                     className="nav-btn rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                     style={{
                       background: "rgba(255, 255, 255, 0.08)",
@@ -495,15 +494,18 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                   >
                     Cancel
                   </button>
-                </AlertDialogCancel>
-                <AlertDialogAction asChild>
-                  <PrimaryCTA onClick={handleApply}>
+                  <PrimaryCTA
+                    onClick={() => {
+                      setConfirmOpen(false);
+                      handleApply();
+                    }}
+                  >
                     Restart Game
                   </PrimaryCTA>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
         ) : (
           <PrimaryCTA onClick={handleApply} aria-label={applyLabel}>
             {applyLabel}
