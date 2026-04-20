@@ -75,9 +75,6 @@ export default function GameFooter({
           >
             {question.difficulty}
           </span>
-          <span className="relative z-10 opacity-50 text-white hidden md:inline">·</span>
-          <span className="relative z-10 hidden md:inline text-white truncate">{question.era}</span>
-
           {/* Timer — absolute right */}
           <span className="absolute right-4 z-10 flex-shrink-0">
             <span
