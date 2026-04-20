@@ -22,15 +22,15 @@ import iconEraActive from "@/assets/icon-era-active.svg";
 import iconEraInactive from "@/assets/icon-era-inactive.svg";
 import iconSettingsActive from "@/assets/icon-settings-active.svg";
 import iconSettingsInactive from "@/assets/icon-settings-inactive.svg";
+import {
+  ALL_CATEGORIES,
+  ALL_DIFFICULTIES,
+  ALL_ERAS,
+  type GameSettings,
+} from "@/data/gameOptions";
 
-export interface GameSettings {
-  numQuestions: number;
-  timePerQuestion: number;
-  timePerAnswer: number;
-  selectedCategories: string[];
-  selectedDifficulties: string[];
-  selectedEras: string[];
-}
+// Re-exported for backward compatibility with any existing imports.
+export type { GameSettings };
 
 interface SettingsPanelProps {
   open: boolean;
@@ -42,48 +42,9 @@ interface SettingsPanelProps {
   currentSettings?: GameSettings;
 }
 
-const categories = [
-  "Art",
-  "Economy",
-  "Food & Drink",
-  "Games",
-  "Geography",
-  "History",
-  "Human Body",
-  "Language",
-  "Law",
-  "Literature",
-  "Math",
-  "Miscellaneous",
-  "Movies",
-  "Music",
-  "Nature",
-  "Performing Arts",
-  "Philosophy",
-  "Politics",
-  "Pop Culture",
-  "Science",
-  "Sports",
-  "Technology",
-  "Television",
-  "Theology",
-  "Video Games",
-];
-const difficulties = ["Casual", "Easy", "Average", "Hard", "Genius"];
-const eras = [
-  "Pre-1500",
-  "1500-1800",
-  "1800-1900",
-  "1900-1950",
-  "1950s",
-  "1960s",
-  "1970s",
-  "1980s",
-  "1990s",
-  "2000s",
-  "2010s",
-  "2020s",
-];
+const categories = [...ALL_CATEGORIES];
+const difficulties = [...ALL_DIFFICULTIES];
+const eras = [...ALL_ERAS];
 
 const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchecked]:bg-[hsl(240_35%_22%)]";
 
@@ -139,7 +100,7 @@ function SectionHeader({
     >
       {icon}
       <span
-        className="text-xs font-black tracking-widest uppercase flex-1 text-left transition-colors duration-300"
+        className="text-xs font-subheading font-bold tracking-widest uppercase flex-1 text-left transition-colors duration-300"
         style={{ color: open ? "hsl(185 70% 55%)" : "#fff" }}
       >
         {label}
@@ -171,7 +132,7 @@ function ToggleRow({
     >
       <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
       <span
-        className={`text-xs font-black tracking-widest transition-colors ${preserveCase ? "normal-case" : "uppercase"}`}
+        className={`text-xs font-body font-bold tracking-widest transition-colors ${preserveCase ? "normal-case" : "uppercase"}`}
         style={{ color: active ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))" }}
       >
         {label}
@@ -179,6 +140,141 @@ function ToggleRow({
     </div>
   );
 }
+
+/**
+ * Collapsible filter section (Categories / Difficulties / Eras).
+ * Renders a header + animated content area with a "Select/Deselect All" toggle
+ * followed by one ToggleRow per option.
+ */
+function FilterSection({
+  label,
+  iconActive,
+  iconInactive,
+  open,
+  onToggle,
+  options,
+  selected,
+  onChange,
+  preserveCase,
+}: {
+  label: string;
+  iconActive: string;
+  iconInactive: string;
+  open: boolean;
+  onToggle: () => void;
+  options: string[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  preserveCase?: (option: string) => boolean;
+}) {
+  const allSelected = options.every((o) => selected.includes(o));
+  const toggleAll = () => onChange(allSelected ? [] : [...options]);
+  const toggleOne = (opt: string) =>
+    onChange(selected.includes(opt) ? selected.filter((v) => v !== opt) : [...selected, opt]);
+
+  return (
+    <section
+      className="mx-5 mb-3 rounded-2xl flex flex-col"
+      style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
+    >
+      <SectionHeader
+        icon={<FadeIcon active={iconActive} inactive={iconInactive} open={open} />}
+        label={label}
+        open={open}
+        onToggle={onToggle}
+      />
+      <div
+        className="grid"
+        style={{
+          gridTemplateRows: open ? "1fr" : "0fr",
+          transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      >
+        <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
+          <ToggleRow
+            label={allSelected ? "Deselect All" : "Select All"}
+            active={allSelected}
+            onClick={toggleAll}
+          />
+          {options.map((opt) => (
+            <ToggleRow
+              key={opt}
+              label={opt}
+              active={selected.includes(opt)}
+              onClick={() => toggleOne(opt)}
+              preserveCase={preserveCase?.(opt)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Discrete-step range slider with dot indicators. Used for question count and
+ * the two timing settings.
+ */
+function StepSlider({
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  stops,
+  valueLabel,
+  suffixLabel,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min: number;
+  max: number;
+  step: number;
+  stops: number[];
+  valueLabel: string;
+  suffixLabel: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-baseline gap-1.5 mb-3">
+        <span className="text-lg font-subheading font-bold" style={{ color: "#fff" }}>
+          {valueLabel}
+        </span>
+        <span className="text-xs font-subheading font-bold uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>
+          {suffixLabel}
+        </span>
+      </div>
+      <div className="step-slider-wrap">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          onKeyDown={(e) => e.stopPropagation()}
+          className="step-slider w-full"
+        />
+        <div className="step-slider-dots">
+          {stops.map((v) => (
+            <div
+              key={v}
+              className="rounded-full flex-shrink-0"
+              style={{ width: 5, height: 5, background: "#fff", opacity: value >= v ? 1 : 0.35 }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const arraysEqual = (a: string[], b: string[]) => {
+  if (a.length !== b.length) return false;
+  const sa = [...a].sort();
+  const sb = [...b].sort();
+  return sa.every((v, i) => v === sb[i]);
+};
 
 export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply, gameInProgress = false, currentSettings }: SettingsPanelProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
@@ -196,48 +292,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const diffOpen = openSection === "difficulty";
   const eraOpen = openSection === "eras";
   const gameOpen = openSection === "game";
-
-  // --- Categories ---
-  const allCatsSelected = categories.every((c) => selectedCategories.includes(c));
-  const toggleAllCategories = () => {
-    if (allCatsSelected) {
-      setSelectedCategories([]);
-    } else {
-      setSelectedCategories([...categories]);
-    }
-  };
-  const toggleCategory = (cat: string) => {
-    const on = selectedCategories.includes(cat);
-    setSelectedCategories(on ? selectedCategories.filter((v) => v !== cat) : [...selectedCategories, cat]);
-  };
-
-  // --- Difficulties ---
-  const allDiffsSelected = difficulties.every((d) => selectedDifficulties.includes(d));
-  const toggleAllDiffs = () => {
-    if (allDiffsSelected) {
-      setSelectedDifficulties([]);
-    } else {
-      setSelectedDifficulties([...difficulties]);
-    }
-  };
-  const toggleDiff = (diff: string) => {
-    const on = selectedDifficulties.includes(diff);
-    setSelectedDifficulties(on ? selectedDifficulties.filter((v) => v !== diff) : [...selectedDifficulties, diff]);
-  };
-
-  // --- Eras ---
-  const allErasSelected = eras.every((e) => selectedEras.includes(e));
-  const toggleAllEras = () => {
-    if (allErasSelected) {
-      setSelectedEras([]);
-    } else {
-      setSelectedEras([...eras]);
-    }
-  };
-  const toggleEra = (era: string) => {
-    const on = selectedEras.includes(era);
-    setSelectedEras(on ? selectedEras.filter((v) => v !== era) : [...selectedEras, era]);
-  };
 
   const handleApply = () => {
     onApply?.({ numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras });
@@ -275,13 +329,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     dragOffset.current = 0;
   }, [onClose]);
 
-  const arraysEqual = (a: string[], b: string[]) => {
-    if (a.length !== b.length) return false;
-    const sa = [...a].sort();
-    const sb = [...b].sort();
-    return sa.every((v, i) => v === sb[i]);
-  };
-
   const hasChanges = currentSettings
     ? numQuestions !== currentSettings.numQuestions ||
       timePerQuestion !== currentSettings.timePerQuestion ||
@@ -315,9 +362,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Title */}
       <div className="px-5 pt-2 pb-2 md:px-6 md:pt-2 md:pb-3">
         <h2
-          className="text-xl md:text-3xl font-black leading-none tracking-tight uppercase"
+          className="text-xl md:text-3xl font-heading font-extrabold leading-none tracking-tight uppercase"
           style={{
-            fontFamily: "'Russo One', 'Nunito', sans-serif",
             background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -333,114 +379,39 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
       </div>
 
-      {/* ── CATEGORIES ── */}
-      <section
-        className="mx-5 mb-3 rounded-2xl flex flex-col"
-        style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-      >
-        <SectionHeader
-          icon={<FadeIcon active={iconCategoriesActive} inactive={iconCategoriesInactive} open={catOpen} />}
-          label="Categories"
-          open={catOpen}
-          onToggle={() => toggleSection("categories")}
-        />
-        <div
-          className="grid"
-          style={{
-            gridTemplateRows: catOpen ? "1fr" : "0fr",
-            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
-            <ToggleRow
-              label={allCatsSelected ? "Deselect All" : "Select All"}
-              active={allCatsSelected}
-              onClick={toggleAllCategories}
-            />
-            {categories.map((cat) => (
-              <ToggleRow
-                key={cat}
-                label={cat}
-                active={selectedCategories.includes(cat)}
-                onClick={() => toggleCategory(cat)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <FilterSection
+        label="Categories"
+        iconActive={iconCategoriesActive}
+        iconInactive={iconCategoriesInactive}
+        open={catOpen}
+        onToggle={() => toggleSection("categories")}
+        options={categories}
+        selected={selectedCategories}
+        onChange={setSelectedCategories}
+      />
 
-      {/* ── DIFFICULTIES ── */}
-      <section
-        className="mx-5 mb-3 rounded-2xl flex flex-col"
-        style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-      >
-        <SectionHeader
-          icon={<FadeIcon active={iconDifficultyActive} inactive={iconDifficultyInactive} open={diffOpen} />}
-          label="Difficulties"
-          open={diffOpen}
-          onToggle={() => toggleSection("difficulty")}
-        />
-        <div
-          className="grid"
-          style={{
-            gridTemplateRows: diffOpen ? "1fr" : "0fr",
-            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
-            <ToggleRow
-              label={allDiffsSelected ? "Deselect All" : "Select All"}
-              active={allDiffsSelected}
-              onClick={toggleAllDiffs}
-            />
-            {difficulties.map((diff) => (
-              <ToggleRow
-                key={diff}
-                label={diff}
-                active={selectedDifficulties.includes(diff)}
-                onClick={() => toggleDiff(diff)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <FilterSection
+        label="Difficulties"
+        iconActive={iconDifficultyActive}
+        iconInactive={iconDifficultyInactive}
+        open={diffOpen}
+        onToggle={() => toggleSection("difficulty")}
+        options={difficulties}
+        selected={selectedDifficulties}
+        onChange={setSelectedDifficulties}
+      />
 
-      {/* ── ERAS ── */}
-      <section
-        className="mx-5 mb-3 rounded-2xl flex flex-col"
-        style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-      >
-        <SectionHeader
-          icon={<FadeIcon active={iconEraActive} inactive={iconEraInactive} open={eraOpen} />}
-          label="Eras"
-          open={eraOpen}
-          onToggle={() => toggleSection("eras")}
-        />
-        <div
-          className="grid"
-          style={{
-            gridTemplateRows: eraOpen ? "1fr" : "0fr",
-            transition: "grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <div className="min-h-0 overflow-hidden flex flex-col [&>*:last-child]:border-b-0">
-            <ToggleRow
-              label={allErasSelected ? "Deselect All" : "Select All"}
-              active={allErasSelected}
-              onClick={toggleAllEras}
-            />
-            {eras.map((era) => (
-              <ToggleRow
-                key={era}
-                label={era}
-                active={selectedEras.includes(era)}
-                onClick={() => toggleEra(era)}
-                preserveCase={/^\d{4}s$/.test(era)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <FilterSection
+        label="Eras"
+        iconActive={iconEraActive}
+        iconInactive={iconEraInactive}
+        open={eraOpen}
+        onToggle={() => toggleSection("eras")}
+        options={eras}
+        selected={selectedEras}
+        onChange={setSelectedEras}
+        preserveCase={(opt) => /^\d{4}s$/.test(opt)}
+      />
 
       <section
         className="mx-5 mb-3 rounded-2xl flex flex-col"
@@ -460,106 +431,40 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           }}
         >
           <div className="min-h-0 overflow-hidden">
-          <div className="px-5 py-4 flex flex-col gap-5">
-            {/* Questions */}
-            <div>
-              <div className="flex items-baseline gap-1.5 mb-3">
-                <span className="text-lg font-black" style={{ color: "#fff" }}>
-                  {numQuestions}
-                </span>
-                <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>
-                  Questions
-                </span>
-              </div>
-              <div className="step-slider-wrap">
-                <input
-                  type="range"
-                  min={10}
-                  max={50}
-                  step={10}
-                  value={numQuestions}
-                  onChange={(e) => setNumQuestions(Number(e.target.value))}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  className="step-slider w-full"
-                />
-                <div className="step-slider-dots">
-                  {[10, 20, 30, 40, 50].map((v) => (
-                    <div
-                      key={v}
-                      className="rounded-full flex-shrink-0"
-                      style={{ width: 5, height: 5, background: "#fff", opacity: numQuestions >= v ? 1 : 0.35 }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <div className="px-5 py-4 flex flex-col gap-5">
+              <StepSlider
+                value={numQuestions}
+                onChange={setNumQuestions}
+                min={10}
+                max={50}
+                step={10}
+                stops={[10, 20, 30, 40, 50]}
+                valueLabel={`${numQuestions}`}
+                suffixLabel="Questions"
+              />
 
-            {/* Seconds/Question */}
-            <div>
-              <div className="flex items-baseline gap-1.5 mb-3">
-                <span className="text-lg font-black" style={{ color: "#fff" }}>
-                  {timePerQuestion}s
-                </span>
-                <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>
-                  / Question
-                </span>
-              </div>
-              <div className="step-slider-wrap">
-                <input
-                  type="range"
-                  min={5}
-                  max={30}
-                  step={5}
-                  value={timePerQuestion}
-                  onChange={(e) => setTimePerQuestion(Number(e.target.value))}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  className="step-slider w-full"
-                />
-                <div className="step-slider-dots">
-                  {[5, 10, 15, 20, 25, 30].map((v) => (
-                    <div
-                      key={v}
-                      className="rounded-full flex-shrink-0"
-                      style={{ width: 5, height: 5, background: "#fff", opacity: timePerQuestion >= v ? 1 : 0.35 }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+              <StepSlider
+                value={timePerQuestion}
+                onChange={setTimePerQuestion}
+                min={5}
+                max={30}
+                step={5}
+                stops={[5, 10, 15, 20, 25, 30]}
+                valueLabel={`${timePerQuestion}s`}
+                suffixLabel="/ Question"
+              />
 
-            {/* Seconds/Answer */}
-            <div>
-              <div className="flex items-baseline gap-1.5 mb-3">
-                <span className="text-lg font-black" style={{ color: "#fff" }}>
-                  {timePerAnswer}s
-                </span>
-                <span className="text-xs font-black uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>
-                  / Answer
-                </span>
-              </div>
-              <div className="step-slider-wrap">
-                <input
-                  type="range"
-                  min={5}
-                  max={30}
-                  step={5}
-                  value={timePerAnswer}
-                  onChange={(e) => setTimePerAnswer(Number(e.target.value))}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  className="step-slider w-full"
-                />
-                <div className="step-slider-dots">
-                  {[5, 10, 15, 20, 25, 30].map((v) => (
-                    <div
-                      key={v}
-                      className="rounded-full flex-shrink-0"
-                      style={{ width: 5, height: 5, background: "#fff", opacity: timePerAnswer >= v ? 1 : 0.35 }}
-                    />
-                  ))}
-                </div>
-              </div>
+              <StepSlider
+                value={timePerAnswer}
+                onChange={setTimePerAnswer}
+                min={5}
+                max={30}
+                step={5}
+                stops={[5, 10, 15, 20, 25, 30]}
+                valueLabel={`${timePerAnswer}s`}
+                suffixLabel="/ Answer"
+              />
             </div>
-          </div>
           </div>
         </div>
       </section>
@@ -573,14 +478,14 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Restart with new settings?</AlertDialogTitle>
-                <AlertDialogDescription>
+                <AlertDialogTitle className="font-subheading font-bold">Restart with new settings?</AlertDialogTitle>
+                <AlertDialogDescription className="font-body font-semibold">
                   Your current game will end and a new game will start with the updated settings.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleApply}>Restart Game</AlertDialogAction>
+                <AlertDialogCancel className="font-body font-semibold">Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleApply} className="font-heading font-extrabold">Restart Game</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

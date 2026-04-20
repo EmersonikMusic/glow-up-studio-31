@@ -44,7 +44,7 @@ export default function GameHeader({
           {/* Username pill — only when logged in, sits left of Logout */}
           {user && (
             <span
-              className="flex items-center gap-1.5 h-9 px-4 text-xs font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
+              className="flex items-center gap-1.5 h-9 px-4 text-xs font-body font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
               style={{
                 color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",
@@ -68,7 +68,7 @@ export default function GameHeader({
             >
               <LogOut className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               <span
-                className="hidden sm:inline ml-1.5 text-xs font-bold uppercase tracking-wider"
+                className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                 style={{ color: "hsl(var(--game-gold))" }}
               >
                 Logout
@@ -87,7 +87,7 @@ export default function GameHeader({
               >
                 <LogIn className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
                 <span
-                  className="hidden sm:inline ml-1.5 text-xs font-bold uppercase tracking-wider"
+                  className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                   style={{ color: "hsl(var(--game-gold))" }}
                 >
                   Login
@@ -109,7 +109,7 @@ export default function GameHeader({
             >
               <Info className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               <span
-                className="hidden sm:inline ml-1.5 text-xs font-bold uppercase tracking-wider"
+                className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                 style={{ color: "hsl(var(--game-gold))" }}
               >
                 About

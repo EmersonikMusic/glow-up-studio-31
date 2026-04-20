@@ -3,7 +3,7 @@ import logo from "@/assets/img-TO-logo-full-desktop-v2.svg";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
-import type { GameSettings } from "./SettingsPanel";
+import type { GameSettings } from "@/data/gameOptions";
 import PrimaryCTA from "./PrimaryCTA";
 
 interface StartScreenProps {
@@ -94,8 +94,8 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
               <text
                 fill="hsl(185 70% 55%)"
                 style={{
-                  fontFamily: "'Fredoka One', 'Russo One', sans-serif",
-                  fontWeight: 900,
+                  fontFamily: "'Rubik', system-ui, sans-serif",
+                  fontWeight: 800,
                   fontSize: "24px",
                   letterSpacing: "0.16em",
                   textTransform: "uppercase",
@@ -130,7 +130,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           {/* How Do I Play link */}
           <button
             onClick={onHowToPlay}
-            className="mt-[22px] text-xs font-bold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
+            className="mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
             style={{ animationDelay: "240ms" }}
           >
             How Do I Play?

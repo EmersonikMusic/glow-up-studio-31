@@ -75,9 +75,8 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
         {/* Title */}
         <div className="px-6 pb-5 text-center">
           <h2
-            className="text-xl font-black uppercase tracking-wider"
+            className="text-xl font-heading font-extrabold uppercase tracking-wider"
             style={{
-              fontFamily: "'Russo One', 'Nunito', sans-serif",
               background: "linear-gradient(160deg, hsl(42 100% 62%), hsl(35 90% 48%))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -86,7 +85,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
           >
             {mode === "login" ? "Welcome Back" : "Create Account"}
           </h2>
-          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>
+          <p className="text-xs mt-1 font-body font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
             {mode === "login" ? "Sign in to continue" : "Join the trivia fun"}
           </p>
         </div>

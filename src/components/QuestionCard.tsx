@@ -28,9 +28,8 @@ export default function QuestionCard({
 
       {/* Question text — smooth shrink via CSS scale transform instead of font-size */}
       <p
-        className="leading-relaxed font-semibold text-center w-full"
+        className="leading-relaxed font-body font-semibold text-center w-full"
         style={{
-          fontFamily: "'Nunito', sans-serif",
           textWrap: "balance",
           color: answered ? "hsl(0 0% 60%)" : "hsl(0 0% 97%)",
           fontSize: "clamp(1.6rem, 4.5vw, 2.4rem)",
@@ -59,9 +58,8 @@ export default function QuestionCard({
           />
 
           <p
-            className="leading-relaxed font-semibold animate-answer-reveal text-center w-full"
+            className="leading-relaxed font-body font-semibold animate-answer-reveal text-center w-full"
             style={{
-              fontFamily: "'Nunito', sans-serif",
               textWrap: "balance",
               color: "hsl(0 0% 97%)",
               fontSize: "clamp(1.6rem, 4.5vw, 2.4rem)",
@@ -83,7 +81,7 @@ export default function QuestionCard({
           }}
         >
           <p
-            className="text-sm font-black"
+            className="text-sm font-subheading font-bold"
             style={{ color: "hsl(0 70% 70%)" }}
           >
             Time's up!

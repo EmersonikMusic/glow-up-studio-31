@@ -42,12 +42,12 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
           {/* Main heading */}
           <div className="text-center space-y-3">
             <div
-              className="text-4xl sm:text-5xl font-black animate-bounce-in"
-              style={{ color: "hsl(42 100% 55%)", fontFamily: "'Russo One', sans-serif" }}
+              className="text-4xl sm:text-5xl font-heading font-extrabold animate-bounce-in"
+              style={{ color: "hsl(42 100% 55%)" }}
             >
               Trivia Complete!
             </div>
-            <p className="text-muted-foreground text-base max-w-xs mx-auto leading-relaxed">
+            <p className="text-muted-foreground text-base max-w-xs mx-auto leading-relaxed font-body font-semibold">
               Great job exploring the world of trivia! Ready for another round?
             </p>
           </div>
