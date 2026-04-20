@@ -280,6 +280,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [numQuestions, setNumQuestions] = useState(10);
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Single open section — accordion behavior. Game Settings open by default.
   const [openSection, setOpenSection] = useState<SectionKey>("game");
