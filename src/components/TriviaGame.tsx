@@ -128,9 +128,37 @@ export default function TriviaGame() {
     setPaused((prev) => !prev);
   }, []);
 
-  const handleApply = useCallback((newSettings: GameSettings) => {
+  const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
-  }, []);
+    const wasInGame =
+      gameStateRef.current === "playing" || gameStateRef.current === "answered";
+    if (!wasInGame) return;
+
+    // Seamless restart with new settings
+    clearTimer();
+    clearAnswerTimer();
+    setLoading(true);
+    try {
+      const data = await fetchAndStartGame(newSettings);
+      if (!data.length) {
+        toast.error("No questions matched your filters. Try widening them.");
+        return;
+      }
+      setActiveQuestions(data);
+      setQuestionIndex(0);
+      setScore(0);
+      setAnimKey((k) => k + 1);
+      setPaused(false);
+      setPanelOpen(false);
+      setGameState("playing");
+      startCountdown(newSettings.timePerQuestion);
+    } catch (err) {
+      console.error("fetchAndStartGame failed:", err);
+      toast.error("Couldn't load questions. Check your connection or try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [clearTimer, clearAnswerTimer, startCountdown]);
 
   const handleStart = useCallback(async () => {
     if (loading) return;
