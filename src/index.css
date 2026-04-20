@@ -214,6 +214,24 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
+/* Lock thumb shadow + remove browser focus styling on the input */
+.step-slider:focus,
+.step-slider:focus-visible,
+.step-slider:active {
+  outline: none;
+  box-shadow: none;
+}
+.step-slider::-webkit-slider-thumb:hover,
+.step-slider::-webkit-slider-thumb:active,
+.step-slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.step-slider::-moz-range-thumb:hover,
+.step-slider::-moz-range-thumb:active,
+.step-slider:focus::-moz-range-thumb {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
 /* Force white text inside game screens regardless of base-layer overrides */
 .game-text-white,
 .game-text-white p {
