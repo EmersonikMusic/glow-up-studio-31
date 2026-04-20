@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
 import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import { fetchAndStartGame } from "@/lib/triviaApi";
+import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
+import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
@@ -13,36 +14,12 @@ import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
-import type { GameSettings } from "./SettingsPanel";
 import mascotImg from "@/assets/Mascot.svg";
 import { getMascotForCategory } from "@/data/categoryMascots";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
-const ALL_CATEGORIES = [
-  "Art", "Economy", "Food & Drink", "Games", "Geography", "History",
-  "Human Body", "Language", "Law", "Literature", "Math", "Miscellaneous",
-  "Movies", "Music", "Nature", "Performing Arts", "Philosophy", "Politics",
-  "Pop Culture", "Science", "Sports", "Technology", "Television", "Theology",
-  "Video Games",
-];
-const ALL_DIFFICULTIES = ["Casual", "Easy", "Average", "Hard", "Genius"];
-const ALL_ERAS = [
-  "Pre-1500", "1500-1800", "1800-1900", "1900-1950", "1950s", "1960s",
-  "1970s", "1980s", "1990s", "2000s", "2010s", "2020s",
-];
-
-const DEFAULT_SETTINGS: GameSettings = {
-  numQuestions: 10,
-  timePerQuestion: 5,
-  timePerAnswer: 5,
-  selectedCategories: [...ALL_CATEGORIES],
-  selectedDifficulties: [...ALL_DIFFICULTIES],
-  selectedEras: [...ALL_ERAS],
-};
-
 export default function TriviaGame() {
-  const isMobile = useIsMobile();
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
@@ -50,58 +27,37 @@ export default function TriviaGame() {
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
-  const [countdown, setCountdown] = useState<number>(DEFAULT_SETTINGS.timePerQuestion);
-  const [answerCountdown, setAnswerCountdown] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
   const [showLogin, setShowLogin] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Refs are read inside intervals — using refs avoids re-creating intervals on
+  // every state change while still observing the latest pause / game state.
   const pausedRef = useRef(false);
   const gameStateRef = useRef<GameState>("start");
+
+  const {
+    value: countdown,
+    setValue: setCountdown,
+    start: startCountdown,
+    clear: clearTimer,
+  } = useCountdown(DEFAULT_SETTINGS.timePerQuestion, pausedRef);
+
+  const {
+    value: answerCountdown,
+    start: startAnswerCountdown,
+    clear: clearAnswerTimer,
+  } = useNullableCountdown(pausedRef);
 
   const currentQuestion = activeQuestions[questionIndex];
   const isLast = questionIndex === activeQuestions.length - 1;
 
-  const clearTimer = useCallback(() => {
-    if (timerRef.current !== null) { clearInterval(timerRef.current); timerRef.current = null; }
-  }, []);
-
-  const clearAnswerTimer = useCallback(() => {
-    if (answerTimerRef.current !== null) { clearInterval(answerTimerRef.current); answerTimerRef.current = null; }
-    setAnswerCountdown(null);
-  }, []);
-
-  const startCountdown = useCallback((seconds: number) => {
-    clearTimer();
-    setCountdown(seconds);
-    timerRef.current = setInterval(() => {
-      if (pausedRef.current) return;
-      setCountdown((prev) => {
-        if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [clearTimer]);
-
-  const startAnswerCountdown = useCallback((seconds: number) => {
-    clearAnswerTimer();
-    setAnswerCountdown(seconds);
-    answerTimerRef.current = setInterval(() => {
-      if (pausedRef.current) return;
-      setAnswerCountdown((prev) => {
-        if (prev === null || prev <= 1) { clearInterval(answerTimerRef.current!); answerTimerRef.current = null; return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [clearAnswerTimer]);
-
   useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
 
-  // Auto-pause when settings panel opens during an active game
+  // Auto-pause when settings panel opens during an active game.
+  // Reads game/pause state from refs so the effect only re-runs on panelOpen.
   useEffect(() => {
     if (
       panelOpen &&
@@ -121,25 +77,30 @@ export default function TriviaGame() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState]);
 
-  useEffect(() => {
-    if (answerCountdown === 0 && gameState === "answered") {
-      clearAnswerTimer();
-      if (isLast) {
-        setGameState("finished");
-      } else {
-        setQuestionIndex((prev) => prev + 1);
-        setGameState("playing");
-        setAnimKey((k) => k + 1);
-        startCountdown(settings.timePerQuestion);
-      }
+  // Advance to the next question or finish when answer reveal expires.
+  const advanceOrFinish = useCallback(() => {
+    clearAnswerTimer();
+    if (isLast) {
+      setGameState("finished");
+      return;
     }
-  }, [answerCountdown, gameState, isLast, clearAnswerTimer, startCountdown, settings.timePerQuestion]);
+    setQuestionIndex((prev) => prev + 1);
+    setGameState("playing");
+    setAnimKey((k) => k + 1);
+    startCountdown(settings.timePerQuestion);
+  }, [clearAnswerTimer, isLast, startCountdown, settings.timePerQuestion]);
+
+  useEffect(() => {
+    if (answerCountdown === 0 && gameState === "answered") advanceOrFinish();
+  }, [answerCountdown, gameState, advanceOrFinish]);
 
   const handleTogglePause = useCallback(() => {
     setPaused((prev) => !prev);
   }, []);
 
-  // Defer countdown until the new question card is painted on screen
+  // Defer the question countdown until after the question card is painted.
+  // Two rAF + small timeout keeps the bar animation perfectly aligned with
+  // the slide-in transition on the card.
   const deferCountdown = useCallback((seconds: number) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -148,16 +109,8 @@ export default function TriviaGame() {
     });
   }, [startCountdown]);
 
-  const handleApply = useCallback(async (newSettings: GameSettings) => {
-    setSettings(newSettings);
-    const wasInGame =
-      gameStateRef.current === "playing" || gameStateRef.current === "answered";
-    if (!wasInGame) return;
-
-    // Close drawer immediately so it slides out during the fetch
-    setPanelOpen(false);
-    clearTimer();
-    clearAnswerTimer();
+  // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
+  const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
     setLoading(true);
     try {
       const data = await fetchAndStartGame(newSettings);
@@ -178,46 +131,32 @@ export default function TriviaGame() {
     } finally {
       setLoading(false);
     }
-  }, [clearTimer, clearAnswerTimer, deferCountdown]);
+  }, [deferCountdown]);
+
+  const handleApply = useCallback(async (newSettings: GameSettings) => {
+    setSettings(newSettings);
+    const wasInGame =
+      gameStateRef.current === "playing" || gameStateRef.current === "answered";
+    if (!wasInGame) return;
+
+    // Close drawer immediately so it slides out during the fetch.
+    setPanelOpen(false);
+    clearTimer();
+    clearAnswerTimer();
+    await runFetchAndStart(newSettings);
+  }, [clearTimer, clearAnswerTimer, runFetchAndStart]);
 
   const handleStart = useCallback(async () => {
     if (loading) return;
     setPanelOpen(false);
     clearAnswerTimer();
-    setLoading(true);
-    try {
-      const data = await fetchAndStartGame(settings);
-      if (!data.length) {
-        toast.error("No questions matched your filters. Try widening them.");
-        return;
-      }
-      setActiveQuestions(data);
-      setQuestionIndex(0);
-      setScore(0);
-      setAnimKey((k) => k + 1);
-      setPaused(false);
-      setGameState("playing");
-      deferCountdown(settings.timePerQuestion);
-    } catch (err) {
-      console.error("fetchAndStartGame failed:", err);
-      toast.error("Couldn't load questions. Check your connection or try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, settings, deferCountdown, clearAnswerTimer]);
+    await runFetchAndStart(settings);
+  }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
 
   const handleNext = useCallback(() => {
     if (gameState !== "answered") return;
-    clearAnswerTimer();
-    if (isLast) {
-      setGameState("finished");
-    } else {
-      setQuestionIndex((prev) => prev + 1);
-      setGameState("playing");
-      setAnimKey((k) => k + 1);
-      startCountdown(settings.timePerQuestion);
-    }
-  }, [gameState, isLast, clearAnswerTimer, startCountdown, settings.timePerQuestion]);
+    advanceOrFinish();
+  }, [gameState, advanceOrFinish]);
 
   const handleRestart = useCallback(() => {
     clearTimer();
@@ -227,13 +166,10 @@ export default function TriviaGame() {
     setScore(0);
     setActiveQuestions([]);
     setCountdown(settings.timePerQuestion);
-    setAnswerCountdown(null);
     setGameState("start");
     setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
     setAnimKey((k) => k + 1);
-  }, [clearTimer, clearAnswerTimer, settings.timePerQuestion]);
-
-  useEffect(() => () => { clearTimer(); clearAnswerTimer(); }, [clearTimer, clearAnswerTimer]);
+  }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
 
   if (gameState === "about") {
     return (
