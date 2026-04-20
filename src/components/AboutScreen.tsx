@@ -76,13 +76,12 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
         {/* Header */}
         <div className="px-6 md:px-8 pt-10 pb-6 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
-          <p className="text-sm font-black tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
+          <p className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
             Welcome to your
           </p>
           <h1
-            className="text-4xl font-black uppercase leading-none tracking-tight"
+            className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
             style={{
-              fontFamily: "'Russo One', 'Nunito', sans-serif",
               background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
