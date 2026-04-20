@@ -184,6 +184,25 @@ export default function GameHeader({
               />
             </button>
           )}
+
+          {/* Fullscreen toggle */}
+          {fsSupported && (
+            <button
+              onClick={toggleFullscreen}
+              className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
+              style={{
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+              }}
+              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              ) : (
+                <Maximize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </header>
