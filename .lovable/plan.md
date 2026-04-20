@@ -1,39 +1,60 @@
 
 
-## Plan: Auto-pause game when settings panel opens
+## Plan: Fix "Play Again" to fully reset game like first Start
 
-### Behavior
-When the settings drawer opens mid-game, automatically pause the game (timers freeze, mascot float pauses, footer pause icon flips to play). When the drawer closes without applying new settings, the game stays paused — the user must press play to resume. This keeps the pause/play state explicit and predictable.
+### Problem
+On the Result screen, clicking "Play Again" calls `handleRestart`, which sets `gameState` back to `"start"`. The user then sees the Start screen and must click "Start Game" again — which should trigger a fresh fetch + countdown. But the report says the countdown timer and animation aren't resetting.
 
-### Change (single file: `src/components/TriviaGame.tsx`)
-Add an effect that watches `panelOpen`. When it becomes `true` during an active game (`playing` or `answered`) and the game isn't already paused, set `paused = true`.
-
+Looking at `handleRestart` in `TriviaGame.tsx`:
 ```ts
-useEffect(() => {
-  if (
-    panelOpen &&
-    (gameStateRef.current === "playing" || gameStateRef.current === "answered") &&
-    !pausedRef.current
-  ) {
-    setPaused(true);
-  }
-}, [panelOpen]);
+const handleRestart = useCallback(() => {
+  clearTimer();
+  clearAnswerTimer();
+  setPaused(false);
+  setQuestionIndex(0);
+  setScore(0);
+  setGameState("start");
+  setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
+  setAnimKey((k) => k + 1);
+}, [clearTimer, clearAnswerTimer]);
 ```
 
-Why this works:
-- `paused` already drives both timers (`pausedRef` short-circuits the interval ticks in `startCountdown` / `startAnswerCountdown`) and the mascot's `animationPlayState`.
-- `GameFooter` already swaps the icon based on the `paused` prop, so no footer changes needed.
-- Using refs in the condition avoids re-running when `gameState`/`paused` change — only the panel-open transition triggers the auto-pause.
-- On Apply (mid-game restart), `handleApply` already sets `setPaused(false)`, so the new game starts un-paused as expected.
-- On close-without-apply, the game stays paused; the user resumes manually via the footer play button. This is intentional — auto-resuming would feel jarring if the user briefly peeked at settings.
+Issues:
+1. `countdown` state is **not reset** — it's left at whatever value it had when the previous game ended (often `0`). When the user starts the next game, `handleStart` calls `deferCountdown(...)` which waits ~350ms before `startCountdown` runs. During that gap, the footer reads the stale `countdown=0`, so the timer/progress bar appears stuck/empty until the deferred call kicks in.
+2. `answerCountdown` similarly not reset to `null`.
+3. `activeQuestions` is left populated from the previous game — minor, but means a stale `currentQuestion` could briefly flash.
+
+### Fix (single file: `src/components/TriviaGame.tsx`)
+Update `handleRestart` to reset all gameplay state to the same baseline the component had on first mount:
+
+```ts
+const handleRestart = useCallback(() => {
+  clearTimer();
+  clearAnswerTimer();
+  setPaused(false);
+  setQuestionIndex(0);
+  setScore(0);
+  setActiveQuestions([]);
+  setCountdown(settings.timePerQuestion); // reset to full
+  setAnswerCountdown(null);
+  setGameState("start");
+  setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
+  setAnimKey((k) => k + 1);
+}, [clearTimer, clearAnswerTimer, settings.timePerQuestion]);
+```
+
+Why this matches first-Start behavior:
+- On first mount, `countdown` is initialized to `DEFAULT_SETTINGS.timePerQuestion` and `answerCountdown` is `null`. After restart we reset to the **current** `settings.timePerQuestion` (which respects any user customization).
+- `activeQuestions = []` clears the stale question so the footer/card don't render leftover content during the brief transition.
+- `setAnimKey` already bumps the question card animation; combined with the cleared questions, the next Start fetch + `deferCountdown` will produce a clean fade-in identical to the very first game.
 
 ### Files touched
-- `src/components/TriviaGame.tsx` — add one `useEffect` (~7 lines).
+- `src/components/TriviaGame.tsx` — extend `handleRestart` (~3 added lines, 1 dep added).
 
 ### Out of scope
-- No changes to `GameFooter`, `SettingsPanel`, timers, or pause UI.
-- Settings panel open on the Start screen is unaffected (no game in progress).
+- No changes to `handleStart`, `ResultScreen`, footer, or timers themselves.
+- No change to the deferred countdown logic — it already works on first Start.
 
 ### Verification
-Start a game → open Settings → timer freezes, mascot stops floating, footer icon shows play. Close panel without applying → still paused, press play to resume. Open Settings again → change a slider → Apply → confirm → new game starts running (not paused).
+Play a full game to the Result screen → click "Play Again" → Start screen appears with settings panel open (desktop) → click "Start Game" → new question loads, countdown bar starts full and ticks down smoothly, mascot animates — identical to the very first game of the session.
 
