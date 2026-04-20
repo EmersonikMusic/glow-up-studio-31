@@ -232,7 +232,7 @@ export default function TriviaGame() {
 
   return (
     <div
-      className="min-h-screen grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
+      className="min-h-[100svh] grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
       style={{
         background: bgGradient || "hsl(var(--game-bg))",
         transition: "background 0.6s ease",

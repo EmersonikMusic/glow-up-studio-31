@@ -1,4 +1,5 @@
-import { LogIn, LogOut, User, Info } from "lucide-react";
+import { LogIn, LogOut, User, Info, Maximize2, Minimize2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +20,41 @@ export default function GameHeader({
   settingsOpen = false,
 }: GameHeaderProps) {
   const { user, logout } = useAuth();
+
+  const fsSupported =
+    typeof document !== "undefined" &&
+    !!(
+      document.documentElement.requestFullscreen ||
+      (document.documentElement as any).webkitRequestFullscreen
+    );
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (!fsSupported) return;
+    const sync = () => {
+      const fsEl =
+        document.fullscreenElement || (document as any).webkitFullscreenElement;
+      setIsFullscreen(!!fsEl);
+    };
+    document.addEventListener("fullscreenchange", sync);
+    document.addEventListener("webkitfullscreenchange", sync);
+    sync();
+    return () => {
+      document.removeEventListener("fullscreenchange", sync);
+      document.removeEventListener("webkitfullscreenchange", sync);
+    };
+  }, [fsSupported]);
+
+  const toggleFullscreen = () => {
+    const el = document.documentElement as any;
+    const doc = document as any;
+    const fsEl = document.fullscreenElement || doc.webkitFullscreenElement;
+    if (!fsEl) {
+      el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
+    } else {
+      doc.exitFullscreen?.() || doc.webkitExitFullscreen?.();
+    }
+  };
 
   return (
     <header
@@ -146,6 +182,25 @@ export default function GameHeader({
                   transform: settingsOpen ? "rotate(60deg)" : "rotate(0deg)",
                 }}
               />
+            </button>
+          )}
+
+          {/* Fullscreen toggle */}
+          {fsSupported && (
+            <button
+              onClick={toggleFullscreen}
+              className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
+              style={{
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+              }}
+              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              ) : (
+                <Maximize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              )}
             </button>
           )}
         </div>
