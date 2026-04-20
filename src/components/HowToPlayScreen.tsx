@@ -74,13 +74,12 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
 
         {/* Header */}
         <div className="px-6 md:px-8 pt-10 pb-6 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
-          <p className="text-sm font-black tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
+          <p className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
             Here's
           </p>
           <h1
-            className="text-4xl font-black uppercase leading-none tracking-tight"
+            className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
             style={{
-              fontFamily: "'Russo One', 'Nunito', sans-serif",
               background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -97,10 +96,10 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
           <div className="px-6 md:px-8 py-7 flex flex-col gap-6 game-text-white">
             {/* Customize */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Customize Your Game
               </h2>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed font-body font-semibold">
                 Open the settings panel to make the game your own. Pick your favorite{" "}
                 <span className="font-black">categories</span> and{" "}
                 <span className="font-black">eras</span>, set a custom{" "}
@@ -114,10 +113,10 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
 
             {/* Gameplay */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 How to Play
               </h2>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed font-body font-semibold">
                 Apply your settings and press <span className="font-black">START GAME</span>. Each question is displayed
                 for the amount of time you chose — try to answer it{" "}
                 <span className="font-black">before the timer runs out!</span> When time is up, the answer is revealed.
@@ -128,10 +127,10 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
 
             {/* Pause */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Pause Anytime
               </h2>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed font-body font-semibold">
                 Need a break? You can <span className="font-black">pause the game</span> at any time using the pause
                 button in the footer.
               </p>
@@ -141,10 +140,10 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
 
             {/* Changing settings */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Changing Settings Mid-Game
               </h2>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed font-body font-semibold">
                 Want to switch things up? Open the settings panel, pick your new settings, and apply them.{" "}
                 <span className="font-black">Note:</span> applying new settings will start a new game!
               </p>
@@ -152,7 +151,7 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
 
             {/* Sign-off */}
             <div className="pt-1 pb-2">
-              <p className="text-sm leading-relaxed" style={{ color: "hsl(185 70% 55%)" }}>
+              <p className="text-sm leading-relaxed font-body font-semibold" style={{ color: "hsl(185 70% 55%)" }}>
                 Now go,
                 <br />
                 <span className="font-black not-italic">Nerd up!</span>

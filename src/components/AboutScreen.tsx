@@ -100,10 +100,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
           <div className="px-6 md:px-8 py-7 flex flex-col gap-6 game-text-white">
             {/* Who are we */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Who are we?
               </h2>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed font-body font-semibold">
                 We are a team of trivia fans who love learning, writing, and playing trivia. Here at{" "}
                 <span className="font-black">Triviolivia</span>, we believe that learning should be entertaining and
                 stimulating. Our platform is designed for trivia experts, young learners, and everyone in between.
@@ -114,10 +114,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
             {/* What sets us apart */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What sets us apart?
               </h2>
-              <p className="text-sm leading-relaxed mb-4">
+              <p className="text-sm leading-relaxed font-body font-semibold mb-4">
                 <span className="font-black">Triviolivia</span> is not just another trivia game. Triviolivia is a free
                 and fully customizable source of endless trivia questions and answers across{" "}
                 <span className="font-black">25 categories</span>,{" "}
@@ -141,7 +141,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   "Tired of AI hallucination questions?",
                   "Want to just eventually know everything?",
                 ].map((item, i) => (
-                  <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
+                  <li key={i} className="text-sm leading-relaxed font-body font-semibold flex items-start gap-2">
                     <span
                       className="shrink-0 mt-[5px] w-2 h-2 rounded-full"
                       style={{ background: "hsl(185 70% 55%)" }}
@@ -161,10 +161,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
             {/* How do I contribute */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 How do I contribute?
               </h2>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed font-body font-semibold">
                 Our meticulously crafted and curated questions are designed to entertain, educate, challenge, and spark
                 curiosity. We are always adding to our database and we're always looking for new questions.{" "}
                 <span className="font-black">Show us what you got!</span> If your submitted questions survive our
@@ -177,15 +177,15 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
             {/* What next */}
             <div>
-              <h2 className="text-xs font-black tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What next?
               </h2>
-              <p className="text-sm leading-relaxed font-black">Go play. Good luck. Have fun. Nerd up!</p>
+              <p className="text-sm leading-relaxed font-body font-semibold font-black">Go play. Good luck. Have fun. Nerd up!</p>
             </div>
 
             {/* Sign-off */}
             <div className="pt-1 pb-2">
-              <p className="text-sm leading-relaxed" style={{ color: "hsl(185 70% 55%)" }}>
+              <p className="text-sm leading-relaxed font-body font-semibold" style={{ color: "hsl(185 70% 55%)" }}>
                 With love,
                 <br />
                 <span className="font-black not-italic">The Triviolivia Team</span>
