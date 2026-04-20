@@ -1,33 +1,28 @@
 
+## Plan: Widen tablet portrait Settings drawer
 
-## Plan: Fix Restart Game CTA to match Start Game exactly
-
-### Root cause
-`<AlertDialogAction asChild>` from `src/components/ui/alert-dialog.tsx` injects `buttonVariants()` classes (`h-10`, `bg-primary`, `text-primary-foreground`, `px-4`, etc.) into the child via Radix's `Slot`. These get merged with `<PrimaryCTA>`'s gradient/`min-h-14`/`px-10` classes. Because Tailwind has no specificity tiebreaker for two conflicting utilities in a merged class string, the default button styles can win — overriding the gradient background, height, and padding. Same root issue would affect any future PrimaryCTA used inside AlertDialogAction.
-
-The Cancel button has the analogous problem with `AlertDialogCancel asChild` (injects `outline` variant classes), but visually it currently still resembles the intended pill — we'll harden both the same way.
+### Issue
+Desktop SettingsPanel uses `w-[30%]` which on a 768px tablet portrait = ~230px wide — narrower than the `min-h-14 px-10` "Apply Settings" CTA, causing it to clip or look cramped.
 
 ### Fix
-Drop the Radix wrapper for the action/cancel buttons in `src/components/SettingsPanel.tsx` and instead use `AlertDialog`'s controlled `open` state, so we can render plain `<PrimaryCTA>` and the existing styled Cancel `<button>` directly without `AlertDialogAction`/`AlertDialogCancel` injecting variant classes.
+`src/components/SettingsPanel.tsx` (desktop branch, ~line 538): change the panel width from `w-[30%]` to a responsive value that scales with breakpoint:
 
-**Changes — `src/components/SettingsPanel.tsx` only** (lines ~474-506):
+```
+w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]
+```
 
-1. Add local state: `const [confirmOpen, setConfirmOpen] = useState(false);`
-2. Replace the `AlertDialogTrigger asChild` wrapper with `<PrimaryCTA onClick={() => setConfirmOpen(true)}>`.
-3. Make `<AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>`.
-4. In the footer, replace:
-   - `<AlertDialogAction asChild><PrimaryCTA …/></AlertDialogAction>` → `<PrimaryCTA onClick={() => { setConfirmOpen(false); handleApply(); }}>Restart Game</PrimaryCTA>`
-   - `<AlertDialogCancel asChild><button …/></AlertDialogCancel>` → plain `<button onClick={() => setConfirmOpen(false)} …>Cancel</button>` (same existing styling — `nav-btn rounded-full px-10 min-h-14 py-2 …`).
-5. Keep the non-`hasChanges` branch unchanged.
+- **Tablet portrait (768–1023px)**: ~422px — comfortably fits "Apply Settings" with padding.
+- **lg (1024–1279px)**: ~410px.
+- **xl (1280px+)**: ~410–480px capped — close to the original 30% feel on large desktops.
+- `max-w-[480px]` prevents it from getting absurdly wide on ultrawide monitors.
 
-This guarantees the Restart Game button renders with identical classes to Start Game / Play Again / Apply Settings (gradient, `min-h-14`, `px-10`, Rubik 800 uppercase, gold shadow), and Cancel keeps its glass-pill look without `buttonVariants({variant:"outline"})` leaking in.
+The mobile bottom-sheet branch (under `useIsMobile`, <768px) is untouched.
 
 ### Files touched
-- `src/components/SettingsPanel.tsx` (one section, ~30 lines)
+- `src/components/SettingsPanel.tsx` — single className change on the sliding panel wrapper.
 
 ### Out of scope
-No changes to `alert-dialog.tsx` primitives, `PrimaryCTA`, theme, or anything else.
+No content, padding, or styling changes inside the drawer.
 
 ### Verification
-Open settings mid-game → change a value → click Apply Settings → confirmation dialog: "Restart Game" must be pixel-identical to Start Game (orange→yellow gradient, purple border, white Rubik 800 uppercase, same height as Cancel pill beside it). Cancel closes the dialog; Restart Game restarts the game.
-
+At 768×1024 (tablet portrait): drawer is ~420px wide, "Apply Settings" CTA fits on one line with breathing room on both sides. At 1440px desktop: drawer width visually similar to before.
