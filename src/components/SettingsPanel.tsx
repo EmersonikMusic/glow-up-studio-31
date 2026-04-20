@@ -486,7 +486,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
               <AlertDialogFooter>
                 <AlertDialogCancel asChild>
                   <button
-                    className="nav-btn rounded-full px-6 h-11 font-body font-bold uppercase tracking-wider transition-all duration-200 active:scale-95"
+                    className="nav-btn rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                     style={{
                       background: "rgba(255, 255, 255, 0.08)",
                       border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -497,7 +497,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                   </button>
                 </AlertDialogCancel>
                 <AlertDialogAction asChild>
-                  <PrimaryCTA onClick={handleApply} className="h-11 px-8 text-base">
+                  <PrimaryCTA onClick={handleApply}>
                     Restart Game
                   </PrimaryCTA>
                 </AlertDialogAction>
