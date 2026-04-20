@@ -52,7 +52,9 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
         }`}
         style={{
           ...(!isMobile && { width: "70vw", minWidth: "300px" }),
-          background: "rgba(0, 0, 0, 0.45)",
+          background: "rgba(0, 0, 0, 0.25)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
           border: isMobile ? "none" : "1.5px solid rgba(255, 255, 255, 0.18)",
           boxShadow: isMobile
             ? "12px 0 48px rgba(0, 0, 0, 0.5)"
