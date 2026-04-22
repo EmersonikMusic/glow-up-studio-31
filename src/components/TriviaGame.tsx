@@ -299,7 +299,7 @@ export default function TriviaGame() {
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
-            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch md:-mr-6 lg:-mr-8"
+            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch"
             style={{
               width: "30%",
               transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -317,15 +317,21 @@ export default function TriviaGame() {
               }}
             >
               <div
-                className="absolute inset-0 rounded-full"
-                style={{ background: "rgb(125, 223, 232)" }}
+                className="absolute rounded-full"
+                style={{
+                  width: "70%",
+                  height: "70%",
+                  bottom: 0,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: "rgb(125, 223, 232)",
+                }}
               />
               <img
-                key={currentQuestion.category}
                 src={getMascotForCategory(currentQuestion.category)}
                 alt="TrivOlivia mascot"
-                className="relative z-10 h-[110%] w-auto object-contain drop-shadow-xl animate-fade-in"
-                style={{ marginBottom: "-8%" }}
+                className="relative z-10 h-[125%] w-auto object-contain drop-shadow-xl"
+                style={{ marginBottom: 0 }}
                 draggable={false}
               />
             </div>
@@ -342,15 +348,21 @@ export default function TriviaGame() {
             }}
           >
             <div
-              className="absolute inset-0 rounded-full"
-              style={{ background: "rgb(125, 223, 232)" }}
+              className="absolute rounded-full"
+              style={{
+                width: "70%",
+                height: "70%",
+                bottom: 0,
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "rgb(125, 223, 232)",
+              }}
             />
             <img
-              key={currentQuestion.category}
               src={getMascotForCategory(currentQuestion.category)}
               alt="TrivOlivia mascot"
-              className="relative z-10 h-[110%] w-auto object-contain drop-shadow-xl animate-fade-in"
-              style={{ marginBottom: "-8%" }}
+              className="relative z-10 h-[125%] w-auto object-contain drop-shadow-xl"
+              style={{ marginBottom: 0 }}
               draggable={false}
             />
           </div>
