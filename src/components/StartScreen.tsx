@@ -27,14 +27,14 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
     >
       {/* Ambient blobs */}
       <div
-        className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none animate-blob-a"
         style={{
           background: "radial-gradient(circle, hsl(280 60% 50% / 0.14) 0%, transparent 70%)",
           filter: "blur(60px)",
         }}
       />
       <div
-        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none animate-blob-b"
         style={{
           background: "radial-gradient(circle, hsl(210 70% 50% / 0.1) 0%, transparent 70%)",
           filter: "blur(60px)",
