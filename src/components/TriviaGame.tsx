@@ -284,7 +284,7 @@ export default function TriviaGame() {
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
-          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%]">
+          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-[140px] sm:pb-[160px] md:pb-0">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -310,8 +310,8 @@ export default function TriviaGame() {
             <div
               className="relative flex items-center justify-center"
               style={{
-                width: "clamp(140px, 18vw, 240px)",
-                height: "clamp(140px, 18vw, 240px)",
+                width: "clamp(180px, 24vw, 320px)",
+                height: "clamp(180px, 24vw, 320px)",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
               }}
@@ -321,9 +321,10 @@ export default function TriviaGame() {
                 style={{ background: "rgb(125, 223, 232)" }}
               />
               <img
+                key={currentQuestion.category}
                 src={getMascotForCategory(currentQuestion.category)}
                 alt="TrivOlivia mascot"
-                className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl transition-opacity duration-300"
+                className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl animate-fade-in"
                 style={{ marginBottom: "-2%" }}
                 draggable={false}
               />
@@ -334,8 +335,8 @@ export default function TriviaGame() {
           <div
             className="md:hidden absolute bottom-2 right-3 pointer-events-none z-10 flex items-end justify-center opacity-90"
             style={{
-              width: "clamp(90px, 26vw, 130px)",
-              height: "clamp(90px, 26vw, 130px)",
+              width: "clamp(120px, 32vw, 170px)",
+              height: "clamp(120px, 32vw, 170px)",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
@@ -345,9 +346,10 @@ export default function TriviaGame() {
               style={{ background: "rgb(125, 223, 232)" }}
             />
             <img
+              key={currentQuestion.category}
               src={getMascotForCategory(currentQuestion.category)}
               alt="TrivOlivia mascot"
-              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl transition-opacity duration-300"
+              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl animate-fade-in"
               style={{ marginBottom: "-2%" }}
               draggable={false}
             />
