@@ -191,10 +191,11 @@ export default function GameHeader({
               <img
                 src={settingsIcon}
                 alt="Settings"
-                className="w-5 h-5 transition-transform duration-500 md:hover:rotate-45"
-                style={{
-                  transform: settingsOpen ? "rotate(60deg)" : "rotate(0deg)",
-                }}
+                className="gear-icon w-5 h-5"
+                data-open={settingsOpen ? "true" : "false"}
+                style={
+                  settingsOpen ? { transform: "rotate(60deg)" } : undefined
+                }
               />
             </button>
           )}
