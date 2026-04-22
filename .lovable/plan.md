@@ -1,97 +1,53 @@
 
 
-## Plan: Phone-landscape validation + automated visual regression
+## Mobile Layout Fix: Reduce Card Padding & Lower Mascot
 
-Two deliverables, both layout-validation only. No app code changes.
+### Problem
+On mobile, the mascot SVG (anchored at `bottom: 64px`, sized up to 200px) overlaps the question/answer text because the QuestionCard centers its content vertically with generous top/bottom padding. Long questions + revealed answers push content down into the mascot's area.
 
-### Part 1 — Phone landscape test plan (manual + emulated)
+### Changes
 
-Add `docs/testing/phone-landscape-validation.md` covering:
+**1. `src/components/QuestionCard.tsx` — Top-align content on mobile, reduce vertical padding**
+- Change `justify-center` to `justify-start` so question text anchors to the top of the card on mobile (keep centered on desktop via `md:justify-center`).
+- Reduce mobile vertical padding: change `paddingTop`/`paddingBottom` from `clamp(1.5rem, 4vw, 2.5rem)` to `clamp(0.75rem, 2.5vw, 2.5rem)` so the question sits closer to the top edge.
 
-**Why this is needed**
-The Lovable preview's viewport selector snaps to a fixed list (max width 1920, includes 844×1194 / 820×1180 but no true phone-landscape pairing like 844×390). The `useIsMobile` hook and `@media (max-height: 500px) and (orientation: landscape)` rules can only be exercised on real devices, Chrome DevTools Device Mode, or Playwright. This document defines exactly how to verify them.
+**2. `src/components/TriviaGame.tsx` — Lower the mobile mascot toward the footer**
+- Move mascot anchor from `bottom: 64px` down to `bottom: 8px` so it tucks just above the footer pill (footer is ~auto-height, the pill itself provides clearance).
+- Slightly shrink the mascot to reduce vertical footprint: `clamp(120px, 32vw, 170px)` instead of `clamp(140px, 38vw, 200px)`.
+- Keep `right-0`, `justify-end`, `z-20`, and the float animation untouched.
 
-**Target viewports** (all landscape, height ≤ 500)
-- 667×375 — iPhone SE
-- 736×414 — iPhone 8 Plus
-- 812×375 — iPhone X / 11 Pro
-- 844×390 — iPhone 12 / 13 / 14
-- 896×414 — iPhone 11 / XR
-- 932×430 — iPhone 14 Pro Max
-- 740×360 — Galaxy S8 baseline
-- 800×360 — common Android landscape
+**3. Verification**
+After implementation, test in the 472×702 viewport (current preview) with:
+- Longest question sample from the question bank
+- Longest answer sample (revealed state)
+- Confirm the question text top edge sits ~12px from card top, and the mascot's top edge stays below the answer reveal text with at least 8px clearance.
 
-**Methods**
-1. **Chrome DevTools** → Device Toolbar → "Responsive" → enter width × height → rotate. Screenshot via Cmd+Shift+P → "Capture screenshot".
-2. **Real device** → open Preview URL → rotate to landscape → check items below.
-3. **Playwright** (preferred for repeatability) — see Part 2.
+### Technical Details
 
-**Per-viewport checklist** (pass/fail table to fill in)
-- Header: logo, login/username pill, About, Settings gear, Fullscreen — all visible, none wrapped to a second row.
-- Question card: question text + all 4 answers fully on-screen, no horizontal scroll.
-- Mascot: visible on the right gutter, vertically centered, not overlapping any text inside the card.
-- Footer pill: countdown number + progress bar fully visible and tappable; not overlapped by mascot.
-- Settings: tap gear → drawer slides up from BOTTOM (not from the right). Apply button reachable via scroll if needed.
-- No content clipped at viewport edges (top, right, bottom, left).
-
-**Pass criteria**: every item checked on every listed viewport. Failures recorded with screenshot and viewport size.
-
-### Part 2 — Automated visual regression via Playwright
-
-The project already has `playwright.config.ts`, `playwright-fixture.ts`, and `tests/card-height.spec.ts`. Extend that setup.
-
-**New file**: `tests/visual-regression.spec.ts`
-
-For each target viewport (portrait + landscape across phone, tablet, desktop):
-1. Set viewport via `page.setViewportSize({ width, height })`.
-2. Navigate to `/`, advance into the game (click Start), wait for question card.
-3. Capture full-page screenshot → `tests/__screenshots__/{viewport-name}-gameplay.png`.
-4. Open Settings → wait for drawer → capture → `{viewport-name}-settings.png`.
-5. Run overlap detection (see below) and assert pass.
-
-**Viewports to capture** (16 total: 8 sizes × {gameplay, settings-open})
-- 360×800, 390×844, 414×896 — phone portrait
-- 667×375, 844×390, 932×430 — phone landscape
-- 768×1024, 820×1180 — tablet portrait
-- 1024×768, 1180×820 — tablet landscape
-- 1280×720, 1920×1080 — desktop
-
-**Overlap detection helper** (`tests/utils/overlap.ts`)
-Use Playwright's `locator.boundingBox()` to read rectangles for:
-- `header` (header element)
-- `[data-testid="question-card"]`
-- `.mobile-mascot-overlay` and the desktop mascot wrapper (whichever is visible)
-- footer pill (footer element)
-
-For each pair where overlap is NOT allowed, assert `rectsDoNotOverlap(a, b)`. The mascot/card pair on mobile-landscape is the one true known-edge case — the mascot sits in the reserved right gutter, so allow it ONLY if the mascot's left edge ≥ card's right edge minus 4px tolerance.
-
-Also assert no element extends past viewport bounds:
-`box.x ≥ 0 && box.y ≥ 0 && box.x + box.width ≤ viewportWidth && box.y + box.height ≤ viewportHeight`.
-
-**Settings drawer style assertion**
-- On mobile viewports (width < 768 OR (height ≤ 500 && width ≤ 950)): assert the drawer container has class indicating bottom-sheet (e.g. `data-side="bottom"` or matches the mobile sheet selector).
-- On tablet/desktop: assert side-drawer class (`data-side="right"`).
-
-**Test output**
-- Console summary: viewport → pass/fail per check.
-- Screenshots saved to `tests/__screenshots__/` for visual diff review.
-- A `tests/__screenshots__/REPORT.md` generated by the test run summarizing pass/fail and embedding image links.
-
-**Run command** (documented in the new doc)
-```
-npx playwright test tests/visual-regression.spec.ts
+```tsx
+// QuestionCard.tsx — mobile-first top alignment
+className="... flex flex-col justify-start md:justify-center items-center ..."
+style={{
+  paddingTop: "clamp(0.75rem, 2.5vw, 2.5rem)",
+  paddingBottom: "clamp(0.75rem, 2.5vw, 2.5rem)",
+  // ... rest unchanged
+}}
 ```
 
-### Files created
-- `docs/testing/phone-landscape-validation.md` — manual test plan and checklist.
-- `tests/visual-regression.spec.ts` — automated capture + overlap assertions.
-- `tests/utils/overlap.ts` — bounding-box overlap and viewport-bounds helpers.
-- `tests/__screenshots__/.gitkeep` — directory marker; generated PNGs follow.
+```tsx
+// TriviaGame.tsx — mobile mascot lower & smaller
+<div
+  className="md:hidden absolute right-0 pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
+  style={{
+    width: "clamp(120px, 32vw, 170px)",
+    height: "clamp(120px, 32vw, 170px)",
+    bottom: "8px",
+    // ... rest unchanged
+  }}
+>
+```
 
-### Out of scope
-- Changing any app component, hook, or style.
-- Adding orientation-lock UI or "rotate device" prompts.
-- Replacing the existing `tests/card-height.spec.ts`.
-- CI integration (can be added later; this PR keeps the test runnable locally).
-- Pixel-diff baselining against committed snapshots — overlap/bounds assertions are the source of truth; PNGs are for human review.
+### Files Edited
+- `src/components/QuestionCard.tsx`
+- `src/components/TriviaGame.tsx`
 
