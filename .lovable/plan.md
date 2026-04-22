@@ -1,37 +1,65 @@
 
 
-## Plan: Restore (and grow) mobile game card height
+## Plan: Card-height regression test + iOS Safari viewport stability
 
-### Root cause
-On mobile, `<main>` is `flex items-center` and the game-area wrapper is `flex-none` with no height. With `items-center`, children shrink to content, so `h-full` on the card resolves against an auto-height parent and the card collapses to text size — smaller than the previous `min-h-[60vh]` build.
+### Part 1 — Automated card-height check (Playwright)
 
-### Fix — `src/components/TriviaGame.tsx` `<main>` (line 255-268)
+A Vitest/jsdom test cannot measure real layout heights — it has no painted layout. Use Playwright (already installed: `@playwright/test` + `playwright.config.ts`) for a real-browser check.
 
-1. Change `<main>` classes:
-   - `flex items-center md:items-stretch` → `flex items-stretch`
-   - Keep `h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8` (breathing room above/below preserved).
+**New file:** `tests/card-height.spec.ts`
+- Launch the app at the preview URL, click Start to enter gameplay.
+- Read the bounding box height of the question card (`[data-testid="question-card"]`) on Q1.
+- Submit/advance through 3 questions (skip via the answer-phase auto-advance or click Next).
+- Re-measure the card height after each transition.
+- Assert all heights are within 1px of the Q1 baseline.
+- Run at mobile viewport (390×844) and desktop (1280×720) in two projects.
 
-2. Change game-area wrapper (line 257):
-   - `flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]` → `flex-none flex flex-col justify-center h-full w-full md:w-[70%]`
-   - `h-full` now applies on mobile too, so the column fills the `1fr` grid row minus the 12px top/bottom padding.
+**Required tweak:** add `data-testid="question-card"` to the wrapper `<div>` in `src/components/QuestionCard.tsx` (line 17) so the test has a stable selector. No visual change.
 
-3. `QuestionCard.tsx` stays `h-full` — now resolves correctly against a real height, making the card span the full available row.
+**Script:** add `"test:e2e": "playwright test"` to `package.json` so the user can run it.
 
-### Result
-- Mobile card height = `100svh − header − footer − 24px` (12px top + 12px bottom padding). On 390×774 with ~64px header + ~80px footer, that's roughly **606px tall**, vs. ~464px previously (60vh − padding).
-- Card height is **constant across all questions** (governed by viewport + grid, not content), matching the prior behavior the user wanted preserved.
-- Visible 12px gap above and below the card — never flush against header or footer.
-- Desktop (`md:`) layout unchanged: `items-stretch` was already its behavior via the override.
+### Part 2 — iOS Safari toolbar stability (scroll/resize listener)
+
+**Problem:** when the iOS Safari address bar collapses on scroll, the visual viewport changes height. `100svh` handles the static case, but in-flight scroll events plus rubber-band scrolling can briefly hide the footer or cover the card.
+
+**Fix — `src/components/TriviaGame.tsx`:**
+1. Add a `useEffect` that subscribes to `window.visualViewport` `resize` and `scroll` events (with `window.resize` + `orientationchange` fallbacks for browsers without `visualViewport`).
+2. On each event, write the current visual viewport height to a CSS variable on `document.documentElement`:
+   ```ts
+   const h = window.visualViewport?.height ?? window.innerHeight;
+   document.documentElement.style.setProperty("--app-vh", `${h}px`);
+   ```
+3. Throttle with `requestAnimationFrame` to avoid layout thrash; clean up listeners on unmount.
+
+**Fix — root container (`<div className="min-h-[100svh] grid ...">`)**:
+- Change min-height to use the live variable with a graceful fallback chain:
+  ```
+  style={{ minHeight: "var(--app-vh, 100svh)" }}
+  ```
+- Keep `100svh` as the CSS fallback for SSR/first paint and non-iOS browsers.
+
+**Fix — `<main>` (line ~257):**
+- Already uses `min-h-0` + grid `1fr`, so it inherits the corrected height automatically. No changes needed.
+
+**Fix — keep footer in view on rubber-band scroll:**
+- Add `overscroll-behavior-y: none` to the root container (Tailwind `overscroll-none`) so iOS rubber-band can't drag the footer off-screen during gameplay.
+
+### Part 3 — Optional Vitest sanity test
+Add a lightweight `src/components/__tests__/QuestionCard.test.tsx` that renders the card with two different questions and asserts the wrapper has the `h-full` class — guards against future regressions where someone re-introduces `min-h-[60vh]` or content-sized heights. Fast, runs in CI on every commit.
 
 ### Files touched
-- `src/components/TriviaGame.tsx` — two className tweaks on `<main>` and the game-area wrapper.
+- `src/components/QuestionCard.tsx` — add `data-testid="question-card"`.
+- `src/components/TriviaGame.tsx` — visual-viewport listener + `--app-vh` variable + `overscroll-none`.
+- `tests/card-height.spec.ts` (new) — Playwright regression spec.
+- `src/components/__tests__/QuestionCard.test.tsx` (new) — Vitest class-presence guard.
+- `package.json` — add `test:e2e` script.
 
 ### Out of scope
-No changes to `QuestionCard.tsx`, footer, header, mascot, animations, colors, or any game logic.
+No changes to game logic, timers, animations, colors, fonts, header/footer styling, or desktop layout.
 
-### Verification (390×774 mobile)
-1. Card visibly fills space between header and footer with ~12px gap on each side.
-2. Card height identical on Q1, Q2, Q3 — does not change per question.
-3. Footer fully visible whether iOS Safari URL bar is shown or hidden.
-4. Desktop ≥768px layout unchanged.
+### Verification
+1. `npm run test` passes (Vitest guard).
+2. `npm run test:e2e` passes; card heights identical (±1px) across Q1→Q4 on mobile and desktop projects.
+3. iOS Safari (real device or 390×844 emulation): scroll/swipe to collapse address bar → footer remains visible, card never overlaps footer, no visible jumpiness.
+4. Android Chrome + desktop: no regressions; layout identical to current build.
 
