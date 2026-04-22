@@ -1,35 +1,61 @@
 
 
-## Plan: Balance mascot whitespace on tablet too
+## Plan: Landscape support for tablet & mobile (layout-only)
 
-### Problem
-The previous change reduced `marginRight` for the desktop mascot, but at tablet widths (md breakpoint, 768–1024px) the mascot still looks off-center within its 30% column. The two whitespace gaps (card↔mascot vs mascot↔screen edge) need to look visually equal across tablet AND desktop.
+### Goal
+Make the game fully usable when devices are rotated to landscape, without changing portrait behavior or desktop. Tablet landscape inherits the existing desktop layout. Phone landscape gets targeted layout tweaks because vertical space is severely limited (~360–430px tall). Settings drawer on phones — including landscape — must continue sliding up from the bottom.
 
-### Root cause
-Mascot column is `items-end` aligned at 30% width. The mascot itself is `clamp(180px, 24vw, 320px)`. At tablet (~768–1024px), 24vw ≈ 184–245px, so the mascot fills most of the 30% column (~230–307px). With even a small `marginRight`, it gets pushed left of where visual centering would place it.
+### Problems observed
+1. `useIsMobile` uses `max-width: 768`. In phone landscape, modern devices (iPhone 12+, Pixel) measure 844–956px wide → they incorrectly get the desktop layout (right-side drawer instead of bottom sheet).
+2. True narrow phone landscape keeps the mobile layout but the mobile mascot (`clamp(180px, 55vw, 280px)`) and card padding (`pb-[160px]`) consume too much of the ~360px-tall viewport, causing overlap.
+3. Header right-side cluster can crowd at narrow landscape widths.
 
-True visual centering = mascot horizontally centered within its 30% column, regardless of viewport size. That makes the left gap (card→mascot) and right gap (mascot→edge) automatically equal at every breakpoint.
+### Approach
 
-### Change
-In `src/components/TriviaGame.tsx`, desktop/tablet mascot wrapper:
+**A. Detect "phone-shape" not just narrow width.**
+Update `useIsMobile` to treat a viewport as mobile when EITHER:
+- `width < 768` (current rule), OR
+- landscape AND `height ≤ 500` AND `width ≤ 950` (covers all phones in landscape; tablets in landscape have height ≥ 768 so are excluded).
 
-- Change column alignment from `items-end` → `items-center` so the mascot centers horizontally within its 30% column at every md+ width.
-- Remove the `marginRight` style entirely (no longer needed once centered).
+This routes phone landscape to the bottom-sheet drawer.
 
-This produces equal left/right whitespace automatically across tablet (768px) through desktop (1920px+), since the gaps are determined by the column geometry, not a fixed offset.
+**B. Add mobile-landscape layout adjustments via `@media (max-height: 500px) and (orientation: landscape)`.**
+- Card column bottom padding: drop from `pb-[160px]` to ~96px in mobile landscape.
+- Mobile mascot: switch sizing to `clamp(120px, 28vh, 180px)` (vh-anchored) so it shrinks with short viewports; keep `bottom-6 -right-2` anchor.
+
+**C. Header crowding in mobile landscape.**
+- Show the compact mobile username pill (instead of the desktop pill) in mobile landscape.
+- Reduce header vertical padding in mobile landscape to reclaim ~20–30px of vertical space.
+
+**D. Tablet landscape.**
+Already passes `md:` breakpoint and renders the desktop layout. No changes needed.
 
 ### Files touched
-- `src/components/TriviaGame.tsx` — desktop mascot column: `items-end` → `items-center`; remove `marginRight` from inner wrapper style.
+- `src/hooks/use-mobile.tsx` — broaden `isMobile` to include phone-landscape detection.
+- `src/components/TriviaGame.tsx` — mobile-landscape card padding and mascot sizing only (Tailwind arbitrary `[@media...]:` variants).
+- `src/components/GameHeader.tsx` — show compact username pill and reduce vertical padding in mobile landscape.
+- `src/index.css` — mobile-landscape media-query rules that can't be expressed as Tailwind variants (header padding override, username-pill visibility toggle).
 
-### Out of scope
-- Mobile mascot (separate overlay, already correct).
-- Mascot scale (`clamp(180px, 24vw, 320px)` unchanged).
-- 70/30 card/mascot column split.
-- Vertical positioning, float animation, settings-panel fade.
+### Out of scope (layout-only change)
+- Any gameplay logic, timer behavior, scoring, answer reveal, or question flow.
+- Animations, transitions, hover effects, float/pulse/shake/breathe motion.
+- Styling beyond layout (colors, gradients, glassmorphism, typography weights, font families, font sizes outside of what's strictly needed for layout to fit).
+- Desktop layout, tablet portrait, phone portrait — all unchanged.
+- Settings panel content, drawer width on desktop, About/HowToPlay/Result/Start/Login screens.
+- Mascot scale on desktop, mascot float animation, mascot fade-on-settings-open behavior.
+- Card width split (70/30), card content, footer pill content.
+- Question card font-size clamps, text color, divider styling.
+- Adding orientation-lock or "rotate device" prompts.
 
-### Verification
-1. Tablet 768×1024 and 820×1180: gap between card's right edge and mascot ≈ gap between mascot and right screen edge.
-2. Desktop 1280, 1440, 1920: same visual balance maintained.
-3. Settings panel open: mascot fade-out behavior unchanged.
-4. Mobile: no visual change.
+### Verification (interactive elements visible & operable per screen + orientation)
+Confirm for each viewport that header buttons (logo, login/username, About, Settings gear, Fullscreen), question card text, footer countdown pill, and (where applicable) mascot are all on-screen and tappable, and that opening Settings reveals the correct drawer style:
+
+1. **Phone portrait 390×844** — unchanged. Bottom-sheet drawer. All header icons + footer + mascot visible.
+2. **Phone landscape 844×390 / 932×430** — bottom-sheet drawer (slides from bottom). Compact username pill. Mascot shrunk, no overlap with card text. Footer pill fully tappable. All header icons fit on one row.
+3. **Small Android landscape 736×360** — same as #2; mascot ~120px.
+4. **Tablet portrait 768×1024 / 820×1180** — unchanged. Desktop layout, side drawer.
+5. **Tablet landscape 1024×768 / 1180×820** — desktop layout, side drawer (right). 70/30 card+mascot split. All controls visible.
+6. **Desktop 1280 / 1440 / 1920** — unchanged.
+7. Settings open on phone landscape: backdrop visible, sheet scrolls, Apply button reachable.
+8. Settings open on tablet landscape: side drawer slides in from right, Apply button visible.
 
