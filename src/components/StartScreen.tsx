@@ -92,6 +92,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
                 </filter>
               </defs>
               <text
+                className="animate-text-shimmer"
                 fill="hsl(185 70% 55%)"
                 style={{
                   fontFamily: "'Rubik', system-ui, sans-serif",
