@@ -252,9 +252,9 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen onRestart={handleRestart} />
       ) : (
-        <main className="relative flex items-center md:items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
+        <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
-          <div className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]">
+          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
