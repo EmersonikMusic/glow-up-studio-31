@@ -22,7 +22,10 @@ export default function QuestionCard({
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
         boxShadow: "0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25)",
-        padding: "clamp(1.5rem, 4vw, 2.5rem)",
+        paddingTop: "clamp(1.5rem, 4vw, 2.5rem)",
+        paddingBottom: "clamp(1.5rem, 4vw, 2.5rem)",
+        paddingLeft: "clamp(0.875rem, 3vw, 2.5rem)",
+        paddingRight: "clamp(0.875rem, 3vw, 2.5rem)",
         gap: 0,
       }}
     >

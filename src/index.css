@@ -429,10 +429,24 @@
     padding-bottom: 96px !important;
   }
 
-  /* Mobile mascot: anchor to viewport height so it shrinks with short viewports */
+  /* Card column: reserve right gutter so the mascot sits beside (not over) the card */
+  .mobile-landscape\:pr-\[140px\] {
+    padding-right: 140px !important;
+  }
+
+  /* Mobile mascot: anchor vertically centered in the right gutter beside the card */
   .mobile-mascot-overlay {
     width: clamp(120px, 28vh, 180px) !important;
     height: clamp(120px, 28vh, 180px) !important;
+    bottom: 50% !important;
+    right: 8px !important;
+    transform: translateY(50%) !important;
+  }
+
+  /* Question card: reduce vertical padding to fit short viewports */
+  [data-testid="question-card"] {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
   }
 
   /* Header: reduce vertical padding to reclaim ~20–30px */
