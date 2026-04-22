@@ -1,23 +1,24 @@
 
 
-## Plan: Tighten mobile mascot-to-footer spacing
+## Plan: Lower mobile mascot to clear answer text
+
+### Problem
+On mobile, the mascot's head/glasses overlap the answer text ("On the Waterfront."). Below the mascot there's ~80px of empty space above the footer pill (the green-highlighted region). Solution: shift the mascot down so it stops covering copy and the gap below it is halved.
 
 ### Change
-In `src/components/TriviaGame.tsx`, the mobile mascot is currently anchored at `bottom-24` (96px from viewport bottom). The footer pill sits roughly at the bottom edge, so there's ~80–90px of empty space between the mascot's bottom edge and the top of the footer pill — too much.
-
-Reduce the offset so the gap lands in the requested 20–30px range:
-- Change `bottom-24` (96px) → `bottom-20` (80px) on the mobile mascot wrapper.
-
-That ~16px reduction brings the bottom of the mascot's circle closer to the top of the footer pill, leaving a comfortable ~20–30px breathing gap instead of the current ~80–90px.
+In `src/components/TriviaGame.tsx`, the mobile mascot wrapper is anchored at `bottom-20` (80px from viewport bottom). Lower it to `bottom-10` (40px) — a 40px downward shift that:
+- Pulls the mascot's head/glasses below the answer text line.
+- Reduces the empty space between the mascot's bottom edge and the top of the footer pill from ~80px to ~40px (half).
 
 ### Files touched
-- `src/components/TriviaGame.tsx` — mobile mascot `bottom-24` → `bottom-20`.
+- `src/components/TriviaGame.tsx` — mobile mascot wrapper class `bottom-20` → `bottom-10`.
 
 ### Out of scope
-Mascot scale, right offset, desktop mascot positioning, footer, card padding.
+Mascot scale, right offset, desktop mascot positioning, footer styling, card padding.
 
 ### Verification
-1. Mobile 360×640, 390×844, 414×896: visible gap between bottom of mascot circle and top of footer pill is in the 20–30px range.
-2. Mascot still overlaps the lower-right corner of the question card.
-3. Footer pill uncovered and fully tappable (pause, next).
+1. Mobile 360×640, 390×844, 414×896: mascot's head/glasses no longer overlap question or answer text.
+2. Gap between bottom of mascot circle and top of footer pill is roughly half what it was (~40px).
+3. Mascot still overlaps the lower-right corner of the question card (background only, not text).
+4. Footer pill remains uncovered and fully tappable.
 
