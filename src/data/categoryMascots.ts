@@ -4,27 +4,37 @@ import defaultMascot from "@/assets/Mascot.svg";
 /**
  * Category → mascot image mapping.
  *
- * To add a unique mascot for a category:
- *   1. Place the SVG/PNG in src/assets/mascots/
- *   2. Import it at the top of this file
- *   3. Map it to the category key below
+ * SVGs in src/assets/mascots/ are bundled automatically via import.meta.glob.
+ * Filename convention: lowercase category, " & " → "-and-", spaces → "-".
+ *   "Art"          → art.svg
+ *   "Food & Drink" → food-and-drink.svg
+ *   "Pop Culture"  → pop-culture.svg
+ *   "Video Games"  → video-games.svg
  *
- * Any category without an explicit entry falls back to the default mascot.
+ * Categories without a matching file fall back to the default mascot.
  */
 
-// import artMascot from "@/assets/mascots/mascot-art.svg";
-// import historyMascot from "@/assets/mascots/mascot-history.svg";
+const mascotModules = import.meta.glob("../assets/mascots/*.svg", {
+  eager: true,
+  import: "default",
+}) as Record<string, string>;
 
-const categoryMascots: Partial<Record<Category, string>> = {
-  // Art: artMascot,
-  // History: historyMascot,
-  // Science: scienceMascot,
-  // Geography: geographyMascot,
-  // ... add more as mascot assets are created
-};
-
-export function getMascotForCategory(category: Category): string {
-  return categoryMascots[category] ?? defaultMascot;
+// Build a filename → url lookup (e.g. "art" → "/assets/art-abc123.svg")
+const mascotByFilename: Record<string, string> = {};
+for (const [path, url] of Object.entries(mascotModules)) {
+  const name = path.split("/").pop()?.replace(/\.svg$/, "");
+  if (name) mascotByFilename[name] = url;
 }
 
-export default categoryMascots;
+function categoryToFilename(category: Category): string {
+  return category
+    .toLowerCase()
+    .replace(/\s*&\s*/g, "-and-")
+    .replace(/\s+/g, "-");
+}
+
+export function getMascotForCategory(category: Category): string {
+  return mascotByFilename[categoryToFilename(category)] ?? defaultMascot;
+}
+
+export default getMascotForCategory;
