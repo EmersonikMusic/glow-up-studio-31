@@ -1,49 +1,44 @@
 
 
-## Plan: Decode prewarm + size normalization
+## Plan: Remove fade, reposition turquoise circle, center desktop mascot
 
-### 1. Decode prewarm (eliminate residual swap delay)
+### 1. Remove the fade transition on mascot swap
+The `animate-fade-in` class is the visible delay — it runs a 0.3s opacity+translateY animation on every category change, trailing the instantaneous text/background swap.
 
-Current preload only triggers HTTP fetch — the browser still **decodes** the SVG on first paint, which is what you see as lag on slower devices.
+In `src/components/TriviaGame.tsx`, both desktop and mobile mascot `<img>` tags:
+- Remove `animate-fade-in`.
+- Remove `key={currentQuestion.category}` (without an animation, remounting serves no purpose; letting React patch the `src` attribute makes the swap fully synchronous against the prewarmed cache).
+- Keep the parent float animation untouched.
 
-Update `src/data/categoryMascots.ts`:
-- Replace the basic `new Image(); img.src = url` loop with a prewarm that calls `img.decode()` on each (including the default `Mascot.svg`).
-- Wrap each `decode()` in `Promise.race([decode, timeoutPromise(2000)])` so a slow/failed decode never blocks others.
-- Run inside `requestIdleCallback` (with `setTimeout` fallback) so prewarm doesn't compete with first paint of the Start screen.
-- Keep the function fire-and-forget — no exports change, no callers touched.
+### 2. Reposition the turquoise circle (lower-body anchor)
+Reference shows the circle framing the **torso/lower body**, with head and hat extending well above its top edge. Currently the circle is `inset-0` (fills the whole square), so it's too tall and head sits inside it.
 
-Result: by the time the user clicks Start, every SVG is already fetched **and** GPU-decoded. The first paint of any new category is synchronous.
+In both mascot blocks:
+- Change the circle `<div>` from `absolute inset-0 rounded-full` to a smaller, bottom-anchored circle:
+  - `width: 70%`, `height: 70%`
+  - `bottom: 0`, `left: 50%`, `transform: translateX(-50%)`
+  - Same cyan color, still `rounded-full`.
+- Bump the `<img>` so head/hat clearly extend above the circle:
+  - `h-[110%]` → `h-[125%]`
+  - `marginBottom` from `-8%` → `0` so the body anchors at the circle's bottom.
+- Apply identical changes to mobile so both breakpoints match.
 
-### 2. Size normalization (root cause: viewBox variance)
+### 3. Center the desktop mascot in its column
+Currently the desktop mascot column uses `md:-mr-6 lg:-mr-8` (negative right margins that bleed it toward the screen edge) **plus** `items-center justify-center` on the column — but the negative margin pulls the whole flex content rightward, and visually the mascot still reads as sitting closer to the card (left side) than the edge. Fix:
 
-Confirmed via inspection — the 25 SVGs have wildly different viewBox aspect ratios:
-- Narrowest: `286 × 486` (≈0.59 ratio) — sports, science, miscellaneous, etc.
-- Widest: `409 × 577` (≈0.71 ratio) — television
-- Tallest relative: `300 × 589` (food-and-drink)
-
-With the current square container + `object-contain`, narrower mascots render smaller and shorter ones sit lower. That's the visual inconsistency, not a rendering bug.
-
-**Fix (no re-uploads needed)** — normalize at render time in `src/components/TriviaGame.tsx`:
-- Change container `height` to `auto` and let the image set its own intrinsic ratio, OR
-- Better: keep the container square (cyan circle stays a circle) but add a uniform **height-based sizing rule** to the `<img>`: switch from `w-[85%] h-auto` to `h-[110%] w-auto` so every mascot is sized by its **height** (the more consistent dimension across the set — all heights cluster 467–589, ratio variance ~25%, vs widths 286–409 with ~43% variance). This makes every character appear at the same visual height regardless of body width.
-- Adjust `marginBottom` from `-2%` to `-8%` so the slightly taller render still anchors at the circle's lower edge.
-- Apply identical rule to mobile `<img>` so both breakpoints stay in sync.
-
-If after this the visual size still varies more than you like, you can re-export the SVGs with a shared canvas (e.g. all `400 × 580`, character centered), which would be the cleanest long-term fix — but the render-time normalization above gets us 90% there with zero asset work.
+- Remove `md:-mr-6 lg:-mr-8` from the desktop mascot column wrapper. With those gone, the inner `flex items-center justify-center` correctly centers the mascot horizontally within the 30% column — equal whitespace on both sides between the card and the screen edge.
+- No other layout changes; column width stays 30%, card column stays 70%.
 
 ### Files touched
-- `src/data/categoryMascots.ts` — replace simple preload with `decode()` prewarm + idle-callback scheduling + per-image timeout.
-- `src/components/TriviaGame.tsx` — both mascot `<img>` tags: switch from width-based to height-based sizing, adjust `marginBottom`.
+- `src/components/TriviaGame.tsx` — both mascot blocks: drop fade + key on `<img>`, resize/reposition the cyan circle, bump image height, zero out marginBottom; on the desktop wrapper, remove the negative right margins so the mascot truly centers in its column.
 
 ### Out of scope
-No changes to the float animation, fade-in, gradient sync, container dimensions, default-mascot screens, or game logic. No SVG file edits.
+No changes to prewarm logic, float animation, gradient sync, mascot mappings, mobile overlay position, settings panel, header/footer, or game logic. SVG files unchanged.
 
 ### Verification
-1. Cold reload → click Start → cycle Q1→Q5 across mixed categories. Mascot, background, and question text appear in the same frame on every transition (test on a throttled CPU profile too).
-2. Visually compare 5 random categories side-by-side — character heights match within a few pixels at both breakpoints.
-3. Longest question + longest answer test strings still render fully visible at 360×640, 390×844, 414×896 (mobile padding unchanged).
-4. `npm run test` and `npm run test:e2e` still pass.
-
-### Optional follow-up (only if you still see size jitter)
-You re-export all 25 SVGs onto a shared canvas (`400 × 580` recommended). Tell me the new dimensions and I'll drop the height-based hack — assets become the single source of truth.
+1. Cycle through 5+ questions on desktop (1147×774) and mobile (390×844) — mascot, background, and text all swap in the same paint frame, no trailing fade.
+2. Visual check vs. reference: circle frames the torso, head + hat extend above on every category, both breakpoints.
+3. Desktop mascot is visually centered within its column — equal gap between the right edge of the card and the mascot, and between the mascot and the right edge of the screen.
+4. Longest question + answer strings still fully visible at 360×640, 390×844, 414×896.
+5. `npm run test` and `npm run test:e2e` still pass.
 
