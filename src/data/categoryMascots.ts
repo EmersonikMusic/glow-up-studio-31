@@ -1,65 +1,37 @@
 import { Category } from "./questions";
 import defaultMascot from "@/assets/Mascot.svg";
+import defaultMascotMarkup from "@/assets/Mascot.svg?raw";
 
 /**
- * Category → mascot image mapping.
+ * Category → mascot mapping.
  *
- * SVGs in src/assets/mascots/ are bundled automatically via import.meta.glob.
- * Filename convention: lowercase category, " & " → "-and-", spaces → "-".
- *   "Art"          → art.svg
- *   "Food & Drink" → food-and-drink.svg
- *   "Pop Culture"  → pop-culture.svg
- *   "Video Games"  → video-games.svg
- *
- * Categories without a matching file fall back to the default mascot.
+ * Two parallel maps:
+ * - URL-based (existing) for Start/About/Result screens via <img>.
+ * - Raw SVG markup for in-game inline rendering. Inline SVGs render in the
+ *   same React commit as text/background — no <img> fetch/decode lag.
  */
 
-const mascotModules = import.meta.glob("../assets/mascots/*.svg", {
+const mascotUrlModules = import.meta.glob("../assets/mascots/*.svg", {
   eager: true,
   import: "default",
 }) as Record<string, string>;
 
-// Build a filename → url lookup (e.g. "art" → "/assets/art-abc123.svg")
-const mascotByFilename: Record<string, string> = {};
-for (const [path, url] of Object.entries(mascotModules)) {
+const mascotMarkupModules = import.meta.glob("../assets/mascots/*.svg", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+}) as Record<string, string>;
+
+const mascotUrlByFilename: Record<string, string> = {};
+for (const [path, url] of Object.entries(mascotUrlModules)) {
   const name = path.split("/").pop()?.replace(/\.svg$/, "");
-  if (name) mascotByFilename[name] = url;
+  if (name) mascotUrlByFilename[name] = url;
 }
 
-// Prewarm: fetch + GPU-decode all mascot SVGs once at module load so the very
-// first category swap paints synchronously, even on slower devices. Each decode
-// is raced against a 2s timeout so a slow/failed image never blocks the others.
-// Scheduled via requestIdleCallback (with setTimeout fallback) so prewarm doesn't
-// compete with the Start screen's first paint.
-if (typeof window !== "undefined") {
-  const urls = [...Object.values(mascotByFilename), defaultMascot];
-
-  const prewarmOne = (url: string): Promise<void> => {
-    const img = new Image();
-    img.src = url;
-    const decodePromise: Promise<void> = img.decode
-      ? img.decode().catch(() => {})
-      : new Promise((resolve) => {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        });
-    const timeout = new Promise<void>((resolve) => setTimeout(resolve, 2000));
-    return Promise.race([decodePromise, timeout]);
-  };
-
-  const runPrewarm = () => {
-    void Promise.all(urls.map(prewarmOne));
-  };
-
-  type IdleWindow = Window & {
-    requestIdleCallback?: (cb: () => void) => number;
-  };
-  const w = window as IdleWindow;
-  if (typeof w.requestIdleCallback === "function") {
-    w.requestIdleCallback(runPrewarm);
-  } else {
-    setTimeout(runPrewarm, 0);
-  }
+const mascotMarkupByFilename: Record<string, string> = {};
+for (const [path, markup] of Object.entries(mascotMarkupModules)) {
+  const name = path.split("/").pop()?.replace(/\.svg$/, "");
+  if (name) mascotMarkupByFilename[name] = markup;
 }
 
 function categoryToFilename(category: Category): string {
@@ -70,7 +42,11 @@ function categoryToFilename(category: Category): string {
 }
 
 export function getMascotForCategory(category: Category): string {
-  return mascotByFilename[categoryToFilename(category)] ?? defaultMascot;
+  return mascotUrlByFilename[categoryToFilename(category)] ?? defaultMascot;
+}
+
+export function getMascotMarkupForCategory(category: Category): string {
+  return mascotMarkupByFilename[categoryToFilename(category)] ?? defaultMascotMarkup;
 }
 
 export default getMascotForCategory;
