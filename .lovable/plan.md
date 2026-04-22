@@ -1,53 +1,36 @@
 
 
-## Mobile Layout Fix: Reduce Card Padding & Lower Mascot
+## Mobile Mascot Inside Card + Larger Top Padding (Mobile Only)
 
 ### Problem
-On mobile, the mascot SVG (anchored at `bottom: 64px`, sized up to 200px) overlaps the question/answer text because the QuestionCard centers its content vertically with generous top/bottom padding. Long questions + revealed answers push content down into the mascot's area.
+On mobile, the mascot floats outside the QuestionCard (anchored to `<main>`, `bottom: 8px`, `right: 0`) and can drift over the card edges. The user wants it visually contained inside the card with ≥12px padding from the card's inner edges, and wants the question text pushed down by +40px more top padding. Both changes are mobile-only — desktop layout must remain untouched.
 
 ### Changes
 
-**1. `src/components/QuestionCard.tsx` — Top-align content on mobile, reduce vertical padding**
-- Change `justify-center` to `justify-start` so question text anchors to the top of the card on mobile (keep centered on desktop via `md:justify-center`).
-- Reduce mobile vertical padding: change `paddingTop`/`paddingBottom` from `clamp(1.5rem, 4vw, 2.5rem)` to `clamp(0.75rem, 2.5vw, 2.5rem)` so the question sits closer to the top edge.
+**1. `src/components/TriviaGame.tsx` — Anchor mobile mascot to the card wrapper**
+- Add `relative` to the game-area wrapper that holds `<QuestionCard>` (the `flex-none flex flex-col justify-center …` div, currently around line 288) so absolute children anchor to the card column instead of `<main>`.
+- Move the existing `md:hidden` mascot `<div>` to be a sibling of `<QuestionCard>` *inside* that wrapper.
+- Replace the `right-0` Tailwind class and `bottom: 8px` inline value with:
+  - `bottom: 12px`
+  - `right: 12px`
+- Keep `pointer-events-none`, `z-20`, `flex items-end justify-end`, the float animation, and the cyan circle backdrop unchanged.
+- Keep size at `clamp(120px, 32vw, 170px)` for now; if visual QA shows it crowding text, drop to `clamp(110px, 28vw, 150px)`.
 
-**2. `src/components/TriviaGame.tsx` — Lower the mobile mascot toward the footer**
-- Move mascot anchor from `bottom: 64px` down to `bottom: 8px` so it tucks just above the footer pill (footer is ~auto-height, the pill itself provides clearance).
-- Slightly shrink the mascot to reduce vertical footprint: `clamp(120px, 32vw, 170px)` instead of `clamp(140px, 38vw, 200px)`.
-- Keep `right-0`, `justify-end`, `z-20`, and the float animation untouched.
+**2. `src/components/QuestionCard.tsx` — Mobile-only padding bumps**
+- Remove `paddingTop` and `paddingBottom` from the inline `style` object.
+- Add Tailwind responsive padding utilities to the root `<div>` className so mobile gets the bumps and desktop keeps the original `clamp(0.75rem, 2.5vw, 2.5rem)` values:
+  - `pt-[calc(clamp(0.75rem,2.5vw,2.5rem)+40px)] md:pt-[clamp(0.75rem,2.5vw,2.5rem)]`
+  - `pb-[calc(clamp(0.75rem,2.5vw,2.5rem)+140px)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)]`
+- The +140px mobile bottom padding reserves clearance below the answer-reveal text so the in-card mascot (≤170px tall, anchored 12px from bottom) never overlaps content.
 
-**3. Verification**
-After implementation, test in the 472×702 viewport (current preview) with:
-- Longest question sample from the question bank
-- Longest answer sample (revealed state)
-- Confirm the question text top edge sits ~12px from card top, and the mascot's top edge stays below the answer reveal text with at least 8px clearance.
-
-### Technical Details
-
-```tsx
-// QuestionCard.tsx — mobile-first top alignment
-className="... flex flex-col justify-start md:justify-center items-center ..."
-style={{
-  paddingTop: "clamp(0.75rem, 2.5vw, 2.5rem)",
-  paddingBottom: "clamp(0.75rem, 2.5vw, 2.5rem)",
-  // ... rest unchanged
-}}
-```
-
-```tsx
-// TriviaGame.tsx — mobile mascot lower & smaller
-<div
-  className="md:hidden absolute right-0 pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
-  style={{
-    width: "clamp(120px, 32vw, 170px)",
-    height: "clamp(120px, 32vw, 170px)",
-    bottom: "8px",
-    // ... rest unchanged
-  }}
->
-```
+### Verification (after implementation)
+At 472×702 with the longest question + revealed answer:
+- Question top edge sits ~40px lower than current.
+- Mascot is fully inside the card with ≥12px gap from card's right and bottom inner edges.
+- Answer reveal text clears the mascot's top edge with ≥8px breathing room.
+- Desktop (≥768px) layout is visually identical to current.
 
 ### Files Edited
-- `src/components/QuestionCard.tsx`
 - `src/components/TriviaGame.tsx`
+- `src/components/QuestionCard.tsx`
 
