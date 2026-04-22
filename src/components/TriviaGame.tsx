@@ -338,7 +338,7 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — bottom-right overlay, enlarged to overlap card */}
           <div
-            className="md:hidden absolute bottom-24 -right-4 pointer-events-none z-10 flex items-end justify-center"
+            className="md:hidden absolute bottom-20 -right-4 pointer-events-none z-10 flex items-end justify-center"
             style={{
               width: "clamp(180px, 55vw, 280px)",
               height: "clamp(180px, 55vw, 280px)",
