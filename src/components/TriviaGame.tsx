@@ -337,11 +337,11 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — sits in reserved bottom area beside footer, never overlaps card */}
           <div
-            className="md:hidden absolute right-2 pointer-events-none z-10 flex items-end justify-center mobile-mascot-overlay"
+            className="md:hidden absolute right-1 pointer-events-none z-10 flex items-end justify-center mobile-mascot-overlay"
             style={{
-              width: "clamp(120px, 32vw, 170px)",
-              height: "clamp(120px, 32vw, 170px)",
-              bottom: "84px",
+              width: "clamp(80px, 22vw, 120px)",
+              height: "clamp(80px, 22vw, 120px)",
+              bottom: "70px",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
