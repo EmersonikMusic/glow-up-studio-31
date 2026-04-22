@@ -252,7 +252,7 @@ export default function TriviaGame() {
       {gameState === "finished" ? (
         <ResultScreen onRestart={handleRestart} />
       ) : (
-        <main className="relative flex items-center md:items-stretch h-full py-2 sm:py-6 px-2 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
+        <main className="relative flex items-center md:items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
           <div className="flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]">
             <QuestionCard
@@ -302,10 +302,10 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — bottom-right overlay */}
           <div
-            className="md:hidden absolute bottom-0 right-0 pointer-events-none z-10 flex items-end justify-center"
+            className="md:hidden absolute bottom-2 right-3 pointer-events-none z-10 flex items-end justify-center opacity-90"
             style={{
-              width: "clamp(110px, 32vw, 160px)",
-              height: "clamp(110px, 32vw, 160px)",
+              width: "clamp(90px, 26vw, 130px)",
+              height: "clamp(90px, 26vw, 130px)",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}

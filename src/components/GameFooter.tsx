@@ -42,7 +42,10 @@ export default function GameFooter({
   const isAnswerPhase = answerCountdown !== null;
 
   return (
-    <footer className="px-3 sm:px-6 md:px-8 pb-5 sm:pb-6 pt-2 w-full">
+    <footer
+      className="px-3 sm:px-6 md:px-8 pt-2 w-full"
+      style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
+    >
       <div className="flex items-center gap-3 w-full md:w-[70%]">
         {/* Metadata pill with integrated timer */}
         <div
@@ -89,7 +92,7 @@ export default function GameFooter({
         {/* Pause / Play — matches gear icon style */}
         <button
           onClick={onTogglePause}
-          className="flex items-center justify-center flex-shrink-0 w-9 h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
+          className="flex items-center justify-center flex-shrink-0 w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
           style={{
             background: "rgba(0, 0, 0, 0.35)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
