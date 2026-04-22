@@ -21,7 +21,18 @@ export interface MascotTiming {
 const store = new Map<string, MascotTiming>();
 const listeners = new Set<() => void>();
 
+// Cached, referentially-stable snapshot for useSyncExternalStore.
+// Rebuilt only inside emit() — getMascotTimings() must always return the
+// same reference until the store actually changes, otherwise React's
+// useSyncExternalStore will loop ("Maximum update depth exceeded").
+let cachedSnapshot: MascotTiming[] = [];
+
+function rebuildSnapshot() {
+  cachedSnapshot = Array.from(store.values()).sort((a, b) => b.lastAt - a.lastAt);
+}
+
 function emit() {
+  rebuildSnapshot();
   listeners.forEach((l) => l());
 }
 
@@ -44,7 +55,7 @@ export function recordMascotSwap(category: string, path: MascotPath) {
 }
 
 export function getMascotTimings(): MascotTiming[] {
-  return Array.from(store.values()).sort((a, b) => b.lastAt - a.lastAt);
+  return cachedSnapshot;
 }
 
 export function clearMascotTimings() {
@@ -54,5 +65,7 @@ export function clearMascotTimings() {
 
 export function subscribeMascotTimings(fn: () => void): () => void {
   listeners.add(fn);
-  return () => listeners.delete(fn);
+  return (): void => {
+    listeners.delete(fn);
+  };
 }
