@@ -16,6 +16,7 @@ export default function QuestionCard({
   return (
     <div
       key={animKey}
+      data-testid="question-card"
       className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up h-full backdrop-blur-xl"
       style={{
         background: "rgba(0, 0, 0, 0.45)",

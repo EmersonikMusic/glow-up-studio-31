@@ -56,6 +56,36 @@ export default function TriviaGame() {
   useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
 
+  // Keep --app-vh in sync with the visual viewport so iOS Safari address-bar
+  // collapses don't briefly hide the footer or overlap the card.
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const h = window.visualViewport?.height ?? window.innerHeight;
+        document.documentElement.style.setProperty("--app-vh", `${h}px`);
+      });
+    };
+    update();
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", update);
+      vv.addEventListener("scroll", update);
+    }
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (vv) {
+        vv.removeEventListener("resize", update);
+        vv.removeEventListener("scroll", update);
+      }
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, []);
+
   // Auto-pause when settings panel opens during an active game.
   // Reads game/pause state from refs so the effect only re-runs on panelOpen.
   useEffect(() => {
@@ -232,10 +262,11 @@ export default function TriviaGame() {
 
   return (
     <div
-      className="min-h-[100svh] grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
+      className="min-h-[100svh] overscroll-none grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
       style={{
         background: bgGradient || "hsl(var(--game-bg))",
         transition: "background 0.6s ease",
+        minHeight: "var(--app-vh, 100svh)",
       }}
     >
 
