@@ -1,38 +1,49 @@
 
 
-## Plan: Fix mascot lag, add fade animation, enlarge mascot
+## Plan: Decode prewarm + size normalization
 
-### 1. Eliminate the swap lag (root cause)
-The `<img>` waits for the network/decode of each new SVG the first time it's requested, so text + background swap before the image catches up. Fix in two layers:
+### 1. Decode prewarm (eliminate residual swap delay)
 
-**a. Preload all mascots once at app boot** — in `src/data/categoryMascots.ts`, after the eager `import.meta.glob`, loop the resolved URLs and instantiate `new Image()` per URL (browser caches them). Runs once on module import. Zero render cost, all 25 SVGs warm in the HTTP cache before the first question swap.
+Current preload only triggers HTTP fetch — the browser still **decodes** the SVG on first paint, which is what you see as lag on slower devices.
 
-**b. Force a fresh `<img>` element per category** — give each `<img>` a `key={currentQuestion.category}` so React unmounts/mounts on category change. Combined with the warm cache, the new src paints in the same frame as the question text swap.
+Update `src/data/categoryMascots.ts`:
+- Replace the basic `new Image(); img.src = url` loop with a prewarm that calls `img.decode()` on each (including the default `Mascot.svg`).
+- Wrap each `decode()` in `Promise.race([decode, timeoutPromise(2000)])` so a slow/failed decode never blocks others.
+- Run inside `requestIdleCallback` (with `setTimeout` fallback) so prewarm doesn't compete with first paint of the Start screen.
+- Keep the function fire-and-forget — no exports change, no callers touched.
 
-### 2. Subtle on-swap animation (matches site language)
-Existing site animations: `animate-fade-in` (opacity + translateY 10px, 0.3s ease-out — already used by other transitions). Apply it to both mascot `<img>` elements via the same `key={currentQuestion.category}`. Removes the current `transition-opacity duration-300` on the img (it never fires because the element doesn't re-render — only `src` changes). The float idle animation on the parent stays untouched.
+Result: by the time the user clicks Start, every SVG is already fetched **and** GPU-decoded. The first paint of any new category is synchronous.
 
-### 3. Enlarge the mascot (both breakpoints)
+### 2. Size normalization (root cause: viewBox variance)
 
-**Desktop (≥768px)** — currently `clamp(140px, 18vw, 240px)` inside a 30%-width column. Bump to `clamp(180px, 24vw, 320px)`. Column width stays 30%; the `-mr-6/-mr-8` negative margins already let it bleed to the edge, and the question card sits in the 70% column so no overlap is possible.
+Confirmed via inspection — the 25 SVGs have wildly different viewBox aspect ratios:
+- Narrowest: `286 × 486` (≈0.59 ratio) — sports, science, miscellaneous, etc.
+- Widest: `409 × 577` (≈0.71 ratio) — television
+- Tallest relative: `300 × 589` (food-and-drink)
 
-**Mobile (<768px)** — currently bottom-right overlay at `clamp(90px, 26vw, 130px)`. Increase to `clamp(120px, 32vw, 170px)`. Risk: this overlay sits inside `<main>` over the card. To guarantee the longest question + longest answer never get covered:
-- Reserve safe space at the bottom of the card by adding `pb-[140px] sm:pb-[160px] md:pb-0` to the QuestionCard's outer container in `TriviaGame.tsx` (only on mobile — desktop mascot is in its own column, so 0 padding there).
-- The card uses `flex flex-col justify-center`, so reserved bottom padding shifts content upward and prevents the mascot from overlapping text even with the longest strings. Question text uses `clamp(1.6rem, 4.5vw, 2.4rem)` and the divider+answer reveal stay inside the padded region.
+With the current square container + `object-contain`, narrower mascots render smaller and shorter ones sit lower. That's the visual inconsistency, not a rendering bug.
 
-Verification target strings (the two you provided) will be tested at 360×640, 390×844, 414×896 and confirmed not to be obscured by the mascot.
+**Fix (no re-uploads needed)** — normalize at render time in `src/components/TriviaGame.tsx`:
+- Change container `height` to `auto` and let the image set its own intrinsic ratio, OR
+- Better: keep the container square (cyan circle stays a circle) but add a uniform **height-based sizing rule** to the `<img>`: switch from `w-[85%] h-auto` to `h-[110%] w-auto` so every mascot is sized by its **height** (the more consistent dimension across the set — all heights cluster 467–589, ratio variance ~25%, vs widths 286–409 with ~43% variance). This makes every character appear at the same visual height regardless of body width.
+- Adjust `marginBottom` from `-2%` to `-8%` so the slightly taller render still anchors at the circle's lower edge.
+- Apply identical rule to mobile `<img>` so both breakpoints stay in sync.
+
+If after this the visual size still varies more than you like, you can re-export the SVGs with a shared canvas (e.g. all `400 × 580`, character centered), which would be the cleanest long-term fix — but the render-time normalization above gets us 90% there with zero asset work.
 
 ### Files touched
-- `src/data/categoryMascots.ts` — add one-time `new Image()` preload loop after the glob.
-- `src/components/TriviaGame.tsx` — add `key={currentQuestion.category}` + `animate-fade-in` to both mascot `<img>` tags; bump desktop and mobile size clamps; add mobile-only bottom padding wrapper around the QuestionCard column so text never sits behind the mascot.
+- `src/data/categoryMascots.ts` — replace simple preload with `decode()` prewarm + idle-callback scheduling + per-image timeout.
+- `src/components/TriviaGame.tsx` — both mascot `<img>` tags: switch from width-based to height-based sizing, adjust `marginBottom`.
 
 ### Out of scope
-No changes to background gradients, layout grid, header/footer, timers, float animation, default-mascot screens, or game logic. The default `Mascot.svg` still shows on Start/About/Result screens.
+No changes to the float animation, fade-in, gradient sync, container dimensions, default-mascot screens, or game logic. No SVG file edits.
 
 ### Verification
-1. Start a game → question text, background, and mascot all swap in the same frame (no visible delay on Q1→Q2→Q3…).
-2. Mascot fades in subtly on each new question, matching the site's existing fade-in feel.
-3. With the longest question and longest answer rendered (forced via test data), no character is covered by the mascot at 360×640, 390×844, 414×896, 768×1024, 1280×720, 1920×1080.
-4. Default `Mascot.svg` still appears on Start/About/Result.
-5. `npm run test` and `npm run test:e2e` still pass — no test selectors or card heights change.
+1. Cold reload → click Start → cycle Q1→Q5 across mixed categories. Mascot, background, and question text appear in the same frame on every transition (test on a throttled CPU profile too).
+2. Visually compare 5 random categories side-by-side — character heights match within a few pixels at both breakpoints.
+3. Longest question + longest answer test strings still render fully visible at 360×640, 390×844, 414×896 (mobile padding unchanged).
+4. `npm run test` and `npm run test:e2e` still pass.
+
+### Optional follow-up (only if you still see size jitter)
+You re-export all 25 SVGs onto a shared canvas (`400 × 580` recommended). Tell me the new dimensions and I'll drop the height-based hack — assets become the single source of truth.
 
