@@ -14,7 +14,8 @@ import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
-import { getMascotForCategory } from "@/data/categoryMascots";
+import MascotSvg from "./MascotSvg";
+import MascotDebugOverlay from "./MascotDebugOverlay";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
@@ -284,7 +285,7 @@ export default function TriviaGame() {
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
-          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-[140px] sm:pb-[160px] md:pb-0">
+          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-[180px] sm:pb-[200px] md:pb-0">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -299,7 +300,7 @@ export default function TriviaGame() {
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
-            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch"
+            className="hidden md:flex flex-none flex-col items-center justify-end overflow-visible self-stretch"
             style={{
               width: "30%",
               transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -308,10 +309,11 @@ export default function TriviaGame() {
             }}
           >
             <div
-              className="relative flex items-center justify-center"
+              className="relative flex items-center justify-center my-auto"
               style={{
                 width: "clamp(180px, 24vw, 320px)",
                 height: "clamp(180px, 24vw, 320px)",
+                marginRight: "clamp(8px, 2vw, 32px)",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
               }}
@@ -327,12 +329,9 @@ export default function TriviaGame() {
                   background: "rgb(125, 223, 232)",
                 }}
               />
-              <img
-                src={getMascotForCategory(currentQuestion.category)}
-                alt="TrivOlivia mascot"
-                className="relative z-10 h-[125%] w-auto object-contain drop-shadow-xl"
-                style={{ marginBottom: 0 }}
-                draggable={false}
+              <MascotSvg
+                category={currentQuestion.category}
+                className="relative z-10 h-full w-full drop-shadow-xl"
               />
             </div>
           </div>
@@ -341,8 +340,8 @@ export default function TriviaGame() {
           <div
             className="md:hidden absolute bottom-2 right-3 pointer-events-none z-10 flex items-end justify-center opacity-90"
             style={{
-              width: "clamp(120px, 32vw, 170px)",
-              height: "clamp(120px, 32vw, 170px)",
+              width: "clamp(150px, 42vw, 220px)",
+              height: "clamp(150px, 42vw, 220px)",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
@@ -358,12 +357,9 @@ export default function TriviaGame() {
                 background: "rgb(125, 223, 232)",
               }}
             />
-            <img
-              src={getMascotForCategory(currentQuestion.category)}
-              alt="TrivOlivia mascot"
-              className="relative z-10 h-[125%] w-auto object-contain drop-shadow-xl"
-              style={{ marginBottom: 0 }}
-              draggable={false}
+            <MascotSvg
+              category={currentQuestion.category}
+              className="relative z-10 h-full w-full drop-shadow-xl"
             />
           </div>
         </main>
@@ -399,6 +395,9 @@ export default function TriviaGame() {
 
       {/* Login modal */}
       {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+
+      {/* Mascot debug overlay (toggle: ?mascotDebug=1 or Shift+D) */}
+      <MascotDebugOverlay />
     </div>
   );
 }
