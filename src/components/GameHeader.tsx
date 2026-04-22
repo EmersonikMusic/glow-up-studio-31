@@ -212,9 +212,9 @@ export default function GameHeader({
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
             >
               {isFullscreen ? (
-                <Minimize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                <Minimize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               ) : (
-                <Maximize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                <Maximize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               )}
             </button>
           )}
