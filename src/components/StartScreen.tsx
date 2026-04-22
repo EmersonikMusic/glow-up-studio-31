@@ -27,14 +27,14 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
     >
       {/* Ambient blobs */}
       <div
-        className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none animate-blob-a"
         style={{
           background: "radial-gradient(circle, hsl(280 60% 50% / 0.14) 0%, transparent 70%)",
           filter: "blur(60px)",
         }}
       />
       <div
-        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none animate-blob-b"
         style={{
           background: "radial-gradient(circle, hsl(210 70% 50% / 0.1) 0%, transparent 70%)",
           filter: "blur(60px)",
@@ -60,7 +60,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           }}
         >
           {/* Logo */}
-          <div className="w-full max-w-2xl animate-fade-in" style={{ animationDelay: "0ms" }}>
+          <div className="w-full max-w-2xl animate-fade-in animate-float-soft" style={{ animationDelay: "0ms" }}>
             <img
               src={logo}
               alt="Triviolivia — Earth's Deepest Trivia Source"
@@ -92,6 +92,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
                 </filter>
               </defs>
               <text
+                className="animate-text-shimmer"
                 fill="hsl(185 70% 55%)"
                 style={{
                   fontFamily: "'Rubik', system-ui, sans-serif",
@@ -130,7 +131,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           {/* How Do I Play link */}
           <button
             onClick={onHowToPlay}
-            className="mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
+            className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
             style={{ animationDelay: "240ms" }}
           >
             How Do I Play?

@@ -126,7 +126,7 @@ export default function GameHeader({
               }}
               aria-label="Log out"
             >
-              <LogOut className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              <LogOut className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               <span
                 className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                 style={{ color: "hsl(var(--game-gold))" }}
@@ -145,7 +145,7 @@ export default function GameHeader({
                 }}
                 aria-label="Login"
               >
-                <LogIn className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                <LogIn className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
                 <span
                   className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                   style={{ color: "hsl(var(--game-gold))" }}
@@ -167,7 +167,7 @@ export default function GameHeader({
               }}
               aria-label="About"
             >
-              <Info className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              <Info className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               <span
                 className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                 style={{ color: "hsl(var(--game-gold))" }}
@@ -191,10 +191,11 @@ export default function GameHeader({
               <img
                 src={settingsIcon}
                 alt="Settings"
-                className="w-5 h-5 transition-transform duration-500 md:hover:rotate-45"
-                style={{
-                  transform: settingsOpen ? "rotate(60deg)" : "rotate(0deg)",
-                }}
+                className="gear-icon w-5 h-5"
+                data-open={settingsOpen ? "true" : "false"}
+                style={
+                  settingsOpen ? { transform: "rotate(60deg)" } : undefined
+                }
               />
             </button>
           )}
@@ -211,9 +212,9 @@ export default function GameHeader({
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
             >
               {isFullscreen ? (
-                <Minimize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                <Minimize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               ) : (
-                <Maximize2 className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                <Maximize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               )}
             </button>
           )}
