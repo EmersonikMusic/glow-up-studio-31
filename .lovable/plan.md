@@ -1,61 +1,97 @@
 
 
-## Plan: Mobile-landscape fixes, padding tweak, end-to-end QA
+## Plan: Phone-landscape validation + automated visual regression
 
-Layout-only changes. No gameplay, animation, or styling alterations beyond what's listed.
+Two deliverables, both layout-validation only. No app code changes.
 
-### Part 1 — Reduce QuestionCard inner padding (mobile portrait)
+### Part 1 — Phone landscape test plan (manual + emulated)
 
-In `src/components/QuestionCard.tsx`, the card uses `padding: clamp(1.5rem, 4vw, 2.5rem)` on all four sides. On mobile portrait (390px wide), `4vw ≈ 15.6px` but the clamp floor is `1.5rem (24px)`, so horizontal padding is 24px each side. Reduce horizontal padding by ~10px on mobile only:
+Add `docs/testing/phone-landscape-validation.md` covering:
 
-- Switch from a single `padding` shorthand to split vertical / horizontal padding.
-- Vertical: keep `clamp(1.5rem, 4vw, 2.5rem)`.
-- Horizontal: use `clamp(0.875rem, 3vw, 2.5rem)` so mobile portrait drops to ~14px (down ~10px from 24px), while tablet/desktop stay at the previous max.
+**Why this is needed**
+The Lovable preview's viewport selector snaps to a fixed list (max width 1920, includes 844×1194 / 820×1180 but no true phone-landscape pairing like 844×390). The `useIsMobile` hook and `@media (max-height: 500px) and (orientation: landscape)` rules can only be exercised on real devices, Chrome DevTools Device Mode, or Playwright. This document defines exactly how to verify them.
 
-### Part 2 — Mobile landscape display fixes
+**Target viewports** (all landscape, height ≤ 500)
+- 667×375 — iPhone SE
+- 736×414 — iPhone 8 Plus
+- 812×375 — iPhone X / 11 Pro
+- 844×390 — iPhone 12 / 13 / 14
+- 896×414 — iPhone 11 / XR
+- 932×430 — iPhone 14 Pro Max
+- 740×360 — Galaxy S8 baseline
+- 800×360 — common Android landscape
 
-Current issues likely on phone landscape (e.g. 844×390):
-1. Card is in a `w-full md:w-[70%]` column. On mobile-landscape it takes full width — there's no room for the mascot beside it, so mascot overlay sits over the card's lower-right and can crowd the answer text horizontally.
-2. Footer's inner `<div>` is `w-full md:w-[70%]` — fine on mobile (full width).
-3. The `mobile-landscape:pb-[96px]` class works only because index.css declares the exact escaped class inside a media query. On a 390px-tall viewport, even 96px bottom padding leaves ~150px for question text after header (~50px) and footer (~70px) — workable but tight.
+**Methods**
+1. **Chrome DevTools** → Device Toolbar → "Responsive" → enter width × height → rotate. Screenshot via Cmd+Shift+P → "Capture screenshot".
+2. **Real device** → open Preview URL → rotate to landscape → check items below.
+3. **Playwright** (preferred for repeatability) — see Part 2.
 
-Changes in `src/components/TriviaGame.tsx`:
-- Card column on mobile-landscape: reserve room on the right so the mascot sits beside (not over) the card. Add a right padding override in index.css: `@media (max-height:500px) and (orientation:landscape) { .mobile-landscape\:pr-\[140px\] { padding-right: 140px !important; } }` and add `mobile-landscape:pr-[140px]` to the card column wrapper. This pushes the card text inward so the shrunk mascot (~120–180px) sits in the cleared right gutter without overlapping text.
-- Mobile mascot overlay: in mobile-landscape, anchor it vertically centered against the card (not bottom-aligned with the footer). Add a media-query override in index.css setting `.mobile-mascot-overlay { bottom: 50% !important; transform: translateY(50%); right: 8px !important; }` so it sits beside the card mid-height instead of behind the footer. Keep portrait behavior unchanged (the rule only applies inside the landscape media query).
+**Per-viewport checklist** (pass/fail table to fill in)
+- Header: logo, login/username pill, About, Settings gear, Fullscreen — all visible, none wrapped to a second row.
+- Question card: question text + all 4 answers fully on-screen, no horizontal scroll.
+- Mascot: visible on the right gutter, vertically centered, not overlapping any text inside the card.
+- Footer pill: countdown number + progress bar fully visible and tappable; not overlapped by mascot.
+- Settings: tap gear → drawer slides up from BOTTOM (not from the right). Apply button reachable via scroll if needed.
+- No content clipped at viewport edges (top, right, bottom, left).
 
-Changes in `src/index.css`:
-- Add `.mobile-landscape\:pr-\[140px\] { padding-right: 140px !important; }` inside the existing `@media (max-height:500px) and (orientation:landscape)` block.
-- Update the existing `.mobile-mascot-overlay` rule inside that same media query to also override `bottom`, `right`, and add a vertical centering transform.
-- Add a small safety: reduce QuestionCard vertical padding floor to fit short viewports — extend the same media query with `[data-testid="question-card"] { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }`.
+**Pass criteria**: every item checked on every listed viewport. Failures recorded with screenshot and viewport size.
 
-### Part 3 — End-to-end verification via screenshots
+### Part 2 — Automated visual regression via Playwright
 
-After implementation, capture screenshots at each viewport on the live preview and confirm: header buttons visible and not wrapping, question card text fully on-screen and not overlapped, footer pill fully visible and tappable, mascot present (where applicable) and not covering text, settings panel opens in correct style (bottom sheet on phone portrait + phone landscape; side drawer on tablet+).
+The project already has `playwright.config.ts`, `playwright-fixture.ts`, and `tests/card-height.spec.ts`. Extend that setup.
 
-Viewports to verify:
-1. 360×800 — phone portrait small
-2. 390×844 — phone portrait standard
-3. 414×896 — phone portrait large
-4. 844×390 — phone landscape standard
-5. 768×1024 — tablet portrait
-6. 1024×768 — tablet landscape
-7. 1280×720 — desktop small
-8. 1920×1080 — desktop large
+**New file**: `tests/visual-regression.spec.ts`
 
-For each, capture: gameplay (mid-question) and settings-open state. Report any cut-off / overlap with a screenshot.
+For each target viewport (portrait + landscape across phone, tablet, desktop):
+1. Set viewport via `page.setViewportSize({ width, height })`.
+2. Navigate to `/`, advance into the game (click Start), wait for question card.
+3. Capture full-page screenshot → `tests/__screenshots__/{viewport-name}-gameplay.png`.
+4. Open Settings → wait for drawer → capture → `{viewport-name}-settings.png`.
+5. Run overlap detection (see below) and assert pass.
 
-### Files touched
-- `src/components/QuestionCard.tsx` — split padding into vertical/horizontal clamps.
-- `src/components/TriviaGame.tsx` — add `mobile-landscape:pr-[140px]` to card column wrapper.
-- `src/index.css` — extend mobile-landscape media query with new pr override, updated mascot anchoring, and reduced card vertical padding.
+**Viewports to capture** (16 total: 8 sizes × {gameplay, settings-open})
+- 360×800, 390×844, 414×896 — phone portrait
+- 667×375, 844×390, 932×430 — phone landscape
+- 768×1024, 820×1180 — tablet portrait
+- 1024×768, 1180×820 — tablet landscape
+- 1280×720, 1920×1080 — desktop
 
-### Out of scope (layout-only)
-- Any gameplay logic, timer, scoring, answer-reveal flow, question advancement.
-- Animations, transitions, hover effects, float/pulse motion, fade-on-settings-open.
-- Colors, gradients, glassmorphism styling, fonts, font weights.
-- Desktop, tablet portrait, and tablet landscape layouts (verified only, not changed).
-- Phone portrait beyond the requested 10px horizontal padding reduction on the card.
-- Settings panel content, drawer widths on desktop, About / HowToPlay / Result / Start / Login screens.
-- Mascot scale on desktop, mascot float animation, fade-on-settings-open behavior.
-- Card width split (70/30 desktop), card content, footer pill content, font-size clamps.
+**Overlap detection helper** (`tests/utils/overlap.ts`)
+Use Playwright's `locator.boundingBox()` to read rectangles for:
+- `header` (header element)
+- `[data-testid="question-card"]`
+- `.mobile-mascot-overlay` and the desktop mascot wrapper (whichever is visible)
+- footer pill (footer element)
+
+For each pair where overlap is NOT allowed, assert `rectsDoNotOverlap(a, b)`. The mascot/card pair on mobile-landscape is the one true known-edge case — the mascot sits in the reserved right gutter, so allow it ONLY if the mascot's left edge ≥ card's right edge minus 4px tolerance.
+
+Also assert no element extends past viewport bounds:
+`box.x ≥ 0 && box.y ≥ 0 && box.x + box.width ≤ viewportWidth && box.y + box.height ≤ viewportHeight`.
+
+**Settings drawer style assertion**
+- On mobile viewports (width < 768 OR (height ≤ 500 && width ≤ 950)): assert the drawer container has class indicating bottom-sheet (e.g. `data-side="bottom"` or matches the mobile sheet selector).
+- On tablet/desktop: assert side-drawer class (`data-side="right"`).
+
+**Test output**
+- Console summary: viewport → pass/fail per check.
+- Screenshots saved to `tests/__screenshots__/` for visual diff review.
+- A `tests/__screenshots__/REPORT.md` generated by the test run summarizing pass/fail and embedding image links.
+
+**Run command** (documented in the new doc)
+```
+npx playwright test tests/visual-regression.spec.ts
+```
+
+### Files created
+- `docs/testing/phone-landscape-validation.md` — manual test plan and checklist.
+- `tests/visual-regression.spec.ts` — automated capture + overlap assertions.
+- `tests/utils/overlap.ts` — bounding-box overlap and viewport-bounds helpers.
+- `tests/__screenshots__/.gitkeep` — directory marker; generated PNGs follow.
+
+### Out of scope
+- Changing any app component, hook, or style.
+- Adding orientation-lock UI or "rotate device" prompts.
+- Replacing the existing `tests/card-height.spec.ts`.
+- CI integration (can be added later; this PR keeps the test runnable locally).
+- Pixel-diff baselining against committed snapshots — overlap/bounds assertions are the source of truth; PNGs are for human review.
 
