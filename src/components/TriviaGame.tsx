@@ -14,7 +14,6 @@ import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
-import mascotImg from "@/assets/Mascot.svg";
 import { getMascotForCategory } from "@/data/categoryMascots";
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
