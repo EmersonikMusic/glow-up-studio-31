@@ -1,49 +1,37 @@
 
-## Plan: Mobile UX/UI revisions (with vertical breathing room)
 
-### 1. Username left-aligned on mobile
-`src/components/GameHeader.tsx`
-- Render the username pill in two slots with responsive visibility:
-  - `sm:hidden` copy in the **left slot** (same x-position as logo when logged out).
-  - `hidden sm:flex` copy stays in the right cluster on tablet/desktop.
-- Same pill styling in both. Logo stays hidden on mobile when logged in (current behavior).
+## Plan: Restore (and grow) mobile game card height
 
-### 2. Equal horizontal padding for game card, mascot, and footer pill
-`src/components/TriviaGame.tsx`
-- `<main>` mobile horizontal padding: `px-2` → `px-3` to match footer's `px-3`.
-- Mobile mascot: remove `right-0`/`bottom-0`, add `right-3 bottom-2` so it lives inside the same 12px gutter.
+### Root cause
+On mobile, `<main>` is `flex items-center` and the game-area wrapper is `flex-none` with no height. With `items-center`, children shrink to content, so `h-full` on the card resolves against an auto-height parent and the card collapses to text size — smaller than the previous `min-h-[60vh]` build.
 
-### 3. Game area fills more vertical space — but with breathing room
-**Key revision per your feedback:** the card must NOT sit flat against the header or footer. Keep visible padding on top and bottom of the card.
+### Fix — `src/components/TriviaGame.tsx` `<main>` (line 255-268)
 
-`src/components/QuestionCard.tsx`
-- Replace `min-h-[60vh] md:min-h-0 md:h-full` with `h-full md:h-full`. Card now stretches to fill its grid row (relies on grid `1fr`, not `vh`, so it works identically across iOS Safari, Chrome, Firefox, Samsung Internet — adapts to dynamic browser chrome via the parent's `100svh`).
+1. Change `<main>` classes:
+   - `flex items-center md:items-stretch` → `flex items-stretch`
+   - Keep `h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8` (breathing room above/below preserved).
 
-`src/components/TriviaGame.tsx` `<main>`
-- Add `min-h-0` so the `1fr` row can shrink properly inside the grid (required for `h-full` on the card to behave).
-- Mobile vertical padding: keep generous breathing room — `py-3 sm:py-6` (12px top/bottom on mobile). This is the gap between header→card and card→footer. Card will be **taller than current** (currently capped by `60vh` minus padding) but never flush against header or footer.
-- Net effect on a 390×774 viewport: header ~64px + footer ~80px + 2×12px main padding = ~168px chrome, leaving ~606px for the card (vs. ~464px today at 60vh). Significantly taller, with clear visible gaps above and below.
+2. Change game-area wrapper (line 257):
+   - `flex-none flex flex-col justify-center md:h-full w-full md:w-[70%]` → `flex-none flex flex-col justify-center h-full w-full md:w-[70%]`
+   - `h-full` now applies on mobile too, so the column fills the `1fr` grid row minus the 12px top/bottom padding.
 
-### 4. UX best-practice refinements (mobile, no functional changes)
-- **Safe-area insets**: header gets `paddingTop: max(existing, env(safe-area-inset-top))`; footer gets `paddingBottom: max(existing, env(safe-area-inset-bottom))`. Prevents notch/home-indicator overlap in fullscreen + iOS standalone PWA.
-- **Tap targets**: header nav buttons `w-9 h-9` → `w-10 h-10` on mobile only (`w-10 h-10 sm:w-9 sm:h-9`). Footer pause button gets matching mobile bump. Meets Apple HIG 44pt / Material 48dp.
-- **Mascot doesn't crowd content**: mobile mascot size `clamp(110px, 32vw, 160px)` → `clamp(90px, 26vw, 130px)`, plus `opacity-90`. Charming accent without competing with answer text on 375px screens.
-- **Header cluster on narrow screens**: with up to 5 right-side items (username + logout + about + settings + fullscreen), reduce mobile gap `gap-1.5` → `gap-1`, and make username pill `truncate max-w-[80px] sm:max-w-none` to prevent overflow at 320px.
+3. `QuestionCard.tsx` stays `h-full` — now resolves correctly against a real height, making the card span the full available row.
+
+### Result
+- Mobile card height = `100svh − header − footer − 24px` (12px top + 12px bottom padding). On 390×774 with ~64px header + ~80px footer, that's roughly **606px tall**, vs. ~464px previously (60vh − padding).
+- Card height is **constant across all questions** (governed by viewport + grid, not content), matching the prior behavior the user wanted preserved.
+- Visible 12px gap above and below the card — never flush against header or footer.
+- Desktop (`md:`) layout unchanged: `items-stretch` was already its behavior via the override.
 
 ### Files touched
-- `src/components/GameHeader.tsx` — username left slot on mobile, larger mobile tap targets, tighter gap, safe-area top.
-- `src/components/TriviaGame.tsx` — `main` padding (`px-3`, `py-3`, `min-h-0`), mobile mascot inset + size.
-- `src/components/QuestionCard.tsx` — `min-h-[60vh]` → `h-full`.
-- `src/components/GameFooter.tsx` — safe-area bottom padding, larger pause tap target on mobile.
+- `src/components/TriviaGame.tsx` — two className tweaks on `<main>` and the game-area wrapper.
 
 ### Out of scope
-No changes to game logic, timers, animations, colors, fonts, desktop layout (≥768px), or any settings/start/about/login screens.
+No changes to `QuestionCard.tsx`, footer, header, mascot, animations, colors, or any game logic.
 
-### Verification (390×774 mobile preview, then iOS Safari + Android Chrome)
-1. Logged-in mobile: username pill at left edge (same x as logo when logged out).
-2. Card left/right edges align with footer pill edges (~12px gutter).
-3. **Visible gap (~12px) between header and top of card, and between bottom of card and footer** — card never flush.
-4. Card noticeably taller than current build; footer fully visible whether Safari URL bar is shown or hidden.
-5. Mascot inside the 12px gutter, not flush to viewport edge.
-6. All header buttons ≥40px on mobile; no horizontal overflow at 320px.
-7. Notched iPhone: no content under notch or home indicator.
+### Verification (390×774 mobile)
+1. Card visibly fills space between header and footer with ~12px gap on each side.
+2. Card height identical on Q1, Q2, Q3 — does not change per question.
+3. Footer fully visible whether iOS Safari URL bar is shown or hidden.
+4. Desktop ≥768px layout unchanged.
+
