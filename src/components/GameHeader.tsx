@@ -58,7 +58,7 @@ export default function GameHeader({
 
   return (
     <header
-      className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md"
+      className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md mobile-landscape-header"
       style={{
         paddingTop: "max(clamp(0.75rem, 2vw, 1.25rem), env(safe-area-inset-top))",
         paddingBottom: "clamp(0.75rem, 2vw, 1.25rem)",
@@ -86,7 +86,7 @@ export default function GameHeader({
           {/* Mobile-only username pill — sits at the same x-position as the logo */}
           {user && (
             <span
-              className="sm:hidden flex items-center gap-1.5 h-9 px-3 text-xs font-body font-bold tracking-wider uppercase rounded-full"
+              className="username-pill-mobile sm:hidden flex items-center gap-1.5 h-9 px-3 text-xs font-body font-bold tracking-wider uppercase rounded-full"
               style={{
                 color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",
@@ -104,7 +104,7 @@ export default function GameHeader({
           {/* Username pill — desktop/tablet only, sits left of Logout */}
           {user && (
             <span
-              className="hidden sm:flex items-center gap-1.5 h-9 px-4 text-xs font-body font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
+              className="username-pill-desktop hidden sm:flex items-center gap-1.5 h-9 px-4 text-xs font-body font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
               style={{
                 color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",

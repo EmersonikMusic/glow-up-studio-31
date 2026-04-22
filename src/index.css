@@ -420,3 +420,32 @@
     transform: none !important;
   }
 }
+
+/* ── Mobile landscape (short viewport, phone-shape) ──
+   Layout-only overrides so the game fits on phones rotated to landscape. */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Card column: trim bottom padding since footer is shorter and mascot is smaller */
+  .mobile-landscape\:pb-\[96px\] {
+    padding-bottom: 96px !important;
+  }
+
+  /* Mobile mascot: anchor to viewport height so it shrinks with short viewports */
+  .mobile-mascot-overlay {
+    width: clamp(120px, 28vh, 180px) !important;
+    height: clamp(120px, 28vh, 180px) !important;
+  }
+
+  /* Header: reduce vertical padding to reclaim ~20–30px */
+  header.mobile-landscape-header {
+    padding-top: max(0.4rem, env(safe-area-inset-top)) !important;
+    padding-bottom: 0.4rem !important;
+  }
+
+  /* Username pill: hide the desktop one, show the compact mobile pill */
+  .username-pill-desktop {
+    display: none !important;
+  }
+  .username-pill-mobile {
+    display: inline-flex !important;
+  }
+}
