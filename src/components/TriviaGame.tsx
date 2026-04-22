@@ -285,7 +285,7 @@ export default function TriviaGame() {
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
-          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-[80px] sm:pb-[96px] md:pb-0 mobile-landscape:pb-[96px] mobile-landscape:pr-[140px]">
+          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-2 md:pb-0 mobile-landscape:pb-[96px] mobile-landscape:pr-[140px]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -337,11 +337,11 @@ export default function TriviaGame() {
 
           {/* Mobile mascot — sits in reserved bottom area beside footer, never overlaps card */}
           <div
-            className="md:hidden absolute right-1 pointer-events-none z-10 flex items-end justify-center mobile-mascot-overlay"
+            className="md:hidden absolute right-0 pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
             style={{
-              width: "clamp(80px, 22vw, 120px)",
-              height: "clamp(80px, 22vw, 120px)",
-              bottom: "70px",
+              width: "clamp(140px, 38vw, 200px)",
+              height: "clamp(140px, 38vw, 200px)",
+              bottom: "64px",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
