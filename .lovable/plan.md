@@ -1,65 +1,66 @@
 
 
-## Plan: Card-height regression test + iOS Safari viewport stability
+## Plan: Wire up final 5 mascots and ship dynamic mapping
 
-### Part 1 — Automated card-height check (Playwright)
+### Uploads received (this batch)
+`sports.svg`, `technology.svg`, `television.svg`, `theology.svg`, `video-games.svg`.
 
-A Vitest/jsdom test cannot measure real layout heights — it has no painted layout. Use Playwright (already installed: `@playwright/test` + `playwright.config.ts`) for a real-browser check.
+Combined with the prior two batches, **all 25 of 25** category SVGs are now in hand. No category is missing.
 
-**New file:** `tests/card-height.spec.ts`
-- Launch the app at the preview URL, click Start to enter gameplay.
-- Read the bounding box height of the question card (`[data-testid="question-card"]`) on Q1.
-- Submit/advance through 3 questions (skip via the answer-phase auto-advance or click Next).
-- Re-measure the card height after each transition.
-- Assert all heights are within 1px of the Q1 baseline.
-- Run at mobile viewport (390×844) and desktop (1280×720) in two projects.
+### Coverage check (Category → file)
 
-**Required tweak:** add `data-testid="question-card"` to the wrapper `<div>` in `src/components/QuestionCard.tsx` (line 17) so the test has a stable selector. No visual change.
+| Category | File | Category | File |
+|---|---|---|---|
+| Art | art.svg ✓ | Movies | movies.svg ✓ |
+| Economy | economy.svg ✓ | Music | music.svg ✓ |
+| Food & Drink | food-and-drink.svg ✓ | Nature | nature.svg ✓ |
+| Games | games.svg ✓ | Performing Arts | performing-arts.svg ✓ |
+| Geography | geography.svg ✓ | Philosophy | philosophy.svg ✓ |
+| History | history.svg ✓ | Politics | politics.svg ✓ |
+| Human Body | human-body.svg ✓ | Pop Culture | pop-culture.svg ✓ |
+| Language | language.svg ✓ | Science | science.svg ✓ |
+| Law | law.svg ✓ | Sports | sports.svg ✓ |
+| Literature | literature.svg ✓ | Technology | technology.svg ✓ |
+| Math | math.svg ✓ | Television | television.svg ✓ |
+| Miscellaneous | miscellaneous.svg ✓ | Theology | theology.svg ✓ |
+| Video Games | video-games.svg ✓ | | |
 
-**Script:** add `"test:e2e": "playwright test"` to `package.json` so the user can run it.
+All 25 covered.
 
-### Part 2 — iOS Safari toolbar stability (scroll/resize listener)
+### What I'll do
 
-**Problem:** when the iOS Safari address bar collapses on scroll, the visual viewport changes height. `100svh` handles the static case, but in-flight scroll events plus rubber-band scrolling can briefly hide the footer or cover the card.
+**1. Copy all 25 uploaded SVGs into `src/assets/mascots/`**
+Filenames preserved exactly as listed above.
 
-**Fix — `src/components/TriviaGame.tsx`:**
-1. Add a `useEffect` that subscribes to `window.visualViewport` `resize` and `scroll` events (with `window.resize` + `orientationchange` fallbacks for browsers without `visualViewport`).
-2. On each event, write the current visual viewport height to a CSS variable on `document.documentElement`:
-   ```ts
-   const h = window.visualViewport?.height ?? window.innerHeight;
-   document.documentElement.style.setProperty("--app-vh", `${h}px`);
-   ```
-3. Throttle with `requestAnimationFrame` to avoid layout thrash; clean up listeners on unmount.
+**2. Rewrite `src/data/categoryMascots.ts`**
+- Use `import.meta.glob('../assets/mascots/*.svg', { eager: true, import: 'default' })` to bundle every SVG synchronously.
+- `categoryToFilename()` helper: lowercase the category, replace ` & ` with `-and-`, then remaining spaces with `-` (e.g. `"Pop Culture"` → `"pop-culture"`, `"Food & Drink"` → `"food-and-drink"`, `"Video Games"` → `"video-games"`).
+- `getMascotForCategory(category)` returns the matched glob entry, or falls back to the existing default `Mascot.svg` (defensive guard for any future category).
 
-**Fix — root container (`<div className="min-h-[100svh] grid ...">`)**:
-- Change min-height to use the live variable with a graceful fallback chain:
-  ```
-  style={{ minHeight: "var(--app-vh, 100svh)" }}
-  ```
-- Keep `100svh` as the CSS fallback for SSR/first paint and non-iOS browsers.
+**3. Update `src/components/TriviaGame.tsx` mobile mascot**
+- Swap the hardcoded `mascotImg` for `getMascotForCategory(currentQuestion.category)`.
+- Add `transition-opacity duration-300` to the mobile `<img>` so it fades like the desktop one when the gradient swaps.
 
-**Fix — `<main>` (line ~257):**
-- Already uses `min-h-0` + grid `1fr`, so it inherits the corrected height automatically. No changes needed.
+Desktop mascot already calls `getMascotForCategory` — picks up new mappings automatically.
 
-**Fix — keep footer in view on rubber-band scroll:**
-- Add `overscroll-behavior-y: none` to the root container (Tailwind `overscroll-none`) so iOS rubber-band can't drag the footer off-screen during gameplay.
-
-### Part 3 — Optional Vitest sanity test
-Add a lightweight `src/components/__tests__/QuestionCard.test.tsx` that renders the card with two different questions and asserts the wrapper has the `h-full` class — guards against future regressions where someone re-introduces `min-h-[60vh]` or content-sized heights. Fast, runs in CI on every commit.
+### Default-mascot guarantee (unchanged)
+- Start / Settings / About / How-to-Play / Result screens render outside the gameplay branch and continue to show the default `Mascot.svg`.
+- During gameplay the mascot only changes when `currentQuestion.category` changes — same key as the background gradient, so they swap in sync.
 
 ### Files touched
-- `src/components/QuestionCard.tsx` — add `data-testid="question-card"`.
-- `src/components/TriviaGame.tsx` — visual-viewport listener + `--app-vh` variable + `overscroll-none`.
-- `tests/card-height.spec.ts` (new) — Playwright regression spec.
-- `src/components/__tests__/QuestionCard.test.tsx` (new) — Vitest class-presence guard.
-- `package.json` — add `test:e2e` script.
+- `src/assets/mascots/*.svg` — 25 new files (full set).
+- `src/data/categoryMascots.ts` — real glob-based map + filename helper.
+- `src/components/TriviaGame.tsx` — mobile mascot uses `getMascotForCategory` + fade transition.
 
 ### Out of scope
-No changes to game logic, timers, animations, colors, fonts, header/footer styling, or desktop layout.
+No changes to gradients, layout, sizes, animations, timers, header/footer, or game logic.
 
 ### Verification
-1. `npm run test` passes (Vitest guard).
-2. `npm run test:e2e` passes; card heights identical (±1px) across Q1→Q4 on mobile and desktop projects.
-3. iOS Safari (real device or 390×844 emulation): scroll/swipe to collapse address bar → footer remains visible, card never overlaps footer, no visible jumpiness.
-4. Android Chrome + desktop: no regressions; layout identical to current build.
+1. Start screen: default `Mascot.svg` visible (mobile + desktop).
+2. Begin a game: each question's mascot matches its category on both mobile and desktop, fading in alongside the gradient.
+3. Cycle through every category at least once — confirm all 25 mascots render with no broken images and no console warnings.
+4. Existing `npm run test` and `npm run test:e2e` still pass (no selectors, heights, or timers affected).
+
+### Missing images
+None. All 25 categories are covered.
 
