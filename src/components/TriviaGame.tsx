@@ -303,7 +303,7 @@ export default function TriviaGame() {
               style={{
                 width: "clamp(140px, 36vw, 195px)",
                 height: "clamp(140px, 36vw, 195px)",
-                bottom: "12px",
+                bottom: "28px",
                 right: "12px",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
