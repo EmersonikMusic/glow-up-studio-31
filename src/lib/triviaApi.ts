@@ -20,7 +20,7 @@ export const ERA_IDS: Record<string, number> = {
   "2000s": 10, "2010s": 11, "2020s": 12,
 };
 
-const API_BASE = "https://www.triviolivia.com/api/questions/";
+const API_BASE = "/api/questions/";
 const FETCH_TIMEOUT_MS = 20_000;
 
 // Reverse lookup: era ID → era name
