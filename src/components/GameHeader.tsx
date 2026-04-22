@@ -86,7 +86,7 @@ export default function GameHeader({
           {/* Mobile-only username pill — sits at the same x-position as the logo */}
           {user && (
             <span
-              className="sm:hidden flex items-center gap-1.5 h-9 px-3 text-xs font-body font-bold tracking-wider uppercase rounded-full max-w-[120px]"
+              className="sm:hidden flex items-center gap-1.5 h-9 px-3 text-xs font-body font-bold tracking-wider uppercase rounded-full"
               style={{
                 color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",
@@ -94,7 +94,7 @@ export default function GameHeader({
               }}
             >
               <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(185 70% 55%)" }} />
-              <span className="truncate">{user.username.slice(0, 20)}</span>
+              <span className="whitespace-nowrap">{user.username.slice(0, 20)}</span>
             </span>
           )}
         </div>
