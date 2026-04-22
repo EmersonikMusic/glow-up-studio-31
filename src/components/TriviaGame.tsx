@@ -339,9 +339,9 @@ export default function TriviaGame() {
           <div
             className="md:hidden absolute right-0 pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
             style={{
-              width: "clamp(140px, 38vw, 200px)",
-              height: "clamp(140px, 38vw, 200px)",
-              bottom: "64px",
+              width: "clamp(120px, 32vw, 170px)",
+              height: "clamp(120px, 32vw, 170px)",
+              bottom: "8px",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
