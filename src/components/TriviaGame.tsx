@@ -285,7 +285,7 @@ export default function TriviaGame() {
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
-          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-[80px] sm:pb-[96px] md:pb-0 mobile-landscape:pb-[96px] mobile-landscape:pr-[140px]">
+          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-2 md:pb-0 mobile-landscape:pb-[96px] mobile-landscape:pr-[140px]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
