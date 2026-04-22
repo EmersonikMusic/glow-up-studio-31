@@ -73,7 +73,7 @@ export default function GameFooter({
           <span className="relative z-10 text-white truncate uppercase">{question.category}</span>
           <span className="relative z-10 opacity-50 text-white">·</span>
           <span
-            className="relative z-10 font-subheading font-bold whitespace-nowrap uppercase"
+            className="relative z-10 font-subheading whitespace-nowrap uppercase"
             style={{ color: difficultyColor[question.difficulty] ?? "hsl(var(--muted-foreground))" }}
           >
             {question.difficulty}
