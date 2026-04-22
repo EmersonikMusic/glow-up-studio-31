@@ -336,12 +336,12 @@ export default function TriviaGame() {
             </div>
           </div>
 
-          {/* Mobile mascot — bottom-right overlay */}
+          {/* Mobile mascot — bottom-right overlay, enlarged to overlap card */}
           <div
-            className="md:hidden absolute bottom-2 right-3 pointer-events-none z-10 flex items-end justify-center opacity-90"
+            className="md:hidden absolute -bottom-4 -right-4 pointer-events-none z-10 flex items-end justify-center"
             style={{
-              width: "clamp(150px, 42vw, 220px)",
-              height: "clamp(150px, 42vw, 220px)",
+              width: "clamp(180px, 55vw, 280px)",
+              height: "clamp(180px, 55vw, 280px)",
               animation: "float 3s ease-in-out infinite",
               animationPlayState: paused ? "paused" : "running",
             }}
