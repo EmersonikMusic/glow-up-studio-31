@@ -36,15 +36,15 @@ export default function Index() {
   return (
     <>
       <Helmet>
-        <title>TRIVIOLIVIA — Free Trivia Game | Earth's Deepest Trivia Source</title>
+        <title>Triviolivia — Free Online Trivia Game with 25 Categories</title>
         <meta
           name="description"
-          content="Play TRIVIOLIVIA, a free online trivia game with 25 categories, 5 difficulties, and 12 eras. Thousands of questions — start playing instantly, no signup."
+          content="Triviolivia is a free trivia game with thousands of say-aloud questions across 25 categories, 5 difficulties, and 12 eras. No signup — play instantly in your browser."
         />
         <link rel="canonical" href="https://triviolivia.com/" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta property="og:url" content="https://triviolivia.com/" />
-        <meta property="og:site_name" content="TRIVIOLIVIA" />
+        <meta property="og:site_name" content="Triviolivia" />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
       <TriviaGame />
