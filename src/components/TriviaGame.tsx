@@ -300,7 +300,7 @@ export default function TriviaGame() {
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
-            className="hidden md:flex flex-none flex-col items-end justify-center overflow-visible self-stretch"
+            className="hidden md:flex flex-none flex-col items-center justify-center overflow-visible self-stretch"
             style={{
               width: "30%",
               transition: "opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -313,7 +313,6 @@ export default function TriviaGame() {
               style={{
                 width: "clamp(180px, 24vw, 320px)",
                 height: "clamp(180px, 24vw, 320px)",
-                marginRight: "clamp(16px, 3.5vw, 56px)",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
               }}
