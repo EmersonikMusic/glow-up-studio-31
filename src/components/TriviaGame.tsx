@@ -285,7 +285,7 @@ export default function TriviaGame() {
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
-          <div className="flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-2 md:pb-0 mobile-landscape:pb-[96px] mobile-landscape:pr-[140px]">
+          <div className="relative flex-none flex flex-col justify-center h-full w-full md:w-[70%] pb-2 md:pb-0 mobile-landscape:pb-[96px] mobile-landscape:pr-[140px]">
             <QuestionCard
               question={currentQuestion}
               animKey={animKey}
@@ -296,6 +296,35 @@ export default function TriviaGame() {
                   : undefined
               }
             />
+
+            {/* Mobile mascot — anchored inside the card area, 12px from inner edges */}
+            <div
+              className="md:hidden absolute pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
+              style={{
+                width: "clamp(120px, 32vw, 170px)",
+                height: "clamp(120px, 32vw, 170px)",
+                bottom: "12px",
+                right: "12px",
+                animation: "float 3s ease-in-out infinite",
+                animationPlayState: paused ? "paused" : "running",
+              }}
+            >
+              <div
+                className="absolute rounded-full"
+                style={{
+                  width: "70%",
+                  height: "70%",
+                  bottom: 0,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: "rgb(125, 223, 232)",
+                }}
+              />
+              <MascotSvg
+                category={currentQuestion.category}
+                className="relative z-10 h-full w-full drop-shadow-xl"
+              />
+            </div>
           </div>
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
@@ -333,34 +362,6 @@ export default function TriviaGame() {
                 className="relative z-10 h-full w-full drop-shadow-xl"
               />
             </div>
-          </div>
-
-          {/* Mobile mascot — sits in reserved bottom area beside footer, never overlaps card */}
-          <div
-            className="md:hidden absolute right-0 pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
-            style={{
-              width: "clamp(120px, 32vw, 170px)",
-              height: "clamp(120px, 32vw, 170px)",
-              bottom: "8px",
-              animation: "float 3s ease-in-out infinite",
-              animationPlayState: paused ? "paused" : "running",
-            }}
-          >
-            <div
-              className="absolute rounded-full"
-              style={{
-                width: "70%",
-                height: "70%",
-                bottom: 0,
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "rgb(125, 223, 232)",
-              }}
-            />
-            <MascotSvg
-              category={currentQuestion.category}
-              className="relative z-10 h-full w-full drop-shadow-xl"
-            />
           </div>
         </main>
       )}
