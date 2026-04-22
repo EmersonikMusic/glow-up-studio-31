@@ -335,12 +335,14 @@
   font-family: 'Rubik', system-ui, sans-serif;
   font-weight: 800;
   box-shadow: 0 4px 16px hsl(42 100% 55% / 0.25);
-  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.18s ease;
+  animation: cta-breathe 3.5s ease-in-out infinite;
 }
 @media (hover: hover) and (pointer: fine) {
   .cta-glass:hover {
     border-color: hsl(42 100% 72%);
     box-shadow: 0 6px 20px hsl(42 100% 55% / 0.3);
+    animation-play-state: paused;
   }
 }
 .cta-glass:active {
@@ -352,5 +354,69 @@
   .nav-btn:hover {
     border-color: hsl(185 70% 55%) !important;
     background: rgba(255, 255, 255, 0.12) !important;
+  }
+}
+
+/* Header gear: full spin on hover (reverses on hover-off via same transition) */
+.gear-icon {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav-btn:hover .gear-icon:not([data-open="true"]) {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fullscreen icon: scale up on hover so the corner arrows visually push outward */
+.fs-icon {
+  transition: transform 0.25s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav-btn:hover .fs-icon {
+    transform: scale(1.12);
+  }
+}
+
+/* Subtle scale-up for other nav icons on hover */
+.nav-icon {
+  transition: transform 0.2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav-btn:hover .nav-icon {
+    transform: scale(1.08);
+  }
+}
+
+/* "How Do I Play?" subtle hover lift */
+.howto-link {
+  display: inline-block;
+  transition: transform 0.18s ease, color 0.2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .howto-link:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Reduced motion — kill all the new ambient/hover motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-soft,
+  .animate-blob-a,
+  .animate-blob-b,
+  .animate-text-shimmer,
+  .cta-glass {
+    animation: none !important;
+  }
+  .gear-icon,
+  .fs-icon,
+  .nav-icon,
+  .howto-link {
+    transition: none !important;
+  }
+  .nav-btn:hover .gear-icon:not([data-open="true"]),
+  .nav-btn:hover .fs-icon,
+  .nav-btn:hover .nav-icon,
+  .howto-link:hover {
+    transform: none !important;
   }
 }
