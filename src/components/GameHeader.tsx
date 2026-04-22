@@ -167,7 +167,7 @@ export default function GameHeader({
               }}
               aria-label="About"
             >
-              <Info className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              <Info className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
               <span
                 className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
                 style={{ color: "hsl(var(--game-gold))" }}
