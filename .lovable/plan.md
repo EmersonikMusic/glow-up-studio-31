@@ -1,46 +1,49 @@
 
-## Plan: Mobile dynamic viewport + Fullscreen toggle
+## Plan: Mobile UX/UI revisions (with vertical breathing room)
 
-### Part 1 — Mobile viewport fits browser chrome
+### 1. Username left-aligned on mobile
+`src/components/GameHeader.tsx`
+- Render the username pill in two slots with responsive visibility:
+  - `sm:hidden` copy in the **left slot** (same x-position as logo when logged out).
+  - `hidden sm:flex` copy stays in the right cluster on tablet/desktop.
+- Same pill styling in both. Logo stays hidden on mobile when logged in (current behavior).
 
-**Problem:** `min-h-screen` on the game container uses `100vh`, which on iOS Safari (incl. iPhone 17 Pro) ignores the dynamic browser UI (URL bar, bottom toolbar). Header/footer get pushed off-screen.
+### 2. Equal horizontal padding for game card, mascot, and footer pill
+`src/components/TriviaGame.tsx`
+- `<main>` mobile horizontal padding: `px-2` → `px-3` to match footer's `px-3`.
+- Mobile mascot: remove `right-0`/`bottom-0`, add `right-3 bottom-2` so it lives inside the same 12px gutter.
 
-**Fix — `src/components/TriviaGame.tsx`** (root container, ~line 197):
-- Replace `min-h-screen` with `min-h-[100svh]` (small viewport height — accounts for browser chrome).
-- Keep `grid-rows-[auto_1fr_auto]` so header + footer hold their slots and the middle row shrinks.
+### 3. Game area fills more vertical space — but with breathing room
+**Key revision per your feedback:** the card must NOT sit flat against the header or footer. Keep visible padding on top and bottom of the card.
 
-**Fix — `index.html`:**
-- Update viewport meta to `width=device-width, initial-scale=1.0, viewport-fit=cover` so the page respects safe-areas on notched devices.
+`src/components/QuestionCard.tsx`
+- Replace `min-h-[60vh] md:min-h-0 md:h-full` with `h-full md:h-full`. Card now stretches to fill its grid row (relies on grid `1fr`, not `vh`, so it works identically across iOS Safari, Chrome, Firefox, Samsung Internet — adapts to dynamic browser chrome via the parent's `100svh`).
 
-**Fix — `src/index.css`:**
-- Add a small `@supports (height: 100svh)` fallback rule isn't needed since Tailwind compiles `100svh` directly; just rely on the class. No additional CSS required.
+`src/components/TriviaGame.tsx` `<main>`
+- Add `min-h-0` so the `1fr` row can shrink properly inside the grid (required for `h-full` on the card to behave).
+- Mobile vertical padding: keep generous breathing room — `py-3 sm:py-6` (12px top/bottom on mobile). This is the gap between header→card and card→footer. Card will be **taller than current** (currently capped by `60vh` minus padding) but never flush against header or footer.
+- Net effect on a 390×774 viewport: header ~64px + footer ~80px + 2×12px main padding = ~168px chrome, leaving ~606px for the card (vs. ~464px today at 60vh). Significantly taller, with clear visible gaps above and below.
 
-This guarantees the game container is exactly the visible viewport height (recalculated as the iOS toolbar collapses/expands), keeping header and footer on-screen at all times.
-
-### Part 2 — Fullscreen toggle button
-
-**New button in `src/components/GameHeader.tsx`:**
-- Add a new icon button placed **to the right of the Settings gear**.
-- Use Lucide `Maximize2` / `Minimize2` icons, swapping based on state.
-- Same styling as the other nav buttons (`nav-btn`, 9×9, glass background, gold icon).
-- aria-label toggles between "Enter fullscreen" / "Exit fullscreen".
-
-**Logic — handled inside `GameHeader.tsx`** (self-contained, no parent wiring needed):
-- `const [isFullscreen, setIsFullscreen] = useState(false)`
-- `onClick` calls `document.documentElement.requestFullscreen()` or `document.exitFullscreen()` (with vendor fallbacks for Safari: `webkitRequestFullscreen`, `webkitExitFullscreen`).
-- `useEffect` listens to `fullscreenchange` + `webkitfullscreenchange` to sync state if user exits via Esc/swipe.
-- Hide the button if Fullscreen API is unsupported (`!document.documentElement.requestFullscreen && !(...)webkitRequestFullscreen` → render nothing).
+### 4. UX best-practice refinements (mobile, no functional changes)
+- **Safe-area insets**: header gets `paddingTop: max(existing, env(safe-area-inset-top))`; footer gets `paddingBottom: max(existing, env(safe-area-inset-bottom))`. Prevents notch/home-indicator overlap in fullscreen + iOS standalone PWA.
+- **Tap targets**: header nav buttons `w-9 h-9` → `w-10 h-10` on mobile only (`w-10 h-10 sm:w-9 sm:h-9`). Footer pause button gets matching mobile bump. Meets Apple HIG 44pt / Material 48dp.
+- **Mascot doesn't crowd content**: mobile mascot size `clamp(110px, 32vw, 160px)` → `clamp(90px, 26vw, 130px)`, plus `opacity-90`. Charming accent without competing with answer text on 375px screens.
+- **Header cluster on narrow screens**: with up to 5 right-side items (username + logout + about + settings + fullscreen), reduce mobile gap `gap-1.5` → `gap-1`, and make username pill `truncate max-w-[80px] sm:max-w-none` to prevent overflow at 320px.
 
 ### Files touched
-- `index.html` — viewport meta tweak.
-- `src/components/TriviaGame.tsx` — `min-h-screen` → `min-h-[100svh]`.
-- `src/components/GameHeader.tsx` — new fullscreen button + state/effect.
+- `src/components/GameHeader.tsx` — username left slot on mobile, larger mobile tap targets, tighter gap, safe-area top.
+- `src/components/TriviaGame.tsx` — `main` padding (`px-3`, `py-3`, `min-h-0`), mobile mascot inset + size.
+- `src/components/QuestionCard.tsx` — `min-h-[60vh]` → `h-full`.
+- `src/components/GameFooter.tsx` — safe-area bottom padding, larger pause tap target on mobile.
 
 ### Out of scope
-No layout, color, padding, or other component changes.
+No changes to game logic, timers, animations, colors, fonts, desktop layout (≥768px), or any settings/start/about/login screens.
 
-### Verification (browser test after build)
-1. Mobile viewport (390×844, iPhone 14 Pro proxy): confirm header + footer both fully visible, no clipping.
-2. Click new fullscreen button → enters fullscreen, icon swaps to "shrink".
-3. Click again (or press Esc) → exits, icon swaps back to "expand".
-4. Verify on desktop the button sits to the right of the gear icon, matches glass nav style.
+### Verification (390×774 mobile preview, then iOS Safari + Android Chrome)
+1. Logged-in mobile: username pill at left edge (same x as logo when logged out).
+2. Card left/right edges align with footer pill edges (~12px gutter).
+3. **Visible gap (~12px) between header and top of card, and between bottom of card and footer** — card never flush.
+4. Card noticeably taller than current build; footer fully visible whether Safari URL bar is shown or hidden.
+5. Mascot inside the 12px gutter, not flush to viewport edge.
+6. All header buttons ≥40px on mobile; no horizontal overflow at 320px.
+7. Notched iPhone: no content under notch or home indicator.
