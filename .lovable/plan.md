@@ -1,66 +1,38 @@
 
 
-## Plan: Wire up final 5 mascots and ship dynamic mapping
+## Plan: Fix mascot lag, add fade animation, enlarge mascot
 
-### Uploads received (this batch)
-`sports.svg`, `technology.svg`, `television.svg`, `theology.svg`, `video-games.svg`.
+### 1. Eliminate the swap lag (root cause)
+The `<img>` waits for the network/decode of each new SVG the first time it's requested, so text + background swap before the image catches up. Fix in two layers:
 
-Combined with the prior two batches, **all 25 of 25** category SVGs are now in hand. No category is missing.
+**a. Preload all mascots once at app boot** — in `src/data/categoryMascots.ts`, after the eager `import.meta.glob`, loop the resolved URLs and instantiate `new Image()` per URL (browser caches them). Runs once on module import. Zero render cost, all 25 SVGs warm in the HTTP cache before the first question swap.
 
-### Coverage check (Category → file)
+**b. Force a fresh `<img>` element per category** — give each `<img>` a `key={currentQuestion.category}` so React unmounts/mounts on category change. Combined with the warm cache, the new src paints in the same frame as the question text swap.
 
-| Category | File | Category | File |
-|---|---|---|---|
-| Art | art.svg ✓ | Movies | movies.svg ✓ |
-| Economy | economy.svg ✓ | Music | music.svg ✓ |
-| Food & Drink | food-and-drink.svg ✓ | Nature | nature.svg ✓ |
-| Games | games.svg ✓ | Performing Arts | performing-arts.svg ✓ |
-| Geography | geography.svg ✓ | Philosophy | philosophy.svg ✓ |
-| History | history.svg ✓ | Politics | politics.svg ✓ |
-| Human Body | human-body.svg ✓ | Pop Culture | pop-culture.svg ✓ |
-| Language | language.svg ✓ | Science | science.svg ✓ |
-| Law | law.svg ✓ | Sports | sports.svg ✓ |
-| Literature | literature.svg ✓ | Technology | technology.svg ✓ |
-| Math | math.svg ✓ | Television | television.svg ✓ |
-| Miscellaneous | miscellaneous.svg ✓ | Theology | theology.svg ✓ |
-| Video Games | video-games.svg ✓ | | |
+### 2. Subtle on-swap animation (matches site language)
+Existing site animations: `animate-fade-in` (opacity + translateY 10px, 0.3s ease-out — already used by other transitions). Apply it to both mascot `<img>` elements via the same `key={currentQuestion.category}`. Removes the current `transition-opacity duration-300` on the img (it never fires because the element doesn't re-render — only `src` changes). The float idle animation on the parent stays untouched.
 
-All 25 covered.
+### 3. Enlarge the mascot (both breakpoints)
 
-### What I'll do
+**Desktop (≥768px)** — currently `clamp(140px, 18vw, 240px)` inside a 30%-width column. Bump to `clamp(180px, 24vw, 320px)`. Column width stays 30%; the `-mr-6/-mr-8` negative margins already let it bleed to the edge, and the question card sits in the 70% column so no overlap is possible.
 
-**1. Copy all 25 uploaded SVGs into `src/assets/mascots/`**
-Filenames preserved exactly as listed above.
+**Mobile (<768px)** — currently bottom-right overlay at `clamp(90px, 26vw, 130px)`. Increase to `clamp(120px, 32vw, 170px)`. Risk: this overlay sits inside `<main>` over the card. To guarantee the longest question + longest answer never get covered:
+- Reserve safe space at the bottom of the card by adding `pb-[140px] sm:pb-[160px] md:pb-0` to the QuestionCard's outer container in `TriviaGame.tsx` (only on mobile — desktop mascot is in its own column, so 0 padding there).
+- The card uses `flex flex-col justify-center`, so reserved bottom padding shifts content upward and prevents the mascot from overlapping text even with the longest strings. Question text uses `clamp(1.6rem, 4.5vw, 2.4rem)` and the divider+answer reveal stay inside the padded region.
 
-**2. Rewrite `src/data/categoryMascots.ts`**
-- Use `import.meta.glob('../assets/mascots/*.svg', { eager: true, import: 'default' })` to bundle every SVG synchronously.
-- `categoryToFilename()` helper: lowercase the category, replace ` & ` with `-and-`, then remaining spaces with `-` (e.g. `"Pop Culture"` → `"pop-culture"`, `"Food & Drink"` → `"food-and-drink"`, `"Video Games"` → `"video-games"`).
-- `getMascotForCategory(category)` returns the matched glob entry, or falls back to the existing default `Mascot.svg` (defensive guard for any future category).
-
-**3. Update `src/components/TriviaGame.tsx` mobile mascot**
-- Swap the hardcoded `mascotImg` for `getMascotForCategory(currentQuestion.category)`.
-- Add `transition-opacity duration-300` to the mobile `<img>` so it fades like the desktop one when the gradient swaps.
-
-Desktop mascot already calls `getMascotForCategory` — picks up new mappings automatically.
-
-### Default-mascot guarantee (unchanged)
-- Start / Settings / About / How-to-Play / Result screens render outside the gameplay branch and continue to show the default `Mascot.svg`.
-- During gameplay the mascot only changes when `currentQuestion.category` changes — same key as the background gradient, so they swap in sync.
+Verification target strings (the two you provided) will be tested at 360×640, 390×844, 414×896 and confirmed not to be obscured by the mascot.
 
 ### Files touched
-- `src/assets/mascots/*.svg` — 25 new files (full set).
-- `src/data/categoryMascots.ts` — real glob-based map + filename helper.
-- `src/components/TriviaGame.tsx` — mobile mascot uses `getMascotForCategory` + fade transition.
+- `src/data/categoryMascots.ts` — add one-time `new Image()` preload loop after the glob.
+- `src/components/TriviaGame.tsx` — add `key={currentQuestion.category}` + `animate-fade-in` to both mascot `<img>` tags; bump desktop and mobile size clamps; add mobile-only bottom padding wrapper around the QuestionCard column so text never sits behind the mascot.
 
 ### Out of scope
-No changes to gradients, layout, sizes, animations, timers, header/footer, or game logic.
+No changes to background gradients, layout grid, header/footer, timers, float animation, default-mascot screens, or game logic. The default `Mascot.svg` still shows on Start/About/Result screens.
 
 ### Verification
-1. Start screen: default `Mascot.svg` visible (mobile + desktop).
-2. Begin a game: each question's mascot matches its category on both mobile and desktop, fading in alongside the gradient.
-3. Cycle through every category at least once — confirm all 25 mascots render with no broken images and no console warnings.
-4. Existing `npm run test` and `npm run test:e2e` still pass (no selectors, heights, or timers affected).
-
-### Missing images
-None. All 25 categories are covered.
+1. Start a game → question text, background, and mascot all swap in the same frame (no visible delay on Q1→Q2→Q3…).
+2. Mascot fades in subtly on each new question, matching the site's existing fade-in feel.
+3. With the longest question and longest answer rendered (forced via test data), no character is covered by the mascot at 360×640, 390×844, 414×896, 768×1024, 1280×720, 1920×1080.
+4. Default `Mascot.svg` still appears on Start/About/Result.
+5. `npm run test` and `npm run test:e2e` still pass — no test selectors or card heights change.
 
