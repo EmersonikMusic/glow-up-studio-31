@@ -128,6 +128,16 @@ export async function fetchAndStartGame(settings: GameSettings): Promise<Questio
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      // Most likely the API host is serving HTML (e.g. an SPA fallback) because
+      // the API endpoint isn't reachable at this URL anymore. Surface a clearer
+      // error than the cryptic "Unexpected token '<'" JSON parse failure.
+      throw new Error(
+        `Questions API returned ${contentType || "non-JSON"} instead of JSON. ` +
+          `Check that ${API_BASE} still serves the questions endpoint.`,
+      );
+    }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
     return shuffle(raw).map(adaptQuestion);
