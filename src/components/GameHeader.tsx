@@ -119,7 +119,7 @@ export default function GameHeader({
           {user ? (
             <button
               onClick={logout}
-              className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -138,7 +138,7 @@ export default function GameHeader({
             onLogin && (
               <button
                 onClick={onLogin}
-                className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+                className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
                 style={{
                   background: "rgba(255, 255, 255, 0.08)",
                   border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -160,7 +160,7 @@ export default function GameHeader({
           {onAbout && (
             <button
               onClick={onAbout}
-              className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
