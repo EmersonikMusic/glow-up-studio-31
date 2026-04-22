@@ -26,6 +26,18 @@ for (const [path, url] of Object.entries(mascotModules)) {
   if (name) mascotByFilename[name] = url;
 }
 
+// Preload all mascot SVGs once at module load so the browser caches them
+// before the first category swap. Eliminates first-paint lag during gameplay.
+if (typeof window !== "undefined") {
+  for (const url of Object.values(mascotByFilename)) {
+    const img = new Image();
+    img.src = url;
+  }
+  // Also preload the default fallback.
+  const fallback = new Image();
+  fallback.src = defaultMascot;
+}
+
 function categoryToFilename(category: Category): string {
   return category
     .toLowerCase()
