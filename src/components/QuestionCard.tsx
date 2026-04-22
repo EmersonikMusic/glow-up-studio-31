@@ -17,13 +17,13 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up h-full backdrop-blur-xl"
+      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
         boxShadow: "0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25)",
-        paddingTop: "clamp(1.5rem, 4vw, 2.5rem)",
-        paddingBottom: "clamp(1.5rem, 4vw, 2.5rem)",
+        paddingTop: "clamp(0.75rem, 2.5vw, 2.5rem)",
+        paddingBottom: "clamp(0.75rem, 2.5vw, 2.5rem)",
         paddingLeft: "clamp(0.875rem, 3vw, 2.5rem)",
         paddingRight: "clamp(0.875rem, 3vw, 2.5rem)",
         gap: 0,
