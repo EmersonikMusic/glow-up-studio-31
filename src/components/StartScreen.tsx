@@ -60,7 +60,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           }}
         >
           {/* Logo */}
-          <div className="w-full max-w-2xl animate-fade-in animate-float-soft" style={{ animationDelay: "0ms, 600ms" }}>
+          <div className="w-full max-w-2xl animate-fade-in animate-float-soft" style={{ animationDelay: "0ms" }}>
             <img
               src={logo}
               alt="Triviolivia — Earth's Deepest Trivia Source"
