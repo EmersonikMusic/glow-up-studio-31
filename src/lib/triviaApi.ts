@@ -20,6 +20,11 @@ export const ERA_IDS: Record<string, number> = {
   "2000s": 10, "2010s": 11, "2020s": 12,
 };
 
+// NOTE: www.triviolivia.com now points to Lovable hosting, so it no longer
+// serves the questions API — it returns the SPA's index.html for unknown
+// paths, which causes "Unexpected token '<'" JSON parse errors.
+// Update this constant once the questions API is live on its new host
+// (e.g. https://api.triviolivia.com/api/questions/).
 const API_BASE = "https://www.triviolivia.com/api/questions/";
 const FETCH_TIMEOUT_MS = 20_000;
 
