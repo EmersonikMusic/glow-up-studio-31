@@ -16,7 +16,7 @@ export default function QuestionCard({
   return (
     <div
       key={animKey}
-      className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up min-h-[60vh] md:min-h-0 md:h-full backdrop-blur-xl"
+      className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up h-full backdrop-blur-xl"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",

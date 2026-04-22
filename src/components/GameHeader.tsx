@@ -60,14 +60,14 @@ export default function GameHeader({
     <header
       className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md"
       style={{
-        paddingTop: "clamp(0.75rem, 2vw, 1.25rem)",
+        paddingTop: "max(clamp(0.75rem, 2vw, 1.25rem), env(safe-area-inset-top))",
         paddingBottom: "clamp(0.75rem, 2vw, 1.25rem)",
         background: "rgba(0, 0, 0, 0.25)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
       }}
     >
       <div className="flex items-center justify-between gap-2">
-        {/* Left slot: Logo (hidden on mobile only when logged in) */}
+        {/* Left slot: Logo (when logged out) OR username pill (mobile only, when logged in) */}
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
           <button
             type="button"
@@ -83,14 +83,28 @@ export default function GameHeader({
               draggable={false}
             />
           </button>
-        </div>
-
-        {/* Right: Username → Login/Logout → About → Settings */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Username pill — only when logged in, sits left of Logout */}
+          {/* Mobile-only username pill — sits at the same x-position as the logo */}
           {user && (
             <span
-              className="flex items-center gap-1.5 h-9 px-4 text-xs font-body font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
+              className="sm:hidden flex items-center gap-1.5 h-9 px-3 text-xs font-body font-bold tracking-wider uppercase rounded-full max-w-[120px]"
+              style={{
+                color: "hsl(185 70% 55%)",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+              }}
+            >
+              <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(185 70% 55%)" }} />
+              <span className="truncate">{user.username.slice(0, 20)}</span>
+            </span>
+          )}
+        </div>
+
+        {/* Right: Username (desktop) → Login/Logout → About → Settings → Fullscreen */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Username pill — desktop/tablet only, sits left of Logout */}
+          {user && (
+            <span
+              className="hidden sm:flex items-center gap-1.5 h-9 px-4 text-xs font-body font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
               style={{
                 color: "hsl(185 70% 55%)",
                 background: "rgba(255, 255, 255, 0.08)",
@@ -105,7 +119,7 @@ export default function GameHeader({
           {user ? (
             <button
               onClick={logout}
-              className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -124,7 +138,7 @@ export default function GameHeader({
             onLogin && (
               <button
                 onClick={onLogin}
-                className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+                className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
                 style={{
                   background: "rgba(255, 255, 255, 0.08)",
                   border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -146,7 +160,7 @@ export default function GameHeader({
           {onAbout && (
             <button
               onClick={onAbout}
-              className="nav-btn flex items-center justify-center w-9 h-9 sm:w-auto sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -167,7 +181,7 @@ export default function GameHeader({
           {onSettingsToggle && (
             <button
               onClick={onSettingsToggle}
-              className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
+              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
@@ -189,7 +203,7 @@ export default function GameHeader({
           {fsSupported && (
             <button
               onClick={toggleFullscreen}
-              className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
+              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.15)",
