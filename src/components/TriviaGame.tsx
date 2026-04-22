@@ -349,8 +349,8 @@ export default function TriviaGame() {
               key={currentQuestion.category}
               src={getMascotForCategory(currentQuestion.category)}
               alt="TrivOlivia mascot"
-              className="relative z-10 w-[85%] h-auto object-contain drop-shadow-xl animate-fade-in"
-              style={{ marginBottom: "-2%" }}
+              className="relative z-10 h-[110%] w-auto object-contain drop-shadow-xl animate-fade-in"
+              style={{ marginBottom: "-8%" }}
               draggable={false}
             />
           </div>
