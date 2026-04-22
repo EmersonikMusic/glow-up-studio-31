@@ -20,6 +20,11 @@ export const ERA_IDS: Record<string, number> = {
   "2000s": 10, "2010s": 11, "2020s": 12,
 };
 
+// NOTE: www.triviolivia.com now points to Lovable hosting, so it no longer
+// serves the questions API — it returns the SPA's index.html for unknown
+// paths, which causes "Unexpected token '<'" JSON parse errors.
+// Update this constant once the questions API is live on its new host
+// (e.g. https://api.triviolivia.com/api/questions/).
 const API_BASE = "https://www.triviolivia.com/api/questions/";
 const FETCH_TIMEOUT_MS = 20_000;
 
@@ -122,6 +127,16 @@ export async function fetchAndStartGame(settings: GameSettings): Promise<Questio
     const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
+    }
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      // Most likely the API host is serving HTML (e.g. an SPA fallback) because
+      // the API endpoint isn't reachable at this URL anymore. Surface a clearer
+      // error than the cryptic "Unexpected token '<'" JSON parse failure.
+      throw new Error(
+        `Questions API returned ${contentType || "non-JSON"} instead of JSON. ` +
+          `Check that ${API_BASE} still serves the questions endpoint.`,
+      );
     }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
