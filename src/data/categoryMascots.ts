@@ -26,16 +26,40 @@ for (const [path, url] of Object.entries(mascotModules)) {
   if (name) mascotByFilename[name] = url;
 }
 
-// Preload all mascot SVGs once at module load so the browser caches them
-// before the first category swap. Eliminates first-paint lag during gameplay.
+// Prewarm: fetch + GPU-decode all mascot SVGs once at module load so the very
+// first category swap paints synchronously, even on slower devices. Each decode
+// is raced against a 2s timeout so a slow/failed image never blocks the others.
+// Scheduled via requestIdleCallback (with setTimeout fallback) so prewarm doesn't
+// compete with the Start screen's first paint.
 if (typeof window !== "undefined") {
-  for (const url of Object.values(mascotByFilename)) {
+  const urls = [...Object.values(mascotByFilename), defaultMascot];
+
+  const prewarmOne = (url: string): Promise<void> => {
     const img = new Image();
     img.src = url;
+    const decodePromise: Promise<void> = img.decode
+      ? img.decode().catch(() => {})
+      : new Promise((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        });
+    const timeout = new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    return Promise.race([decodePromise, timeout]);
+  };
+
+  const runPrewarm = () => {
+    void Promise.all(urls.map(prewarmOne));
+  };
+
+  type IdleWindow = Window & {
+    requestIdleCallback?: (cb: () => void) => number;
+  };
+  const w = window as IdleWindow;
+  if (typeof w.requestIdleCallback === "function") {
+    w.requestIdleCallback(runPrewarm);
+  } else {
+    setTimeout(runPrewarm, 0);
   }
-  // Also preload the default fallback.
-  const fallback = new Image();
-  fallback.src = defaultMascot;
 }
 
 function categoryToFilename(category: Category): string {
