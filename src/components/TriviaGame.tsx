@@ -220,7 +220,13 @@ export default function TriviaGame() {
   }, [gameState]);
 
   // Desktop power-user shortcuts: → / N (next), S (settings), M (mute).
+  // Gated to true desktop — touch devices and tablets are excluded.
   useEffect(() => {
+    const isTouchOrSmall =
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.innerWidth < 1024;
+    if (isTouchOrSmall) return;
+
     const onKeyDown = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
       const tag = t?.tagName;
@@ -240,8 +246,7 @@ export default function TriviaGame() {
       // Toggle mute.
       if (e.code === "KeyM" && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        // Lazy import to avoid hook order issues.
-        import("@/lib/sound").then((m) => m.toggleMuted());
+        toggleMuted();
         return;
       }
     };
@@ -249,7 +254,7 @@ export default function TriviaGame() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  // Tick sound + haptic for last 3s of question phase.
+  // Tick sound for last 3s of question phase.
   const lastTickRef = useRef<number>(-1);
   useEffect(() => {
     if (gameState !== "playing") {
@@ -259,29 +264,18 @@ export default function TriviaGame() {
     if (countdown > 0 && countdown <= 3 && countdown !== lastTickRef.current) {
       lastTickRef.current = countdown;
       play("tick");
-      vibrate(8);
     }
   }, [countdown, gameState, play]);
 
-  // Reveal sound + haptic + mascot bounce when entering "answered".
+  // Reveal sound + mascot bounce when entering "answered".
   useEffect(() => {
     if (gameState === "answered") {
       play("reveal");
-      vibrate(30);
       setMascotState("celebrate");
       const t = setTimeout(() => setMascotState("idle"), 500);
       return () => clearTimeout(t);
     }
   }, [gameState, play]);
-
-  // Mascot urgency wobble during last 5s of question phase.
-  useEffect(() => {
-    if (gameState === "playing" && countdown > 0 && countdown <= 5) {
-      setMascotState("urgent");
-    } else if (gameState === "playing") {
-      setMascotState("idle");
-    }
-  }, [countdown, gameState]);
 
   // Mascot droop when paused.
   useEffect(() => {
