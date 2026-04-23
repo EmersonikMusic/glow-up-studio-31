@@ -16,7 +16,7 @@ const stateClass: Record<MascotState, string> = {
   idle: "",
   celebrate: "animate-mascot-bounce",
   urgent: "animate-mascot-wobble",
-  paused: "animate-mascot-droop",
+  paused: "",
 };
 
 /**
