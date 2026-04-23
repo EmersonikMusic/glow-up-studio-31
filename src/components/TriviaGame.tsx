@@ -302,8 +302,8 @@ export default function TriviaGame() {
             <div
               className="md:hidden absolute pointer-events-none z-20 flex items-end justify-center mobile-mascot-overlay"
               style={{
-                width: "clamp(155px, 40vw, 195px)",
-                height: "clamp(155px, 40vw, 195px)",
+                width: "clamp(165px, 44vw, 9999px)",
+                height: "clamp(165px, 44vw, 9999px)",
                 bottom: "28px",
                 left: "50%",
                 transform: "translateX(-50%)",
