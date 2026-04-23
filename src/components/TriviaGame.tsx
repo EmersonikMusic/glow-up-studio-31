@@ -6,7 +6,7 @@ import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import { useSound } from "@/hooks/useSound";
-import { vibrate } from "@/lib/haptics";
+import { toggleMuted } from "@/lib/sound";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
