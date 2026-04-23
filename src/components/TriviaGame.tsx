@@ -1,10 +1,12 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
+import { useSound } from "@/hooks/useSound";
+import { vibrate } from "@/lib/haptics";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
@@ -14,8 +16,17 @@ import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import SettingsPanel from "./SettingsPanel";
 import LoginScreen from "./LoginScreen";
-import MascotSvg from "./MascotSvg";
+import MascotSvg, { type MascotState } from "./MascotSvg";
+import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
+
+/** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
+function gradientFlashColor(gradient?: string): string | undefined {
+  if (!gradient) return undefined;
+  const m = gradient.match(/rgba?\([^)]+\)/);
+  if (!m) return undefined;
+  return m[0].replace(/,\s*[\d.]+\)/, ", 0.55)");
+}
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
 
