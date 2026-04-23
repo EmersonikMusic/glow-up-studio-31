@@ -83,7 +83,7 @@ export default function QuestionCard({
     marginBottom: 0,
     ...(isMobile
       ? {
-          fontSize: "calc(clamp(1.375rem, 4.1vw, 2.525rem) * var(--q-font-scale, 1))",
+          fontSize: "calc(clamp(1.5rem, 4.6vw, 2.65rem) * var(--q-font-scale, 1))",
           ["--q-font-scale" as any]: String(qFontScale),
         }
       : {}),
@@ -94,7 +94,7 @@ export default function QuestionCard({
     color: "hsl(0 0% 97%)",
     ...(isMobile
       ? {
-          fontSize: "calc(clamp(1.375rem, 4.1vw, 2.525rem) * var(--a-font-scale, 1))",
+          fontSize: "calc(clamp(1.5rem, 4.6vw, 2.65rem) * var(--a-font-scale, 1))",
           ["--a-font-scale" as any]: String(aFontScale),
         }
       : {}),
@@ -179,7 +179,7 @@ export default function QuestionCard({
         // ─── DESKTOP / TABLET: original single-flow layout ──────────────
         <div className="w-full flex flex-col items-center">
           <p
-            className="font-body font-semibold text-center w-full text-[clamp(1.6rem,4.5vw,2.4rem)] leading-[1.5]"
+            className="font-body font-semibold text-center w-full text-[clamp(1.725rem,5vw,2.525rem)] leading-[1.5]"
             style={questionStyle}
           >
             {question.text}
@@ -196,7 +196,7 @@ export default function QuestionCard({
                 }}
               />
               <p
-                className="leading-relaxed font-body font-semibold animate-answer-reveal text-center w-full text-[clamp(1.6rem,4.5vw,2.4rem)] leading-[1.45]"
+                className="leading-relaxed font-body font-semibold animate-answer-reveal text-center w-full text-[clamp(1.725rem,5vw,2.525rem)] leading-[1.45]"
                 style={answerStyle}
               >
                 {correctAnswer}
