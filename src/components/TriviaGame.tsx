@@ -267,6 +267,7 @@ export default function TriviaGame() {
         background: bgGradient || "hsl(var(--game-bg))",
         transition: "background 0.6s ease",
         minHeight: "var(--app-vh, 100svh)",
+        maxHeight: "var(--app-vh, 100svh)",
       }}
     >
 
