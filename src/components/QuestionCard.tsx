@@ -17,29 +17,25 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl pt-[178px] pb-[178px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)]"
+      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl min-h-0 overflow-hidden pt-[clamp(1rem,3vh,1.5rem)] pb-[178px] px-[clamp(1.75rem,6vw,5rem)] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
         boxShadow: "0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25)",
-        paddingLeft: "clamp(0.875rem, 3vw, 2.5rem)",
-        paddingRight: "clamp(0.875rem, 3vw, 2.5rem)",
         gap: 0,
       }}
     >
 
       {/* Question text — smooth shrink via CSS scale transform instead of font-size */}
       <p
-        className="leading-relaxed font-body font-semibold text-center w-full"
+        className="leading-relaxed font-body font-semibold text-center w-full text-[clamp(1.25rem,3.6vw,2.4rem)] md:text-[clamp(1.6rem,4.5vw,2.4rem)] leading-[1.4] md:leading-[1.5]"
         style={{
           textWrap: "balance",
           color: answered ? "hsl(0 0% 60%)" : "hsl(0 0% 97%)",
-          fontSize: "clamp(1.6rem, 4.5vw, 2.4rem)",
           transition: "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease",
           transform: answered ? "scale(0.65)" : "scale(1)",
           transformOrigin: "center center",
           opacity: answered ? 0.7 : 1,
-          lineHeight: 1.5,
           marginBottom: 0,
         }}
       >
@@ -51,21 +47,18 @@ export default function QuestionCard({
         <>
           {/* Divider between question and answer */}
           <div
-            className="w-2/3 mx-auto animate-answer-reveal"
+            className="w-2/3 mx-auto animate-answer-reveal my-[clamp(0.5rem,1.5vw,1rem)] md:my-[clamp(1rem,2.5vw,1.5rem)]"
             style={{
               height: "1px",
               background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
-              margin: "clamp(1rem, 2.5vw, 1.5rem) auto",
             }}
           />
 
           <p
-            className="leading-relaxed font-body font-semibold animate-answer-reveal text-center w-full"
+            className="leading-relaxed font-body font-semibold animate-answer-reveal text-center w-full text-[clamp(1.25rem,3.6vw,2.4rem)] md:text-[clamp(1.6rem,4.5vw,2.4rem)] leading-[1.4] md:leading-[1.45]"
             style={{
               textWrap: "balance",
               color: "hsl(0 0% 97%)",
-              fontSize: "clamp(1.6rem, 4.5vw, 2.4rem)",
-              lineHeight: 1.45,
             }}
           >
             {correctAnswer}
