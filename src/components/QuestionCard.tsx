@@ -17,7 +17,7 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl pt-[calc(clamp(0.75rem,2.5vw,2.5rem)+40px)] pb-[calc(clamp(0.75rem,2.5vw,2.5rem)+181px)] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)]"
+      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl pt-[178px] pb-[178px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)]"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
