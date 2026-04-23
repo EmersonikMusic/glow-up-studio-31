@@ -1,41 +1,50 @@
 
 
-## Two small fixes
+## Refinements
 
-### 1. Keyboard "Next" (→ / N) only fires once
-**File:** `src/components/TriviaGame.tsx`
+### 1. Remove "Next" keyboard functionality
+**`src/components/TriviaGame.tsx`** — Delete the `ArrowRight` / `KeyN` block from the desktop keyboard shortcuts effect (lines 240-245). The `handleNext` callback and the answer-expiry auto-advance remain (clicking Next button and timed reveal still work).
 
-Root cause: `advanceOrFinish` (line 184) closes over `isLast` and `settings.timePerQuestion`. While the `advanceOrFinishRef` is updated via effect, the timing of the ref update vs. when the keydown handler reads it can drift after the first advance, causing subsequent presses to invoke a stale closure that no-ops or behaves unexpectedly.
+**`src/components/KeyboardShortcutsHelp.tsx`** — Remove the `["→ or N", "Next question"]` entry from the shortcuts list.
 
-Fix: stabilize `advanceOrFinish` so its identity never changes — read `isLast` (via `questionIndex` + `activeQuestions.length`) and `settings.timePerQuestion` from refs instead of closure.
-
-Changes:
-- Add `questionIndexRef`, `activeQuestionsLenRef`, `timePerQuestionRef` updated in small `useEffect`s mirroring the existing `gameStateRef` pattern.
-- Rewrite `advanceOrFinish` with `useCallback(..., [])` so it has a stable identity, reading `isLast` from `questionIndexRef.current === activeQuestionsLenRef.current - 1` and using `timePerQuestionRef.current` when calling `startCountdown`.
-- Drop the now-unnecessary `advanceOrFinishRef` indirection in the keyboard handler — call `advanceOrFinish` directly. Update the answer-expiry effect (line 199) and `handleNext` to call the same stable function.
-
-This guarantees `→` / `N` works on every "answered" state until the final question.
-
-### 2. Add "contact us" line to end screen
-**File:** `src/components/ResultScreen.tsx`
-
-Below the "Change Settings" button, inside the same flex column wrapper (so it inherits centering), add:
-
-```tsx
-<a
-  href="mailto:mark.mazurek@triviolivia.com"
-  className="mt-3 text-xs sm:text-sm font-body text-white/70 hover:text-white transition-colors underline-offset-4 hover:underline"
->
-  Contact us at mark.mazurek@triviolivia.com
-</a>
+### 2. Hide shortcuts pill on tablet
+**`src/components/KeyboardShortcutsHelp.tsx`** — Replace `useIsMobile()` (which only triggers below 768px) with a true desktop check matching the keyboard handler gate:
+```ts
+const isTouchOrSmall =
+  window.matchMedia("(pointer: coarse)").matches ||
+  window.innerWidth < 1024;
+if (isTouchOrSmall) return null;
 ```
+Wrap in a small `useState` + `useEffect` so it re-evaluates on resize/orientation change. This hides the icon on phones AND tablets (iPads register as `pointer: coarse`); only true desktops with mouse + ≥1024px width see it.
 
-- Renders as a plain text link (no button styling) so it doesn't compete visually with the two CTAs above.
-- White/70 color with hover-to-white + underline transition matches the existing minimalist aesthetic.
-- `mailto:` opens the user's default email client with the address pre-filled.
-- Wrapped in the existing `flex flex-col items-center gap-3 w-full` container so it sits centered directly below "Change Settings".
+### 3. Revise pause overlay
+**`src/components/PauseOverlay.tsx`**:
+- Remove `backdropFilter` / `WebkitBackdropFilter` properties (no glass blur).
+- Keep dimming: `background: rgba(0, 0, 0, 0.45)` stays.
+- Replace the centered flex layout with a `flex flex-col justify-between` so:
+  - "Paused" text sits 28px from the **top** of the card area (`paddingTop: 28px`).
+  - Hint line sits 28px from the **bottom** of the card area (`paddingBottom: 28px`).
+- Update hint text to: `PRESS SPACE OR START BUTTON TO RESUME` (uppercase already applied via existing class).
+- Remove the responsive `hidden sm:inline` wrapper around "space or" — show the full string on all sizes.
+
+### 4. Remove mascot tilt on pause
+**`src/components/MascotSvg.tsx`** — Change the `paused` entry in `stateClass` from `"animate-mascot-droop"` to `""` (empty). The mascot remains static (no animation) when paused, but no tilt/droop is applied.
+
+The `paused` state value itself stays in the type for future use; only the visual animation is dropped. Optionally also delete the `animate-mascot-droop` keyframe from `src/index.css` (harmless if left in).
+
+### 5. Calmer countdown sound
+**`src/lib/sound.ts`** — Soften the `tick` case in the `play` switch:
+- Reduce frequency from `880 Hz` to `520 Hz` (warmer, less piercing).
+- Reduce duration from `0.08s` to `0.12s` (gentler decay tail).
+- Reduce peak from `0.5` to `0.32` (quieter overall).
+- Keep `triangle` waveform (smoother harmonics than sine for this pitch).
+
+Result: a soft, low woodblock-style "tock" instead of the current sharp ping.
 
 ### Files to edit
-- `src/components/TriviaGame.tsx` — stabilize `advanceOrFinish` via refs.
-- `src/components/ResultScreen.tsx` — add mailto link below Change Settings CTA.
+- `src/components/TriviaGame.tsx` — drop Next keyboard handler.
+- `src/components/KeyboardShortcutsHelp.tsx` — drop Next entry; gate to true desktop (≥1024px + fine pointer).
+- `src/components/PauseOverlay.tsx` — remove blur, reposition text, update hint copy.
+- `src/components/MascotSvg.tsx` — remove paused animation class.
+- `src/lib/sound.ts` — soften tick tone.
 
