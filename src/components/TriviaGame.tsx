@@ -19,6 +19,7 @@ import LoginScreen from "./LoginScreen";
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
+import { matchesMedia } from "@/lib/browserCompat";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
 function gradientFlashColor(gradient?: string): string | undefined {
@@ -92,7 +93,7 @@ export default function TriviaGame() {
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(() => !window.matchMedia("(max-width: 767px)").matches);
+  const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
   const [showLogin, setShowLogin] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
@@ -228,9 +229,7 @@ export default function TriviaGame() {
   // Desktop power-user shortcuts: → / N (next), S (settings), M (mute).
   // Gated to true desktop — touch devices and tablets are excluded.
   useEffect(() => {
-    const isTouchOrSmall =
-      window.matchMedia("(pointer: coarse)").matches ||
-      window.innerWidth < 1024;
+    const isTouchOrSmall = matchesMedia("(pointer: coarse)") || window.innerWidth < 1024;
     if (isTouchOrSmall) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -386,7 +385,7 @@ export default function TriviaGame() {
     setActiveQuestions([]);
     setCountdown(settings.timePerQuestion);
     setGameState("start");
-    setPanelOpen(!window.matchMedia("(max-width: 767px)").matches);
+    setPanelOpen(!matchesMedia("(max-width: 767px)", false));
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
 
