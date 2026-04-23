@@ -240,7 +240,7 @@ export default function TriviaGame() {
       // Next: arrow right or N (only when an answer is being shown).
       if ((e.code === "ArrowRight" || e.code === "KeyN") && gameStateRef.current === "answered") {
         e.preventDefault();
-        advanceOrFinishRef.current?.();
+        advanceOrFinish();
         return;
       }
       // Toggle settings panel.
