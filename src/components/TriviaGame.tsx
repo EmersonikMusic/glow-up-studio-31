@@ -88,7 +88,7 @@ export default function TriviaGame() {
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [gameState, setGameState] = useState<GameState>("start");
+  const [gameState, setGameState] = useState<GameState>("finished");
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
