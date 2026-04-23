@@ -103,12 +103,14 @@ export default function TriviaGame() {
   const [mascotState, setMascotState] = useState<MascotState>("idle");
   const lastCategoryRef = useRef<string | null>(null);
   const milestonesFiredRef = useRef<Set<number>>(new Set());
-  const advanceOrFinishRef = useRef<(() => void) | null>(null);
 
   // Refs are read inside intervals — using refs avoids re-creating intervals on
   // every state change while still observing the latest pause / game state.
   const pausedRef = useRef(false);
   const gameStateRef = useRef<GameState>("start");
+  const questionIndexRef = useRef(0);
+  const activeQuestionsLenRef = useRef(0);
+  const timePerQuestionRef = useRef(DEFAULT_SETTINGS.timePerQuestion);
 
   const {
     value: countdown,
@@ -128,6 +130,9 @@ export default function TriviaGame() {
 
   useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
+  useEffect(() => { questionIndexRef.current = questionIndex; }, [questionIndex]);
+  useEffect(() => { activeQuestionsLenRef.current = activeQuestions.length; }, [activeQuestions.length]);
+  useEffect(() => { timePerQuestionRef.current = settings.timePerQuestion; }, [settings.timePerQuestion]);
 
   // Keep --app-vh in sync with the visual viewport so iOS Safari address-bar
   // collapses don't briefly hide the footer or overlap the card.
@@ -181,19 +186,20 @@ export default function TriviaGame() {
   }, [gameState]);
 
   // Advance to the next question or finish when answer reveal expires.
+  // Stable identity (no deps) — reads latest values from refs so keyboard
+  // shortcuts always see the current question index without stale closures.
   const advanceOrFinish = useCallback(() => {
     clearAnswerTimer();
-    if (isLast) {
+    const isLastNow = questionIndexRef.current === activeQuestionsLenRef.current - 1;
+    if (isLastNow) {
       setGameState("finished");
       return;
     }
     setQuestionIndex((prev) => prev + 1);
     setGameState("playing");
     setAnimKey((k) => k + 1);
-    startCountdown(settings.timePerQuestion);
-  }, [clearAnswerTimer, isLast, startCountdown, settings.timePerQuestion]);
-
-  useEffect(() => { advanceOrFinishRef.current = advanceOrFinish; }, [advanceOrFinish]);
+    startCountdown(timePerQuestionRef.current);
+  }, [clearAnswerTimer, startCountdown]);
 
   useEffect(() => {
     if (answerCountdown === 0 && gameState === "answered") advanceOrFinish();
@@ -234,7 +240,7 @@ export default function TriviaGame() {
       // Next: arrow right or N (only when an answer is being shown).
       if ((e.code === "ArrowRight" || e.code === "KeyN") && gameStateRef.current === "answered") {
         e.preventDefault();
-        advanceOrFinishRef.current?.();
+        advanceOrFinish();
         return;
       }
       // Toggle settings panel.

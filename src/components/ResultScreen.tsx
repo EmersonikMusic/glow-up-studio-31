@@ -92,6 +92,12 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
                 Change Settings
               </button>
             )}
+            <a
+              href="mailto:mark.mazurek@triviolivia.com"
+              className="mt-3 text-xs sm:text-sm font-body text-white/70 hover:text-white transition-colors underline-offset-4 hover:underline text-center"
+            >
+              Contact us at mark.mazurek@triviolivia.com
+            </a>
           </div>
         </div>
       </div>
