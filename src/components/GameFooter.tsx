@@ -40,6 +40,17 @@ export default function GameFooter({
 }: GameFooterProps) {
 
   const isAnswerPhase = answerCountdown !== null;
+  const displayCountdown = isAnswerPhase ? (answerCountdown ?? 0) : countdown;
+  // Last-5s urgency only applies during the QUESTION phase.
+  const isUrgent = !isAnswerPhase && countdown > 0 && countdown <= 5;
+
+  // Color shifts across the final countdown: teal (5–4) → gold (3–2) → red (1).
+  let timerColor = "hsl(185 70% 55%)";
+  if (isUrgent) {
+    if (countdown <= 1) timerColor = "hsl(0 80% 60%)";
+    else if (countdown <= 3) timerColor = "hsl(42 100% 55%)";
+    else timerColor = "hsl(185 70% 55%)";
+  }
 
   return (
     <footer
@@ -65,6 +76,14 @@ export default function GameFooter({
             }}
           />
 
+          {/* Urgency shimmer overlay — only in last 5s of question phase */}
+          {isUrgent && (
+            <div
+              className="absolute inset-0 rounded-full pointer-events-none shimmer-overlay"
+              aria-hidden="true"
+            />
+          )}
+
           {/* Content — all relative z-10 to sit above the bar */}
           <span className="relative z-10 text-white tabular-nums whitespace-nowrap uppercase">
             {questionIndex + 1}/{totalQuestions}
@@ -81,10 +100,10 @@ export default function GameFooter({
           {/* Timer — absolute right */}
           <span className="absolute right-3 z-10 flex-shrink-0">
             <span
-              className="tabular-nums font-subheading font-bold uppercase"
-              style={{ color: "hsl(185 70% 55%)" }}
+              className={`tabular-nums font-subheading font-bold uppercase inline-block ${isUrgent ? "animate-pulse-urgent" : ""}`}
+              style={{ color: timerColor, transition: "color 0.3s ease" }}
             >
-              {isAnswerPhase ? (answerCountdown ?? 0) : countdown}<span className="normal-case">s</span>
+              {displayCountdown}<span className="normal-case">s</span>
             </span>
           </span>
         </div>
