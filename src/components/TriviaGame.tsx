@@ -50,6 +50,7 @@ export default function TriviaGame() {
   const [mascotState, setMascotState] = useState<MascotState>("idle");
   const lastCategoryRef = useRef<string | null>(null);
   const milestonesFiredRef = useRef<Set<number>>(new Set());
+  const advanceOrFinishRef = useRef<(() => void) | null>(null);
 
   // Refs are read inside intervals — using refs avoids re-creating intervals on
   // every state change while still observing the latest pause / game state.
@@ -138,6 +139,8 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
     startCountdown(settings.timePerQuestion);
   }, [clearAnswerTimer, isLast, startCountdown, settings.timePerQuestion]);
+
+  useEffect(() => { advanceOrFinishRef.current = advanceOrFinish; }, [advanceOrFinish]);
 
   useEffect(() => {
     if (answerCountdown === 0 && gameState === "answered") advanceOrFinish();
@@ -405,7 +408,7 @@ export default function TriviaGame() {
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
-        <ResultScreen onRestart={handleRestart} />
+        <ResultScreen onRestart={handleRestart} onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }} />
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
@@ -419,7 +422,15 @@ export default function TriviaGame() {
                   ? currentQuestion.answers.find((a) => a.id === currentQuestion.correctId)?.text
                   : undefined
               }
+              flashColor={gradientFlashColor(bgGradient)}
             />
+
+            {/* Pause overlay (sits over question card area) */}
+            <div className="absolute inset-0 pointer-events-none z-30">
+              <div className="relative w-full h-full">
+                <PauseOverlay visible={paused && (gameState === "playing" || gameState === "answered")} />
+              </div>
+            </div>
 
             {/* Mobile mascot — anchored inside the card area, 12px from inner edges */}
             <div
