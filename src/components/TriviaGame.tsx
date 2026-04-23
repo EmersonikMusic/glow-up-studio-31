@@ -43,6 +43,14 @@ export default function TriviaGame() {
   const [showLogin, setShowLogin] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
+  // Polish state.
+  const { play } = useSound();
+  const [sparkleKey, setSparkleKey] = useState(0);
+  const [milestoneKey, setMilestoneKey] = useState(0);
+  const [mascotState, setMascotState] = useState<MascotState>("idle");
+  const lastCategoryRef = useRef<string | null>(null);
+  const milestonesFiredRef = useRef<Set<number>>(new Set());
+
   // Refs are read inside intervals — using refs avoids re-creating intervals on
   // every state change while still observing the latest pause / game state.
   const pausedRef = useRef(false);
