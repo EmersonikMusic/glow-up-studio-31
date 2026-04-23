@@ -7,6 +7,8 @@
  * gentle, on-brand (gameshow-meets-educational), and never abrasive.
  */
 
+import { safeStorageGet, safeStorageSet } from "@/lib/browserCompat";
+
 export type SoundName = "tick" | "reveal" | "transition" | "start" | "complete";
 
 const STORAGE_KEY = "to.sound.muted";
@@ -17,7 +19,7 @@ let muted = true; // default OFF until user opts in
 
 // Read persisted mute state on first import (browser only).
 if (typeof window !== "undefined") {
-  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const stored = safeStorageGet(STORAGE_KEY);
   // If never set, default to muted (true). User must opt in.
   muted = stored === null ? true : stored === "1";
 }
@@ -125,7 +127,7 @@ const MUTE_EVENT = "to:sound-muted-changed";
 export function setMuted(next: boolean) {
   muted = next;
   if (typeof window !== "undefined") {
-    window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
+    safeStorageSet(STORAGE_KEY, next ? "1" : "0");
     // Notify React subscribers (header toggle, etc.) so the UI stays in sync
     // regardless of where the change was triggered (click, keyboard shortcut).
     window.dispatchEvent(new CustomEvent(MUTE_EVENT));
