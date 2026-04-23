@@ -20,7 +20,7 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
 
   return (
     <div
-      className="relative flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up"
+      className="relative flex flex-col items-center justify-center flex-1 min-h-0 overflow-hidden px-4 sm:px-6 py-4 sm:py-8 animate-slide-in-up"
       style={{ background: "hsl(var(--game-bg))" }}
     >
       <ConfettiBurst count={14} />
@@ -34,11 +34,11 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
         }}
       >
 
-        <div className="px-8 py-10 flex flex-col items-center gap-8">
+        <div className="px-8 py-6 sm:py-10 flex flex-col items-center gap-5 sm:gap-8">
           {/* Character + glow - larger for balance */}
           <div className="relative flex items-center justify-center">
             <div
-              className="absolute w-40 h-40 rounded-full"
+              className="absolute w-32 h-32 sm:w-40 sm:h-40 rounded-full"
               style={{
                 background: "radial-gradient(circle, hsl(42 100% 55% / 0.35) 0%, transparent 70%)",
                 filter: "blur(20px)",
@@ -47,14 +47,14 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
             <img
               src={mascotImg}
               alt="Olivia"
-              className="relative z-10 w-32 h-32 object-contain drop-shadow-2xl animate-float"
+              className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl animate-float"
             />
           </div>
 
           {/* Main heading */}
           <div className="text-center space-y-3">
             <div
-              className="text-4xl sm:text-5xl font-heading font-extrabold animate-bounce-in"
+              className="text-3xl sm:text-5xl font-heading font-extrabold animate-bounce-in"
               style={{ color: "hsl(42 100% 55%)" }}
             >
               Trivia Complete!
