@@ -48,7 +48,7 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
               Trivia Complete!
             </div>
             <p className="text-muted-foreground text-base max-w-xs mx-auto leading-relaxed font-body font-semibold">
-              Great job exploring the world of trivia! Ready for another round?
+              Ready for another round?
             </p>
           </div>
 
