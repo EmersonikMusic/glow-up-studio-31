@@ -456,12 +456,16 @@ export default function TriviaGame() {
                   background: "rgb(125, 223, 232)",
                 }}
               />
+              {/* Sparkle burst on category change */}
+              <SparkleBurst key={`sparkle-m-${sparkleKey}`} sparkleKey={sparkleKey} />
+              {/* Milestone particle */}
+              <MilestoneParticle key={`mile-m-${milestoneKey}`} milestoneKey={milestoneKey} />
               <MascotSvg
                 category={currentQuestion.category}
+                state={mascotState}
                 className="relative z-10 h-full w-full drop-shadow-xl"
               />
             </div>
-          </div>
 
           {/* Right column — mascot, hidden on mobile, 30% on desktop */}
           <div
