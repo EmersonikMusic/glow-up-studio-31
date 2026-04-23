@@ -69,10 +69,10 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
 
 
           {/* CTAs — equal width */}
-          <div className="flex flex-col items-center gap-3 w-full">
+          <div className="flex flex-col items-stretch gap-3 w-full max-w-[280px] mx-auto">
             <PrimaryCTA
               onClick={onRestart}
-              className="group min-w-[240px]"
+              className="group w-full"
               aria-label="Play Again"
             >
               <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
@@ -82,7 +82,7 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
               <button
                 onClick={onChangeSettings}
                 aria-label="Change Settings"
-                className="nav-btn min-w-[240px] rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
+                className="nav-btn w-full rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                 style={{
                   background: "rgba(255, 255, 255, 0.08)",
                   border: "1px solid rgba(255, 255, 255, 0.15)",
