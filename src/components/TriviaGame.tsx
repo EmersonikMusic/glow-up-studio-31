@@ -435,12 +435,12 @@ export default function TriviaGame() {
 
   return (
     <div
-      className="min-h-[100svh] overscroll-none grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
+      className="min-h-screen overscroll-none grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
       style={{
         background: bgGradient || "hsl(var(--game-bg))",
         transition: "background 0.6s ease",
-        minHeight: "var(--app-vh, 100svh)",
-        maxHeight: "var(--app-vh, 100svh)",
+        minHeight: "var(--app-vh, 100vh)",
+        maxHeight: "var(--app-vh, 100vh)",
       }}
     >
 
