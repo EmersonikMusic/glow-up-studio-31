@@ -1,38 +1,36 @@
 
 
-## Mobile Mascot: Account for Float Animation + Slight Size Bump
+## Equalize Mobile Card Padding (Mobile Only)
 
-### Problem
-The mobile mascot uses `animation: float 3s ease-in-out infinite`, which translates it vertically. At the animation's lowest point, the mascot dips below its anchored `bottom: 12px` position, breaking the "≥12px inside the card" rule. Also, the mascot should be slightly larger.
+### Goal
+Vertically anchor the longest question + answer block exactly between the card's top inner edge and the highest point of the mascot's head (including float animation), on **mobile only**. Desktop and tablet (≥768px) layouts remain byte-identical.
 
-### Investigation Needed
-The `float` keyframe isn't visible in the supplied context. I'll inspect `src/index.css` and `tailwind.config.ts` to find its definition and measure the downward translate so the new `bottom` offset compensates exactly. Assumption for now: `float` translates `±6px` to `±10px` on the Y axis (typical for this pattern). I'll confirm before writing the fix; if the float keyframe translates by `Npx` downward, mascot's `bottom` becomes `12px + Npx`.
+### Math (mobile)
+- Mobile mascot: `clamp(140px, 36vw, 195px)` → 140px at 390px viewport.
+- Anchored at `bottom: 28px`. Float animation translates `0 → -10px → 0`.
+- Mascot's top edge at highest float frame = `28 + 140 + 10` = **178px** above card's bottom inner edge.
+- Equal top + bottom padding of **178px** centres the text band between card top and mascot peak.
 
-### Changes (mobile only)
+### Changes
 
-**`src/components/TriviaGame.tsx` — mobile mascot wrapper (the `md:hidden absolute …` div)**
-- Increase size from `clamp(120px, 32vw, 170px)` to `clamp(140px, 36vw, 195px)` (~15% larger, still fits the card with the new bottom padding).
-- Update `bottom` from `12px` to `12px + downwardTranslateOfFloat` so the mascot's lowest animation frame sits exactly 12px above the card's bottom inner edge.
-  - If float dips 8px down → `bottom: 20px`
-  - If float dips 10px down → `bottom: 22px`
-  - Exact value finalized after reading the keyframe.
-- Keep `right: 12px`, `pointer-events-none`, `z-20`, and `flex items-end justify-end` unchanged.
-- Desktop mascot (the `hidden md:flex` block) is untouched.
+**`src/components/QuestionCard.tsx` — symmetric mobile-only paddings**
+- Replace asymmetric mobile padding utilities with symmetric pair, keeping desktop `md:` overrides intact:
+  - Old: `pt-[calc(clamp(0.75rem,2.5vw,2.5rem)+40px)] pb-[calc(clamp(0.75rem,2.5vw,2.5rem)+181px)] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)]`
+  - New: `pt-[178px] pb-[178px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)]`
+- Tailwind's `md:` prefix activates at ≥768px, so the `178px` values apply only at mobile widths. Tablet (768px+) and desktop are unaffected.
+- `justify-start md:justify-center` flex alignment unchanged.
 
-**`src/components/QuestionCard.tsx` — bump mobile bottom padding to match larger mascot**
-- The mobile bottom padding currently reserves `clamp(0.75rem,2.5vw,2.5rem) + 140px` for the 170px-tall mascot at `bottom: 12px`.
-- Increase to `+165px` to keep ≥8px clearance between answer-reveal text and the larger mascot's top edge at its highest float frame.
-- New class: `pb-[calc(clamp(0.75rem,2.5vw,2.5rem)+165px)]`. Desktop `md:pb-[clamp(0.75rem,2.5vw,2.5rem)]` unchanged.
-- `paddingTop` rules unchanged.
+**No changes** to `TriviaGame.tsx`. Mascot size, `bottom: 28px`, `right: 12px`, and float animation must remain as-is — the 178px figure is derived directly from those values.
 
 ### Verification (after switch to default mode)
-At 471×702 with the longest question + revealed answer:
-- Mascot's lowest float frame sits exactly 12px above card bottom inner edge.
-- Mascot's highest float frame leaves ≥8px gap below answer-reveal text.
-- Mascot is ~15% larger visually.
-- Desktop layout (≥768px) is byte-identical to current.
+At 390×799 with the longest sample (fascism question + hockey teams answer):
+- Question top sits exactly 178px below card's top inner edge.
+- Answer bottom sits exactly 178px above card's bottom inner edge — flush with mascot's highest float frame, zero overlap.
+- Equal whitespace above question and below answer (visual symmetry).
+- At 768px+ (tablet/desktop), padding falls back to `clamp(0.75rem, 2.5vw, 2.5rem)` — identical to current.
+
+If the longest sample overflows the available band (text height > card_height − 356px) at 390px, a follow-up will lower the `clamp(1.6rem, 4.5vw, 2.4rem)` font-size ceiling.
 
 ### Files Edited
-- `src/components/TriviaGame.tsx`
 - `src/components/QuestionCard.tsx`
 
