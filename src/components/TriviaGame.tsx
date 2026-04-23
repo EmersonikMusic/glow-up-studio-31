@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
@@ -26,6 +26,59 @@ function gradientFlashColor(gradient?: string): string | undefined {
   const m = gradient.match(/rgba?\([^)]+\)/);
   if (!m) return undefined;
   return m[0].replace(/,\s*[\d.]+\)/, ", 0.55)");
+}
+
+/** 3-dot sparkle burst (mascot category-change flair). Re-mounts via key. */
+function SparkleBurst({ sparkleKey }: { sparkleKey: number }) {
+  if (sparkleKey === 0) return null;
+  const dots = [
+    { x: -34, y: -28 },
+    { x: 34, y: -34 },
+    { x: 0, y: -42 },
+  ];
+  return (
+    <div className="absolute inset-0 pointer-events-none z-20" aria-hidden="true">
+      {dots.map((d, i) => (
+        <span
+          key={i}
+          className="sparkle-dot absolute rounded-full"
+          style={
+            {
+              top: "50%",
+              left: "50%",
+              width: 8,
+              height: 8,
+              background: "hsl(42 100% 70%)",
+              boxShadow: "0 0 8px hsl(42 100% 70% / 0.8)",
+              animationDelay: `${i * 60}ms`,
+              "--sx": `${d.x}px`,
+              "--sy": `${d.y}px`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Single golden particle drifting up — fired at 25/50/75% milestones. */
+function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
+  if (milestoneKey === 0) return null;
+  return (
+    <span
+      className="milestone-particle absolute rounded-full pointer-events-none z-20"
+      aria-hidden="true"
+      style={{
+        bottom: "10%",
+        left: "50%",
+        width: 10,
+        height: 10,
+        background: "hsl(42 100% 60%)",
+        boxShadow: "0 0 12px hsl(42 100% 60% / 0.9)",
+        transform: "translateX(-50%)",
+      }}
+    />
+  );
 }
 
 type GameState = "start" | "about" | "playing" | "answered" | "finished";
