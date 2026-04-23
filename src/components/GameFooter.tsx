@@ -76,13 +76,7 @@ export default function GameFooter({
             }}
           />
 
-          {/* Urgency shimmer overlay — only in last 5s of question phase */}
-          {isUrgent && (
-            <div
-              className="absolute inset-0 rounded-full pointer-events-none shimmer-overlay"
-              aria-hidden="true"
-            />
-          )}
+          {/* Urgency shimmer removed — too distracting during countdown. */}
 
           {/* Content — all relative z-10 to sit above the bar */}
           <span className="relative z-10 text-white tabular-nums whitespace-nowrap uppercase">
