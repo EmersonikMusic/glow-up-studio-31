@@ -119,7 +119,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
 
           {/* Start button — logo-aligned CTA */}
           <PrimaryCTA
-            onClick={onStart}
+            onClick={handleStart}
             disabled={loading}
             className="mt-8 animate-fade-in"
             style={{ animationDelay: "180ms" }}
