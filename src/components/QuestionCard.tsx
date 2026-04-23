@@ -20,7 +20,7 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className="w-full rounded-2xl flex flex-col justify-center items-center animate-slide-in-up h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]"
+      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
@@ -29,7 +29,7 @@ export default function QuestionCard({
       }}
     >
       {/* Inner text wrapper — pushes content above the mascot's animated peak on mobile */}
-      <div className="w-full flex flex-col items-center mb-[150px] md:mb-0">
+      <div className="w-full flex flex-col items-center mt-[12px] mb-[165px] md:mt-0 md:mb-0">
         {/* Question text */}
         <p
           className="font-body font-semibold text-center w-full text-[clamp(1.25rem,3.6vw,2.4rem)] md:text-[clamp(1.6rem,4.5vw,2.4rem)] leading-[1.4] md:leading-[1.5]"
