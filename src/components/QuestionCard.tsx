@@ -1,24 +1,39 @@
 import { Question } from "@/data/questions";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 interface QuestionCardProps {
   question: Question;
   animKey: number;
   answered: boolean;
   correctAnswer?: string;
+  flashColor?: string;
 }
 
 const FONT_SCALE_FLOOR = 0.7;
 const FONT_SCALE_STEP = 0.05;
+
+// Pool of entrance animation classes for variety across questions.
+const ENTRANCE_CLASSES = [
+  "animate-slide-in-up",
+  "animate-soft-zoom-in",
+  "animate-fade-blur-in",
+];
 
 export default function QuestionCard({
   question,
   animKey,
   answered,
   correctAnswer,
+  flashColor,
 }: QuestionCardProps) {
   const isMobile = useIsMobile();
+
+  // Stable random entrance per question (keyed by animKey).
+  const entranceClass = useMemo(
+    () => ENTRANCE_CLASSES[animKey % ENTRANCE_CLASSES.length],
+    [animKey]
+  );
 
   const questionRef = useRef<HTMLParagraphElement | null>(null);
   const answerRef = useRef<HTMLParagraphElement | null>(null);
@@ -104,13 +119,14 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className="w-full rounded-2xl flex flex-col justify-start md:justify-center items-center animate-slide-in-up h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]"
+      className={`w-full rounded-2xl flex flex-col justify-start md:justify-center items-center ${entranceClass} ${flashColor ? "animate-border-flash" : ""} h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]`}
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
         boxShadow:
           "0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25)",
         gap: 0,
+        ...(flashColor ? ({ ["--flash-color" as any]: flashColor } as React.CSSProperties) : {}),
       }}
     >
       {isMobile ? (
@@ -130,17 +146,26 @@ export default function QuestionCard({
             </p>
           </div>
 
-          {/* Divider — anchored Y, fades in when answered */}
+          {/* Divider — anchored Y, sweeps in left→right when answered */}
           <div
-            className="w-2/3 my-[clamp(0.5rem,1.5vw,1rem)] flex-shrink-0"
+            className="w-2/3 my-[clamp(0.5rem,1.5vw,1rem)] flex-shrink-0 overflow-hidden"
             style={{
               height: "1px",
-              background:
-                "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
               opacity: answered ? 1 : 0,
-              transition: "opacity 0.5s ease",
+              transition: "opacity 0.3s ease",
             }}
-          />
+          >
+            {answered && (
+              <div
+                key={`divider-${animKey}`}
+                className="w-full h-full animate-divider-sweep"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                }}
+              />
+            )}
+          </div>
 
           {/* Answer zone — top-aligned to divider, grows downward */}
           <div
@@ -150,7 +175,7 @@ export default function QuestionCard({
             {answered && correctAnswer && (
               <p
                 ref={answerRef}
-                className="font-body font-semibold animate-answer-reveal text-center w-full leading-[1.4]"
+                className="font-body font-semibold animate-spring-rise text-center w-full leading-[1.4]"
                 style={answerStyle}
               >
                 {correctAnswer}
@@ -187,16 +212,18 @@ export default function QuestionCard({
 
           {answered && correctAnswer && (
             <>
-              <div
-                className="w-2/3 mx-auto animate-answer-reveal my-[clamp(1rem,2.5vw,1.5rem)]"
-                style={{
-                  height: "1px",
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
-                }}
-              />
+              <div className="w-2/3 mx-auto my-[clamp(1rem,2.5vw,1.5rem)] overflow-hidden" style={{ height: "1px" }}>
+                <div
+                  key={`divider-d-${animKey}`}
+                  className="w-full h-full animate-divider-sweep"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                  }}
+                />
+              </div>
               <p
-                className="leading-relaxed font-body font-semibold animate-answer-reveal text-center w-full text-[clamp(1.725rem,5vw,2.525rem)] leading-[1.45]"
+                className="leading-relaxed font-body font-semibold animate-spring-rise text-center w-full text-[clamp(1.725rem,5vw,2.525rem)] leading-[1.45]"
                 style={answerStyle}
               >
                 {correctAnswer}

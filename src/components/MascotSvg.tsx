@@ -3,24 +3,27 @@ import type { Category } from "@/data/questions";
 import { getMascotMarkupForCategory } from "@/data/categoryMascots";
 import { recordMascotSwap } from "@/lib/mascotDebug";
 
+export type MascotState = "idle" | "celebrate" | "urgent" | "paused";
+
 interface MascotSvgProps {
   category: Category;
   className?: string;
   ariaLabel?: string;
+  state?: MascotState;
 }
 
+const stateClass: Record<MascotState, string> = {
+  idle: "",
+  celebrate: "animate-mascot-bounce",
+  urgent: "animate-mascot-wobble",
+  paused: "animate-mascot-droop",
+};
+
 /**
- * Renders the category's mascot as inline SVG.
- *
- * - Strips fixed width/height on the root <svg> so CSS controls sizing.
- * - Forces preserveAspectRatio="xMidYMax meet" so the mascot's body is
- *   always bottom-aligned within the container — guarantees the turquoise
- *   circle hugs the lower body identically across all 25 SVGs.
- *
- * Inline rendering avoids the <img> fetch/decode lifecycle, so the swap
- * commits in the same paint frame as text/background updates.
+ * Renders the category's mascot as inline SVG with reactive state-driven
+ * micro-animations (celebrate / urgent / paused).
  */
-export default function MascotSvg({ category, className, ariaLabel }: MascotSvgProps) {
+export default function MascotSvg({ category, className, ariaLabel, state = "idle" }: MascotSvgProps) {
   const markup = useMemo(() => {
     const raw = getMascotMarkupForCategory(category);
     return raw
@@ -38,10 +41,11 @@ export default function MascotSvg({ category, className, ariaLabel }: MascotSvgP
 
   return (
     <div
-      className={className}
+      className={`${className ?? ""} ${stateClass[state]}`}
       role="img"
       aria-label={ariaLabel ?? "TrivOlivia mascot"}
       dangerouslySetInnerHTML={{ __html: markup }}
+      style={{ transformOrigin: "bottom center" }}
     />
   );
 }

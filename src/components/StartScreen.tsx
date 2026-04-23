@@ -5,6 +5,7 @@ import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
 import PrimaryCTA from "./PrimaryCTA";
+import { useSound } from "@/hooks/useSound";
 
 interface StartScreenProps {
   onStart: () => void;
@@ -20,6 +21,12 @@ interface StartScreenProps {
 
 export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
   const isMobile = useIsMobile();
+  const { play } = useSound();
+
+  const handleStart = () => {
+    play("start");
+    onStart();
+  };
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
@@ -112,7 +119,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
 
           {/* Start button — logo-aligned CTA */}
           <PrimaryCTA
-            onClick={onStart}
+            onClick={handleStart}
             disabled={loading}
             className="mt-8 animate-fade-in"
             style={{ animationDelay: "180ms" }}

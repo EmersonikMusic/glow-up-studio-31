@@ -1,20 +1,35 @@
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Settings as SettingsIcon } from "lucide-react";
+import { useEffect } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
+import SecondaryCTA from "./SecondaryCTA";
+import ConfettiBurst from "./ConfettiBurst";
+import { useSound } from "@/hooks/useSound";
+import { vibrate } from "@/lib/haptics";
 
 interface ResultScreenProps {
   onRestart: () => void;
+  onChangeSettings?: () => void;
 }
 
-export default function ResultScreen({ onRestart }: ResultScreenProps) {
+export default function ResultScreen({ onRestart, onChangeSettings }: ResultScreenProps) {
+  const { play } = useSound();
+
+  // Fanfare + double-pulse haptic on mount.
+  useEffect(() => {
+    play("complete");
+    vibrate([50, 60, 50]);
+  }, [play]);
+
   return (
     <div
-      className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up"
+      className="relative flex flex-col items-center justify-center flex-1 px-4 sm:px-6 py-8 animate-slide-in-up"
       style={{ background: "hsl(var(--game-bg))" }}
     >
+      <ConfettiBurst count={14} />
       {/* Glassmorphism card */}
       <div
-        className="w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
+        className="relative w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
         style={{
           background: "rgba(0, 0, 0, 0.45)",
           border: "1.5px solid rgba(255, 255, 255, 0.18)",
@@ -56,11 +71,19 @@ export default function ResultScreen({ onRestart }: ResultScreenProps) {
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
 
-          {/* CTA */}
-          <PrimaryCTA onClick={onRestart} className="group" aria-label="Play Again">
-            <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
-            Play Again
-          </PrimaryCTA>
+          {/* CTAs */}
+          <div className="flex flex-col items-center gap-3 w-full">
+            <PrimaryCTA onClick={onRestart} className="group" aria-label="Play Again">
+              <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
+              Play Again
+            </PrimaryCTA>
+            {onChangeSettings && (
+              <SecondaryCTA onClick={onChangeSettings} aria-label="Change Settings">
+                <SettingsIcon className="w-4 h-4" />
+                Change Settings
+              </SecondaryCTA>
+            )}
+          </div>
         </div>
       </div>
     </div>
