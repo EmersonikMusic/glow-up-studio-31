@@ -237,12 +237,6 @@ export default function TriviaGame() {
       const t = e.target as HTMLElement | null;
       const tag = t?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
-      // Next: arrow right or N (only when an answer is being shown).
-      if ((e.code === "ArrowRight" || e.code === "KeyN") && gameStateRef.current === "answered") {
-        e.preventDefault();
-        advanceOrFinish();
-        return;
-      }
       // Toggle settings panel.
       if (e.code === "KeyS" && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
