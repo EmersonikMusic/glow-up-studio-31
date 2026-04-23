@@ -141,7 +141,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
 
       {/* Copyright legal line */}
       <p
-        className="absolute left-1/2 -translate-x-1/2 bottom-[7px] text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap pointer-events-none animate-fade-in"
+        className="absolute left-1/2 -translate-x-1/2 bottom-[12px] text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap pointer-events-none animate-fade-in"
         style={{ animationDelay: "300ms" }}
       >
         Copyright © 2026 Triviolivia Inc. All rights reserved.
