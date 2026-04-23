@@ -1,16 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HelpCircle } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 /**
  * Discoverable "?" pill that opens a small popover with desktop keyboard
- * shortcuts. Hidden on mobile (where shortcuts don't apply).
+ * shortcuts. Hidden on phones AND tablets — only true desktops with a fine
+ * pointer and ≥1024px width see it (matches the keyboard handler gate).
  */
 export default function KeyboardShortcutsHelp() {
   const [open, setOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  if (isMobile) return null;
+  useEffect(() => {
+    const evaluate = () => {
+      if (typeof window === "undefined") return;
+      const isTouchOrSmall =
+        window.matchMedia("(pointer: coarse)").matches ||
+        window.innerWidth < 1024;
+      setIsDesktop(!isTouchOrSmall);
+    };
+    evaluate();
+    window.addEventListener("resize", evaluate);
+    window.addEventListener("orientationchange", evaluate);
+    return () => {
+      window.removeEventListener("resize", evaluate);
+      window.removeEventListener("orientationchange", evaluate);
+    };
+  }, []);
+
+  if (!isDesktop) return null;
 
   return (
     <div className="relative">
@@ -50,7 +67,6 @@ export default function KeyboardShortcutsHelp() {
             <ul className="space-y-2 text-xs font-body font-semibold text-white/80">
               {[
                 ["Space", "Pause / Resume"],
-                ["→ or N", "Next question"],
                 ["S", "Toggle settings"],
                 ["M", "Mute / Unmute"],
               ].map(([k, v]) => (

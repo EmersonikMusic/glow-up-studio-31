@@ -3,18 +3,18 @@ interface PauseOverlayProps {
 }
 
 /**
- * Soft blur overlay shown when the game is paused. Sits inside the question
- * card area (parent must be position: relative).
+ * Dim overlay shown when the game is paused. Sits inside the question card
+ * area (parent must be position: relative). No blur — just dimming.
  */
 export default function PauseOverlay({ visible }: PauseOverlayProps) {
   if (!visible) return null;
   return (
     <div
-      className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-2xl animate-fade-blur-in"
+      className="absolute inset-0 z-30 flex flex-col items-center justify-between rounded-2xl animate-fade-blur-in"
       style={{
         background: "rgba(0, 0, 0, 0.45)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
+        paddingTop: "28px",
+        paddingBottom: "28px",
       }}
       aria-live="polite"
       role="status"
@@ -29,8 +29,8 @@ export default function PauseOverlay({ visible }: PauseOverlayProps) {
       >
         Paused
       </div>
-      <p className="mt-3 text-xs sm:text-sm font-body font-semibold uppercase tracking-widest text-white/80">
-        Press <span className="hidden sm:inline">space or</span> tap play to resume
+      <p className="text-xs sm:text-sm font-body font-semibold uppercase tracking-widest text-white/80 text-center px-4">
+        Press space or start button to resume
       </p>
     </div>
   );

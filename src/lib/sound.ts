@@ -90,7 +90,7 @@ export function play(name: SoundName) {
 
   switch (name) {
     case "tick":
-      envTone(c, 880, t, 0.08, "triangle", 0.5);
+      envTone(c, 520, t, 0.12, "triangle", 0.32);
       break;
     case "reveal":
       // Gentle 2-note chime: E5 → A5
