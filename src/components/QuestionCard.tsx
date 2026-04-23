@@ -29,7 +29,7 @@ export default function QuestionCard({
       }}
     >
       {/* Inner text wrapper — pushes content above the mascot's animated peak on mobile */}
-      <div className="w-full flex flex-col items-center mb-[150px] md:mb-0">
+      <div className="w-full flex flex-col items-center mt-[12px] mb-[165px] md:mt-0 md:mb-0">
         {/* Question text */}
         <p
           className="font-body font-semibold text-center w-full text-[clamp(1.25rem,3.6vw,2.4rem)] md:text-[clamp(1.6rem,4.5vw,2.4rem)] leading-[1.4] md:leading-[1.5]"
