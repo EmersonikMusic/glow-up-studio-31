@@ -205,9 +205,6 @@ export default function GameHeader({
           {/* Sound toggle */}
           <SoundToggle />
 
-          {/* Mobile haptics toggle (auto-hides if unsupported / desktop) */}
-          <HapticsToggle />
-
           {/* Keyboard shortcuts help (desktop only) */}
           <KeyboardShortcutsHelp />
 
