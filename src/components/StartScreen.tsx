@@ -29,8 +29,12 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
   };
   return (
     <div
-      className="min-h-screen flex flex-col relative overflow-hidden"
-      style={{ background: "hsl(var(--game-bg))" }}
+      className="min-h-[100svh] flex flex-col relative overflow-hidden"
+      style={{
+        background: "hsl(var(--game-bg))",
+        minHeight: "var(--app-vh, 100svh)",
+        maxHeight: "var(--app-vh, 100svh)",
+      }}
     >
       {/* Ambient blobs */}
       <div
