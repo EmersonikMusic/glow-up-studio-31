@@ -163,6 +163,110 @@ export default function TriviaGame() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [gameState]);
 
+  // Desktop power-user shortcuts: → / N (next), S (settings), M (mute).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      const tag = t?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
+      // Next: arrow right or N (only when an answer is being shown).
+      if ((e.code === "ArrowRight" || e.code === "KeyN") && gameStateRef.current === "answered") {
+        e.preventDefault();
+        advanceOrFinishRef.current?.();
+        return;
+      }
+      // Toggle settings panel.
+      if (e.code === "KeyS" && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setPanelOpen((v) => !v);
+        return;
+      }
+      // Toggle mute.
+      if (e.code === "KeyM" && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        // Lazy import to avoid hook order issues.
+        import("@/lib/sound").then((m) => m.toggleMuted());
+        return;
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  // Tick sound + haptic for last 3s of question phase.
+  const lastTickRef = useRef<number>(-1);
+  useEffect(() => {
+    if (gameState !== "playing") {
+      lastTickRef.current = -1;
+      return;
+    }
+    if (countdown > 0 && countdown <= 3 && countdown !== lastTickRef.current) {
+      lastTickRef.current = countdown;
+      play("tick");
+      vibrate(8);
+    }
+  }, [countdown, gameState, play]);
+
+  // Reveal sound + haptic + mascot bounce when entering "answered".
+  useEffect(() => {
+    if (gameState === "answered") {
+      play("reveal");
+      vibrate(30);
+      setMascotState("celebrate");
+      const t = setTimeout(() => setMascotState("idle"), 500);
+      return () => clearTimeout(t);
+    }
+  }, [gameState, play]);
+
+  // Mascot urgency wobble during last 5s of question phase.
+  useEffect(() => {
+    if (gameState === "playing" && countdown > 0 && countdown <= 5) {
+      setMascotState("urgent");
+    } else if (gameState === "playing") {
+      setMascotState("idle");
+    }
+  }, [countdown, gameState]);
+
+  // Mascot droop when paused.
+  useEffect(() => {
+    if (paused && (gameState === "playing" || gameState === "answered")) {
+      setMascotState("paused");
+    } else if (gameState === "playing") {
+      setMascotState("idle");
+    }
+  }, [paused, gameState]);
+
+  // Sparkle burst + transition sound when category changes.
+  useEffect(() => {
+    const cur = currentQuestion?.category;
+    if (!cur || gameState !== "playing") return;
+    if (lastCategoryRef.current && lastCategoryRef.current !== cur) {
+      setSparkleKey((k) => k + 1);
+    }
+    lastCategoryRef.current = cur;
+  }, [currentQuestion?.category, gameState]);
+
+  // Transition swoosh on every new question (after the first).
+  const prevIndexRef = useRef(0);
+  useEffect(() => {
+    if (gameState === "playing" && questionIndex > 0 && questionIndex !== prevIndexRef.current) {
+      play("transition");
+    }
+    prevIndexRef.current = questionIndex;
+  }, [questionIndex, gameState, play]);
+
+  // Progress milestones (25 / 50 / 75%) → golden particle burst.
+  useEffect(() => {
+    if (gameState !== "playing" || activeQuestions.length < 4) return;
+    const pct = ((questionIndex + 1) / activeQuestions.length) * 100;
+    [25, 50, 75].forEach((mark) => {
+      if (pct >= mark && !milestonesFiredRef.current.has(mark)) {
+        milestonesFiredRef.current.add(mark);
+        setMilestoneKey((k) => k + 1);
+      }
+    });
+  }, [questionIndex, gameState, activeQuestions.length]);
+
   // Defer the question countdown until after the question card is painted.
   // Two rAF + small timeout keeps the bar animation perfectly aligned with
   // the slide-in transition on the card.
