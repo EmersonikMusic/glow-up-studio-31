@@ -103,12 +103,14 @@ export default function TriviaGame() {
   const [mascotState, setMascotState] = useState<MascotState>("idle");
   const lastCategoryRef = useRef<string | null>(null);
   const milestonesFiredRef = useRef<Set<number>>(new Set());
-  const advanceOrFinishRef = useRef<(() => void) | null>(null);
 
   // Refs are read inside intervals — using refs avoids re-creating intervals on
   // every state change while still observing the latest pause / game state.
   const pausedRef = useRef(false);
   const gameStateRef = useRef<GameState>("start");
+  const questionIndexRef = useRef(0);
+  const activeQuestionsLenRef = useRef(0);
+  const timePerQuestionRef = useRef(DEFAULT_SETTINGS.timePerQuestion);
 
   const {
     value: countdown,
