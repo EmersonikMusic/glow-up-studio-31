@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import legacy from "@vitejs/plugin-legacy";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
@@ -12,10 +13,25 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    // Legacy bundle for older browsers (Samsung Tizen TV, older WebKit, etc.).
+    // Modern browsers load the modern ESM bundle; legacy clients fall back via <script nomodule>.
+    legacy({
+      targets: ["chrome >= 61", "safari >= 11", "samsung >= 8", "ie 11"],
+      modernPolyfills: true,
+      renderLegacyChunks: true,
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+    }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  build: {
+    // Cap modern bundle syntax so even non-legacy paths avoid bleeding-edge features.
+    target: ["es2017", "chrome61", "safari11"],
   },
 }));

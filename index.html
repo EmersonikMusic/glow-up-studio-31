@@ -40,7 +40,24 @@
 </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Pre-mount fallback: shown if JS fails to parse/run (very old TV browsers, etc.).
+           React clears this on successful mount. -->
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;background:#1a1740;color:#fff;text-align:center;">
+        <div style="max-width:480px;">
+          <h1 style="font-size:24px;margin:0 0 12px;">Loading Triviolivia…</h1>
+          <p style="margin:0;opacity:0.7;font-size:14px;">If this message stays on screen, your browser may be too old. Try opening <strong>triviolivia.com</strong> on a phone, tablet, or desktop browser.</p>
+        </div>
+      </div>
+    </div>
+    <noscript>
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;background:#1a1740;color:#fff;text-align:center;">
+        <div style="max-width:480px;">
+          <h1 style="font-size:24px;margin:0 0 12px;">JavaScript required</h1>
+          <p style="margin:0;opacity:0.85;">Triviolivia needs JavaScript to run. Please enable it in your browser settings.</p>
+        </div>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
