@@ -139,13 +139,21 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
         </div>
       </div>
 
-      {/* Copyright legal line */}
-      <p
-        className="absolute left-1/2 -translate-x-1/2 bottom-[12px] text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap pointer-events-none animate-fade-in"
-        style={{ animationDelay: "300ms" }}
+      {/* Copyright legal line — shifts with game area when settings open */}
+      <div
+        className="absolute bottom-[12px] left-0 flex justify-center pointer-events-none"
+        style={{
+          transition: "width 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+          width: !isMobile && panelOpen ? "70%" : "100%",
+        }}
       >
-        Copyright © 2026 Triviolivia Inc. All rights reserved.
-      </p>
+        <p
+          className="text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap animate-fade-in"
+          style={{ animationDelay: "300ms" }}
+        >
+          Copyright © 2026 Triviolivia Inc. All rights reserved.
+        </p>
+      </div>
 
       {/* Settings panel */}
       <SettingsPanel
