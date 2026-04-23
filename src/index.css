@@ -463,3 +463,25 @@
     display: inline-flex !important;
   }
 }
+
+/* Portrait lock fallback — shows a rotate prompt on phones in landscape (iOS Safari ignores screen.orientation.lock). */
+@media (orientation: landscape) and (max-width: 950px) {
+  body::before {
+    content: "Please rotate your device to portrait";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Fredoka One', 'Rubik', sans-serif;
+    font-size: 1.25rem;
+    text-align: center;
+    padding: 2rem;
+  }
+  body > #root {
+    display: none !important;
+  }
+}
