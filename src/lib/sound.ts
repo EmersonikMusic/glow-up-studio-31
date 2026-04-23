@@ -120,10 +120,15 @@ export function isMuted(): boolean {
   return muted;
 }
 
+const MUTE_EVENT = "to:sound-muted-changed";
+
 export function setMuted(next: boolean) {
   muted = next;
   if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
+    // Notify React subscribers (header toggle, etc.) so the UI stays in sync
+    // regardless of where the change was triggered (click, keyboard shortcut).
+    window.dispatchEvent(new CustomEvent(MUTE_EVENT));
   }
   if (!next) {
     // First unmute may need a user gesture to unlock the context.
@@ -135,3 +140,5 @@ export function toggleMuted(): boolean {
   setMuted(!muted);
   return muted;
 }
+
+export { MUTE_EVENT };
