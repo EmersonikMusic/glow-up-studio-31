@@ -130,6 +130,9 @@ export default function TriviaGame() {
 
   useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
+  useEffect(() => { questionIndexRef.current = questionIndex; }, [questionIndex]);
+  useEffect(() => { activeQuestionsLenRef.current = activeQuestions.length; }, [activeQuestions.length]);
+  useEffect(() => { timePerQuestionRef.current = settings.timePerQuestion; }, [settings.timePerQuestion]);
 
   // Keep --app-vh in sync with the visual viewport so iOS Safari address-bar
   // collapses don't briefly hide the footer or overlap the card.
