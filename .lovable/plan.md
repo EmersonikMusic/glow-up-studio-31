@@ -1,50 +1,53 @@
 
 
-## Refinements
+## Fix mobile screen-height clipping on Start & Result screens
 
-### 1. Remove "Next" keyboard functionality
-**`src/components/TriviaGame.tsx`** — Delete the `ArrowRight` / `KeyN` block from the desktop keyboard shortcuts effect (lines 240-245). The `handleNext` callback and the answer-expiry auto-advance remain (clicking Next button and timed reveal still work).
+Two viewport bugs, both isolated to mobile:
 
-**`src/components/KeyboardShortcutsHelp.tsx`** — Remove the `["→ or N", "Next question"]` entry from the shortcuts list.
+### 1. Start screen scrolls on iOS Chrome / Firefox
 
-### 2. Hide shortcuts pill on tablet
-**`src/components/KeyboardShortcutsHelp.tsx`** — Replace `useIsMobile()` (which only triggers below 768px) with a true desktop check matching the keyboard handler gate:
-```ts
-const isTouchOrSmall =
-  window.matchMedia("(pointer: coarse)").matches ||
-  window.innerWidth < 1024;
-if (isTouchOrSmall) return null;
-```
-Wrap in a small `useState` + `useEffect` so it re-evaluates on resize/orientation change. This hides the icon on phones AND tablets (iPads register as `pointer: coarse`); only true desktops with mouse + ≥1024px width see it.
+**Root cause:** `StartScreen` root uses `min-h-screen` which resolves to `100vh` — the **large** viewport in Chrome/Firefox iOS (URL bar collapsed). When the page first loads with the URL bar visible, the actual viewport is shorter, so content overflows and the page scrolls. Safari uses the small viewport for `100vh` so it's already correct.
 
-### 3. Revise pause overlay
-**`src/components/PauseOverlay.tsx`**:
-- Remove `backdropFilter` / `WebkitBackdropFilter` properties (no glass blur).
-- Keep dimming: `background: rgba(0, 0, 0, 0.45)` stays.
-- Replace the centered flex layout with a `flex flex-col justify-between` so:
-  - "Paused" text sits 28px from the **top** of the card area (`paddingTop: 28px`).
-  - Hint line sits 28px from the **bottom** of the card area (`paddingBottom: 28px`).
-- Update hint text to: `PRESS SPACE OR START BUTTON TO RESUME` (uppercase already applied via existing class).
-- Remove the responsive `hidden sm:inline` wrapper around "space or" — show the full string on all sizes.
+**Fix — `src/components/StartScreen.tsx`:**
+- Change root `<div>` from `min-h-screen` to `min-h-[100svh]` and add inline style locking it to the live visual viewport on mobile only:
+  ```tsx
+  className="min-h-[100svh] flex flex-col relative overflow-hidden"
+  style={{
+    background: "hsl(var(--game-bg))",
+    minHeight: "var(--app-vh, 100svh)",
+    maxHeight: "var(--app-vh, 100svh)",
+  }}
+  ```
+- This reuses the existing `--app-vh` CSS variable already maintained by the `useEffect` in `TriviaGame.tsx` (lines 137–165), which tracks `visualViewport.height`. No new listeners needed.
+- Add `overflow-hidden` is already present — combined with the locked max-height, this prevents the body scroll on Chrome/Firefox iOS without affecting Safari (where `100svh` already matches).
 
-### 4. Remove mascot tilt on pause
-**`src/components/MascotSvg.tsx`** — Change the `paused` entry in `stateClass` from `"animate-mascot-droop"` to `""` (empty). The mascot remains static (no animation) when paused, but no tilt/droop is applied.
+### 2. Result screen scrolls on Safari / clips on Firefox (mobile)
 
-The `paused` state value itself stays in the type for future use; only the visual animation is dropped. Optionally also delete the `animate-mascot-droop` keyframe from `src/index.css` (harmless if left in).
+**Root cause:** `ResultScreen` renders inside the `grid grid-rows-[auto_1fr_auto]` container in `TriviaGame.tsx` whose total height is locked to `--app-vh` with `overflow-hidden`. The result card stack (mascot 128px + heading + divider + two CTAs + mailto link + `gap-8` + `py-10`) is ~560px tall, plus root `py-8` (64px). On a 667–700px visual viewport (Firefox iOS with chrome) the card is taller than the row, so Firefox clips the bottom. Safari's body absorbs the overflow → unwanted scroll.
 
-### 5. Calmer countdown sound
-**`src/lib/sound.ts`** — Soften the `tick` case in the `play` switch:
-- Reduce frequency from `880 Hz` to `520 Hz` (warmer, less piercing).
-- Reduce duration from `0.08s` to `0.12s` (gentler decay tail).
-- Reduce peak from `0.5` to `0.32` (quieter overall).
-- Keep `triangle` waveform (smoother harmonics than sine for this pitch).
+**Fix — `src/components/ResultScreen.tsx`:**
+- Make the screen consume only the available row height and shrink padding on mobile:
+  - Root container: change `py-8` → `py-4 sm:py-8`, add `min-h-0 overflow-hidden`.
+- Tighten the card vertical rhythm on mobile so it always fits:
+  - Card inner `<div className="px-8 py-10 flex flex-col items-center gap-8">` → `px-8 py-6 sm:py-10 flex flex-col items-center gap-5 sm:gap-8`
+  - Mascot wrapper image `w-32 h-32` → `w-24 h-24 sm:w-32 sm:h-32`, glow `w-40 h-40` → `w-32 h-32 sm:w-40 sm:h-40`
+  - Heading `text-4xl sm:text-5xl` → `text-3xl sm:text-5xl`
+- These changes only affect screens narrower than the `sm` breakpoint (640px); desktop is unchanged.
 
-Result: a soft, low woodblock-style "tock" instead of the current sharp ping.
+### Why both fixes are mobile-only
+
+- `100svh` resolves identically to `100vh` on desktop browsers (no URL bar collapse), and `--app-vh` always equals the window height there — so the StartScreen lock is a no-op on desktop.
+- The ResultScreen padding/sizing reductions are gated on `sm:` Tailwind prefixes (≥640px reverts to current values), so tablets and desktop look identical.
 
 ### Files to edit
-- `src/components/TriviaGame.tsx` — drop Next keyboard handler.
-- `src/components/KeyboardShortcutsHelp.tsx` — drop Next entry; gate to true desktop (≥1024px + fine pointer).
-- `src/components/PauseOverlay.tsx` — remove blur, reposition text, update hint copy.
-- `src/components/MascotSvg.tsx` — remove paused animation class.
-- `src/lib/sound.ts` — soften tick tone.
+
+- `src/components/StartScreen.tsx` — swap `min-h-screen` for `--app-vh`-locked `min-h-[100svh]` with `maxHeight` lock.
+- `src/components/ResultScreen.tsx` — mobile padding/gap/icon-size reductions, add `min-h-0 overflow-hidden` on root.
+
+### Post-implementation verification
+
+After the changes, take screenshots at 390×844 (iPhone 12/13/14 portrait, the current viewport target) for both Start and Result screens and confirm:
+- No vertical scroll on either screen.
+- Card content fully visible top-to-bottom (mascot, heading, divider, both CTAs, mailto link).
+- No layout regression at desktop sizes.
 
