@@ -41,15 +41,14 @@ export default function GameFooter({
 
   const isAnswerPhase = answerCountdown !== null;
   const displayCountdown = isAnswerPhase ? (answerCountdown ?? 0) : countdown;
-  // Last-5s urgency only applies during the QUESTION phase.
-  const isUrgent = !isAnswerPhase && countdown > 0 && countdown <= 5;
+  // Last-3s urgency only applies during the QUESTION phase.
+  const isUrgent = !isAnswerPhase && countdown > 0 && countdown <= 3;
 
-  // Color shifts across the final countdown: teal (5–4) → gold (3–2) → red (1).
+  // Color shifts across the final countdown: teal (>3) → gold (3–2) → red (1).
   let timerColor = "hsl(185 70% 55%)";
   if (isUrgent) {
     if (countdown <= 1) timerColor = "hsl(0 80% 60%)";
-    else if (countdown <= 3) timerColor = "hsl(42 100% 55%)";
-    else timerColor = "hsl(185 70% 55%)";
+    else timerColor = "hsl(42 100% 55%)";
   }
 
   return (
