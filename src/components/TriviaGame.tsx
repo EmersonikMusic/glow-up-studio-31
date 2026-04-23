@@ -300,12 +300,13 @@ export default function TriviaGame() {
 
             {/* Mobile mascot — anchored inside the card area, 12px from inner edges */}
             <div
-              className="md:hidden absolute pointer-events-none z-20 flex items-end justify-end mobile-mascot-overlay"
+              className="md:hidden absolute pointer-events-none z-20 flex items-end justify-center mobile-mascot-overlay"
               style={{
                 width: "clamp(155px, 40vw, 195px)",
                 height: "clamp(155px, 40vw, 195px)",
                 bottom: "28px",
-                right: "12px",
+                left: "50%",
+                transform: "translateX(-50%)",
                 animation: "float 3s ease-in-out infinite",
                 animationPlayState: paused ? "paused" : "running",
               }}
