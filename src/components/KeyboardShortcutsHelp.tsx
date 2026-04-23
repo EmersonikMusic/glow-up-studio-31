@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { HelpCircle } from "lucide-react";
+import { matchesMedia } from "@/lib/browserCompat";
 
 /**
  * Discoverable "?" pill that opens a small popover with desktop keyboard
@@ -13,9 +14,7 @@ export default function KeyboardShortcutsHelp() {
   useEffect(() => {
     const evaluate = () => {
       if (typeof window === "undefined") return;
-      const isTouchOrSmall =
-        window.matchMedia("(pointer: coarse)").matches ||
-        window.innerWidth < 1024;
+      const isTouchOrSmall = matchesMedia("(pointer: coarse)") || window.innerWidth < 1024;
       setIsDesktop(!isTouchOrSmall);
     };
     evaluate();

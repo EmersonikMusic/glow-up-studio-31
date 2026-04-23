@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createSafeId } from "@/lib/browserCompat";
 
 interface User {
   id: string;
@@ -34,28 +35,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Simulate API delay
     await new Promise((r) => setTimeout(r, 800));
     const username = email.split("@")[0];
-    setUser({ id: crypto.randomUUID(), username, email, provider: "email" });
+    setUser({ id: createSafeId(), username, email, provider: "email" });
     setIsLoading(false);
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 800));
-    setUser({ id: crypto.randomUUID(), username: "GoogleUser", email: "user@gmail.com", provider: "google" });
+    setUser({ id: createSafeId(), username: "GoogleUser", email: "user@gmail.com", provider: "google" });
     setIsLoading(false);
   }, []);
 
   const loginWithApple = useCallback(async () => {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 800));
-    setUser({ id: crypto.randomUUID(), username: "AppleUser", email: "user@icloud.com", provider: "apple" });
+    setUser({ id: createSafeId(), username: "AppleUser", email: "user@icloud.com", provider: "apple" });
     setIsLoading(false);
   }, []);
 
   const signup = useCallback(async (email: string, _password: string, username: string) => {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 800));
-    setUser({ id: crypto.randomUUID(), username, email, provider: "email" });
+    setUser({ id: createSafeId(), username, email, provider: "email" });
     setIsLoading(false);
   }, []);
 

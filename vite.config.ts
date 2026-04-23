@@ -31,7 +31,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Cap modern bundle syntax so even non-legacy paths avoid bleeding-edge features.
-    target: ["es2017", "chrome61", "safari11"],
+    target: "es2015",
   },
 }));
