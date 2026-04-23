@@ -83,7 +83,7 @@ export default function QuestionCard({
     marginBottom: 0,
     ...(isMobile
       ? {
-          fontSize: "calc(clamp(1.25rem, 3.6vw, 2.4rem) * var(--q-font-scale, 1))",
+          fontSize: "calc(clamp(1.375rem, 4.1vw, 2.525rem) * var(--q-font-scale, 1))",
           ["--q-font-scale" as any]: String(qFontScale),
         }
       : {}),
@@ -94,7 +94,7 @@ export default function QuestionCard({
     color: "hsl(0 0% 97%)",
     ...(isMobile
       ? {
-          fontSize: "calc(clamp(1.25rem, 3.6vw, 2.4rem) * var(--a-font-scale, 1))",
+          fontSize: "calc(clamp(1.375rem, 4.1vw, 2.525rem) * var(--a-font-scale, 1))",
           ["--a-font-scale" as any]: String(aFontScale),
         }
       : {}),
