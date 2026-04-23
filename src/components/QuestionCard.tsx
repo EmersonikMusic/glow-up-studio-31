@@ -25,8 +25,15 @@ export default function QuestionCard({
   animKey,
   answered,
   correctAnswer,
+  flashColor,
 }: QuestionCardProps) {
   const isMobile = useIsMobile();
+
+  // Stable random entrance per question (keyed by animKey).
+  const entranceClass = useMemo(
+    () => ENTRANCE_CLASSES[animKey % ENTRANCE_CLASSES.length],
+    [animKey]
+  );
 
   const questionRef = useRef<HTMLParagraphElement | null>(null);
   const answerRef = useRef<HTMLParagraphElement | null>(null);
