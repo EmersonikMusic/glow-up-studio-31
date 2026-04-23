@@ -1,16 +1,24 @@
 import { Question } from "@/data/questions";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 interface QuestionCardProps {
   question: Question;
   animKey: number;
   answered: boolean;
   correctAnswer?: string;
+  flashColor?: string;
 }
 
 const FONT_SCALE_FLOOR = 0.7;
 const FONT_SCALE_STEP = 0.05;
+
+// Pool of entrance animation classes for variety across questions.
+const ENTRANCE_CLASSES = [
+  "animate-slide-in-up",
+  "animate-soft-zoom-in",
+  "animate-fade-blur-in",
+];
 
 export default function QuestionCard({
   question,
