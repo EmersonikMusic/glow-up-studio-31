@@ -21,6 +21,12 @@ interface StartScreenProps {
 
 export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
   const isMobile = useIsMobile();
+  const { play } = useSound();
+
+  const handleStart = () => {
+    play("start");
+    onStart();
+  };
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
