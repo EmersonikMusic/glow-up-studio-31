@@ -1,11 +1,9 @@
-import { RotateCcw, Settings as SettingsIcon } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
-import SecondaryCTA from "./SecondaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
 import { useSound } from "@/hooks/useSound";
-import { vibrate } from "@/lib/haptics";
 
 interface ResultScreenProps {
   onRestart: () => void;
@@ -15,10 +13,9 @@ interface ResultScreenProps {
 export default function ResultScreen({ onRestart, onChangeSettings }: ResultScreenProps) {
   const { play } = useSound();
 
-  // Fanfare + double-pulse haptic on mount.
+  // Fanfare on mount.
   useEffect(() => {
     play("complete");
-    vibrate([50, 60, 50]);
   }, [play]);
 
   return (
@@ -71,17 +68,29 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
 
-          {/* CTAs */}
+          {/* CTAs — equal width */}
           <div className="flex flex-col items-center gap-3 w-full">
-            <PrimaryCTA onClick={onRestart} className="group" aria-label="Play Again">
+            <PrimaryCTA
+              onClick={onRestart}
+              className="group min-w-[240px]"
+              aria-label="Play Again"
+            >
               <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
               Play Again
             </PrimaryCTA>
             {onChangeSettings && (
-              <SecondaryCTA onClick={onChangeSettings} aria-label="Change Settings">
-                <SettingsIcon className="w-4 h-4" />
+              <button
+                onClick={onChangeSettings}
+                aria-label="Change Settings"
+                className="nav-btn min-w-[240px] rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  color: "hsl(var(--game-gold))",
+                }}
+              >
                 Change Settings
-              </SecondaryCTA>
+              </button>
             )}
           </div>
         </div>
