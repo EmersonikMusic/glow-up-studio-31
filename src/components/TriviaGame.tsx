@@ -186,19 +186,20 @@ export default function TriviaGame() {
   }, [gameState]);
 
   // Advance to the next question or finish when answer reveal expires.
+  // Stable identity (no deps) — reads latest values from refs so keyboard
+  // shortcuts always see the current question index without stale closures.
   const advanceOrFinish = useCallback(() => {
     clearAnswerTimer();
-    if (isLast) {
+    const isLastNow = questionIndexRef.current === activeQuestionsLenRef.current - 1;
+    if (isLastNow) {
       setGameState("finished");
       return;
     }
     setQuestionIndex((prev) => prev + 1);
     setGameState("playing");
     setAnimKey((k) => k + 1);
-    startCountdown(settings.timePerQuestion);
-  }, [clearAnswerTimer, isLast, startCountdown, settings.timePerQuestion]);
-
-  useEffect(() => { advanceOrFinishRef.current = advanceOrFinish; }, [advanceOrFinish]);
+    startCountdown(timePerQuestionRef.current);
+  }, [clearAnswerTimer, startCountdown]);
 
   useEffect(() => {
     if (answerCountdown === 0 && gameState === "answered") advanceOrFinish();
