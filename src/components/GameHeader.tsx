@@ -117,7 +117,7 @@ export default function GameHeader({
               <span>{user.username.slice(0, 20)}</span>
             </span>
           )}
-          {/* Login or Logout */}
+          {/* Logout only — login UI is hidden until real account creation/login is enabled */}
           {user ? (
             <button
               onClick={logout}
@@ -136,27 +136,7 @@ export default function GameHeader({
                 Logout
               </span>
             </button>
-          ) : (
-            onLogin && (
-              <button
-                onClick={onLogin}
-                className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
-                style={{
-                  background: "rgba(255, 255, 255, 0.08)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                }}
-                aria-label="Login"
-              >
-                <LogIn className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
-                <span
-                  className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
-                  style={{ color: "hsl(var(--game-gold))" }}
-                >
-                  Login
-                </span>
-              </button>
-            )
-          )}
+          ) : null}
 
           {/* About */}
           {onAbout && (
