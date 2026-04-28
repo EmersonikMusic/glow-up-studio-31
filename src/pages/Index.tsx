@@ -18,7 +18,7 @@ export default function Index() {
         "@id": "https://triviolivia.com/#org",
         "name": "TRIVIOLIVIA",
         "url": "https://triviolivia.com/",
-        "logo": "https://triviolivia.com/favicon.ico",
+        "logo": "https://triviolivia.com/favicon.png",
       },
       {
         "@type": "Game",
