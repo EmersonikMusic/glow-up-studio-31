@@ -345,6 +345,10 @@
   .shimmer-overlay,
   .animate-divider-sweep,
   .animate-spring-rise,
+  .animate-answer-lift-glow,
+  .animate-premium-drift,
+  .animate-spotlight-breathe,
+  .animate-glass-glow,
   .animate-mascot-bounce,
   .animate-mascot-wobble,
   .animate-mascot-droop,
@@ -613,6 +617,7 @@
   .animate-blob-a,
   .animate-blob-b,
   .animate-text-shimmer,
+  .premium-sheen::after,
   .cta-glass {
     animation: none !important;
   }
