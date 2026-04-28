@@ -36,6 +36,18 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
         maxHeight: "var(--app-vh, 100vh)",
       }}
     >
+      {/* Premium ambient stage */}
+      <div className="premium-ambient animate-premium-drift" />
+      <div className="premium-grid" />
+      <div className="premium-vignette" />
+      <div
+        className="absolute left-1/2 top-[18%] h-[42vh] w-[78vw] -translate-x-1/2 rounded-full pointer-events-none animate-spotlight-breathe"
+        style={{
+          background: "radial-gradient(ellipse, hsl(var(--game-spotlight) / 0.18) 0%, hsl(var(--game-teal) / 0.08) 38%, transparent 68%)",
+          filter: "blur(34px)",
+        }}
+      />
+
       {/* Ambient blobs */}
       <div
         className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none animate-blob-a"
@@ -71,11 +83,16 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           }}
         >
           {/* Logo */}
-          <div className="w-full max-w-2xl animate-fade-in animate-float-soft" style={{ animationDelay: "0ms" }}>
+          <div className="relative w-full max-w-2xl animate-fade-in animate-float-soft" style={{ animationDelay: "0ms" }}>
+            <div
+              className="absolute inset-x-[8%] bottom-[8%] h-8 rounded-full blur-2xl opacity-70"
+              style={{ background: "hsl(var(--game-teal) / 0.28)" }}
+              aria-hidden="true"
+            />
             <img
               src={logo}
               alt="Triviolivia — Earth's Deepest Trivia Source"
-              className="w-full h-auto"
+              className="relative z-10 w-full h-auto drop-shadow-2xl"
               draggable={false}
             />
           </div>
@@ -122,22 +139,28 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           </div>
 
           {/* Start button — logo-aligned CTA */}
-          <PrimaryCTA
-            onClick={handleStart}
-            disabled={loading}
-            className="mt-8 animate-fade-in"
-            style={{ animationDelay: "180ms" }}
-            aria-label={loading ? "Loading questions" : "Start Game"}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                <span>Loading…</span>
-              </>
-            ) : (
-              "Start Game"
-            )}
-          </PrimaryCTA>
+          <div className="relative mt-8 animate-fade-in" style={{ animationDelay: "180ms" }}>
+            <div
+              className="absolute inset-x-4 top-1/2 h-10 -translate-y-1/2 rounded-full blur-2xl opacity-60"
+              style={{ background: "hsl(var(--game-spotlight) / 0.38)" }}
+              aria-hidden="true"
+            />
+            <PrimaryCTA
+              onClick={handleStart}
+              disabled={loading}
+              className="relative"
+              aria-label={loading ? "Loading questions" : "Start Game"}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                  <span>Loading…</span>
+                </>
+              ) : (
+                "Start Game"
+              )}
+            </PrimaryCTA>
+          </div>
 
           {/* How Do I Play link */}
           <button
