@@ -119,12 +119,8 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className={`w-full rounded-2xl flex flex-col justify-start md:justify-center items-center ${entranceClass} ${flashColor ? "animate-border-flash" : ""} h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]`}
+      className={`premium-glass premium-sheen w-full rounded-2xl flex flex-col justify-start md:justify-center items-center ${entranceClass} ${flashColor ? "animate-border-flash" : "animate-glass-glow"} h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]`}
       style={{
-        background: "rgba(0, 0, 0, 0.45)",
-        border: "1.5px solid rgba(255, 255, 255, 0.18)",
-        boxShadow:
-          "0 12px 48px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25)",
         gap: 0,
         ...(flashColor ? ({ ["--flash-color" as any]: flashColor } as React.CSSProperties) : {}),
       }}
@@ -161,7 +157,7 @@ export default function QuestionCard({
                 className="w-full h-full animate-divider-sweep"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                    "linear-gradient(90deg, transparent, hsl(var(--game-teal) / 0.45), hsl(var(--game-spotlight) / 0.32), transparent)",
                 }}
               />
             )}
@@ -175,7 +171,7 @@ export default function QuestionCard({
             {answered && correctAnswer && (
               <p
                 ref={answerRef}
-                className="font-body font-semibold animate-spring-rise text-center w-full leading-[1.4]"
+                className="font-body font-semibold animate-answer-lift-glow text-center w-full leading-[1.4]"
                 style={answerStyle}
               >
                 {correctAnswer}
@@ -218,12 +214,12 @@ export default function QuestionCard({
                   className="w-full h-full animate-divider-sweep"
                   style={{
                     background:
-                      "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                      "linear-gradient(90deg, transparent, hsl(var(--game-teal) / 0.45), hsl(var(--game-spotlight) / 0.32), transparent)",
                   }}
                 />
               </div>
               <p
-                className="leading-relaxed font-body font-semibold animate-spring-rise text-center w-full text-[clamp(1.725rem,5vw,2.525rem)] leading-[1.45]"
+                className="leading-relaxed font-body font-semibold animate-answer-lift-glow text-center w-full text-[clamp(1.725rem,5vw,2.525rem)] leading-[1.45]"
                 style={answerStyle}
               >
                 {correctAnswer}
