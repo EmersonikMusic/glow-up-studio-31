@@ -23,14 +23,15 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
       className="relative flex flex-col items-center justify-center flex-1 min-h-0 overflow-hidden px-4 sm:px-6 py-4 sm:py-8 animate-slide-in-up"
       style={{ background: "hsl(var(--game-bg))" }}
     >
+      <div className="premium-ambient animate-premium-drift" />
+      <div className="premium-grid" />
+      <div className="premium-vignette" />
       <ConfettiBurst count={14} />
       {/* Glassmorphism card */}
       <div
-        className="relative w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
+        className="premium-glass premium-sheen animate-glass-glow relative w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
         style={{
-          background: "rgba(0, 0, 0, 0.45)",
-          border: "1.5px solid rgba(255, 255, 255, 0.18)",
-          boxShadow: "0 16px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
+          boxShadow: "0 24px 76px hsl(240 60% 5% / 0.58), 0 0 34px hsl(var(--game-spotlight) / 0.1), inset 0 1px 0 hsl(var(--game-glass-border) / 0.14)",
         }}
       >
 
