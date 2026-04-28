@@ -166,8 +166,8 @@ export default function GameHeader({
               onClick={onSettingsToggle}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "hsl(var(--game-glass-border) / 0.08)",
+                border: "1px solid hsl(var(--game-glass-border) / 0.16)",
               }}
               aria-label={settingsOpen ? "Close settings" : "Open settings"}
             >
@@ -195,8 +195,8 @@ export default function GameHeader({
               onClick={toggleFullscreen}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "hsl(var(--game-glass-border) / 0.08)",
+                border: "1px solid hsl(var(--game-glass-border) / 0.16)",
               }}
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
             >
