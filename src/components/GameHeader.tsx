@@ -64,8 +64,9 @@ export default function GameHeader({
       style={{
         paddingTop: "max(clamp(0.75rem, 2vw, 1.25rem), env(safe-area-inset-top))",
         paddingBottom: "clamp(0.75rem, 2vw, 1.25rem)",
-        background: "rgba(0, 0, 0, 0.25)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        background: "linear-gradient(180deg, hsl(var(--game-glass) / 0.58), hsl(var(--game-glass) / 0.22))",
+        borderBottom: "1px solid hsl(var(--game-glass-border) / 0.13)",
+        boxShadow: "0 8px 28px hsl(240 60% 5% / 0.18)",
       }}
     >
       <div className="flex items-center justify-between gap-2">
@@ -123,8 +124,8 @@ export default function GameHeader({
               onClick={logout}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "hsl(var(--game-glass-border) / 0.08)",
+                border: "1px solid hsl(var(--game-glass-border) / 0.16)",
               }}
               aria-label="Log out"
             >
@@ -144,8 +145,8 @@ export default function GameHeader({
               onClick={onAbout}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "hsl(var(--game-glass-border) / 0.08)",
+                border: "1px solid hsl(var(--game-glass-border) / 0.16)",
               }}
               aria-label="About"
             >
@@ -165,8 +166,8 @@ export default function GameHeader({
               onClick={onSettingsToggle}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "hsl(var(--game-glass-border) / 0.08)",
+                border: "1px solid hsl(var(--game-glass-border) / 0.16)",
               }}
               aria-label={settingsOpen ? "Close settings" : "Open settings"}
             >
@@ -194,8 +195,8 @@ export default function GameHeader({
               onClick={toggleFullscreen}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
+                background: "hsl(var(--game-glass-border) / 0.08)",
+                border: "1px solid hsl(var(--game-glass-border) / 0.16)",
               }}
               aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
             >

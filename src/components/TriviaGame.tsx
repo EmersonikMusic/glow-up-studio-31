@@ -442,6 +442,9 @@ export default function TriviaGame() {
         maxHeight: "var(--app-vh, 100vh)",
       }}
     >
+      <div className="premium-ambient animate-premium-drift" />
+      <div className="premium-grid" />
+      <div className="premium-vignette" />
 
       {/* Row 1: Header */}
       <GameHeader
@@ -492,6 +495,13 @@ export default function TriviaGame() {
               }}
             >
               <div
+                className="absolute inset-[-10%] rounded-full animate-spotlight-breathe"
+                style={{
+                  background: "radial-gradient(circle, hsl(var(--game-spotlight) / 0.16), hsl(var(--game-teal) / 0.1) 42%, transparent 72%)",
+                  filter: "blur(14px)",
+                }}
+              />
+              <div
                 className="absolute rounded-full"
                 style={{
                   width: "70%",
@@ -533,6 +543,13 @@ export default function TriviaGame() {
                 animationPlayState: paused ? "paused" : "running",
               }}
             >
+              <div
+                className="absolute inset-[-12%] rounded-full animate-spotlight-breathe"
+                style={{
+                  background: "radial-gradient(circle, hsl(var(--game-spotlight) / 0.18), hsl(var(--game-teal) / 0.12) 42%, transparent 72%)",
+                  filter: "blur(16px)",
+                }}
+              />
               <div
                 className="absolute rounded-full"
                 style={{

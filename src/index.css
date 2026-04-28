@@ -50,6 +50,11 @@
     --game-wrong: 0 70% 50%;
     --game-progress: 240 35% 28%;
     --game-btn: 280 60% 52%;
+    --game-teal: 185 70% 55%;
+    --game-spotlight: 42 100% 55%;
+    --game-glass: 240 40% 10%;
+    --game-glass-border: 0 0% 100%;
+    --game-vignette: 240 55% 7%;
 
     --sidebar-background: 240 45% 13%;
     --sidebar-foreground: 0 0% 100%;
@@ -108,10 +113,92 @@
   50%      { box-shadow: 0 4px 22px hsl(42 100% 55% / 0.45); }
 }
 
+@keyframes premium-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.75; }
+  50% { transform: translate3d(2%, -1.5%, 0) rotate(0.6deg); opacity: 1; }
+}
+
+@keyframes spotlight-breathe {
+  0%, 100% { opacity: 0.42; transform: scale(0.98); }
+  50% { opacity: 0.68; transform: scale(1.03); }
+}
+
+@keyframes premium-sheen {
+  0% { transform: translateX(-140%) skewX(-14deg); opacity: 0; }
+  18% { opacity: 0.55; }
+  44%, 100% { transform: translateX(170%) skewX(-14deg); opacity: 0; }
+}
+
+@keyframes glass-glow-pulse {
+  0%, 100% { box-shadow: 0 18px 56px hsl(240 60% 5% / 0.46), inset 0 1px 0 hsl(var(--game-glass-border) / 0.12); }
+  50% { box-shadow: 0 22px 68px hsl(240 60% 5% / 0.56), 0 0 28px hsl(var(--game-teal) / 0.1), inset 0 1px 0 hsl(var(--game-glass-border) / 0.16); }
+}
+
+@keyframes answer-lift-glow {
+  0% { opacity: 0; transform: translateY(18px) scale(0.97); filter: blur(6px); }
+  70% { opacity: 1; transform: translateY(-2px) scale(1.01); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
 .animate-float-soft { animation: float-soft 4s ease-in-out infinite; }
 .animate-blob-a { animation: blob-drift-a 22s ease-in-out infinite; }
 .animate-blob-b { animation: blob-drift-b 18s ease-in-out infinite; }
 .animate-text-shimmer { animation: text-shimmer 4s ease-in-out infinite; }
+.animate-premium-drift { animation: premium-drift 16s ease-in-out infinite; }
+.animate-spotlight-breathe { animation: spotlight-breathe 5s ease-in-out infinite; }
+.animate-glass-glow { animation: glass-glow-pulse 4.5s ease-in-out infinite; }
+.animate-answer-lift-glow { animation: answer-lift-glow 0.72s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.premium-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 22%, hsl(var(--game-spotlight) / 0.13), transparent 28%),
+    radial-gradient(circle at 16% 74%, hsl(var(--game-teal) / 0.12), transparent 27%),
+    radial-gradient(circle at 84% 66%, hsl(var(--accent) / 0.12), transparent 30%),
+    linear-gradient(120deg, transparent 0%, hsl(var(--game-glass-border) / 0.035) 45%, transparent 58%);
+  opacity: 0.9;
+}
+
+.premium-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 42%, hsl(var(--game-vignette) / 0.38) 100%),
+    linear-gradient(180deg, hsl(var(--game-vignette) / 0.16), transparent 28%, hsl(var(--game-vignette) / 0.24));
+}
+
+.premium-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.13;
+  background-image:
+    linear-gradient(hsl(var(--game-glass-border) / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--game-glass-border) / 0.08) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+}
+
+.premium-sheen::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: 0;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, hsl(var(--game-glass-border) / 0.18), transparent);
+  animation: premium-sheen 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.premium-glass {
+  background: linear-gradient(145deg, hsl(var(--game-glass) / 0.58), hsl(var(--game-glass) / 0.34));
+  border: 1.5px solid hsl(var(--game-glass-border) / 0.2);
+  box-shadow: 0 18px 56px hsl(240 60% 5% / 0.46), inset 0 1px 0 hsl(var(--game-glass-border) / 0.12);
+}
 
 @keyframes pulse-gold {
   0%, 100% { box-shadow: 0 0 0 0 hsl(42 100% 55% / 0.4); }
@@ -258,6 +345,10 @@
   .shimmer-overlay,
   .animate-divider-sweep,
   .animate-spring-rise,
+  .animate-answer-lift-glow,
+  .animate-premium-drift,
+  .animate-spotlight-breathe,
+  .animate-glass-glow,
   .animate-mascot-bounce,
   .animate-mascot-wobble,
   .animate-mascot-droop,
@@ -475,7 +566,8 @@
 @media (hover: hover) and (pointer: fine) {
   .nav-btn:hover {
     border-color: hsl(185 70% 55%) !important;
-    background: rgba(255, 255, 255, 0.12) !important;
+    background: linear-gradient(135deg, hsl(var(--game-glass-border) / 0.14), hsl(var(--game-teal) / 0.1)) !important;
+    box-shadow: 0 8px 22px hsl(240 60% 5% / 0.24), 0 0 16px hsl(var(--game-teal) / 0.12) !important;
   }
 }
 
@@ -526,6 +618,7 @@
   .animate-blob-a,
   .animate-blob-b,
   .animate-text-shimmer,
+  .premium-sheen::after,
   .cta-glass {
     animation: none !important;
   }
