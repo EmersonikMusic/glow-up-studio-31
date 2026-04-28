@@ -345,7 +345,7 @@ export default function TriviaGame() {
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
-      toast.error("Couldn't load questions. Check your connection or try again.");
+      toast.error("Couldn't load questions. Check your connection or try again with different settings.");
     } finally {
       setLoading(false);
     }
