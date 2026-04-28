@@ -59,8 +59,12 @@ export default function GameFooter({
       <div className="flex items-center gap-3 w-full md:w-[70%]">
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 backdrop-blur-md uppercase"
-          style={{ background: "rgba(0, 0, 0, 0.35)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
+          className="premium-sheen relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 backdrop-blur-md uppercase"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--game-glass) / 0.62), hsl(var(--game-glass) / 0.36))",
+            border: "1.5px solid hsl(var(--game-glass-border) / 0.2)",
+            boxShadow: "0 12px 34px hsl(240 60% 5% / 0.28), inset 0 1px 0 hsl(var(--game-glass-border) / 0.1)",
+          }}
         >
           {/* Animated time bar */}
           <div
@@ -106,8 +110,9 @@ export default function GameFooter({
           onClick={onTogglePause}
           className="flex items-center justify-center flex-shrink-0 w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
           style={{
-            background: "rgba(0, 0, 0, 0.35)",
-            border: "1.5px solid rgba(255, 255, 255, 0.18)",
+            background: "linear-gradient(135deg, hsl(var(--game-glass) / 0.62), hsl(var(--game-glass) / 0.36))",
+            border: "1.5px solid hsl(var(--game-glass-border) / 0.2)",
+            boxShadow: "0 10px 28px hsl(240 60% 5% / 0.26)",
           }}
           aria-label={paused ? "Resume" : "Pause"}
         >
