@@ -144,6 +144,61 @@
 .animate-blob-a { animation: blob-drift-a 22s ease-in-out infinite; }
 .animate-blob-b { animation: blob-drift-b 18s ease-in-out infinite; }
 .animate-text-shimmer { animation: text-shimmer 4s ease-in-out infinite; }
+.animate-premium-drift { animation: premium-drift 16s ease-in-out infinite; }
+.animate-spotlight-breathe { animation: spotlight-breathe 5s ease-in-out infinite; }
+.animate-glass-glow { animation: glass-glow-pulse 4.5s ease-in-out infinite; }
+.animate-answer-lift-glow { animation: answer-lift-glow 0.72s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.premium-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 22%, hsl(var(--game-spotlight) / 0.13), transparent 28%),
+    radial-gradient(circle at 16% 74%, hsl(var(--game-teal) / 0.12), transparent 27%),
+    radial-gradient(circle at 84% 66%, hsl(var(--accent) / 0.12), transparent 30%),
+    linear-gradient(120deg, transparent 0%, hsl(var(--game-glass-border) / 0.035) 45%, transparent 58%);
+  opacity: 0.9;
+}
+
+.premium-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 42%, hsl(var(--game-vignette) / 0.38) 100%),
+    linear-gradient(180deg, hsl(var(--game-vignette) / 0.16), transparent 28%, hsl(var(--game-vignette) / 0.24));
+}
+
+.premium-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.13;
+  background-image:
+    linear-gradient(hsl(var(--game-glass-border) / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--game-glass-border) / 0.08) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+}
+
+.premium-sheen::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: 0;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, hsl(var(--game-glass-border) / 0.18), transparent);
+  animation: premium-sheen 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.premium-glass {
+  background: linear-gradient(145deg, hsl(var(--game-glass) / 0.58), hsl(var(--game-glass) / 0.34));
+  border: 1.5px solid hsl(var(--game-glass-border) / 0.2);
+  box-shadow: 0 18px 56px hsl(240 60% 5% / 0.46), inset 0 1px 0 hsl(var(--game-glass-border) / 0.12);
+}
 
 @keyframes pulse-gold {
   0%, 100% { box-shadow: 0 0 0 0 hsl(42 100% 55% / 0.4); }
