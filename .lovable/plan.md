@@ -1,53 +1,87 @@
+## Plan: Make Google/Apple login actually work
 
+### Current problem
+The login UI is currently only simulated. Clicking Google or Apple waits briefly and then creates a fake in-memory user like `GoogleUser` or `AppleUser`. Nothing is connected to a real auth provider, so it cannot persist sessions, redirect through Google/Apple, or authenticate real users.
 
-## Fix mobile screen-height clipping on Start & Result screens
+### Goal
+Implement real authentication for:
+- Google sign-in
+- Apple sign-in
+- Email/password login and signup already shown in the modal
+- Logout
+- Session persistence after refresh / redirect
 
-Two viewport bugs, both isolated to mobile:
+Without breaking:
+- Instant no-login gameplay
+- Existing start/game/result screens
+- Recent Samsung Smart TV compatibility work
+- Existing visual style of the login modal/header
 
-### 1. Start screen scrolls on iOS Chrome / Firefox
+### Implementation steps
 
-**Root cause:** `StartScreen` root uses `min-h-screen` which resolves to `100vh` — the **large** viewport in Chrome/Firefox iOS (URL bar collapsed). When the page first loads with the URL bar visible, the actual viewport is shorter, so content overflows and the page scrolls. Safari uses the small viewport for `100vh` so it's already correct.
+#### 1. Add Supabase client integration
+- Install/use `@supabase/supabase-js`.
+- Add `src/integrations/supabase/client.ts` using Vite env vars:
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_PUBLISHABLE_KEY`
+- Keep auth storage guarded for older/restricted browsers so TV browsers do not crash if storage is blocked.
 
-**Fix — `src/components/StartScreen.tsx`:**
-- Change root `<div>` from `min-h-screen` to `min-h-[100svh]` and add inline style locking it to the live visual viewport on mobile only:
-  ```tsx
-  className="min-h-[100svh] flex flex-col relative overflow-hidden"
-  style={{
-    background: "hsl(var(--game-bg))",
-    minHeight: "var(--app-vh, 100svh)",
-    maxHeight: "var(--app-vh, 100svh)",
-  }}
-  ```
-- This reuses the existing `--app-vh` CSS variable already maintained by the `useEffect` in `TriviaGame.tsx` (lines 137–165), which tracks `visualViewport.height`. No new listeners needed.
-- Add `overflow-hidden` is already present — combined with the locked max-height, this prevents the body scroll on Chrome/Firefox iOS without affecting Safari (where `100svh` already matches).
+#### 2. Replace fake `AuthContext` with real auth state
+Update `src/contexts/AuthContext.tsx` to:
+- Listen to `supabase.auth.onAuthStateChange`.
+- Load the initial session with `supabase.auth.getSession()`.
+- Map the Supabase user into the current app shape:
+  - `id`
+  - `email`
+  - `username` from user metadata, email prefix, or provider metadata
+  - `provider`
+- Implement:
+  - `login(email, password)` via `supabase.auth.signInWithPassword`
+  - `signup(email, password, username)` via `supabase.auth.signUp`
+  - `loginWithGoogle()` via `supabase.auth.signInWithOAuth({ provider: "google" })`
+  - `loginWithApple()` via `supabase.auth.signInWithOAuth({ provider: "apple" })`
+  - `logout()` via `supabase.auth.signOut()`
+- Use redirect URL `window.location.origin` so preview and published domains return to the correct app.
 
-### 2. Result screen scrolls on Safari / clips on Firefox (mobile)
+#### 3. Keep profile storage out of scope for now
+Because the app only needs a display username in the header and no database-backed profile data has been requested, I will not add a profiles table or roles table.
 
-**Root cause:** `ResultScreen` renders inside the `grid grid-rows-[auto_1fr_auto]` container in `TriviaGame.tsx` whose total height is locked to `--app-vh` with `overflow-hidden`. The result card stack (mascot 128px + heading + divider + two CTAs + mailto link + `gap-8` + `py-10`) is ~560px tall, plus root `py-8` (64px). On a 667–700px visual viewport (Firefox iOS with chrome) the card is taller than the row, so Firefox clips the bottom. Safari's body absorbs the overflow → unwanted scroll.
+User data will come from Supabase Auth metadata/session only. This avoids adding database schema, RLS, or role-related risk unnecessarily.
 
-**Fix — `src/components/ResultScreen.tsx`:**
-- Make the screen consume only the available row height and shrink padding on mobile:
-  - Root container: change `py-8` → `py-4 sm:py-8`, add `min-h-0 overflow-hidden`.
-- Tighten the card vertical rhythm on mobile so it always fits:
-  - Card inner `<div className="px-8 py-10 flex flex-col items-center gap-8">` → `px-8 py-6 sm:py-10 flex flex-col items-center gap-5 sm:gap-8`
-  - Mascot wrapper image `w-32 h-32` → `w-24 h-24 sm:w-32 sm:h-32`, glow `w-40 h-40` → `w-32 h-32 sm:w-40 sm:h-40`
-  - Heading `text-4xl sm:text-5xl` → `text-3xl sm:text-5xl`
-- These changes only affect screens narrower than the `sm` breakpoint (640px); desktop is unchanged.
+#### 4. Improve login modal behavior and messages
+Update `src/components/LoginScreen.tsx` so real auth failures show useful messages:
+- Invalid email/password
+- OAuth redirect failure
+- Signup confirmation message if email confirmation is required
+- Loading state remains on buttons while Supabase is processing
 
-### Why both fixes are mobile-only
+The existing visual design will remain the same.
 
-- `100svh` resolves identically to `100vh` on desktop browsers (no URL bar collapse), and `--app-vh` always equals the window height there — so the StartScreen lock is a no-op on desktop.
-- The ResultScreen padding/sizing reductions are gated on `sm:` Tailwind prefixes (≥640px reverts to current values), so tablets and desktop look identical.
+#### 5. OAuth provider setup requirements
+Code can initiate the real Google/Apple flows, but the project backend must also have Google and Apple providers enabled.
 
-### Files to edit
+After implementation, you will need to verify in Lovable Cloud/Supabase auth settings that:
+- Google provider is enabled.
+- Apple provider is enabled.
+- Redirect URLs include the published domain:
+  - `https://triviolivia.com`
+  - `https://www.triviolivia.com`
+  - `https://triviolivia.lovable.app`
+  - preview URL if testing from preview
 
-- `src/components/StartScreen.tsx` — swap `min-h-screen` for `--app-vh`-locked `min-h-[100svh]` with `maxHeight` lock.
-- `src/components/ResultScreen.tsx` — mobile padding/gap/icon-size reductions, add `min-h-0 overflow-hidden` on root.
+If the provider is not enabled, the UI will show a clear auth error instead of pretending login worked.
 
-### Post-implementation verification
+### Technical notes
+- I will not add protected routes; gameplay remains public.
+- I will keep `BrowserRouter` and current page flow unchanged.
+- I will preserve the legacy-browser hardening from the Smart TV compatibility pass.
+- I will avoid client-side admin/role logic entirely.
 
-After the changes, take screenshots at 390×844 (iPhone 12/13/14 portrait, the current viewport target) for both Start and Result screens and confirm:
-- No vertical scroll on either screen.
-- Card content fully visible top-to-bottom (mascot, heading, divider, both CTAs, mailto link).
-- No layout regression at desktop sizes.
-
+### Verification
+After implementation:
+- Open login modal and confirm Google/Apple buttons call real OAuth redirects.
+- Confirm email/password signup/login uses Supabase Auth.
+- Confirm returning from OAuth shows the logged-in username in the header.
+- Confirm logout clears the session.
+- Confirm start screen still loads for logged-out users.
+- Confirm no new direct use of fragile browser APIs that could reintroduce TV blank-screen issues.
