@@ -9,10 +9,10 @@ const PrimaryCTA = forwardRef<HTMLButtonElement, PrimaryCTAProps>(
       <button
         ref={ref}
         className={cn(
-          "nav-btn premium-sheen min-h-14 py-2 px-10 rounded-full border-2 border-[#221948] whitespace-nowrap overflow-hidden relative",
+          "nav-btn min-h-14 py-2 px-10 rounded-full border-2 border-[#221948] whitespace-nowrap",
           "bg-[linear-gradient(0deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)]",
           "text-white text-xl font-heading font-extrabold tracking-[0.18em] uppercase",
-          "shadow-lg shadow-black/30 transition-all duration-200 animate-glass-glow",
+          "shadow-lg shadow-black/30 transition-all duration-200",
           "inline-flex items-center justify-center gap-2",
           "disabled:opacity-60 disabled:cursor-not-allowed active:scale-95",
           className
