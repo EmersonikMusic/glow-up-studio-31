@@ -12,31 +12,44 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
   const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  const getAuthMessage = (err: unknown) => {
+    if (err instanceof Error && err.message) return err.message;
+    return "Authentication failed. Please try again.";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     try {
       if (mode === "signup") {
         if (!username.trim()) { setError("Username is required"); return; }
-        await signup(email, password, username);
+        const result = await signup(email, password, username);
+        if (result.needsEmailConfirmation) {
+          setNotice("Check your email to confirm your account, then sign in.");
+          setMode("login");
+          return;
+        }
       } else {
         await login(email, password);
       }
       onClose();
-    } catch {
-      setError("Authentication failed. Please try again.");
+    } catch (err) {
+      setError(getAuthMessage(err));
     }
   };
 
   const handleSocial = async (provider: "google" | "apple") => {
     setError("");
+    setNotice("");
     try {
       if (provider === "google") await loginWithGoogle();
       else await loginWithApple();
       onClose();
-    } catch {
-      setError("Social login failed. Please try again.");
+    } catch (err) {
+      setError(getAuthMessage(err));
     }
   };
 
@@ -178,6 +191,9 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
           {error && (
             <p className="text-xs font-semibold text-center" style={{ color: "hsl(0 70% 60%)" }}>{error}</p>
           )}
+          {notice && (
+            <p className="text-xs font-semibold text-center" style={{ color: "hsl(185 70% 55%)" }}>{notice}</p>
+          )}
 
           <PrimaryCTA type="submit" disabled={isLoading} className="w-full mt-1">
             <LogIn className="w-4 h-4" />
@@ -186,7 +202,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
 
           <button
             type="button"
-            onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }}
+            onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); setNotice(""); }}
             className="text-xs font-semibold text-center transition-colors"
             style={{ color: "rgba(255,255,255,0.45)" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.75)")}
