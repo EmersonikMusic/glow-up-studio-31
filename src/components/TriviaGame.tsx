@@ -495,6 +495,13 @@ export default function TriviaGame() {
               }}
             >
               <div
+                className="absolute inset-[-10%] rounded-full animate-spotlight-breathe"
+                style={{
+                  background: "radial-gradient(circle, hsl(var(--game-spotlight) / 0.16), hsl(var(--game-teal) / 0.1) 42%, transparent 72%)",
+                  filter: "blur(14px)",
+                }}
+              />
+              <div
                 className="absolute rounded-full"
                 style={{
                   width: "70%",
