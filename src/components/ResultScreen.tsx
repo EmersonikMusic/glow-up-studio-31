@@ -46,19 +46,19 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
             />
             <img
               src={mascotImg}
-              alt="Olivia"
+              alt="Olivia the mascot"
               className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl animate-float"
             />
           </div>
 
           {/* Main heading */}
           <div className="text-center space-y-3">
-            <div
+            <h1
               className="text-3xl sm:text-5xl font-heading font-extrabold animate-bounce-in"
               style={{ color: "hsl(42 100% 55%)" }}
             >
               Trivia Complete!
-            </div>
+            </h1>
             <p className="text-muted-foreground text-base max-w-xs mx-auto leading-relaxed font-body font-semibold">
               Ready for another round?
             </p>

@@ -39,11 +39,11 @@ export default function Index() {
         <title>Triviolivia — Free Online Trivia Game with 25 Categories</title>
         <meta
           name="description"
-          content="Triviolivia is a free trivia game with thousands of say-aloud questions across 25 categories, 5 difficulties, and 12 eras. No signup — play instantly in your browser."
+          content="Free say-aloud trivia game with thousands of questions across 25 categories, 5 difficulties, and 12 eras. No signup — play in your browser."
         />
-        <link rel="canonical" href="https://triviolivia.com/" />
+        <link rel="canonical" href="/" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
-        <meta property="og:url" content="https://triviolivia.com/" />
+        <meta property="og:url" content="/" />
         <meta property="og:site_name" content="Triviolivia" />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
