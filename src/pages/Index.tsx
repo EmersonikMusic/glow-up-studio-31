@@ -36,10 +36,10 @@ export default function Index() {
   return (
     <>
       <Helmet>
-        <title>Triviolivia — Free Online Trivia Game with 25 Categories</title>
+        <title>Triviolivia — Free Trivia Game | 25 Categories, 12 Eras</title>
         <meta
           name="description"
-          content="Free say-aloud trivia game with thousands of questions across 25 categories, 5 difficulties, and 12 eras. No signup — play in your browser."
+          content="Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup."
         />
         <link rel="canonical" href="/" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
