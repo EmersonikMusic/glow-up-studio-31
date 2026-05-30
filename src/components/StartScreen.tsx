@@ -70,6 +70,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
             width: !isMobile && panelOpen ? "70%" : "100%",
           }}
         >
+          <h1 className="sr-only">Triviolivia — Earth's Deepest Trivia Source</h1>
           {/* Logo */}
           <div className="w-full max-w-2xl animate-fade-in animate-float-soft" style={{ animationDelay: "0ms" }}>
             <img

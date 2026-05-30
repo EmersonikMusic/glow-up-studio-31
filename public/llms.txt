@@ -1,0 +1,9 @@
+# Triviolivia
+
+> Earth's deepest trivia source — a free say-aloud trivia game with thousands of questions across 25 categories, 5 difficulty levels, and 12 historical eras. No signup required; play instantly in any browser.
+
+Triviolivia is a browser-based party trivia game designed for the say-aloud format: a question appears, players call out their answer, and the answer reveals on a timer. Solo or group play, with rich category, difficulty, and era controls.
+
+## Pages
+
+- [Home](/): Start a game, configure categories/difficulties/eras, and learn how to play.
