@@ -7,7 +7,15 @@ export const CATEGORY_IDS: Record<string, number> = {
   "Human Body": 7, Language: 8, Literature: 9, Math: 10, Miscellaneous: 11,
   Movies: 12, Music: 13, Nature: 14, Philosophy: 15, Politics: 16,
   "Pop Culture": 17, Science: 18, Sports: 19, Technology: 20, Television: 21,
-  "Performing Arts": 22, Theology: 23, "Video Games": 24, Law: 33,
+  "Performing Arts": 22, Theology: 23, "Video Games": 24, Law: 67,
+};
+
+// Backend alias categories that aren't user-selectable but share content with a
+// canonical category. Excluding the canonical should also exclude its aliases.
+const CATEGORY_ALIAS_IDS: Record<string, number[]> = {
+  "Food & Drink": [34], // "Food"
+  Economy: [35],        // "Economics"
+  "Performing Arts": [36], // "Theater"
 };
 
 export const DIFFICULTY_IDS: Record<string, number> = {
@@ -93,6 +101,11 @@ function buildUrl(settings: GameSettings): string {
   params.append("questions", String(settings.numQuestions || 10));
 
   const excludedCats = buildExcluded(settings.selectedCategories, CATEGORY_IDS);
+  // Also exclude backend alias IDs for any deselected canonical category.
+  const selectedSet = new Set(settings.selectedCategories);
+  for (const [name, aliasIds] of Object.entries(CATEGORY_ALIAS_IDS)) {
+    if (!selectedSet.has(name)) excludedCats.push(...aliasIds);
+  }
   if (excludedCats.length > 0) {
     params.append("category", excludedCats.join(","));
   }
@@ -137,14 +150,7 @@ export async function fetchAndStartGame(settings: GameSettings): Promise<Questio
     }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
-    // Defensive client-side category filter: the backend's `category=` exclude
-    // param does not honor every category (e.g. Law/id 33 leaks through). Drop
-    // any question whose category was deselected by the user.
-    const allowed = new Set(settings.selectedCategories);
-    const filtered = raw.filter(
-      (q) => !q.category_name || allowed.has(q.category_name),
-    );
-    return shuffle(filtered).map(adaptQuestion);
+    return shuffle(raw).map(adaptQuestion);
   } catch (err) {
     if ((err as Error).name === "AbortError") {
       throw new Error("Request timed out after 20 seconds");
