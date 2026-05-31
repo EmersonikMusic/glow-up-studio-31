@@ -1,33 +1,27 @@
-## Unify SEO metadata across the site
+## Summary
+Two targeted changes to the Result (end) screen: (1) make "Play Again" restart immediately with the same user-selected settings, and (2) increase vertical spacing between the two action buttons on mobile/tablet.
 
-Apply Title Case "Triviolivia", drop ".com" from titles, and use the stronger unified title + description everywhere.
+## Details
 
-### Final values
-- **Title (everywhere)**: `Triviolivia — Free Trivia Game | 25 Categories, 12 Eras`
-- **Meta description (everywhere)**: `Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup.`
-- **og:site_name (everywhere)**: `Triviolivia`
-- **JSON-LD `name`**: `Triviolivia`
+### 1. "Play Again" restarts with same settings
+**Current behavior:** clicking "Play Again" calls `handleRestart`, which resets the game state to `"start"` and returns the user to the start screen.
 
-### File changes
+**New behavior:** clicking "Play Again" should immediately fetch and start a new game round using the same `settings` object (same categories, difficulties, eras, question count, and timer durations).
 
-**`index.html`**
-- `<title>` → new unified title
-- `<meta name="description">` → new description
-- `<meta name="author">` → `Triviolivia`
-- `<meta property="og:site_name">` → `Triviolivia`
-- `<meta property="og:title">` / `twitter:title` → new title
-- `<meta property="og:description">` / `twitter:description` → new description
+**Implementation:**
+- In `src/components/TriviaGame.tsx`, add a new `handlePlayAgain` callback that:
+  - Clears active timers (`clearTimer`, `clearAnswerTimer`)
+  - Resets `questionIndex`, `score`, and `animKey`
+  - Calls the existing `runFetchAndStart(settings)` to launch a new round with the current settings
+- Pass `handlePlayAgain` into `ResultScreen` as the `onRestart` prop.
+- Leave `handleRestart` untouched; it will continue to be used by the "Change Settings" flow and the home button.
 
-**`src/pages/Index.tsx`** (react-helmet)
-- `<title>` → new unified title (matches index.html)
-- description stays in sync (already matches)
-- `og:site_name` already `Triviolivia` ✓
-- JSON-LD: change `WebSite.name` and `Organization.name` and `Game.name` from `TRIVIOLIVIA` → `Triviolivia`; update `WebSite.description` to match new direction
+### 2. More button spacing on mobile/tablet
+**Current:** the CTA container in `src/components/ResultScreen.tsx` uses a fixed `gap-3` (12px) at all breakpoints.
 
-**`src/pages/NotFound.tsx`**
-- Update any branded title suffix from `TRIVIOLIVIA` / `.com` variants to `Triviolivia` (will verify exact text on read in build mode)
+**New:** increase the gap on smaller screens where the buttons feel cramped, while keeping desktop spacing as-is.
+- Change `gap-3` to `gap-5 sm:gap-3` in the button flex container. This yields 20px spacing below the `sm` breakpoint (mobile/tablet) and 12px on desktop (`sm` and up).
 
-### Not changing
-- Visual logo/wordmark (`TRIVIOLIVIA` stays stylized in the UI)
-- H1s on Start and Result screens
-- llms.txt, robots.txt, sitemap.xml content
+## Files changed
+- `src/components/TriviaGame.tsx` — add `handlePlayAgain`, wire it to `ResultScreen`
+- `src/components/ResultScreen.tsx` — responsive gap tweak
