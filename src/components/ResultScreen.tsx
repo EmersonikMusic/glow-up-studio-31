@@ -69,7 +69,7 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
 
 
           {/* CTAs — equal width */}
-          <div className="flex flex-col items-stretch gap-3 w-full max-w-[280px] mx-auto">
+          <div className="flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto">
             <PrimaryCTA
               onClick={onRestart}
               className="group w-full"
