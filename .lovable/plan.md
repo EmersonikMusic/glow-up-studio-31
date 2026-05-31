@@ -1,27 +1,38 @@
-## Summary
-Two targeted changes to the Result (end) screen: (1) make "Play Again" restart immediately with the same user-selected settings, and (2) increase vertical spacing between the two action buttons on mobile/tablet.
+# Fix: Law (and other) questions leaking past category filter
 
-## Details
+## Root cause
 
-### 1. "Play Again" restarts with same settings
-**Current behavior:** clicking "Play Again" calls `handleRestart`, which resets the game state to `"start"` and returns the user to the start screen.
+The questions API (`https://triviolivia.herokuapp.com/api/questions/`) does **not** honor the Law category in its `category=` exclude parameter. I reproduced this directly:
 
-**New behavior:** clicking "Play Again" should immediately fetch and start a new game round using the same `settings` object (same categories, difficulties, eras, question count, and timer durations).
+- `?category=33` (Law's documented ID) → response still contains Law questions
+- Tried every ID 25–40, 50, 100 — none excludes Law
+- Excluding every other ID (1..24) returns ~all-Law results, confirming Law is in the pool but unreachable via the exclude param
 
-**Implementation:**
-- In `src/components/TriviaGame.tsx`, add a new `handlePlayAgain` callback that:
-  - Clears active timers (`clearTimer`, `clearAnswerTimer`)
-  - Resets `questionIndex`, `score`, and `animKey`
-  - Calls the existing `runFetchAndStart(settings)` to launch a new round with the current settings
-- Pass `handlePlayAgain` into `ResultScreen` as the `onRestart` prop.
-- Leave `handleRestart` untouched; it will continue to be used by the "Change Settings" flow and the home button.
+The bug is on the backend, but we can patch it safely on the client without touching anything else.
 
-### 2. More button spacing on mobile/tablet
-**Current:** the CTA container in `src/components/ResultScreen.tsx` uses a fixed `gap-3` (12px) at all breakpoints.
+## Fix (frontend only)
 
-**New:** increase the gap on smaller screens where the buttons feel cramped, while keeping desktop spacing as-is.
-- Change `gap-3` to `gap-5 sm:gap-3` in the button flex container. This yields 20px spacing below the `sm` breakpoint (mobile/tablet) and 12px on desktop (`sm` and up).
+Add a defensive post-fetch filter in `src/lib/triviaApi.ts` so any question whose `category_name` isn't in the user's `selectedCategories` is dropped before the game starts. This makes the UI honor the user's selection regardless of what the API returns.
+
+### Change in `src/lib/triviaApi.ts` — `fetchAndStartGame`
+
+After parsing `raw` and before `shuffle().map(adaptQuestion)`:
+
+```ts
+const allowed = new Set(settings.selectedCategories);
+const filtered = raw.filter(
+  (q) => !q.category_name || allowed.has(q.category_name),
+);
+return shuffle(filtered).map(adaptQuestion);
+```
+
+Notes:
+- Uses the existing `settings.selectedCategories` already passed in — no new params.
+- Only filters categories (the reported bug). Difficulty/era filters appear to work; not touching them.
+- If filtering empties the batch, the existing "No questions matched your filters" toast in `TriviaGame.runFetchAndStart` will fire naturally.
 
 ## Files changed
-- `src/components/TriviaGame.tsx` — add `handlePlayAgain`, wire it to `ResultScreen`
-- `src/components/ResultScreen.tsx` — responsive gap tweak
+
+- `src/lib/triviaApi.ts` — add the 4-line post-filter inside `fetchAndStartGame`.
+
+No other files, no UI changes, no settings/state changes.

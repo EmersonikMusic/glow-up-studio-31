@@ -137,7 +137,14 @@ export async function fetchAndStartGame(settings: GameSettings): Promise<Questio
     }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
-    return shuffle(raw).map(adaptQuestion);
+    // Defensive client-side category filter: the backend's `category=` exclude
+    // param does not honor every category (e.g. Law/id 33 leaks through). Drop
+    // any question whose category was deselected by the user.
+    const allowed = new Set(settings.selectedCategories);
+    const filtered = raw.filter(
+      (q) => !q.category_name || allowed.has(q.category_name),
+    );
+    return shuffle(filtered).map(adaptQuestion);
   } catch (err) {
     if ((err as Error).name === "AbortError") {
       throw new Error("Request timed out after 20 seconds");
