@@ -7,7 +7,15 @@ export const CATEGORY_IDS: Record<string, number> = {
   "Human Body": 7, Language: 8, Literature: 9, Math: 10, Miscellaneous: 11,
   Movies: 12, Music: 13, Nature: 14, Philosophy: 15, Politics: 16,
   "Pop Culture": 17, Science: 18, Sports: 19, Technology: 20, Television: 21,
-  "Performing Arts": 22, Theology: 23, "Video Games": 24, Law: 33,
+  "Performing Arts": 22, Theology: 23, "Video Games": 24, Law: 67,
+};
+
+// Backend alias categories that aren't user-selectable but share content with a
+// canonical category. Excluding the canonical should also exclude its aliases.
+const CATEGORY_ALIAS_IDS: Record<string, number[]> = {
+  "Food & Drink": [34], // "Food"
+  Economy: [35],        // "Economics"
+  "Performing Arts": [36], // "Theater"
 };
 
 export const DIFFICULTY_IDS: Record<string, number> = {

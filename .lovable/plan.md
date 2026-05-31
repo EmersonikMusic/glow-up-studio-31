@@ -1,38 +1,25 @@
-# Fix: Law (and other) questions leaking past category filter
-
 ## Root cause
 
-The questions API (`https://triviolivia.herokuapp.com/api/questions/`) does **not** honor the Law category in its `category=` exclude parameter. I reproduced this directly:
+Law's ID in `src/lib/triviaApi.ts` is wrong. I queried the live `/api/categories/` endpoint and the backend returns:
 
-- `?category=33` (Law's documented ID) → response still contains Law questions
-- Tried every ID 25–40, 50, 100 — none excludes Law
-- Excluding every other ID (1..24) returns ~all-Law results, confirming Law is in the pool but unreachable via the exclude param
+- **Law → id 67** (we had 33)
+- Plus three alias categories not in our map: **Food (34)**, **Economics (35)**, **Theater (36)**
 
-The bug is on the backend, but we can patch it safely on the client without touching anything else.
+Because we send `category=33,…` as the exclude list, the backend silently ignores `33` (no such category) and keeps Law in the pool — so Law questions always leak through, even when Law is deselected. The aliases leak the same way: `Theater` already appeared in a probe response.
 
-## Fix (frontend only)
+## Fix (frontend only, `src/lib/triviaApi.ts`)
 
-Add a defensive post-fetch filter in `src/lib/triviaApi.ts` so any question whose `category_name` isn't in the user's `selectedCategories` is dropped before the game starts. This makes the UI honor the user's selection regardless of what the API returns.
+1. **Correct the ID**: change `Law: 33` to `Law: 67` in `CATEGORY_IDS`.
+2. **Cover backend aliases** so deselecting a canonical category also excludes its alias. Extend `buildExcluded` (or add a small alias map) so when the user deselects:
+   - `Food & Drink` → also exclude `34` (Food)
+   - `Economy` → also exclude `35` (Economics)
+   - `Performing Arts` → also exclude `36` (Theater)
+3. **Remove the defensive post-fetch category filter** added previously — no longer needed once IDs are correct, and it would silently shrink batches if any other mismatch appeared. (Optional: keep it as a safety net. Recommend removing so we surface future backend drift instead of hiding it.)
 
-### Change in `src/lib/triviaApi.ts` — `fetchAndStartGame`
+No UI, settings, or state changes. No other files touched.
 
-After parsing `raw` and before `shuffle().map(adaptQuestion)`:
+## Technical notes
 
-```ts
-const allowed = new Set(settings.selectedCategories);
-const filtered = raw.filter(
-  (q) => !q.category_name || allowed.has(q.category_name),
-);
-return shuffle(filtered).map(adaptQuestion);
-```
-
-Notes:
-- Uses the existing `settings.selectedCategories` already passed in — no new params.
-- Only filters categories (the reported bug). Difficulty/era filters appear to work; not touching them.
-- If filtering empties the batch, the existing "No questions matched your filters" toast in `TriviaGame.runFetchAndStart` will fire naturally.
-
-## Files changed
-
-- `src/lib/triviaApi.ts` — add the 4-line post-filter inside `fetchAndStartGame`.
-
-No other files, no UI changes, no settings/state changes.
+- Source of truth used: `GET https://triviolivia.herokuapp.com/api/categories/` (confirmed Law id = 67, plus the three aliases above).
+- The alias categories aren't user-selectable in the UI; treating them as "always excluded unless their canonical category is selected" matches user intent.
+- If you'd rather I just fix the Law ID and leave the aliases handled by the existing post-fetch filter, say so and I'll trim step 2.
