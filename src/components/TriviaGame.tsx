@@ -389,6 +389,17 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
 
+  // Play Again: restart immediately with the same settings (skip start screen).
+  const handlePlayAgain = useCallback(async () => {
+    clearTimer();
+    clearAnswerTimer();
+    setPaused(false);
+    setQuestionIndex(0);
+    setScore(0);
+    setAnimKey((k) => k + 1);
+    await runFetchAndStart(settings);
+  }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
+
   if (gameState === "about") {
     return (
       <>
