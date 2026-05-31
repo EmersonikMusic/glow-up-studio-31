@@ -101,6 +101,11 @@ function buildUrl(settings: GameSettings): string {
   params.append("questions", String(settings.numQuestions || 10));
 
   const excludedCats = buildExcluded(settings.selectedCategories, CATEGORY_IDS);
+  // Also exclude backend alias IDs for any deselected canonical category.
+  const selectedSet = new Set(settings.selectedCategories);
+  for (const [name, aliasIds] of Object.entries(CATEGORY_ALIAS_IDS)) {
+    if (!selectedSet.has(name)) excludedCats.push(...aliasIds);
+  }
   if (excludedCats.length > 0) {
     params.append("category", excludedCats.join(","));
   }
