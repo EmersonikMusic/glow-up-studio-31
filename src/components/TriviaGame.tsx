@@ -465,7 +465,7 @@ export default function TriviaGame() {
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
-        <ResultScreen onRestart={handleRestart} onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }} />
+        <ResultScreen onRestart={handlePlayAgain} onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }} />
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
