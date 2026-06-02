@@ -337,19 +337,33 @@ export default function TriviaGame() {
         toast.error("No questions matched your filters. Try widening them.");
         return;
       }
+      // Reset all per-game state BEFORE entering countdown so the playing
+      // state has clean slate (prevents the stale `countdown === 0` from
+      // the prior finished game flipping the first question to "answered").
+      clearTimer();
+      clearAnswerTimer();
+      setCountdown(newSettings.timePerQuestion);
+      milestonesFiredRef.current.clear();
+      lastCategoryRef.current = null;
       setActiveQuestions(data);
       setQuestionIndex(0);
       setScore(0);
       setAnimKey((k) => k + 1);
       setPaused(false);
-      setGameState("playing");
-      deferCountdown(newSettings.timePerQuestion);
+      setGameState("countdown");
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again with different settings.");
     } finally {
       setLoading(false);
     }
+  }, [clearTimer, clearAnswerTimer, setCountdown]);
+
+  // Called by <PreGameCountdown /> when 3-2-1-Go! finishes.
+  const handleCountdownComplete = useCallback(() => {
+    setGameState("playing");
+    setAnimKey((k) => k + 1);
+    deferCountdown(timePerQuestionRef.current);
   }, [deferCountdown]);
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
