@@ -404,14 +404,16 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
 
-  // Play Again: restart immediately with the same settings (skip start screen).
+  // Play Again: show loading overlay, then restart with the same settings.
   const handlePlayAgain = useCallback(async () => {
     clearTimer();
     clearAnswerTimer();
     setPaused(false);
     setQuestionIndex(0);
     setScore(0);
+    setActiveQuestions([]);
     setAnimKey((k) => k + 1);
+    setGameState("loading");
     await runFetchAndStart(settings);
   }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
 
