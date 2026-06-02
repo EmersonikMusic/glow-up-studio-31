@@ -460,6 +460,36 @@ export default function TriviaGame() {
 
   const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
 
+  if (gameState === "loading") {
+    return (
+      <div
+        className="min-h-screen overscroll-none relative overflow-hidden flex items-center justify-center"
+        style={{
+          background: "hsl(var(--game-bg))",
+          minHeight: "var(--app-vh, 100vh)",
+          maxHeight: "var(--app-vh, 100vh)",
+        }}
+      >
+        <div className="flex flex-col items-center gap-6 animate-fade-in">
+          <div
+            className="w-16 h-16 rounded-full border-4 animate-spin"
+            style={{
+              borderColor: "rgba(255,255,255,0.15)",
+              borderTopColor: "hsl(42 100% 55%)",
+            }}
+            aria-hidden="true"
+          />
+          <p
+            className="font-body font-bold uppercase tracking-widest text-sm"
+            style={{ color: "hsl(42 100% 55%)" }}
+          >
+            Loading next round…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (gameState === "countdown") {
     return (
       <div
