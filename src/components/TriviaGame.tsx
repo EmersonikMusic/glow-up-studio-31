@@ -83,7 +83,7 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
   );
 }
 
-type GameState = "start" | "about" | "countdown" | "playing" | "answered" | "finished";
+type GameState = "start" | "about" | "loading" | "countdown" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -404,14 +404,16 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
 
-  // Play Again: restart immediately with the same settings (skip start screen).
+  // Play Again: show loading overlay, then restart with the same settings.
   const handlePlayAgain = useCallback(async () => {
     clearTimer();
     clearAnswerTimer();
     setPaused(false);
     setQuestionIndex(0);
     setScore(0);
+    setActiveQuestions([]);
     setAnimKey((k) => k + 1);
+    setGameState("loading");
     await runFetchAndStart(settings);
   }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
 
@@ -457,6 +459,36 @@ export default function TriviaGame() {
   }
 
   const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
+
+  if (gameState === "loading") {
+    return (
+      <div
+        className="min-h-screen overscroll-none relative overflow-hidden flex items-center justify-center"
+        style={{
+          background: "hsl(var(--game-bg))",
+          minHeight: "var(--app-vh, 100vh)",
+          maxHeight: "var(--app-vh, 100vh)",
+        }}
+      >
+        <div className="flex flex-col items-center gap-6 animate-fade-in">
+          <div
+            className="w-16 h-16 rounded-full border-4 animate-spin"
+            style={{
+              borderColor: "rgba(255,255,255,0.15)",
+              borderTopColor: "hsl(42 100% 55%)",
+            }}
+            aria-hidden="true"
+          />
+          <p
+            className="font-body font-bold uppercase tracking-widest text-sm"
+            style={{ color: "hsl(42 100% 55%)" }}
+          >
+            Loading next round…
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (gameState === "countdown") {
     return (
