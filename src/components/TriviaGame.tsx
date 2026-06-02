@@ -458,6 +458,23 @@ export default function TriviaGame() {
 
   const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
 
+  if (gameState === "countdown") {
+    return (
+      <div
+        className="min-h-screen overscroll-none relative overflow-hidden"
+        style={{
+          background: bgGradient || "hsl(var(--game-bg))",
+          transition: "background 0.6s ease",
+          minHeight: "var(--app-vh, 100vh)",
+          maxHeight: "var(--app-vh, 100vh)",
+        }}
+      >
+        <PreGameCountdown background={bgGradient} onComplete={handleCountdownComplete} />
+      </div>
+    );
+  }
+
+
   return (
     <div
       className="min-h-screen overscroll-none grid grid-rows-[auto_1fr_auto] relative overflow-hidden"
