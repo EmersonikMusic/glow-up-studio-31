@@ -19,6 +19,7 @@ import LoginScreen from "./LoginScreen";
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
+import PreGameCountdown from "./PreGameCountdown";
 import { matchesMedia } from "@/lib/browserCompat";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
@@ -82,7 +83,7 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
   );
 }
 
-type GameState = "start" | "about" | "playing" | "answered" | "finished";
+type GameState = "start" | "about" | "countdown" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -336,19 +337,33 @@ export default function TriviaGame() {
         toast.error("No questions matched your filters. Try widening them.");
         return;
       }
+      // Reset all per-game state BEFORE entering countdown so the playing
+      // state has clean slate (prevents the stale `countdown === 0` from
+      // the prior finished game flipping the first question to "answered").
+      clearTimer();
+      clearAnswerTimer();
+      setCountdown(newSettings.timePerQuestion);
+      milestonesFiredRef.current.clear();
+      lastCategoryRef.current = null;
       setActiveQuestions(data);
       setQuestionIndex(0);
       setScore(0);
       setAnimKey((k) => k + 1);
       setPaused(false);
-      setGameState("playing");
-      deferCountdown(newSettings.timePerQuestion);
+      setGameState("countdown");
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again with different settings.");
     } finally {
       setLoading(false);
     }
+  }, [clearTimer, clearAnswerTimer, setCountdown]);
+
+  // Called by <PreGameCountdown /> when 3-2-1-Go! finishes.
+  const handleCountdownComplete = useCallback(() => {
+    setGameState("playing");
+    setAnimKey((k) => k + 1);
+    deferCountdown(timePerQuestionRef.current);
   }, [deferCountdown]);
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
@@ -442,6 +457,23 @@ export default function TriviaGame() {
   }
 
   const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
+
+  if (gameState === "countdown") {
+    return (
+      <div
+        className="min-h-screen overscroll-none relative overflow-hidden"
+        style={{
+          background: bgGradient || "hsl(var(--game-bg))",
+          transition: "background 0.6s ease",
+          minHeight: "var(--app-vh, 100vh)",
+          maxHeight: "var(--app-vh, 100vh)",
+        }}
+      >
+        <PreGameCountdown background={bgGradient} onComplete={handleCountdownComplete} />
+      </div>
+    );
+  }
+
 
   return (
     <div
