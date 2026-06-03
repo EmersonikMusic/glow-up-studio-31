@@ -19,7 +19,7 @@ import LoginScreen from "./LoginScreen";
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
-import PreGameCountdown from "./PreGameCountdown";
+
 import { matchesMedia } from "@/lib/browserCompat";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
@@ -83,7 +83,7 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
   );
 }
 
-type GameState = "start" | "about" | "loading" | "countdown" | "playing" | "answered" | "finished";
+type GameState = "start" | "about" | "loading" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -350,21 +350,16 @@ export default function TriviaGame() {
       setScore(0);
       setAnimKey((k) => k + 1);
       setPaused(false);
-      setGameState("countdown");
+      setGameState("playing");
+      deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again with different settings.");
     } finally {
       setLoading(false);
     }
-  }, [clearTimer, clearAnswerTimer, setCountdown]);
+  }, [clearTimer, clearAnswerTimer, setCountdown, deferCountdown]);
 
-  // Called by <PreGameCountdown /> when 3-2-1-Go! finishes.
-  const handleCountdownComplete = useCallback(() => {
-    setGameState("playing");
-    setAnimKey((k) => k + 1);
-    deferCountdown(timePerQuestionRef.current);
-  }, [deferCountdown]);
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
@@ -648,10 +643,8 @@ export default function TriviaGame() {
 
       {/* Login modal */}
       {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
-      {/* Pre-game 3-2-1 overlay */}
-      {gameState === "countdown" && (
-        <PreGameCountdown onComplete={handleCountdownComplete} />
-      )}
+
+
 
 
       {/* Mascot debug overlay (toggle: ?mascotDebug=1 or Shift+D) */}
