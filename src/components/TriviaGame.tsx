@@ -350,21 +350,16 @@ export default function TriviaGame() {
       setScore(0);
       setAnimKey((k) => k + 1);
       setPaused(false);
-      setGameState("countdown");
+      setGameState("playing");
+      deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again with different settings.");
     } finally {
       setLoading(false);
     }
-  }, [clearTimer, clearAnswerTimer, setCountdown]);
+  }, [clearTimer, clearAnswerTimer, setCountdown, deferCountdown]);
 
-  // Called by <PreGameCountdown /> when 3-2-1-Go! finishes.
-  const handleCountdownComplete = useCallback(() => {
-    setGameState("playing");
-    setAnimKey((k) => k + 1);
-    deferCountdown(timePerQuestionRef.current);
-  }, [deferCountdown]);
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
