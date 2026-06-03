@@ -19,7 +19,7 @@ import LoginScreen from "./LoginScreen";
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
-import PreGameCountdown from "./PreGameCountdown";
+
 import { matchesMedia } from "@/lib/browserCompat";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
