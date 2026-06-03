@@ -648,6 +648,11 @@ export default function TriviaGame() {
 
       {/* Login modal */}
       {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      {/* Pre-game 3-2-1 overlay */}
+      {gameState === "countdown" && (
+        <PreGameCountdown onComplete={handleCountdownComplete} />
+      )}
+
 
       {/* Mascot debug overlay (toggle: ?mascotDebug=1 or Shift+D) */}
       <MascotDebugOverlay />
