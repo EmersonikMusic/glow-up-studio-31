@@ -490,21 +490,6 @@ export default function TriviaGame() {
     );
   }
 
-  if (gameState === "countdown") {
-    return (
-      <div
-        className="min-h-screen overscroll-none relative overflow-hidden"
-        style={{
-          background: bgGradient || "hsl(var(--game-bg))",
-          transition: "background 0.6s ease",
-          minHeight: "var(--app-vh, 100vh)",
-          maxHeight: "var(--app-vh, 100vh)",
-        }}
-      >
-        <PreGameCountdown background={bgGradient} onComplete={handleCountdownComplete} />
-      </div>
-    );
-  }
 
 
   return (
@@ -663,6 +648,11 @@ export default function TriviaGame() {
 
       {/* Login modal */}
       {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      {/* Pre-game 3-2-1 overlay */}
+      {gameState === "countdown" && (
+        <PreGameCountdown onComplete={handleCountdownComplete} />
+      )}
+
 
       {/* Mascot debug overlay (toggle: ?mascotDebug=1 or Shift+D) */}
       <MascotDebugOverlay />
