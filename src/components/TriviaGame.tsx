@@ -83,7 +83,7 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
   );
 }
 
-type GameState = "start" | "about" | "loading" | "countdown" | "playing" | "answered" | "finished";
+type GameState = "start" | "about" | "loading" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
