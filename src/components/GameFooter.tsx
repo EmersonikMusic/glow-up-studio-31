@@ -59,14 +59,18 @@ export default function GameFooter({
       <div className="flex items-center gap-3 w-full md:w-[70%]">
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 backdrop-blur-md uppercase"
-          style={{ background: "rgba(0, 0, 0, 0.35)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
+          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
+          style={{ background: "rgba(0, 0, 0, 0.5)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}
           <div
             key={`${questionIndex}-${isAnswerPhase ? "answer" : "question"}`}
             className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
             style={{
+              width: "100%",
+              transformOrigin: "left center",
+              willChange: "transform",
+              backfaceVisibility: "hidden",
               background: "rgba(0, 0, 0, 0.3)",
               animation: isAnswerPhase
                 ? `bar-fill ${totalAnswerTime}s linear forwards`

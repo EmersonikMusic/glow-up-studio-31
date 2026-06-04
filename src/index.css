@@ -397,12 +397,12 @@
 
 /* Footer bar animations */
 @keyframes bar-deplete {
-  from { width: 100%; }
-  to   { width: 0%; }
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
 }
 @keyframes bar-fill {
-  from { width: 0%; }
-  to   { width: 100%; }
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 /* Game-show CTA button — sleeker rounded rectangle (educational gameshow vibe) */
