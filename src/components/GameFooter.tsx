@@ -73,8 +73,8 @@ export default function GameFooter({
               backfaceVisibility: "hidden",
               background: "rgba(0, 0, 0, 0.3)",
               animation: isAnswerPhase
-                ? `bar-fill ${totalAnswerTime}s steps(${totalAnswerTime}, end) forwards`
-                : `bar-deplete ${totalQuestionTime}s steps(${totalQuestionTime}, end) forwards`,
+                ? `bar-fill ${totalAnswerTime}s linear forwards`
+                : `bar-deplete ${totalQuestionTime}s linear forwards`,
               animationPlayState: paused ? "paused" : "running",
             }}
           />
