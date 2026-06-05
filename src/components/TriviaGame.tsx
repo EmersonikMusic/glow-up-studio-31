@@ -279,6 +279,33 @@ export default function TriviaGame() {
     }
   }, [gameState, play]);
 
+  // Read question aloud when a new question card appears.
+  useEffect(() => {
+    if (gameState !== "playing") return;
+    const q = activeQuestions[questionIndex];
+    if (!q) return;
+    speakAloud(q.text);
+  }, [gameState, questionIndex, activeQuestions, speakAloud]);
+
+  // Read correct answer aloud when it's revealed.
+  useEffect(() => {
+    if (gameState !== "answered") return;
+    const q = activeQuestions[questionIndex];
+    if (!q) return;
+    const correct = q.answers.find((a) => a.id === q.correctId)?.text;
+    if (correct) speakAloud(correct);
+  }, [gameState, questionIndex, activeQuestions, speakAloud]);
+
+  // Cancel any in-flight speech when leaving active gameplay.
+  useEffect(() => {
+    if (gameState !== "playing" && gameState !== "answered") {
+      cancelSpeech();
+    }
+  }, [gameState, cancelSpeech]);
+
+  // Cancel speech on unmount.
+  useEffect(() => () => cancelSpeech(), [cancelSpeech]);
+
   // Mascot droop when paused.
   useEffect(() => {
     if (paused && (gameState === "playing" || gameState === "answered")) {
