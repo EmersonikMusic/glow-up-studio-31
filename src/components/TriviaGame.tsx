@@ -6,6 +6,7 @@ import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import { useSound } from "@/hooks/useSound";
+import { useReadAloud } from "@/hooks/useReadAloud";
 import { toggleMuted } from "@/lib/sound";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
@@ -100,6 +101,7 @@ export default function TriviaGame() {
 
   // Polish state.
   const { play } = useSound();
+  const { speak: speakAloud, cancel: cancelSpeech } = useReadAloud();
   const [sparkleKey, setSparkleKey] = useState(0);
   const [milestoneKey, setMilestoneKey] = useState(0);
   const [mascotState, setMascotState] = useState<MascotState>("idle");
