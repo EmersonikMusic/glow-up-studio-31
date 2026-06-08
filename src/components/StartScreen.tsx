@@ -11,7 +11,6 @@ import { trackClick } from "@/lib/analytics";
 interface StartScreenProps {
   onStart: () => void;
   onAbout: () => void;
-  onLogin: () => void;
   onHowToPlay: () => void;
   onApply: (settings: GameSettings) => void;
   panelOpen: boolean;
@@ -20,7 +19,7 @@ interface StartScreenProps {
   loading?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
 
@@ -57,7 +56,6 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
       <GameHeader
         onSettingsToggle={onPanelToggle}
         onAbout={onAbout}
-        onLogin={onLogin}
         settingsOpen={panelOpen}
       />
 

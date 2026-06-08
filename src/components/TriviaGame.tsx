@@ -16,7 +16,7 @@ import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import SettingsPanel from "./SettingsPanel";
-import LoginScreen from "./LoginScreen";
+
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
@@ -96,7 +96,7 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
-  const [showLogin, setShowLogin] = useState(false);
+  
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   // Polish state.
@@ -447,7 +447,6 @@ export default function TriviaGame() {
         <StartScreen
           onStart={handleStart}
           onAbout={() => setGameState("about")}
-          onLogin={() => setShowLogin(true)}
           onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
@@ -456,7 +455,6 @@ export default function TriviaGame() {
           loading={loading}
         />
         <AboutScreen onClose={() => setGameState("start")} />
-        {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
       </>
     );
@@ -468,7 +466,6 @@ export default function TriviaGame() {
         <StartScreen
           onStart={handleStart}
           onAbout={() => setGameState("about")}
-          onLogin={() => setShowLogin(true)}
           onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
@@ -476,7 +473,6 @@ export default function TriviaGame() {
           onPanelClose={() => setPanelOpen(false)}
           loading={loading}
         />
-        {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
       </>
     );
@@ -531,7 +527,7 @@ export default function TriviaGame() {
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
         onAbout={() => setGameState("about")}
-        onLogin={() => setShowLogin(true)}
+        
         onHome={handleRestart}
         settingsOpen={panelOpen}
       />
@@ -670,8 +666,6 @@ export default function TriviaGame() {
         currentSettings={settings}
       />
 
-      {/* Login modal */}
-      {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
 
 
 

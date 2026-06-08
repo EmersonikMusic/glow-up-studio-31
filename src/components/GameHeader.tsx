@@ -1,8 +1,7 @@
-import { LogIn, LogOut, User, Info, Maximize2, Minimize2 } from "lucide-react";
+import { Info, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
-import { useAuth } from "@/contexts/AuthContext";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import ReadAloudToggle from "./ReadAloudToggle";
@@ -11,7 +10,6 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
   onAbout?: () => void;
-  onLogin?: () => void;
   onHome?: () => void;
   settingsOpen?: boolean;
 }
@@ -19,11 +17,9 @@ interface GameHeaderProps {
 export default function GameHeader({
   onSettingsToggle,
   onAbout,
-  onLogin,
   onHome,
   settingsOpen = false,
 }: GameHeaderProps) {
-  const { user, logout } = useAuth();
 
   const fsSupported =
     typeof document !== "undefined" &&
@@ -72,14 +68,14 @@ export default function GameHeader({
       }}
     >
       <div className="flex items-center justify-between gap-2">
-        {/* Left slot: Logo (when logged out) OR username pill (mobile only, when logged in) */}
+        {/* Left slot: Logo */}
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
           <button
             type="button"
             onClick={() => { trackClick("header_home_logo"); onHome?.(); }}
             disabled={!onHome}
             aria-label="Return to start screen"
-            className={`${user ? "hidden sm:block" : "block"} rounded transition-transform duration-200 active:scale-95 disabled:cursor-default disabled:active:scale-100 md:hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--game-gold))]`}
+            className="block rounded transition-transform duration-200 active:scale-95 disabled:cursor-default disabled:active:scale-100 md:hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--game-gold))]"
           >
             <img
               src={toLogoSm}
@@ -88,58 +84,10 @@ export default function GameHeader({
               draggable={false}
             />
           </button>
-          {/* Mobile-only username pill — sits at the same x-position as the logo */}
-          {user && (
-            <span
-              className="username-pill-mobile sm:hidden flex items-center gap-1.5 h-9 px-3 text-xs font-body font-bold tracking-wider uppercase rounded-full"
-              style={{
-                color: "hsl(185 70% 55%)",
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-              }}
-            >
-              <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(185 70% 55%)" }} />
-              <span className="whitespace-nowrap">{user.username.slice(0, 20)}</span>
-            </span>
-          )}
         </div>
 
-        {/* Right: Username (desktop) → Login/Logout → About → Settings → Fullscreen */}
+        {/* Right: About → Settings → Fullscreen */}
         <div className="flex items-center gap-1 sm:gap-2">
-          {/* Username pill — desktop/tablet only, sits left of Logout */}
-          {user && (
-            <span
-              className="username-pill-desktop hidden sm:flex items-center gap-1.5 h-9 px-4 text-xs font-body font-bold tracking-wider uppercase whitespace-nowrap rounded-full"
-              style={{
-                color: "hsl(185 70% 55%)",
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-              }}
-            >
-              <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(185 70% 55%)" }} />
-              <span>{user.username.slice(0, 20)}</span>
-            </span>
-          )}
-          {/* Logout only — login UI is hidden until real account creation/login is enabled */}
-          {user ? (
-            <button
-              onClick={() => { trackClick("header_logout"); logout(); }}
-              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
-              style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-              }}
-              aria-label="Log out"
-            >
-              <LogOut className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
-              <span
-                className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
-                style={{ color: "hsl(var(--game-gold))" }}
-              >
-                Logout
-              </span>
-            </button>
-          ) : null}
 
           {/* About */}
           {onAbout && (
