@@ -297,7 +297,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   // Single open section — accordion behavior. Game Settings open by default.
   const [openSection, setOpenSection] = useState<SectionKey>("game");
   const toggleSection = (key: Exclude<SectionKey, null>) =>
-    setOpenSection((cur) => (cur === key ? null : key));
+    setOpenSection((cur) => {
+      const next = cur === key ? null : key;
+      trackClick(`settings_section_${key}_${next === key ? "open" : "close"}`);
+      return next;
+    });
   const catOpen = openSection === "categories";
   const diffOpen = openSection === "difficulty";
   const eraOpen = openSection === "eras";
@@ -353,10 +357,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const panelContent = (
     <>
       {/* Back button (desktop only) */}
+      {/* Back button (desktop only) */}
       {!isMobile && (
         <div className="px-5 pt-4 md:px-6 md:pt-5">
           <button
-            onClick={onClose}
+            onClick={() => { trackClick("settings_back"); onClose(); }}
             aria-label="Back"
             className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
             style={{
@@ -489,7 +494,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
         {gameInProgress && hasChanges ? (
           <>
-            <PrimaryCTA onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
+            <PrimaryCTA trackId="settings_apply_request" onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
               {applyLabel}
             </PrimaryCTA>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
@@ -502,7 +507,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <button
-                    onClick={() => setConfirmOpen(false)}
+                    onClick={() => { trackClick("settings_apply_cancel"); setConfirmOpen(false); }}
                     className="nav-btn rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                     style={{
                       background: "rgba(255, 255, 255, 0.08)",
@@ -513,6 +518,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                     Cancel
                   </button>
                   <PrimaryCTA
+                    trackId="settings_apply_confirm"
                     onClick={() => {
                       setConfirmOpen(false);
                       handleApply();
@@ -525,7 +531,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             </AlertDialog>
           </>
         ) : (
-          <PrimaryCTA onClick={handleApply} aria-label={applyLabel}>
+          <PrimaryCTA trackId="settings_apply" onClick={handleApply} aria-label={applyLabel}>
             {applyLabel}
           </PrimaryCTA>
         )}
