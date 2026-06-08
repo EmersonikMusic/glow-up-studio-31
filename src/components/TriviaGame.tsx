@@ -390,6 +390,8 @@ export default function TriviaGame() {
       setAnimKey((k) => k + 1);
       setPaused(false);
       setGameState("playing");
+      startedAtRef.current = Date.now();
+      trackGameStart(newSettings);
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
