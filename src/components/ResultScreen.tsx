@@ -73,6 +73,7 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
           <div className="flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto">
             <PrimaryCTA
               onClick={onRestart}
+              trackId="result_play_again"
               className="group w-full"
               aria-label="Play Again"
             >
@@ -81,7 +82,7 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
             </PrimaryCTA>
             {onChangeSettings && (
               <button
-                onClick={onChangeSettings}
+                onClick={() => { trackClick("result_change_settings"); onChangeSettings(); }}
                 aria-label="Change Settings"
                 className="nav-btn w-full rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                 style={{
