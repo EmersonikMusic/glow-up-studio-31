@@ -454,6 +454,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 stops={[10, 20, 30, 40, 50]}
                 valueLabel={`${numQuestions}`}
                 suffixLabel="Questions"
+                trackId="slider_num_questions"
               />
 
               <StepSlider
@@ -465,6 +466,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 stops={[5, 10, 15, 20, 25, 30]}
                 valueLabel={`${timePerQuestion}s`}
                 suffixLabel="/ Question"
+                trackId="slider_time_per_question"
               />
 
               <StepSlider
@@ -476,6 +478,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 stops={[5, 10, 15, 20, 25, 30]}
                 valueLabel={`${timePerAnswer}s`}
                 suffixLabel="/ Answer"
+                trackId="slider_time_per_answer"
               />
             </div>
           </div>
