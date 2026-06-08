@@ -447,7 +447,6 @@ export default function TriviaGame() {
         <StartScreen
           onStart={handleStart}
           onAbout={() => setGameState("about")}
-          onLogin={() => setShowLogin(true)}
           onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
