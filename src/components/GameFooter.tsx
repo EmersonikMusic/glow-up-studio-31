@@ -1,5 +1,6 @@
 import { Pause, Play } from "lucide-react";
 import { Question } from "@/data/questions";
+import { trackClick } from "@/lib/analytics";
 
 interface GameFooterProps {
   question: Question;
@@ -107,7 +108,7 @@ export default function GameFooter({
 
         {/* Pause / Play — matches gear icon style */}
         <button
-          onClick={onTogglePause}
+          onClick={() => { trackClick(paused ? "footer_resume" : "footer_pause"); onTogglePause(); }}
           className="flex items-center justify-center flex-shrink-0 w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
           style={{
             background: "rgba(0, 0, 0, 0.35)",
