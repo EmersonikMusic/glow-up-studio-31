@@ -1,5 +1,6 @@
 import { Volume2, VolumeX } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
+import { trackToggle } from "@/lib/analytics";
 
 interface SoundToggleProps {
   className?: string;
@@ -10,10 +11,9 @@ export default function SoundToggle({ className }: SoundToggleProps) {
 
   const handleClick = () => {
     const wasMuted = muted;
+    trackToggle("sound", wasMuted); // new value = unmuted when wasMuted true
     toggle();
-    // Confirmation chime when un-muting (after the state is committed).
     if (wasMuted) {
-      // Small delay so the AudioContext has resumed.
       setTimeout(() => play("tick"), 50);
     }
   };
