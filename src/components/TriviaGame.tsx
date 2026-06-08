@@ -96,7 +96,7 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
-  const [showLogin, setShowLogin] = useState(false);
+  
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   // Polish state.
