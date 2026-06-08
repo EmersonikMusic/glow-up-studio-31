@@ -1,13 +1,26 @@
-import { ButtonHTMLAttributes, forwardRef } from "react";
+import { ButtonHTMLAttributes, forwardRef, MouseEvent } from "react";
 import { cn } from "@/lib/utils";
+import { trackClick } from "@/lib/analytics";
 
-export interface PrimaryCTAProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface PrimaryCTAProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Optional explicit GA control id. Falls back to aria-label, then button text. */
+  trackId?: string;
+}
 
 const PrimaryCTA = forwardRef<HTMLButtonElement, PrimaryCTAProps>(
-  ({ className, children, style, ...props }, ref) => {
+  ({ className, children, style, onClick, trackId, ...props }, ref) => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+      const id =
+        trackId ||
+        (props["aria-label"] as string | undefined) ||
+        (typeof children === "string" ? children : "primary_cta");
+      trackClick(`cta_primary__${id}`);
+      onClick?.(e);
+    };
     return (
       <button
         ref={ref}
+        onClick={handleClick}
         className={cn(
           "nav-btn min-h-14 py-2 px-10 rounded-full border-2 border-[#221948] whitespace-nowrap",
           "bg-[linear-gradient(0deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)]",
