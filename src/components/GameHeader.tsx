@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
 import { useAuth } from "@/contexts/AuthContext";
+import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import ReadAloudToggle from "./ReadAloudToggle";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
@@ -52,6 +53,7 @@ export default function GameHeader({
     const el = document.documentElement as any;
     const doc = document as any;
     const fsEl = document.fullscreenElement || doc.webkitFullscreenElement;
+    trackClick(fsEl ? "header_fullscreen_exit" : "header_fullscreen_enter");
     if (!fsEl) {
       el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
     } else {
@@ -74,7 +76,7 @@ export default function GameHeader({
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
           <button
             type="button"
-            onClick={onHome}
+            onClick={() => { trackClick("header_home_logo"); onHome?.(); }}
             disabled={!onHome}
             aria-label="Return to start screen"
             className={`${user ? "hidden sm:block" : "block"} rounded transition-transform duration-200 active:scale-95 disabled:cursor-default disabled:active:scale-100 md:hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--game-gold))]`}
@@ -121,7 +123,7 @@ export default function GameHeader({
           {/* Logout only — login UI is hidden until real account creation/login is enabled */}
           {user ? (
             <button
-              onClick={logout}
+              onClick={() => { trackClick("header_logout"); logout(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
@@ -142,7 +144,7 @@ export default function GameHeader({
           {/* About */}
           {onAbout && (
             <button
-              onClick={onAbout}
+              onClick={() => { trackClick("header_about"); onAbout(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
@@ -163,7 +165,7 @@ export default function GameHeader({
           {/* Settings gear — always icon-only */}
           {onSettingsToggle && (
             <button
-              onClick={onSettingsToggle}
+              onClick={() => { trackClick(settingsOpen ? "header_settings_close" : "header_settings_open"); onSettingsToggle(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",

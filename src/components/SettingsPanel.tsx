@@ -25,6 +25,7 @@ import {
   ALL_ERAS,
   type GameSettings,
 } from "@/data/gameOptions";
+import { trackClick, trackSelect, trackSlider } from "@/lib/analytics";
 
 // Re-exported for backward compatibility with any existing imports.
 export type { GameSettings };
@@ -153,6 +154,7 @@ function FilterSection({
   selected,
   onChange,
   preserveCase,
+  trackGroup,
 }: {
   label: string;
   iconActive: string;
@@ -163,11 +165,19 @@ function FilterSection({
   selected: string[];
   onChange: (next: string[]) => void;
   preserveCase?: (option: string) => boolean;
+  trackGroup: string;
 }) {
   const allSelected = options.every((o) => selected.includes(o));
-  const toggleAll = () => onChange(allSelected ? [] : [...options]);
-  const toggleOne = (opt: string) =>
+  const toggleAll = () => {
+    const nextActive = !allSelected;
+    trackSelect(trackGroup, "__all__", nextActive);
+    onChange(allSelected ? [] : [...options]);
+  };
+  const toggleOne = (opt: string) => {
+    const nextActive = !selected.includes(opt);
+    trackSelect(trackGroup, opt, nextActive);
     onChange(selected.includes(opt) ? selected.filter((v) => v !== opt) : [...selected, opt]);
+  };
 
   return (
     <section
@@ -221,6 +231,7 @@ function StepSlider({
   stops,
   valueLabel,
   suffixLabel,
+  trackId,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -230,6 +241,7 @@ function StepSlider({
   stops: number[];
   valueLabel: string;
   suffixLabel: string;
+  trackId: string;
 }) {
   return (
     <div>
@@ -248,7 +260,7 @@ function StepSlider({
           max={max}
           step={step}
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => { const v = Number(e.target.value); trackSlider(trackId, v); onChange(v); }}
           onKeyDown={(e) => e.stopPropagation()}
           className="step-slider w-full"
         />
@@ -285,7 +297,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   // Single open section — accordion behavior. Game Settings open by default.
   const [openSection, setOpenSection] = useState<SectionKey>("game");
   const toggleSection = (key: Exclude<SectionKey, null>) =>
-    setOpenSection((cur) => (cur === key ? null : key));
+    setOpenSection((cur) => {
+      const next = cur === key ? null : key;
+      trackClick(`settings_section_${key}_${next === key ? "open" : "close"}`);
+      return next;
+    });
   const catOpen = openSection === "categories";
   const diffOpen = openSection === "difficulty";
   const eraOpen = openSection === "eras";
@@ -341,10 +357,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const panelContent = (
     <>
       {/* Back button (desktop only) */}
+      {/* Back button (desktop only) */}
       {!isMobile && (
         <div className="px-5 pt-4 md:px-6 md:pt-5">
           <button
-            onClick={onClose}
+            onClick={() => { trackClick("settings_back"); onClose(); }}
             aria-label="Back"
             className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
             style={{
@@ -386,6 +403,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         options={categories}
         selected={selectedCategories}
         onChange={setSelectedCategories}
+        trackGroup="category"
       />
 
       <FilterSection
@@ -397,6 +415,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         options={difficulties}
         selected={selectedDifficulties}
         onChange={setSelectedDifficulties}
+        trackGroup="difficulty"
       />
 
       <FilterSection
@@ -409,6 +428,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         selected={selectedEras}
         onChange={setSelectedEras}
         preserveCase={(opt) => /^\d{4}s$/.test(opt)}
+        trackGroup="era"
       />
 
       <section
@@ -439,6 +459,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 stops={[10, 20, 30, 40, 50]}
                 valueLabel={`${numQuestions}`}
                 suffixLabel="Questions"
+                trackId="slider_num_questions"
               />
 
               <StepSlider
@@ -450,6 +471,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 stops={[5, 10, 15, 20, 25, 30]}
                 valueLabel={`${timePerQuestion}s`}
                 suffixLabel="/ Question"
+                trackId="slider_time_per_question"
               />
 
               <StepSlider
@@ -461,6 +483,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 stops={[5, 10, 15, 20, 25, 30]}
                 valueLabel={`${timePerAnswer}s`}
                 suffixLabel="/ Answer"
+                trackId="slider_time_per_answer"
               />
             </div>
           </div>
@@ -471,7 +494,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
         {gameInProgress && hasChanges ? (
           <>
-            <PrimaryCTA onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
+            <PrimaryCTA trackId="settings_apply_request" onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
               {applyLabel}
             </PrimaryCTA>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
@@ -484,7 +507,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <button
-                    onClick={() => setConfirmOpen(false)}
+                    onClick={() => { trackClick("settings_apply_cancel"); setConfirmOpen(false); }}
                     className="nav-btn rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                     style={{
                       background: "rgba(255, 255, 255, 0.08)",
@@ -495,6 +518,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                     Cancel
                   </button>
                   <PrimaryCTA
+                    trackId="settings_apply_confirm"
                     onClick={() => {
                       setConfirmOpen(false);
                       handleApply();
@@ -507,7 +531,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             </AlertDialog>
           </>
         ) : (
-          <PrimaryCTA onClick={handleApply} aria-label={applyLabel}>
+          <PrimaryCTA trackId="settings_apply" onClick={handleApply} aria-label={applyLabel}>
             {applyLabel}
           </PrimaryCTA>
         )}

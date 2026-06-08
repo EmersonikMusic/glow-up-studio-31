@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogIn, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import PrimaryCTA from "@/components/PrimaryCTA";
+import { trackClick } from "@/lib/analytics";
 
 export default function LoginScreen({ onClose }: { onClose: () => void }) {
   const { login, loginWithGoogle, loginWithApple, signup, isLoading } = useAuth();
@@ -16,6 +17,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    trackClick(mode === "signup" ? "login_signup_submit" : "login_signin_submit");
     try {
       if (mode === "signup") {
         if (!username.trim()) { setError("Username is required"); return; }
@@ -31,6 +33,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
 
   const handleSocial = async (provider: "google" | "apple") => {
     setError("");
+    trackClick(`login_social_${provider}`);
     try {
       if (provider === "google") await loginWithGoogle();
       else await loginWithApple();
@@ -62,7 +65,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <button
-            onClick={onClose}
+            onClick={() => { trackClick("login_close"); onClose(); }}
             className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
             style={{ background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.15)" }}
           >
@@ -167,7 +170,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
             />
             <button
               type="button"
-              onClick={() => setShowPassword((v) => !v)}
+              onClick={() => { trackClick("login_toggle_password_visibility"); setShowPassword((v) => !v); }}
               className="absolute right-3 top-1/2 -translate-y-1/2"
               style={{ color: "rgba(255,255,255,0.4)" }}
             >
@@ -186,7 +189,7 @@ export default function LoginScreen({ onClose }: { onClose: () => void }) {
 
           <button
             type="button"
-            onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }}
+            onClick={() => { const next = mode === "login" ? "signup" : "login"; trackClick(`login_switch_to_${next}`); setMode(next); setError(""); }}
             className="text-xs font-semibold text-center transition-colors"
             style={{ color: "rgba(255,255,255,0.45)" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.75)")}

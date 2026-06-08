@@ -1,17 +1,25 @@
-import { ButtonHTMLAttributes, forwardRef } from "react";
+import { ButtonHTMLAttributes, forwardRef, MouseEvent } from "react";
 import { cn } from "@/lib/utils";
+import { trackClick } from "@/lib/analytics";
 
-export interface SecondaryCTAProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface SecondaryCTAProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  trackId?: string;
+}
 
-/**
- * Outlined/ghost variant matching PrimaryCTA's shape & font, with reduced
- * visual weight (transparent background, white border, white text).
- */
 const SecondaryCTA = forwardRef<HTMLButtonElement, SecondaryCTAProps>(
-  ({ className, children, style, ...props }, ref) => {
+  ({ className, children, style, onClick, trackId, ...props }, ref) => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+      const id =
+        trackId ||
+        (props["aria-label"] as string | undefined) ||
+        (typeof children === "string" ? children : "secondary_cta");
+      trackClick(`cta_secondary__${id}`);
+      onClick?.(e);
+    };
     return (
       <button
         ref={ref}
+        onClick={handleClick}
         className={cn(
           "nav-btn min-h-14 py-2 px-10 rounded-full whitespace-nowrap",
           "bg-transparent text-white text-xl font-heading font-extrabold tracking-[0.18em] uppercase",

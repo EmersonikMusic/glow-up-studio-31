@@ -1,5 +1,6 @@
 import { Megaphone, MegaphoneOff } from "lucide-react";
 import { useReadAloud } from "@/hooks/useReadAloud";
+import { trackToggle } from "@/lib/analytics";
 
 interface ReadAloudToggleProps {
   className?: string;
@@ -10,9 +11,14 @@ export default function ReadAloudToggle({ className }: ReadAloudToggleProps) {
 
   if (!supported) return null;
 
+  const handleClick = () => {
+    trackToggle("read_aloud", !enabled);
+    toggle();
+  };
+
   return (
     <button
-      onClick={toggle}
+      onClick={handleClick}
       className={`nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95 ${className ?? ""}`}
       style={{
         background: "rgba(255, 255, 255, 0.08)",
@@ -29,3 +35,4 @@ export default function ReadAloudToggle({ className }: ReadAloudToggleProps) {
     </button>
   );
 }
+

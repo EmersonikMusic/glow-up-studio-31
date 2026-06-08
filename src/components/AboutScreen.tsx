@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback } from "react";
 import PrimaryCTA from "./PrimaryCTA";
+import { trackClick } from "@/lib/analytics";
 
 interface AboutScreenProps {
   onClose: () => void;
@@ -13,6 +14,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
   const handleClose = useCallback(() => {
     if (exiting) return;
+    trackClick("about_close");
     setExiting(true);
     setTimeout(() => onClose(), isMobile ? 350 : 300);
   }, [onClose, isMobile, exiting]);

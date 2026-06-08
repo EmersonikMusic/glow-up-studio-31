@@ -6,6 +6,7 @@ import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
 import PrimaryCTA from "./PrimaryCTA";
 import { useSound } from "@/hooks/useSound";
+import { trackClick } from "@/lib/analytics";
 
 interface StartScreenProps {
   onStart: () => void;
@@ -126,6 +127,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
           <PrimaryCTA
             onClick={handleStart}
             disabled={loading}
+            trackId="start_game"
             className="mt-8 animate-fade-in"
             style={{ animationDelay: "180ms" }}
             aria-label={loading ? "Loading questions" : "Start Game"}
@@ -142,7 +144,7 @@ export default function StartScreen({ onStart, onAbout, onLogin, onHowToPlay, on
 
           {/* How Do I Play link */}
           <button
-            onClick={onHowToPlay}
+            onClick={() => { trackClick("start_how_to_play"); onHowToPlay(); }}
             className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
             style={{ animationDelay: "240ms" }}
           >
