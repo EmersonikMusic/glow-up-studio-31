@@ -22,6 +22,7 @@ import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
 
 import { matchesMedia } from "@/lib/browserCompat";
+import { trackGameStart, trackGameComplete, trackQuestionRevealed } from "@/lib/analytics";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
 function gradientFlashColor(gradient?: string): string | undefined {
@@ -115,6 +116,7 @@ export default function TriviaGame() {
   const questionIndexRef = useRef(0);
   const activeQuestionsLenRef = useRef(0);
   const timePerQuestionRef = useRef(DEFAULT_SETTINGS.timePerQuestion);
+  const startedAtRef = useRef<number>(0);
 
   const {
     value: countdown,
@@ -196,6 +198,13 @@ export default function TriviaGame() {
     clearAnswerTimer();
     const isLastNow = questionIndexRef.current === activeQuestionsLenRef.current - 1;
     if (isLastNow) {
+      trackGameComplete({
+        num_questions: activeQuestionsLenRef.current,
+        questions_played: questionIndexRef.current + 1,
+        duration_sec: startedAtRef.current
+          ? Math.round((Date.now() - startedAtRef.current) / 1000)
+          : 0,
+      });
       setGameState("finished");
       return;
     }
@@ -272,6 +281,7 @@ export default function TriviaGame() {
   // Reveal sound + mascot bounce when entering "answered".
   useEffect(() => {
     if (gameState === "answered") {
+      trackQuestionRevealed();
       play("reveal");
       setMascotState("celebrate");
       const t = setTimeout(() => setMascotState("idle"), 500);
@@ -380,6 +390,8 @@ export default function TriviaGame() {
       setAnimKey((k) => k + 1);
       setPaused(false);
       setGameState("playing");
+      startedAtRef.current = Date.now();
+      trackGameStart(newSettings);
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
