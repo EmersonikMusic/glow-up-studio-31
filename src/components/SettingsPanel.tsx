@@ -231,6 +231,7 @@ function StepSlider({
   stops,
   valueLabel,
   suffixLabel,
+  trackId,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -240,6 +241,7 @@ function StepSlider({
   stops: number[];
   valueLabel: string;
   suffixLabel: string;
+  trackId: string;
 }) {
   return (
     <div>
@@ -258,7 +260,7 @@ function StepSlider({
           max={max}
           step={step}
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => { const v = Number(e.target.value); trackSlider(trackId, v); onChange(v); }}
           onKeyDown={(e) => e.stopPropagation()}
           className="step-slider w-full"
         />
@@ -396,6 +398,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         options={categories}
         selected={selectedCategories}
         onChange={setSelectedCategories}
+        trackGroup="category"
       />
 
       <FilterSection
@@ -407,6 +410,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         options={difficulties}
         selected={selectedDifficulties}
         onChange={setSelectedDifficulties}
+        trackGroup="difficulty"
       />
 
       <FilterSection
@@ -419,6 +423,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         selected={selectedEras}
         onChange={setSelectedEras}
         preserveCase={(opt) => /^\d{4}s$/.test(opt)}
+        trackGroup="era"
       />
 
       <section
