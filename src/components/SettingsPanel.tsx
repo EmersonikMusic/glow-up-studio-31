@@ -25,7 +25,7 @@ import {
   ALL_ERAS,
   type GameSettings,
 } from "@/data/gameOptions";
-import { trackClick, trackSelect, trackSlider } from "@/lib/analytics";
+import { trackClick, trackSelect, trackSettingsApplied } from "@/lib/analytics";
 
 // Re-exported for backward compatibility with any existing imports.
 export type { GameSettings };
@@ -260,7 +260,7 @@ function StepSlider({
           max={max}
           step={step}
           value={value}
-          onChange={(e) => { const v = Number(e.target.value); trackSlider(trackId, v); onChange(v); }}
+          onChange={(e) => { const v = Number(e.target.value); onChange(v); }}
           onKeyDown={(e) => e.stopPropagation()}
           className="step-slider w-full"
         />
@@ -308,7 +308,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const gameOpen = openSection === "game";
 
   const handleApply = () => {
-    onApply?.({ numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras });
+    const next = { numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras };
+    trackSettingsApplied(next);
+    onApply?.(next);
     onClose();
   };
 
