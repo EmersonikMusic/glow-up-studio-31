@@ -666,8 +666,6 @@ export default function TriviaGame() {
         currentSettings={settings}
       />
 
-      {/* Login modal */}
-      {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
 
 
 
