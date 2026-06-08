@@ -25,6 +25,7 @@ import {
   ALL_ERAS,
   type GameSettings,
 } from "@/data/gameOptions";
+import { trackClick, trackSelect, trackSlider } from "@/lib/analytics";
 
 // Re-exported for backward compatibility with any existing imports.
 export type { GameSettings };
@@ -153,6 +154,7 @@ function FilterSection({
   selected,
   onChange,
   preserveCase,
+  trackGroup,
 }: {
   label: string;
   iconActive: string;
@@ -163,11 +165,19 @@ function FilterSection({
   selected: string[];
   onChange: (next: string[]) => void;
   preserveCase?: (option: string) => boolean;
+  trackGroup: string;
 }) {
   const allSelected = options.every((o) => selected.includes(o));
-  const toggleAll = () => onChange(allSelected ? [] : [...options]);
-  const toggleOne = (opt: string) =>
+  const toggleAll = () => {
+    const nextActive = !allSelected;
+    trackSelect(trackGroup, "__all__", nextActive);
+    onChange(allSelected ? [] : [...options]);
+  };
+  const toggleOne = (opt: string) => {
+    const nextActive = !selected.includes(opt);
+    trackSelect(trackGroup, opt, nextActive);
     onChange(selected.includes(opt) ? selected.filter((v) => v !== opt) : [...selected, opt]);
+  };
 
   return (
     <section
