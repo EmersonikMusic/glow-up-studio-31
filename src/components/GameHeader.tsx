@@ -1,8 +1,7 @@
-import { LogIn, LogOut, User, Info, Maximize2, Minimize2 } from "lucide-react";
+import { Info, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
-import { useAuth } from "@/contexts/AuthContext";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import ReadAloudToggle from "./ReadAloudToggle";
@@ -11,7 +10,6 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
   onAbout?: () => void;
-  onLogin?: () => void;
   onHome?: () => void;
   settingsOpen?: boolean;
 }
@@ -19,11 +17,9 @@ interface GameHeaderProps {
 export default function GameHeader({
   onSettingsToggle,
   onAbout,
-  onLogin,
   onHome,
   settingsOpen = false,
 }: GameHeaderProps) {
-  const { user, logout } = useAuth();
 
   const fsSupported =
     typeof document !== "undefined" &&
