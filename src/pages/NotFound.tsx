@@ -107,16 +107,14 @@ const NotFound = () => {
           </h1>
 
           <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-white">
-            This page wandered off the trivia trail.
+            This page wandered off
+            <br />
+            the trivia trail.
           </h2>
 
-          <p className="text-base font-body font-semibold text-white/80 leading-relaxed">
-            We searched every category, every era, every difficulty. Nothing here. Let's get you back to the questions.
-          </p>
-
           <div className="pt-2">
-            <PrimaryCTA onClick={() => navigate("/")} aria-label="Back to the Game">
-              Back to the Game
+            <PrimaryCTA onClick={() => navigate("/")} aria-label="Back to Game">
+              Back to Game
             </PrimaryCTA>
           </div>
         </div>
