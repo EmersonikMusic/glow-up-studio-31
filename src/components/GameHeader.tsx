@@ -134,8 +134,6 @@ export default function GameHeader({
           {/* Sound toggle */}
           <SoundToggle />
 
-          {/* Read-aloud toggle (browser TTS) */}
-          <ReadAloudToggle />
 
           {/* Keyboard shortcuts help (desktop only) */}
           <KeyboardShortcutsHelp />
