@@ -49,7 +49,6 @@ export default function GameHeader({
     const el = document.documentElement as any;
     const doc = document as any;
     const fsEl = document.fullscreenElement || doc.webkitFullscreenElement;
-    trackClick(fsEl ? "header_fullscreen_exit" : "header_fullscreen_enter");
     if (!fsEl) {
       el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
     } else {
