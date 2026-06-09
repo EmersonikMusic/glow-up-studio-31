@@ -20,17 +20,17 @@ export default function PauseOverlay({ visible }: PauseOverlayProps) {
       role="status"
     >
       <div
-        className="text-5xl sm:text-6xl font-heading font-extrabold tracking-wider"
+        className="text-3xl sm:text-4xl font-heading font-extrabold tracking-wider uppercase"
         style={{
           color: "hsl(var(--game-gold))",
           textShadow: "0 2px 12px rgba(0,0,0,0.6)",
           fontFamily: "'Fredoka One', 'Rubik', sans-serif",
         }}
       >
-        Paused
+        PAUSED
       </div>
       <p className="text-xs sm:text-sm font-body font-semibold uppercase tracking-widest text-white/80 text-center px-4">
-        Press space or start button to resume
+        PRESS SPACE OR PLAY BUTTON TO RESUME
       </p>
     </div>
   );
