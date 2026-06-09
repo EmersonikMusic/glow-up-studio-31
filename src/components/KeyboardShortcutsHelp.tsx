@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { HelpCircle } from "lucide-react";
 import { matchesMedia } from "@/lib/browserCompat";
-import { trackClick } from "@/lib/analytics";
+
 
 /**
  * Discoverable "?" pill that opens a small popover with desktop keyboard
