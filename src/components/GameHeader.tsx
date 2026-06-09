@@ -91,7 +91,7 @@ export default function GameHeader({
           {/* About */}
           {onAbout && (
             <button
-              onClick={() => { trackClick("header_about"); onAbout(); }}
+              onClick={() => { trackClick("click_about"); onAbout(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
