@@ -71,7 +71,7 @@ export default function GameHeader({
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
           <button
             type="button"
-            onClick={() => { trackClick("header_home_logo"); onHome?.(); }}
+            onClick={() => { onHome?.(); }}
             disabled={!onHome}
             aria-label="Return to start screen"
             className="block rounded transition-transform duration-200 active:scale-95 disabled:cursor-default disabled:active:scale-100 md:hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--game-gold))]"
