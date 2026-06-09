@@ -22,7 +22,7 @@ import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
 
 import { matchesMedia } from "@/lib/browserCompat";
-import { trackGameStart, trackGameComplete, trackQuestionRevealed } from "@/lib/analytics";
+import { trackGameStart, trackGameComplete } from "@/lib/analytics";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
 function gradientFlashColor(gradient?: string): string | undefined {
@@ -298,7 +298,6 @@ export default function TriviaGame() {
   // Reveal sound + mascot bounce when entering "answered".
   useEffect(() => {
     if (gameState === "answered") {
-      trackQuestionRevealed();
       play("reveal");
       setMascotState("celebrate");
       const t = setTimeout(() => setMascotState("idle"), 500);
