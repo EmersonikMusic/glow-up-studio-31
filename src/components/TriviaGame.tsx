@@ -6,7 +6,7 @@ import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import { useSound } from "@/hooks/useSound";
-import { useReadAloud } from "@/hooks/useReadAloud";
+
 import { toggleMuted } from "@/lib/sound";
 import GameHeader from "./GameHeader";
 import QuestionCard from "./QuestionCard";
@@ -102,7 +102,7 @@ export default function TriviaGame() {
 
   // Polish state.
   const { play } = useSound();
-  const { speak: speakAloud, cancel: cancelSpeech } = useReadAloud();
+  
   const [sparkleKey, setSparkleKey] = useState(0);
   const [milestoneKey, setMilestoneKey] = useState(0);
   const [mascotState, setMascotState] = useState<MascotState>("idle");
@@ -289,32 +289,6 @@ export default function TriviaGame() {
     }
   }, [gameState, play]);
 
-  // Read question aloud when a new question card appears.
-  useEffect(() => {
-    if (gameState !== "playing") return;
-    const q = activeQuestions[questionIndex];
-    if (!q) return;
-    speakAloud(q.text);
-  }, [gameState, questionIndex, activeQuestions, speakAloud]);
-
-  // Read correct answer aloud when it's revealed.
-  useEffect(() => {
-    if (gameState !== "answered") return;
-    const q = activeQuestions[questionIndex];
-    if (!q) return;
-    const correct = q.answers.find((a) => a.id === q.correctId)?.text;
-    if (correct) speakAloud(correct);
-  }, [gameState, questionIndex, activeQuestions, speakAloud]);
-
-  // Cancel any in-flight speech when leaving active gameplay.
-  useEffect(() => {
-    if (gameState !== "playing" && gameState !== "answered") {
-      cancelSpeech();
-    }
-  }, [gameState, cancelSpeech]);
-
-  // Cancel speech on unmount.
-  useEffect(() => () => cancelSpeech(), [cancelSpeech]);
 
   // Mascot droop when paused.
   useEffect(() => {

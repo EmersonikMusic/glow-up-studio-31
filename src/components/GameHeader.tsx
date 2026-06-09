@@ -4,7 +4,6 @@ import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
-import ReadAloudToggle from "./ReadAloudToggle";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 
 interface GameHeaderProps {
@@ -135,8 +134,6 @@ export default function GameHeader({
           {/* Sound toggle */}
           <SoundToggle />
 
-          {/* Read-aloud toggle (browser TTS) */}
-          <ReadAloudToggle />
 
           {/* Keyboard shortcuts help (desktop only) */}
           <KeyboardShortcutsHelp />
