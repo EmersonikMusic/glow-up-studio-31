@@ -102,7 +102,7 @@ export default function TriviaGame() {
 
   // Polish state.
   const { play } = useSound();
-  const { speak: speakAloud, cancel: cancelSpeech } = useReadAloud();
+  
   const [sparkleKey, setSparkleKey] = useState(0);
   const [milestoneKey, setMilestoneKey] = useState(0);
   const [mascotState, setMascotState] = useState<MascotState>("idle");
