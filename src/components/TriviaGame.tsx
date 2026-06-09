@@ -444,12 +444,12 @@ export default function TriviaGame() {
     await runFetchAndStart(settings);
   }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
 
-  if (gameState === "about") {
+  if (gameState === "start") {
     return (
       <>
         <StartScreen
           onStart={handleStart}
-          onAbout={() => setGameState("about")}
+          onAbout={handleOpenAbout}
           onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
@@ -457,7 +457,7 @@ export default function TriviaGame() {
           onPanelClose={() => setPanelOpen(false)}
           loading={loading}
         />
-        <AboutScreen onClose={() => setGameState("start")} />
+        {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
       </>
     );
