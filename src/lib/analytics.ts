@@ -2,16 +2,29 @@
  * Lightweight wrapper around the GA4 gtag.js loaded in index.html.
  * Safe to call from any component — no-ops when gtag is unavailable.
  *
- * Only the events listed below are emitted. Everything else has been
- * intentionally stripped so the GA4 property only receives key events:
- *   - ui_click  (powers cta_primary_*, click_pause, click_resume, click_about, …)
- *   - game_start
- *   - game_complete
+ * Only events in ALLOWED_CLICK_EVENTS (plus the funnel events `game_start`
+ * and `game_complete`) are forwarded to GA4. Each fires as its own named
+ * event so they appear directly in GA4's Events list and can be marked
+ * as Key Events without custom dimensions.
  */
 
 import type { GameSettings } from "@/data/gameOptions";
 
 type GtagParams = Record<string, unknown>;
+
+const ALLOWED_CLICK_EVENTS = new Set<string>([
+  "cta_primary_start_game",
+  "cta_primary_settings_apply",
+  "click_pause",
+  "click_resume",
+  "click_about",
+  "about_close",
+  "click_how_to_play",
+  "how_to_play_close",
+  "click_settings",
+  "settings_close",
+  "result_play_again",
+]);
 
 function getGtag(): ((...args: unknown[]) => void) | null {
   if (typeof window === "undefined") return null;
@@ -29,25 +42,17 @@ export function trackEvent(name: string, params?: GtagParams): void {
   }
 }
 
-/** Slugify free-form labels (e.g. aria-labels) into stable GA event ids. */
-function slug(s: string | undefined | null): string {
-  if (!s) return "unknown";
-  return s
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 60) || "unknown";
-}
-
-export function trackClick(controlId: string, params?: GtagParams): void {
-  trackEvent("ui_click", { control_id: slug(controlId), ...params });
+/**
+ * Emit a click as its own named GA4 event. Names not in the allowlist
+ * are silently dropped so the GA4 property stays limited to key events.
+ */
+export function trackClick(eventName: string, params?: GtagParams): void {
+  if (!ALLOWED_CLICK_EVENTS.has(eventName)) return;
+  trackEvent(eventName, params);
 }
 
 // ---------- Funnel events ----------
 
-/** Fires when a game actually starts. */
 export function trackGameStart(settings: GameSettings): void {
   trackEvent("game_start", {
     num_questions: settings.numQuestions,
@@ -59,7 +64,6 @@ export function trackGameStart(settings: GameSettings): void {
   });
 }
 
-/** Fires when a game reaches the finished state. */
 export function trackGameComplete(payload: {
   num_questions: number;
   questions_played: number;
