@@ -1,51 +1,26 @@
-# Add console.log to each analytics event
+# Remove voice-over functionality
 
-Edit only `src/lib/analytics.ts`. Add one `console.log('<event_name>')` line inside each tracking helper. No payloads logged — just the event name string, per request.
+Strip out all read-aloud / speech-synthesis code and its UI control. No other behavior, design, or copy changes.
 
-## Changes
+## Files to delete
+- `src/lib/speech.ts`
+- `src/hooks/useReadAloud.ts`
+- `src/components/ReadAloudToggle.tsx`
 
-**`trackEvent`** — no log added (keeps it a pure passthrough).
+## Files to edit
 
-**`trackClick(controlId)`** — add:
-```ts
-console.log(slug(controlId));
-```
-→ logs e.g. `header_about`, `header_settings_open`, `header_settings_close`, `header_home_logo`, `header_fullscreen_enter`, `header_fullscreen_exit`, `header_kbd_help_open`, `header_kbd_help_close`, `cta_primary__start_game`, `start_how_to_play`, `footer_pause`, `footer_resume`, `result_change_settings`, `cta_primary__play_again`.
+**`src/components/GameHeader.tsx`**
+- Remove `import ReadAloudToggle from "./ReadAloudToggle";`
+- Remove the `<ReadAloudToggle />` element (and its surrounding comment) from the header controls.
 
-**`trackToggle(controlId, value)`** — add:
-```ts
-console.log(slug(controlId));
-```
-→ logs `read_aloud`, `sound`.
+**`src/components/TriviaGame.tsx`**
+- Remove `import { useReadAloud } from "@/hooks/useReadAloud";`
+- Remove the `const { speak: speakAloud, cancel: cancelSpeech } = useReadAloud();` line.
+- Remove the three speech-related `useEffect`s:
+  - "Read question aloud when a new question card appears"
+  - "Read correct answer aloud when it's revealed"
+  - "Cancel any in-flight speech when leaving active gameplay"
+  - "Cancel speech on unmount"
 
-**`trackSelect(group, option)`** — add:
-```ts
-console.log(`${slug(group)}__${slug(option)}`);
-```
-→ logs e.g. `categories__history`, `difficulties__hard`, `eras__1980s`.
-
-**`trackGameStart`** — add:
-```ts
-console.log('game_start');
-console.log('game_start_categories');
-```
-
-**`trackSettingsApplied`** — add:
-```ts
-console.log('settings_applied');
-console.log('settings_applied_categories');
-```
-
-**`trackQuestionRevealed`** — add:
-```ts
-console.log('question_revealed');
-```
-
-**`trackGameComplete`** — add:
-```ts
-console.log('game_complete');
-```
-
-## Notes
-- Logs fire regardless of whether GA4/gtag is loaded, so testing works locally.
-- No other files modified.
+## Out of scope
+No design, layout, copy, analytics, or other functional changes. Sound effects (`useSound`) are untouched — only voice-over / TTS is removed.
