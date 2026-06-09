@@ -14,7 +14,7 @@ const PrimaryCTA = forwardRef<HTMLButtonElement, PrimaryCTAProps>(
         trackId ||
         (props["aria-label"] as string | undefined) ||
         (typeof children === "string" ? children : "primary_cta");
-      trackClick(`cta_primary__${id}`);
+      trackClick(`cta_primary_${id}`);
       onClick?.(e);
     };
     return (
