@@ -49,7 +49,6 @@ export default function GameHeader({
     const el = document.documentElement as any;
     const doc = document as any;
     const fsEl = document.fullscreenElement || doc.webkitFullscreenElement;
-    trackClick(fsEl ? "header_fullscreen_exit" : "header_fullscreen_enter");
     if (!fsEl) {
       el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
     } else {
@@ -72,7 +71,7 @@ export default function GameHeader({
         <div className="flex items-center flex-shrink-0 select-none min-w-0 gap-2">
           <button
             type="button"
-            onClick={() => { trackClick("header_home_logo"); onHome?.(); }}
+            onClick={() => { onHome?.(); }}
             disabled={!onHome}
             aria-label="Return to start screen"
             className="block rounded transition-transform duration-200 active:scale-95 disabled:cursor-default disabled:active:scale-100 md:hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--game-gold))]"
@@ -92,7 +91,7 @@ export default function GameHeader({
           {/* About */}
           {onAbout && (
             <button
-              onClick={() => { trackClick("header_about"); onAbout(); }}
+              onClick={() => { trackClick("click_about"); onAbout(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
@@ -113,7 +112,7 @@ export default function GameHeader({
           {/* Settings gear — always icon-only */}
           {onSettingsToggle && (
             <button
-              onClick={() => { trackClick(settingsOpen ? "header_settings_close" : "header_settings_open"); onSettingsToggle(); }}
+              onClick={() => { trackClick(settingsOpen ? "click_settings_close" : "click_settings_open"); onSettingsToggle(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",

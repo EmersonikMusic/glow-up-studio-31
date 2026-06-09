@@ -82,7 +82,7 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
             </PrimaryCTA>
             {onChangeSettings && (
               <button
-                onClick={() => { trackClick("result_change_settings"); onChangeSettings(); }}
+                onClick={() => { trackClick("click_change_settings"); onChangeSettings(); }}
                 aria-label="Change Settings"
                 className="nav-btn w-full rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
                 style={{

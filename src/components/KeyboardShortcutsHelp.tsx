@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { HelpCircle } from "lucide-react";
 import { matchesMedia } from "@/lib/browserCompat";
-import { trackClick } from "@/lib/analytics";
+
 
 /**
  * Discoverable "?" pill that opens a small popover with desktop keyboard
@@ -32,7 +32,7 @@ export default function KeyboardShortcutsHelp() {
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen((v) => { trackClick(v ? "header_kbd_help_close" : "header_kbd_help_open"); return !v; })}
+        onClick={() => setOpen((v) => !v)}
         className="nav-btn flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
         style={{
           background: "rgba(255, 255, 255, 0.08)",
