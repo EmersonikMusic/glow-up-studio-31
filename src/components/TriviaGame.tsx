@@ -85,7 +85,7 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
   );
 }
 
-type GameState = "start" | "about" | "loading" | "playing" | "answered" | "finished";
+type GameState = "start" | "loading" | "playing" | "answered" | "finished";
 
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -99,6 +99,23 @@ export default function TriviaGame() {
   const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+  const pausedByAboutRef = useRef(false);
+
+  const handleOpenAbout = useCallback(() => {
+    const inGame =
+      gameStateRef.current === "playing" || gameStateRef.current === "answered";
+    if (inGame && !pausedRef.current) {
+      pausedByAboutRef.current = true;
+      setPaused(true);
+    }
+    setShowAbout(true);
+  }, []);
+
+  const handleCloseAbout = useCallback(() => {
+    setShowAbout(false);
+    pausedByAboutRef.current = false;
+  }, []);
 
   // Polish state.
   const { play } = useSound();
@@ -427,31 +444,12 @@ export default function TriviaGame() {
     await runFetchAndStart(settings);
   }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
 
-  if (gameState === "about") {
-    return (
-      <>
-        <StartScreen
-          onStart={handleStart}
-          onAbout={() => setGameState("about")}
-          onHowToPlay={() => setShowHowToPlay(true)}
-          onApply={handleApply}
-          panelOpen={panelOpen}
-          onPanelToggle={() => setPanelOpen((v) => !v)}
-          onPanelClose={() => setPanelOpen(false)}
-          loading={loading}
-        />
-        <AboutScreen onClose={() => setGameState("start")} />
-        {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
-      </>
-    );
-  }
-
   if (gameState === "start") {
     return (
       <>
         <StartScreen
           onStart={handleStart}
-          onAbout={() => setGameState("about")}
+          onAbout={handleOpenAbout}
           onHowToPlay={() => setShowHowToPlay(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
@@ -459,10 +457,12 @@ export default function TriviaGame() {
           onPanelClose={() => setPanelOpen(false)}
           loading={loading}
         />
+        {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
       </>
     );
   }
+
 
   const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
 
@@ -512,7 +512,7 @@ export default function TriviaGame() {
       {/* Row 1: Header */}
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
-        onAbout={() => setGameState("about")}
+        onAbout={handleOpenAbout}
         
         onHome={handleRestart}
         settingsOpen={panelOpen}
@@ -658,6 +658,8 @@ export default function TriviaGame() {
 
       {/* Mascot debug overlay (toggle: ?mascotDebug=1 or Shift+D) */}
       <MascotDebugOverlay />
+
+      {showAbout && <AboutScreen onClose={handleCloseAbout} />}
     </div>
   );
 }
