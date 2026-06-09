@@ -658,6 +658,8 @@ export default function TriviaGame() {
 
       {/* Mascot debug overlay (toggle: ?mascotDebug=1 or Shift+D) */}
       <MascotDebugOverlay />
+
+      {showAbout && <AboutScreen onClose={handleCloseAbout} />}
     </div>
   );
 }
