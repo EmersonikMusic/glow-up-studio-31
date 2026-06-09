@@ -463,23 +463,6 @@ export default function TriviaGame() {
     );
   }
 
-  if (gameState === "start") {
-    return (
-      <>
-        <StartScreen
-          onStart={handleStart}
-          onAbout={() => setGameState("about")}
-          onHowToPlay={() => setShowHowToPlay(true)}
-          onApply={handleApply}
-          panelOpen={panelOpen}
-          onPanelToggle={() => setPanelOpen((v) => !v)}
-          onPanelClose={() => setPanelOpen(false)}
-          loading={loading}
-        />
-        {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
-      </>
-    );
-  }
 
   const bgGradient = currentQuestion && gameState !== "finished" ? categoryColors[currentQuestion.category] : undefined;
 
