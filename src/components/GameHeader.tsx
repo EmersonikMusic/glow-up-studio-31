@@ -112,7 +112,7 @@ export default function GameHeader({
           {/* Settings gear — always icon-only */}
           {onSettingsToggle && (
             <button
-              onClick={() => { trackClick(settingsOpen ? "header_settings_close" : "header_settings_open"); onSettingsToggle(); }}
+              onClick={() => { trackClick(settingsOpen ? "click_settings_close" : "click_settings_open"); onSettingsToggle(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
