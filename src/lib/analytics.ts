@@ -41,14 +41,17 @@ function slug(s: string | undefined | null): string {
 }
 
 export function trackClick(controlId: string, params?: GtagParams): void {
+  console.log(slug(controlId));
   trackEvent("ui_click", { control_id: slug(controlId), ...params });
 }
 
 export function trackToggle(controlId: string, value: boolean, params?: GtagParams): void {
+  console.log(slug(controlId));
   trackEvent("ui_toggle", { control_id: slug(controlId), value, ...params });
 }
 
 export function trackSelect(group: string, option: string, active: boolean, params?: GtagParams): void {
+  console.log(`${slug(group)}__${slug(option)}`);
   trackEvent("ui_select", {
     control_id: `${slug(group)}__${slug(option)}`,
     group: slug(group),
