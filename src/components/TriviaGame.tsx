@@ -99,6 +99,23 @@ export default function TriviaGame() {
   const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+  const pausedByAboutRef = useRef(false);
+
+  const handleOpenAbout = useCallback(() => {
+    const inGame =
+      gameStateRef.current === "playing" || gameStateRef.current === "answered";
+    if (inGame && !pausedRef.current) {
+      pausedByAboutRef.current = true;
+      setPaused(true);
+    }
+    setShowAbout(true);
+  }, []);
+
+  const handleCloseAbout = useCallback(() => {
+    setShowAbout(false);
+    pausedByAboutRef.current = false;
+  }, []);
 
   // Polish state.
   const { play } = useSound();
