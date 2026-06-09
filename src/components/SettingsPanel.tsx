@@ -25,7 +25,7 @@ import {
   ALL_ERAS,
   type GameSettings,
 } from "@/data/gameOptions";
-import { trackClick, trackSelect, trackSettingsApplied } from "@/lib/analytics";
+import { trackClick } from "@/lib/analytics";
 
 // Re-exported for backward compatibility with any existing imports.
 export type { GameSettings };
@@ -169,13 +169,9 @@ function FilterSection({
 }) {
   const allSelected = options.every((o) => selected.includes(o));
   const toggleAll = () => {
-    const nextActive = !allSelected;
-    trackSelect(trackGroup, "__all__", nextActive);
     onChange(allSelected ? [] : [...options]);
   };
   const toggleOne = (opt: string) => {
-    const nextActive = !selected.includes(opt);
-    trackSelect(trackGroup, opt, nextActive);
     onChange(selected.includes(opt) ? selected.filter((v) => v !== opt) : [...selected, opt]);
   };
 
@@ -309,7 +305,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
   const handleApply = () => {
     const next = { numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras };
-    trackSettingsApplied(next);
     onApply?.(next);
     onClose();
   };

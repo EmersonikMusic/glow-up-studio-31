@@ -1,14 +1,15 @@
 /**
  * Lightweight wrapper around the GA4 gtag.js loaded in index.html.
  * Safe to call from any component — no-ops when gtag is unavailable.
+ *
+ * Only the events listed below are emitted. Everything else has been
+ * intentionally stripped so the GA4 property only receives key events:
+ *   - ui_click  (powers cta_primary_*, click_pause, click_resume, click_about, …)
+ *   - game_start
+ *   - game_complete
  */
 
-import {
-  ALL_CATEGORIES,
-  ALL_DIFFICULTIES,
-  ALL_ERAS,
-  type GameSettings,
-} from "@/data/gameOptions";
+import type { GameSettings } from "@/data/gameOptions";
 
 type GtagParams = Record<string, unknown>;
 
@@ -41,86 +42,21 @@ function slug(s: string | undefined | null): string {
 }
 
 export function trackClick(controlId: string, params?: GtagParams): void {
-  console.log(slug(controlId));
   trackEvent("ui_click", { control_id: slug(controlId), ...params });
-}
-
-export function trackToggle(controlId: string, value: boolean, params?: GtagParams): void {
-  console.log(slug(controlId));
-  trackEvent("ui_toggle", { control_id: slug(controlId), value, ...params });
-}
-
-export function trackSelect(group: string, option: string, active: boolean, params?: GtagParams): void {
-  console.log(`${slug(group)}__${slug(option)}`);
-  trackEvent("ui_select", {
-    control_id: `${slug(group)}__${slug(option)}`,
-    group: slug(group),
-    option,
-    active,
-    ...params,
-  });
 }
 
 // ---------- Funnel events ----------
 
-/** Build `{ <slug>_on: true|false }` map for a fixed option list. */
-function toBoolMap(
-  all: readonly string[],
-  selected: readonly string[],
-  prefix = "",
-): Record<string, boolean> {
-  const set = new Set(selected);
-  const out: Record<string, boolean> = {};
-  for (const opt of all) {
-    out[`${prefix}${slug(opt)}_on`] = set.has(opt);
-  }
-  return out;
-}
-
-function buildSettingsCore(s: GameSettings): GtagParams {
-  return {
-    num_questions: s.numQuestions,
-    time_per_question: s.timePerQuestion,
-    time_per_answer: s.timePerAnswer,
-    categories_count: s.selectedCategories.length,
-    categories_all: s.selectedCategories.length === ALL_CATEGORIES.length,
-    difficulties_count: s.selectedDifficulties.length,
-    difficulties_all: s.selectedDifficulties.length === ALL_DIFFICULTIES.length,
-    eras_count: s.selectedEras.length,
-    eras_all: s.selectedEras.length === ALL_ERAS.length,
-    // Difficulty + era booleans fit alongside the core params (~23 total, under GA4's 25-param cap).
-    ...toBoolMap(ALL_DIFFICULTIES, s.selectedDifficulties),
-    ...toBoolMap(ALL_ERAS, s.selectedEras, "era_"),
-  };
-}
-
-function buildCategoriesPayload(s: GameSettings): GtagParams {
-  return {
-    categories_count: s.selectedCategories.length,
-    ...toBoolMap(ALL_CATEGORIES, s.selectedCategories),
-  };
-}
-
-/** Fires when a game actually starts. Split into two events to stay under GA4's 25-param cap. */
+/** Fires when a game actually starts. */
 export function trackGameStart(settings: GameSettings): void {
-  console.log('game_start');
-  trackEvent("game_start", buildSettingsCore(settings));
-  console.log('game_start_categories');
-  trackEvent("game_start_categories", buildCategoriesPayload(settings));
-}
-
-/** Fires when the user applies new settings (configuration intent, may or may not start a game). */
-export function trackSettingsApplied(settings: GameSettings): void {
-  console.log('settings_applied');
-  trackEvent("settings_applied", buildSettingsCore(settings));
-  console.log('settings_applied_categories');
-  trackEvent("settings_applied_categories", buildCategoriesPayload(settings));
-}
-
-/** Fires each time a question transitions to its reveal state — engagement volume metric. */
-export function trackQuestionRevealed(): void {
-  console.log('question_revealed');
-  trackEvent("question_revealed");
+  trackEvent("game_start", {
+    num_questions: settings.numQuestions,
+    time_per_question: settings.timePerQuestion,
+    time_per_answer: settings.timePerAnswer,
+    categories_count: settings.selectedCategories.length,
+    difficulties_count: settings.selectedDifficulties.length,
+    eras_count: settings.selectedEras.length,
+  });
 }
 
 /** Fires when a game reaches the finished state. */
@@ -129,6 +65,5 @@ export function trackGameComplete(payload: {
   questions_played: number;
   duration_sec: number;
 }): void {
-  console.log('game_complete');
   trackEvent("game_complete", payload);
 }
