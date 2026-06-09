@@ -41,14 +41,17 @@ function slug(s: string | undefined | null): string {
 }
 
 export function trackClick(controlId: string, params?: GtagParams): void {
+  console.log(slug(controlId));
   trackEvent("ui_click", { control_id: slug(controlId), ...params });
 }
 
 export function trackToggle(controlId: string, value: boolean, params?: GtagParams): void {
+  console.log(slug(controlId));
   trackEvent("ui_toggle", { control_id: slug(controlId), value, ...params });
 }
 
 export function trackSelect(group: string, option: string, active: boolean, params?: GtagParams): void {
+  console.log(`${slug(group)}__${slug(option)}`);
   trackEvent("ui_select", {
     control_id: `${slug(group)}__${slug(option)}`,
     group: slug(group),
@@ -100,18 +103,23 @@ function buildCategoriesPayload(s: GameSettings): GtagParams {
 
 /** Fires when a game actually starts. Split into two events to stay under GA4's 25-param cap. */
 export function trackGameStart(settings: GameSettings): void {
+  console.log('game_start');
   trackEvent("game_start", buildSettingsCore(settings));
+  console.log('game_start_categories');
   trackEvent("game_start_categories", buildCategoriesPayload(settings));
 }
 
 /** Fires when the user applies new settings (configuration intent, may or may not start a game). */
 export function trackSettingsApplied(settings: GameSettings): void {
+  console.log('settings_applied');
   trackEvent("settings_applied", buildSettingsCore(settings));
+  console.log('settings_applied_categories');
   trackEvent("settings_applied_categories", buildCategoriesPayload(settings));
 }
 
 /** Fires each time a question transitions to its reveal state — engagement volume metric. */
 export function trackQuestionRevealed(): void {
+  console.log('question_revealed');
   trackEvent("question_revealed");
 }
 
@@ -121,5 +129,6 @@ export function trackGameComplete(payload: {
   questions_played: number;
   duration_sec: number;
 }): void {
+  console.log('game_complete');
   trackEvent("game_complete", payload);
 }
