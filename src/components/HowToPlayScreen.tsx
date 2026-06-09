@@ -14,7 +14,7 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
 
   const handleClose = useCallback(() => {
     if (exiting) return;
-    trackClick("howtoplay_close");
+    trackClick("how_to_play_close");
     setExiting(true);
     setTimeout(() => onClose(), isMobile ? 350 : 300);
   }, [onClose, isMobile, exiting]);
