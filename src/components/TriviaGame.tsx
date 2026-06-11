@@ -479,14 +479,20 @@ export default function TriviaGame() {
           <div
             className="w-16 h-16 rounded-full border-4 animate-spin"
             style={{
-              borderColor: "rgba(255,255,255,0.15)",
+              borderColor: "transparent",
               borderTopColor: "hsl(42 100% 55%)",
             }}
             aria-hidden="true"
           />
           <p
-            className="font-body font-bold uppercase tracking-widest text-sm"
-            style={{ color: "hsl(42 100% 55%)" }}
+            className="text-xl md:text-3xl font-heading font-extrabold leading-none tracking-tight uppercase"
+            style={{
+              background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              lineHeight: 1.1,
+            }}
           >
             Loading next round…
           </p>
