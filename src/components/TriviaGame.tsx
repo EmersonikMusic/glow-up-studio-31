@@ -199,6 +199,9 @@ export default function TriviaGame() {
     }
   }, [panelOpen]);
 
+  useEffect(() => {
+    if (countdown === 0 && gameState === "playing") setGameState("answered");
+  }, [countdown, gameState]);
 
   useEffect(() => {
     if (gameState === "answered") startAnswerCountdown(settings.timePerAnswer);
@@ -227,16 +230,6 @@ export default function TriviaGame() {
     setAnimKey((k) => k + 1);
     startCountdown(timePerQuestionRef.current);
   }, [clearAnswerTimer, startCountdown]);
-
-  useEffect(() => {
-    if (countdown === 0 && gameState === "playing") {
-      if (settings.gameMode === "slideshow") {
-        advanceOrFinish();
-      } else {
-        setGameState("answered");
-      }
-    }
-  }, [countdown, gameState, settings.gameMode, advanceOrFinish]);
 
   useEffect(() => {
     if (answerCountdown === 0 && gameState === "answered") advanceOrFinish();
@@ -526,7 +519,7 @@ export default function TriviaGame() {
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
-        <ResultScreen onRestart={handlePlayAgain} onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }} questions={activeQuestions} mode={settings.gameMode} />
+        <ResultScreen onRestart={handlePlayAgain} onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }} />
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}

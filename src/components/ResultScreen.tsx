@@ -5,17 +5,13 @@ import PrimaryCTA from "./PrimaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
-import type { Question } from "@/data/questions";
-import type { GameMode } from "@/data/gameOptions";
 
 interface ResultScreenProps {
   onRestart: () => void;
   onChangeSettings?: () => void;
-  questions?: Question[];
-  mode?: GameMode;
 }
 
-export default function ResultScreen({ onRestart, onChangeSettings, questions = [], mode = "auto_reveal" }: ResultScreenProps) {
+export default function ResultScreen({ onRestart, onChangeSettings }: ResultScreenProps) {
   const { play } = useSound();
 
   // Fanfare on mount.
@@ -23,17 +19,15 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions = 
     play("complete");
   }, [play]);
 
-  const showRecap = mode === "slideshow" && questions.length > 0;
-
   return (
     <div
-      className="relative flex flex-col items-center justify-center flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 sm:py-8 animate-slide-in-up"
+      className="relative flex flex-col items-center justify-center flex-1 min-h-0 overflow-hidden px-4 sm:px-6 py-4 sm:py-8 animate-slide-in-up"
       style={{ background: "hsl(var(--game-bg))" }}
     >
       <ConfettiBurst count={14} />
       {/* Glassmorphism card */}
       <div
-        className="relative w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl my-auto"
+        className="relative w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
         style={{
           background: "rgba(0, 0, 0, 0.45)",
           border: "1.5px solid rgba(255, 255, 255, 0.18)",
@@ -73,57 +67,6 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions = 
 
           {/* Decorative divider */}
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
-
-          {/* Round Recap (slideshow mode only) */}
-          {showRecap && (
-            <div className="w-full">
-              <h2
-                className="text-xs font-subheading font-bold uppercase tracking-widest text-center mb-3"
-                style={{ color: "hsl(185 70% 55%)" }}
-              >
-                Round Recap
-              </h2>
-              <ol
-                className="w-full rounded-2xl overflow-y-auto"
-                style={{
-                  maxHeight: "40vh",
-                  background: "rgba(0,0,0,0.25)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                {questions.map((q, i) => {
-                  const correct = q.answers.find((a) => a.id === q.correctId)?.text ?? "";
-                  return (
-                    <li
-                      key={q.id ?? i}
-                      className="px-4 py-3 border-b last:border-b-0"
-                      style={{ borderColor: "rgba(255,255,255,0.06)" }}
-                    >
-                      <div className="flex gap-3">
-                        <span
-                          className="font-subheading font-bold flex-shrink-0"
-                          style={{ color: "hsl(42 100% 55%)", minWidth: "1.75rem" }}
-                        >
-                          {i + 1}.
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body font-semibold text-sm text-white/95 leading-snug">
-                            {q.text}
-                          </p>
-                          <p
-                            className="font-body font-bold text-sm mt-1 leading-snug"
-                            style={{ color: "hsl(185 70% 65%)" }}
-                          >
-                            {correct}
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
-          )}
 
 
           {/* CTAs — equal width */}
