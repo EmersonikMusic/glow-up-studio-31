@@ -61,6 +61,7 @@ export function trackGameStart(settings: GameSettings): void {
     categories_count: settings.selectedCategories.length,
     difficulties_count: settings.selectedDifficulties.length,
     eras_count: settings.selectedEras.length,
+    game_mode: settings.gameMode,
   });
 }
 
