@@ -449,6 +449,32 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         >
           <div className="min-h-0 overflow-hidden">
             <div className="px-5 py-4 flex flex-col gap-5">
+              {/* Game Mode toggle */}
+              <div>
+                <div className="flex items-baseline gap-1.5 mb-3">
+                  <span className="text-xs font-subheading font-bold uppercase tracking-widest" style={{ color: "hsl(185 70% 55%)" }}>
+                    Game Mode
+                  </span>
+                </div>
+                <div
+                  className="rounded-xl overflow-hidden [&>*:last-child]:border-b-0"
+                  style={{ background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.08)" }}
+                >
+                  <ToggleRow
+                    label="Reveal after each question"
+                    active={gameMode === "auto_reveal"}
+                    onClick={() => setGameMode("auto_reveal")}
+                    preserveCase
+                  />
+                  <ToggleRow
+                    label="Reveal all at the end"
+                    active={gameMode === "slideshow"}
+                    onClick={() => setGameMode("slideshow")}
+                    preserveCase
+                  />
+                </div>
+              </div>
+
               <StepSlider
                 value={numQuestions}
                 onChange={setNumQuestions}
@@ -473,17 +499,19 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 trackId="slider_time_per_question"
               />
 
-              <StepSlider
-                value={timePerAnswer}
-                onChange={setTimePerAnswer}
-                min={5}
-                max={30}
-                step={5}
-                stops={[5, 10, 15, 20, 25, 30]}
-                valueLabel={`${timePerAnswer}s`}
-                suffixLabel="/ Answer"
-                trackId="slider_time_per_answer"
-              />
+              {gameMode === "auto_reveal" && (
+                <StepSlider
+                  value={timePerAnswer}
+                  onChange={setTimePerAnswer}
+                  min={5}
+                  max={30}
+                  step={5}
+                  stops={[5, 10, 15, 20, 25, 30]}
+                  valueLabel={`${timePerAnswer}s`}
+                  suffixLabel="/ Answer"
+                  trackId="slider_time_per_answer"
+                />
+              )}
             </div>
           </div>
         </div>
