@@ -49,6 +49,8 @@ export const ALL_ERAS = [
   "2020s",
 ] as const;
 
+export type GameMode = "auto_reveal" | "slideshow";
+
 export interface GameSettings {
   numQuestions: number;
   timePerQuestion: number;
@@ -56,6 +58,7 @@ export interface GameSettings {
   selectedCategories: string[];
   selectedDifficulties: string[];
   selectedEras: string[];
+  gameMode: GameMode;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -65,4 +68,5 @@ export const DEFAULT_SETTINGS: GameSettings = {
   selectedCategories: [...ALL_CATEGORIES],
   selectedDifficulties: [...ALL_DIFFICULTIES],
   selectedEras: [...ALL_ERAS],
+  gameMode: "auto_reveal",
 };
