@@ -229,6 +229,16 @@ export default function TriviaGame() {
   }, [clearAnswerTimer, startCountdown]);
 
   useEffect(() => {
+    if (countdown === 0 && gameState === "playing") {
+      if (settings.gameMode === "slideshow") {
+        advanceOrFinish();
+      } else {
+        setGameState("answered");
+      }
+    }
+  }, [countdown, gameState, settings.gameMode, advanceOrFinish]);
+
+  useEffect(() => {
     if (answerCountdown === 0 && gameState === "answered") advanceOrFinish();
   }, [answerCountdown, gameState, advanceOrFinish]);
 
