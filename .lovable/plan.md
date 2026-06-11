@@ -1,45 +1,40 @@
-## Make the pre-mount fallback match the Start Game screen
+## Letter-by-letter bounce animation for "Loading Triviolivia…"
 
-Two issues to fix in `index.html`:
+Scoped to `index.html` only — the heading sits in the pre-mount fallback, so the animation must be pure CSS (no JS, no Motion, no React).
 
-1. The "white border" around the dark panel is the default 8px `<body>` margin (and html/body not set to full height) bleeding through as a white frame.
-2. The fallback has no header bar, so it doesn't visually match the Start Game screen.
+### Changes to `index.html`
 
-### Changes
+1. **Split the heading into per-character spans.**
+   Replace the existing `<h1>Loading Triviolivia…</h1>` with the same text wrapped one character at a time in `<span class="bounce-char">…</span>`. Spaces become `&nbsp;` inside their own span so the wave continues over the gap. The ellipsis `…` is included as its own bouncing span.
 
-**A. Reset page chrome (in `<head>` `<style>` or inline on body)**
-- `html, body { margin: 0; padding: 0; min-height: 100%; background: #1a1740; }`
-- This removes the white border on all browsers and matches the `--game-bg` token (`hsl(240 45% 16%)` ≈ `#1a1740`) used by `StartScreen`.
+2. **Add a keyframe + staggered delays in the existing `<style>` block in `<head>`.**
 
-**B. Add a header bar matching `GameHeader.tsx`**
-- Inside the fallback `<div id="root">`, prepend a `<header>` styled with the same rules used by the React header:
-  - `background: rgba(0,0,0,0.25)`
-  - `border-bottom: 1px solid rgba(255,255,255,0.1)`
-  - `backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);`
-  - Padding `clamp(12px, 2vw, 20px) clamp(16px, 4vw, 32px)`, including `padding-top: max(clamp(12px,2vw,20px), env(safe-area-inset-top))`
-- Header contains the small Trivolivia logo on the left, height 32px (matches `h-8` in GameHeader). Right side is intentionally empty (no Settings/About/etc. buttons — those are React-only and would not work pre-mount).
+   ```css
+   @keyframes triviaBounce {
+     0%, 60%, 100% { transform: translateY(0); }
+     30% { transform: translateY(-14%); }
+   }
+   .bounce-char {
+     display: inline-block;
+     animation: triviaBounce 1.4s cubic-bezier(.5,.05,.3,1) infinite;
+     will-change: transform;
+   }
+   @media (prefers-reduced-motion: reduce) {
+     .bounce-char { animation: none; }
+   }
+   ```
 
-**C. Make the logo available to static HTML**
-- The React app imports `src/assets/TO_logo_sm_clr.svg` via the Vite pipeline, so it is not served at a stable URL for index.html to reference. Copy that file to `public/to-logo-sm.svg` so it's served at `/to-logo-sm.svg` and can be loaded by the fallback `<img>` tag.
-- Use `<img src="/to-logo-sm.svg" alt="Trivolivia" style="height:32px;width:auto;display:block;" draggable="false" />`.
+3. **Stagger each letter by ~70ms via inline `style="animation-delay:Xms"`** on each span (0, 70, 140, 210… through the last character). This produces a left-to-right wave that loops smoothly.
 
-**D. Body content area**
-- Replace the previous root container with a flex column: header on top, then a `flex: 1` content area that vertically and horizontally centers the existing styled heading + helper paragraph (already updated last turn). Keep their typography exactly as last turn.
-- Use `min-height: 100vh; display:flex; flex-direction:column;` on the wrapper so the header sits at top and the loading message centers below it — same shape as `StartScreen`.
+4. **Preserve the existing typography.** The gold gradient, uppercase, Fredoka-style fallback font, size, and line-height stay exactly as they are — they are applied on the parent `<h1>`, and `inline-block` spans inherit the `background-clip:text` fill correctly because the gradient is painted on the `<h1>` (each `<span>` will pick it up since it inherits `color: transparent` and the clipped background extends across all inline children). If the gradient does not render across spans in any tested browser, fall back to setting the gradient on each `.bounce-char` instead of the `<h1>`.
 
-**E. No new dependencies, no font fetches, no JS, no other files.**
-
-### Files touched
-- `index.html` — replace the `<div id="root">` block with header + centered content; add the global `html, body` reset.
-- `public/to-logo-sm.svg` — new file, copied from `src/assets/TO_logo_sm_clr.svg`.
+5. **Respect reduced motion** via the media query above — no bounce for users who opt out.
 
 ### Out of scope
-- No changes to React components, the in-app loading screen, the `<noscript>` block, meta tags, scripts, or analytics.
-- No interactive buttons in the fallback header (they require React).
+
+- No change to layout, header bar, helper paragraph, background, or React code.
+- No new fonts, scripts, or assets.
 
 ### Verification
-Hard-refresh the preview. During the brief pre-mount flash (and on very old browsers that never mount), confirm:
-- No white border around the dark area on any side.
-- A dark glass header bar with the small Trivolivia logo at the top-left, matching the in-app header.
-- Background is the same deep purple as Start Game.
-- Heading "LOADING TRIVIOLIVIA…" in gold gradient, helper paragraph below, both centered.
+
+Hard-refresh the preview. Confirm a gentle left-to-right wave runs continuously across the gold heading, the ellipsis bounces last, the gold gradient stays intact across all letters, and users with `prefers-reduced-motion: reduce` see a static heading.
