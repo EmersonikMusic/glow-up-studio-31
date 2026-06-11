@@ -345,6 +345,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
     ? numQuestions !== currentSettings.numQuestions ||
       timePerQuestion !== currentSettings.timePerQuestion ||
       timePerAnswer !== currentSettings.timePerAnswer ||
+      gameMode !== currentSettings.gameMode ||
       !arraysEqual(selectedCategories, currentSettings.selectedCategories) ||
       !arraysEqual(selectedDifficulties, currentSettings.selectedDifficulties) ||
       !arraysEqual(selectedEras, currentSettings.selectedEras)
