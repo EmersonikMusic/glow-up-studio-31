@@ -1,35 +1,45 @@
-## Restyle the pre-mount loading fallback in `index.html`
+## Make the pre-mount fallback match the Start Game screen
 
-The "Loading Triviolivia… / If this message stays on screen, your browser may be too old…" screen comes from the boot fallback inside `<div id="root">` in `index.html` (lines 49–54), not from the in-app React loading screen. That's why earlier edits to `TriviaGame.tsx` had no effect on it.
+Two issues to fix in `index.html`:
 
-### Changes (scoped to `index.html` only)
+1. The "white border" around the dark panel is the default 8px `<body>` margin (and html/body not set to full height) bleeding through as a white frame.
+2. The fallback has no header bar, so it doesn't visually match the Start Game screen.
 
-1. **Remove the white border / default browser look.** The current block has no explicit border, but the heading uses the default system font weight and color. Switch the container to a borderless, transparent panel — no outline, no card, no ring — so it reads as part of the dark background.
+### Changes
 
-2. **Apply site typography hierarchy** using a safe system fallback (no extra web-font request at boot):
-   - Heading "Loading Triviolivia…":
-     - `font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif`
-     - `font-weight: 800`, `text-transform: uppercase`, `letter-spacing: -0.01em`, `line-height: 1`
-     - Size `clamp(28px, 6vw, 56px)`
-     - Gold gradient fill: `background: linear-gradient(160deg, #FFC93D 0%, #E89412 45%, #C97114 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;`
-     - Plain `#FFC93D` color as fallback for engines that don't support background-clip (set `color` before the gradient overrides it).
-   - Helper paragraph ("If this message stays on screen…"):
-     - `font-family: system-ui, -apple-system, "Segoe UI", sans-serif`
-     - `font-size: 14px`, `opacity: 0.75`, `max-width: 38ch`, centered, line-height 1.5.
-   - Add small vertical spacing between heading and paragraph (`margin-top: 16px` on the `<p>`).
+**A. Reset page chrome (in `<head>` `<style>` or inline on body)**
+- `html, body { margin: 0; padding: 0; min-height: 100%; background: #1a1740; }`
+- This removes the white border on all browsers and matches the `--game-bg` token (`hsl(240 45% 16%)` ≈ `#1a1740`) used by `StartScreen`.
 
-3. **Background** stays `#1a1740` (matches the existing dark theme; no change needed).
+**B. Add a header bar matching `GameHeader.tsx`**
+- Inside the fallback `<div id="root">`, prepend a `<header>` styled with the same rules used by the React header:
+  - `background: rgba(0,0,0,0.25)`
+  - `border-bottom: 1px solid rgba(255,255,255,0.1)`
+  - `backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);`
+  - Padding `clamp(12px, 2vw, 20px) clamp(16px, 4vw, 32px)`, including `padding-top: max(clamp(12px,2vw,20px), env(safe-area-inset-top))`
+- Header contains the small Trivolivia logo on the left, height 32px (matches `h-8` in GameHeader). Right side is intentionally empty (no Settings/About/etc. buttons — those are React-only and would not work pre-mount).
 
-4. **Keep the helper copy verbatim** ("If this message stays on screen, your browser may be too old. Try opening **triviolivia.com** on a phone, tablet, or desktop browser.") per the question selection.
+**C. Make the logo available to static HTML**
+- The React app imports `src/assets/TO_logo_sm_clr.svg` via the Vite pipeline, so it is not served at a stable URL for index.html to reference. Copy that file to `public/to-logo-sm.svg` so it's served at `/to-logo-sm.svg` and can be loaded by the fallback `<img>` tag.
+- Use `<img src="/to-logo-sm.svg" alt="Trivolivia" style="height:32px;width:auto;display:block;" draggable="false" />`.
 
-5. **Do not touch** the `<noscript>` block, meta tags, scripts, or any React code. No changes outside `index.html`.
+**D. Body content area**
+- Replace the previous root container with a flex column: header on top, then a `flex: 1` content area that vertically and horizontally centers the existing styled heading + helper paragraph (already updated last turn). Keep their typography exactly as last turn.
+- Use `min-height: 100vh; display:flex; flex-direction:column;` on the wrapper so the header sits at top and the loading message centers below it — same shape as `StartScreen`.
+
+**E. No new dependencies, no font fetches, no JS, no other files.**
+
+### Files touched
+- `index.html` — replace the `<div id="root">` block with header + centered content; add the global `html, body` reset.
+- `public/to-logo-sm.svg` — new file, copied from `src/assets/TO_logo_sm_clr.svg`.
 
 ### Out of scope
-
-- No changes to the in-app `TriviaGame.tsx` loading screen (already updated previously).
-- No new font `<link>` tags, no new assets, no JS.
-- No layout, routing, or analytics changes.
+- No changes to React components, the in-app loading screen, the `<noscript>` block, meta tags, scripts, or analytics.
+- No interactive buttons in the fallback header (they require React).
 
 ### Verification
-
-After the edit, hard-refresh the preview and confirm the brief pre-mount flash shows the gold uppercase heading on the dark background with no white ring; on a JS-disabled browser the `<noscript>` block (unchanged) still appears.
+Hard-refresh the preview. During the brief pre-mount flash (and on very old browsers that never mount), confirm:
+- No white border around the dark area on any side.
+- A dark glass header bar with the small Trivolivia logo at the top-left, matching the in-app header.
+- Background is the same deep purple as Start Game.
+- Heading "LOADING TRIVIOLIVIA…" in gold gradient, helper paragraph below, both centered.
