@@ -40,16 +40,22 @@
   <meta name="twitter:title" content="Triviolivia — Free Trivia Game | 25 Categories, 12 Eras">
   <meta property="og:description" content="Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup.">
   <meta name="twitter:description" content="Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup.">
+  <style>html,body{margin:0;padding:0;min-height:100%;background:#1a1740;}</style>
 </head>
 
   <body>
     <div id="root">
       <!-- Pre-mount fallback: shown if JS fails to parse/run (very old TV browsers, etc.).
            React clears this on successful mount. -->
-      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1a1740;color:#fff;text-align:center;border:0;">
-        <div style="max-width:480px;border:0;background:transparent;">
-          <h1 style="margin:0;font-family:ui-rounded,'SF Pro Rounded','Segoe UI',system-ui,sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-0.01em;line-height:1;font-size:clamp(28px,6vw,56px);color:#FFC93D;background:linear-gradient(160deg,#FFC93D 0%,#E89412 45%,#C97114 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Loading Triviolivia…</h1>
-          <p style="margin:16px auto 0;opacity:0.75;font-size:14px;line-height:1.5;max-width:38ch;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">If this message stays on screen, your browser may be too old. Try opening <strong>triviolivia.com</strong> on a phone, tablet, or desktop browser.</p>
+      <div style="min-height:100vh;display:flex;flex-direction:column;background:#1a1740;color:#fff;">
+        <header style="position:relative;z-index:20;padding:max(clamp(12px,2vw,20px),env(safe-area-inset-top)) clamp(16px,4vw,32px) clamp(12px,2vw,20px);background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.1);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);">
+          <img src="/to-logo-sm.svg" alt="Trivolivia" style="height:32px;width:auto;display:block;" draggable="false" />
+        </header>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;">
+          <div style="max-width:480px;">
+            <h1 style="margin:0;font-family:ui-rounded,'SF Pro Rounded','Segoe UI',system-ui,sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-0.01em;line-height:1;font-size:clamp(28px,6vw,56px);color:#FFC93D;background:linear-gradient(160deg,#FFC93D 0%,#E89412 45%,#C97114 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Loading Triviolivia…</h1>
+            <p style="margin:16px auto 0;opacity:0.75;font-size:14px;line-height:1.5;max-width:38ch;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">If this message stays on screen, your browser may be too old. Try opening <strong>triviolivia.com</strong> on a phone, tablet, or desktop browser.</p>
+          </div>
         </div>
       </div>
     </div>
