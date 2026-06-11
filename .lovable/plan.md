@@ -1,64 +1,51 @@
-## Goal
+# "Answers at end" game mode
 
-Send each key interaction to GA4 as its **own named event** (no more `ui_click` + `control_id` bundling) so each one shows up in GA4's Events list and can be marked as a Key Event individually.
+Add a new game mode option in Settings. Two modes:
 
-## Final allowlist of events sent to GA4
+- **Auto-reveal** (current default) — each question reveals its answer right after the timer, then advances.
+- **Slideshow** (new) — questions play back-to-back with no answer reveal between them. At the end of the round, the result screen lists every question and its correct answer.
 
-Funnel events (named, with parameters):
-- `game_start`
-- `game_complete`
+## Settings UI
 
-Click events (each fires as its own named event, no parameters):
-- `cta_primary_start_game`
-- `cta_primary_settings_apply`
-- `click_pause`
-- `click_resume`
-- `click_about`
-- `about_close`
-- `click_how_to_play`
-- `how_to_play_close`
-- `click_settings`
-- `settings_close`
-- `result_play_again`
+In **`src/data/gameOptions.ts`**:
+- Add `gameMode: "auto_reveal" | "slideshow"` to `GameSettings`.
+- Default to `"auto_reveal"` so existing behavior is preserved.
 
-Everything else currently calling `trackClick(...)` (secondary CTAs, settings section open/close, settings_back, settings_apply_cancel, change_settings) will become **no-ops** — silently dropped by the allowlist so GA4 stays clean.
+In **`src/components/SettingsPanel.tsx`** → "Game Settings" section, add a new "Game Mode" control above the sliders. Two `ToggleRow`-style rows (mutually exclusive — picking one turns off the other):
+- "Reveal after each question"
+- "Reveal all at the end"
 
-### Naming reconciliation with existing call sites
+State plumbed through `handleApply` like the other settings.
 
-| Current call | Action |
-|---|---|
-| `trackClick("howtoplay_close")` in `HowToPlayScreen.tsx` | Rename to `how_to_play_close` |
-| `trackClick("click_settings_open")` in `GameHeader.tsx` | Rename to `click_settings` |
-| `trackClick("click_settings_close")` in `GameHeader.tsx` | Rename to `settings_close` |
-| `trackClick(\`cta_primary_${id}\`)` in `PrimaryCTA.tsx` for Play Again (`id="result_play_again"`) | Today this emits `cta_primary_result_play_again`. You listed the new name as `result_play_again`. **This plan emits `result_play_again`** (drops the `cta_primary_` prefix only for this one) and removes `cta_primary_result_play_again`. If you'd rather keep both, say so. |
+## Gameplay
 
-## Code changes
+In **`src/components/TriviaGame.tsx`**:
+- When `settings.gameMode === "slideshow"`:
+  - Skip the `"answered"` state entirely — when the question timer hits zero, advance directly to the next question (or `"finished"` if it's the last).
+  - No reveal sound, no answer text rendered on the card, no answer-phase countdown shown in the footer.
+  - Mascot stays in `"idle"` (no celebrate bounce per question).
+- Track each question shown in a `playedQuestionsRef` so the result screen can list them in order. (Today the question pool is in state already; we just need to keep the same `activeQuestions` array around for the results view — it's already preserved until `handleRestart`/`handlePlayAgain`, so no new ref is strictly needed.)
 
-**`src/lib/analytics.ts`**
-- Replace `trackClick(controlId)` (which sent `ui_click` + `control_id`) with a version that emits the name directly: `trackEvent(name, params)`.
-- Add an allowlist constant containing the 12 click event names above. Calls with any other name become no-ops.
-- `trackGameStart` / `trackGameComplete` unchanged.
+`QuestionCard` and `GameFooter` don't need new props — they just won't see `answered === true` in slideshow mode.
 
-**`src/components/PrimaryCTA.tsx`**
-- Special-case `id === "result_play_again"` to emit `result_play_again` instead of `cta_primary_result_play_again`. All other primary CTAs keep the `cta_primary_` prefix (only `cta_primary_start_game` and `cta_primary_settings_apply` will actually fire; others get dropped by the allowlist).
+## Result screen
 
-**`src/components/HowToPlayScreen.tsx`**
-- Change `trackClick("howtoplay_close")` → `trackClick("how_to_play_close")`.
+In **`src/components/ResultScreen.tsx`**:
+- Accept new optional props: `questions: Question[]` and `mode: "auto_reveal" | "slideshow"`.
+- When `mode === "slideshow"`, render a numbered Q&A list above the CTAs:
+  - Glass-styled scrollable list, capped height with internal scroll on small viewports.
+  - Each row: `1.` question text on top, correct answer below in gold/teal accent.
+  - Header: "Round Recap".
+- When `mode === "auto_reveal"`, render exactly as today (no list).
 
-**`src/components/GameHeader.tsx`**
-- Change settings button: `click_settings_open` → `click_settings`, `click_settings_close` → `settings_close`.
+`TriviaGame.tsx` passes `activeQuestions` and `settings.gameMode` into `<ResultScreen>`.
 
-No other call-site edits required. No JSX/UI changes.
+## Analytics
 
-## GA4 UI (after deploy)
-
-1. Trigger each interaction once (live or via DebugView) so GA4 registers the names.
-2. Admin → Data display → **Events**: 13 names appear within ~24h.
-3. Admin → Data display → **Key events**: toggle each of the 13 on.
-4. Delete the now-unused `control_id` custom dimension.
+In **`src/lib/analytics.ts`** → `trackGameStart`, add `game_mode: settings.gameMode` to the payload so we can compare engagement between modes. No new event names, no allowlist changes.
 
 ## Out of scope
 
-- No new tracking instrumentation beyond renames.
-- No visual/UI changes.
-- `game_start` / `game_complete` parameter payloads stay as-is.
+- No changes to scoring, sounds, or timing sliders.
+- No persistence of mode across sessions beyond the existing in-memory `settings` state.
+- No new pause/resume behavior.
