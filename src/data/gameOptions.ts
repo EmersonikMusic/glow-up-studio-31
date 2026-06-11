@@ -60,7 +60,7 @@ export interface GameSettings {
 
 export const DEFAULT_SETTINGS: GameSettings = {
   numQuestions: 10,
-  timePerQuestion: 5,
+  timePerQuestion: 10,
   timePerAnswer: 5,
   selectedCategories: [...ALL_CATEGORIES],
   selectedDifficulties: [...ALL_DIFFICULTIES],

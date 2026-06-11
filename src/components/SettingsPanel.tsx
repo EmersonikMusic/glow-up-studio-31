@@ -286,7 +286,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
   const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
   const [numQuestions, setNumQuestions] = useState(10);
-  const [timePerQuestion, setTimePerQuestion] = useState(5);
+  const [timePerQuestion, setTimePerQuestion] = useState(10);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
