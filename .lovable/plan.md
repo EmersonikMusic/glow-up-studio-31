@@ -1,36 +1,18 @@
-## Fix the invisible bouncing "Loading Triviolivia…" headline
+## Shorten loading headline + speed up bounce + animate each dot individually
 
-### Root cause
-The gold gradient + `background-clip: text` + `-webkit-text-fill-color: transparent` are all set on the `<h1>`. Each letter is wrapped in a `<span class="bounce-char">` with `display: inline-block` (required for the bounce transform). An inline-block child creates its own background painting context, so the parent's clipped gradient does not cover the child's glyphs — the spans inherit `color: transparent` with no background of their own, rendering invisible. The "strange gradients" you see are the leftover `<h1>` background showing through the gaps between inline-block spans.
+Single file: `index.html`.
 
-### Fix (single file: `index.html`)
+### Changes
 
-1. **Move the gold gradient onto `.bounce-char`** so each span paints and clips its own gradient.
+1. **Headline text** — replace the current 20 bouncing spans with `Loading` followed by three separate `.` dots (no single `…` glyph, so each dot can bounce on its own delay).
+   - Letters: `L` (0ms), `o` (60ms), `a` (120ms), `d` (180ms), `i` (240ms), `n` (300ms), `g` (360ms)
+   - Dots: `.` (420ms), `.` (480ms), `.` (540ms)
+   - Update `<h1 aria-label>` to `"Loading..."` (plain ASCII so screen readers announce three periods consistently).
 
-   In the `<style>` block, update `.bounce-char`:
-   ```css
-   .bounce-char{
-     display:inline-block;
-     animation:triviaBounce 1.4s cubic-bezier(.5,.05,.3,1) infinite;
-     will-change:transform;
-     color:#FFC93D;                                  /* fallback for browsers without bg-clip:text */
-     background:linear-gradient(160deg,#FFC93D 0%,#E89412 45%,#C97114 100%);
-     -webkit-background-clip:text;
-     background-clip:text;
-     -webkit-text-fill-color:transparent;
-   }
-   ```
+2. **Speed up wave** — change `.bounce-char` animation duration from `1.4s` to `1s`; per-letter stagger tightens from `70ms` to `60ms` (already reflected in the delays above).
 
-2. **Strip the gradient + background-clip rules off the `<h1>`** so the parent no longer paints a fill behind the spans. Keep the h1's typographic rules (font-family, weight, uppercase, letter-spacing, line-height, font-size, margin). Set `color:#FFC93D` on the h1 too so any stray text (e.g. the `&nbsp;` span) stays on-brand.
-
-3. **Keep the existing `<span class="bounce-char">` markup and staggered `animation-delay` values** — they are correct; only the styling was wrong.
-
-4. **No other changes.** Header bar, body background, helper paragraph, keyframes, reduced-motion media query, and React code all stay as they are.
+3. **No other changes** — keep the gold gradient on each span, keyframes shape, reduced-motion fallback, header bar, helper paragraph, and React code as-is.
 
 ### Verification
 
-Hard-refresh the preview. Confirm:
-- "LOADING TRIVIOLIVIA…" is clearly visible in the gold gradient, on the dark background.
-- A smooth left-to-right bounce wave runs across all letters and loops.
-- No stray gradient streaks behind or between letters.
-- `prefers-reduced-motion: reduce` still freezes the bounce (text remains fully visible).
+Hard-refresh preview. Confirm headline reads `LOADING...` in gold, all 10 spans (7 letters + 3 dots) bounce in sequence with a snappier rhythm, dots clearly animate one after another rather than together, and reduced-motion still freezes the bounce.
