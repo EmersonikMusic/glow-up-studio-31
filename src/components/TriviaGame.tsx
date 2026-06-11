@@ -200,8 +200,14 @@ export default function TriviaGame() {
   }, [panelOpen]);
 
   useEffect(() => {
-    if (countdown === 0 && gameState === "playing") setGameState("answered");
-  }, [countdown, gameState]);
+    if (countdown === 0 && gameState === "playing") {
+      if (settings.gameMode === "slideshow") {
+        advanceOrFinish();
+      } else {
+        setGameState("answered");
+      }
+    }
+  }, [countdown, gameState, settings.gameMode, advanceOrFinish]);
 
   useEffect(() => {
     if (gameState === "answered") startAnswerCountdown(settings.timePerAnswer);
