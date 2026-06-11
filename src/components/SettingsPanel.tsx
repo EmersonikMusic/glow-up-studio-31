@@ -288,6 +288,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [numQuestions, setNumQuestions] = useState(10);
   const [timePerQuestion, setTimePerQuestion] = useState(5);
   const [timePerAnswer, setTimePerAnswer] = useState(5);
+  const [gameMode, setGameMode] = useState<GameSettings["gameMode"]>("auto_reveal");
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Single open section — accordion behavior. Game Settings open by default.
@@ -304,7 +305,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const gameOpen = openSection === "game";
 
   const handleApply = () => {
-    const next = { numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras };
+    const next = { numQuestions, timePerQuestion, timePerAnswer, selectedCategories, selectedDifficulties, selectedEras, gameMode };
     onApply?.(next);
     onClose();
   };
