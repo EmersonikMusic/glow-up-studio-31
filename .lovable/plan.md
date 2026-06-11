@@ -1,40 +1,36 @@
-## Letter-by-letter bounce animation for "Loading Triviolivia…"
+## Fix the invisible bouncing "Loading Triviolivia…" headline
 
-Scoped to `index.html` only — the heading sits in the pre-mount fallback, so the animation must be pure CSS (no JS, no Motion, no React).
+### Root cause
+The gold gradient + `background-clip: text` + `-webkit-text-fill-color: transparent` are all set on the `<h1>`. Each letter is wrapped in a `<span class="bounce-char">` with `display: inline-block` (required for the bounce transform). An inline-block child creates its own background painting context, so the parent's clipped gradient does not cover the child's glyphs — the spans inherit `color: transparent` with no background of their own, rendering invisible. The "strange gradients" you see are the leftover `<h1>` background showing through the gaps between inline-block spans.
 
-### Changes to `index.html`
+### Fix (single file: `index.html`)
 
-1. **Split the heading into per-character spans.**
-   Replace the existing `<h1>Loading Triviolivia…</h1>` with the same text wrapped one character at a time in `<span class="bounce-char">…</span>`. Spaces become `&nbsp;` inside their own span so the wave continues over the gap. The ellipsis `…` is included as its own bouncing span.
+1. **Move the gold gradient onto `.bounce-char`** so each span paints and clips its own gradient.
 
-2. **Add a keyframe + staggered delays in the existing `<style>` block in `<head>`.**
-
+   In the `<style>` block, update `.bounce-char`:
    ```css
-   @keyframes triviaBounce {
-     0%, 60%, 100% { transform: translateY(0); }
-     30% { transform: translateY(-14%); }
-   }
-   .bounce-char {
-     display: inline-block;
-     animation: triviaBounce 1.4s cubic-bezier(.5,.05,.3,1) infinite;
-     will-change: transform;
-   }
-   @media (prefers-reduced-motion: reduce) {
-     .bounce-char { animation: none; }
+   .bounce-char{
+     display:inline-block;
+     animation:triviaBounce 1.4s cubic-bezier(.5,.05,.3,1) infinite;
+     will-change:transform;
+     color:#FFC93D;                                  /* fallback for browsers without bg-clip:text */
+     background:linear-gradient(160deg,#FFC93D 0%,#E89412 45%,#C97114 100%);
+     -webkit-background-clip:text;
+     background-clip:text;
+     -webkit-text-fill-color:transparent;
    }
    ```
 
-3. **Stagger each letter by ~70ms via inline `style="animation-delay:Xms"`** on each span (0, 70, 140, 210… through the last character). This produces a left-to-right wave that loops smoothly.
+2. **Strip the gradient + background-clip rules off the `<h1>`** so the parent no longer paints a fill behind the spans. Keep the h1's typographic rules (font-family, weight, uppercase, letter-spacing, line-height, font-size, margin). Set `color:#FFC93D` on the h1 too so any stray text (e.g. the `&nbsp;` span) stays on-brand.
 
-4. **Preserve the existing typography.** The gold gradient, uppercase, Fredoka-style fallback font, size, and line-height stay exactly as they are — they are applied on the parent `<h1>`, and `inline-block` spans inherit the `background-clip:text` fill correctly because the gradient is painted on the `<h1>` (each `<span>` will pick it up since it inherits `color: transparent` and the clipped background extends across all inline children). If the gradient does not render across spans in any tested browser, fall back to setting the gradient on each `.bounce-char` instead of the `<h1>`.
+3. **Keep the existing `<span class="bounce-char">` markup and staggered `animation-delay` values** — they are correct; only the styling was wrong.
 
-5. **Respect reduced motion** via the media query above — no bounce for users who opt out.
-
-### Out of scope
-
-- No change to layout, header bar, helper paragraph, background, or React code.
-- No new fonts, scripts, or assets.
+4. **No other changes.** Header bar, body background, helper paragraph, keyframes, reduced-motion media query, and React code all stay as they are.
 
 ### Verification
 
-Hard-refresh the preview. Confirm a gentle left-to-right wave runs continuously across the gold heading, the ellipsis bounces last, the gold gradient stays intact across all letters, and users with `prefers-reduced-motion: reduce` see a static heading.
+Hard-refresh the preview. Confirm:
+- "LOADING TRIVIOLIVIA…" is clearly visible in the gold gradient, on the dark background.
+- A smooth left-to-right bounce wave runs across all letters and loops.
+- No stray gradient streaks behind or between letters.
+- `prefers-reduced-motion: reduce` still freezes the bounce (text remains fully visible).
