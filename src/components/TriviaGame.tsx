@@ -9,6 +9,7 @@ import { useSound } from "@/hooks/useSound";
 
 import { toggleMuted } from "@/lib/sound";
 import GameHeader from "./GameHeader";
+import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
@@ -468,34 +469,52 @@ export default function TriviaGame() {
   if (gameState === "loading") {
     return (
       <div
-        className="min-h-screen overscroll-none relative overflow-hidden flex items-center justify-center"
+        className="min-h-screen overscroll-none relative overflow-hidden grid grid-rows-[auto_1fr]"
         style={{
           background: "hsl(var(--game-bg))",
           minHeight: "var(--app-vh, 100vh)",
           maxHeight: "var(--app-vh, 100vh)",
         }}
       >
-        <div className="flex flex-col items-center gap-6 animate-fade-in">
-          <div
-            className="w-16 h-16 rounded-full border-4 animate-spin"
-            style={{
-              borderColor: "transparent",
-              borderTopColor: "hsl(42 100% 55%)",
-            }}
-            aria-hidden="true"
+        <header
+          className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md"
+          style={{
+            paddingTop: "max(clamp(0.75rem, 2vw, 1.25rem), env(safe-area-inset-top))",
+            paddingBottom: "clamp(0.75rem, 2vw, 1.25rem)",
+            background: "rgba(0, 0, 0, 0.25)",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <img
+            src={toLogoSm}
+            alt="Trivolivia"
+            className="h-8 w-auto"
+            draggable={false}
           />
-          <p
-            className="text-xl md:text-3xl font-heading font-extrabold leading-none tracking-tight uppercase"
-            style={{
-              background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              lineHeight: 1.1,
-            }}
-          >
-            Loading next round…
-          </p>
+        </header>
+        <div className="flex items-center justify-center">
+          <div className="flex flex-col items-center gap-6 animate-fade-in">
+            <div
+              className="w-16 h-16 rounded-full border-4 animate-spin"
+              style={{
+                borderColor: "transparent",
+                borderTopColor: "hsl(42 100% 55%)",
+              }}
+              aria-hidden="true"
+            />
+            <p
+              className="text-xl md:text-3xl font-heading font-extrabold leading-none tracking-tight uppercase"
+              style={{
+                background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                lineHeight: 1.1,
+              }}
+            >
+              Loading next round…
+            </p>
+          </div>
         </div>
       </div>
     );
