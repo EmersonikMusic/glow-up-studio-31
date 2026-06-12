@@ -9,6 +9,7 @@ import { useSound } from "@/hooks/useSound";
 
 import { toggleMuted } from "@/lib/sound";
 import GameHeader from "./GameHeader";
+import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
