@@ -13,11 +13,11 @@ import type { GameSettings } from "@/data/gameOptions";
 type GtagParams = Record<string, unknown>;
 
 const ALLOWED_CLICK_EVENTS = new Set<string>([
-  "settings_apply",
-  "nav_about",
-  "nav_how_to_play",
-  "nav_settings",
-  "result_play_again",
+  "cta_primary_settings_apply",
+  "click_about",
+  "click_how_to_play",
+  "click_settings",
+  "cta_primary_result_play_again",
 ]);
 
 function getGtag(): ((...args: unknown[]) => void) | null {
@@ -69,5 +69,5 @@ export function trackGameComplete(payload: {
   questions_played: number;
   duration_sec: number;
 }): void {
-  trackEvent("result_game_complete", payload);
+  trackEvent("game_complete", payload);
 }

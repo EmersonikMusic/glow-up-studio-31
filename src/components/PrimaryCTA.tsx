@@ -14,10 +14,7 @@ const PrimaryCTA = forwardRef<HTMLButtonElement, PrimaryCTAProps>(
         trackId ||
         (props["aria-label"] as string | undefined) ||
         (typeof children === "string" ? children : "primary_cta");
-      // A small set of CTAs use bare event names (no `cta_primary_` prefix)
-      // so they read cleanly in GA4 reports. Everything else gets prefixed.
-      const BARE_EVENTS = new Set(["result_play_again", "settings_apply"]);
-      const eventName = BARE_EVENTS.has(id) ? id : `cta_primary_${id}`;
+      const eventName = `cta_primary_${id}`;
       trackClick(eventName);
       onClick?.(e);
     };
