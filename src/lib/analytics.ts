@@ -13,16 +13,10 @@ import type { GameSettings } from "@/data/gameOptions";
 type GtagParams = Record<string, unknown>;
 
 const ALLOWED_CLICK_EVENTS = new Set<string>([
-  "cta_primary_start_game",
-  "cta_primary_settings_apply",
-  "click_pause",
-  "click_resume",
-  "click_about",
-  "about_close",
-  "click_how_to_play",
-  "how_to_play_close",
-  "click_settings",
-  "settings_close",
+  "settings_apply",
+  "nav_about",
+  "nav_how_to_play",
+  "nav_settings",
   "result_play_again",
 ]);
 
@@ -33,6 +27,12 @@ function getGtag(): ((...args: unknown[]) => void) | null {
 }
 
 export function trackEvent(name: string, params?: GtagParams): void {
+  // Mirror every GA4-bound event to the browser console for debugging.
+  // Filter DevTools by "[GA4]" to see only analytics traffic.
+  if (typeof window !== "undefined") {
+    // eslint-disable-next-line no-console
+    console.log(`[GA4] ${name}`, params ?? {});
+  }
   const gtag = getGtag();
   if (!gtag) return;
   try {
@@ -69,5 +69,5 @@ export function trackGameComplete(payload: {
   questions_played: number;
   duration_sec: number;
 }): void {
-  trackEvent("game_complete", payload);
+  trackEvent("result_game_complete", payload);
 }
