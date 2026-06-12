@@ -90,7 +90,7 @@ export default function GameHeader({
           {/* About */}
           {onAbout && (
             <button
-              onClick={() => { trackClick("click_about"); onAbout(); }}
+              onClick={() => { trackClick("nav_about"); onAbout(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
@@ -111,7 +111,7 @@ export default function GameHeader({
           {/* Settings gear — always icon-only */}
           {onSettingsToggle && (
             <button
-              onClick={() => { trackClick(settingsOpen ? "settings_close" : "click_settings"); onSettingsToggle(); }}
+              onClick={() => { if (!settingsOpen) trackClick("nav_settings"); onSettingsToggle(); }}
               className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
               style={{
                 background: "rgba(255, 255, 255, 0.08)",
