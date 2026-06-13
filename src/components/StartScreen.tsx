@@ -5,6 +5,7 @@ import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
 import PrimaryCTA from "./PrimaryCTA";
+import SecondaryCTA from "./SecondaryCTA";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
 
