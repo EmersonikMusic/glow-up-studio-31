@@ -97,7 +97,7 @@ export default function TriviaGame() {
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
+  const [panelOpen, setPanelOpen] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);

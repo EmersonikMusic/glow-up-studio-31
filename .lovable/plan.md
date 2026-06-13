@@ -1,18 +1,37 @@
-## Shorten loading headline + speed up bounce + animate each dot individually
+# Three small adjustments
 
-Single file: `index.html`.
+## 1. Equal-width Quick Play + Customize Game buttons
+Both buttons currently size to their text content (Quick Play is narrower than Customize Game).
 
-### Changes
+**Change:** in `src/components/StartScreen.tsx`, add `min-w-[260px]` to both the `PrimaryCTA` and `SecondaryCTA` className. This matches the wider button (Customize Game) without changing font size or vertical padding.
 
-1. **Headline text** — replace the current 20 bouncing spans with `Loading` followed by three separate `.` dots (no single `…` glyph, so each dot can bounce on its own delay).
-   - Letters: `L` (0ms), `o` (60ms), `a` (120ms), `d` (180ms), `i` (240ms), `n` (300ms), `g` (360ms)
-   - Dots: `.` (420ms), `.` (480ms), `.` (540ms)
-   - Update `<h1 aria-label>` to `"Loading..."` (plain ASCII so screen readers announce three periods consistently).
+## 2. Settings menu closed on initial load
+In `src/components/TriviaGame.tsx` line 100:
 
-2. **Speed up wave** — change `.bounce-char` animation duration from `1.4s` to `1s`; per-letter stagger tightens from `70ms` to `60ms` (already reflected in the delays above).
+```ts
+const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
+```
 
-3. **No other changes** — keep the gold gradient on each span, keyframes shape, reduced-motion fallback, header bar, helper paragraph, and React code as-is.
+Currently desktop opens the panel by default. Change to:
 
-### Verification
+```ts
+const [panelOpen, setPanelOpen] = useState(false);
+```
 
-Hard-refresh preview. Confirm headline reads `LOADING...` in gold, all 10 spans (7 letters + 3 dots) bounce in sequence with a snappier rhythm, dots clearly animate one after another rather than together, and reduced-motion still freezes the bounce.
+So both mobile and desktop start with settings closed; "Customize Game" button toggles it open.
+
+## 3. Fix question-text pop-in animation
+Right now `animate-question-pop` is applied to the outer card container in `QuestionCard.tsx`, so the entire card pops. The card mounts once and stays, so subsequent questions don't visibly pop (the card never re-mounts despite `key={animKey}` — actually it does re-mount, but the pop covers the full card not the text). The user wants the question text itself to pop in (mirroring the answer's `animate-spring-rise`).
+
+**Change in `src/components/QuestionCard.tsx`:**
+- Remove `${entranceClass}` from the outer card `<div>` className.
+- Add `animate-question-pop` className to both the mobile `<p>` (question text, line ~131) and the desktop `<p>` (line ~178) that render `{question.text}`.
+- Use `key={animKey}` on each question `<p>` so the animation re-fires every new question.
+
+This makes the question text pop in on every reveal, matching the answer reveal feel.
+
+## Verification
+After build:
+- Visually confirm both CTAs match width on the start screen.
+- Confirm settings drawer is closed on load and opens via Customize Game.
+- Confirm question text pops in on game start and on each new question.
