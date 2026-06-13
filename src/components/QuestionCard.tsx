@@ -1,6 +1,6 @@
 import { Question } from "@/data/questions";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 interface QuestionCardProps {
   question: Question;
