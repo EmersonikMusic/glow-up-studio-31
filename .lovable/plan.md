@@ -1,37 +1,19 @@
-# Three small adjustments
+## Goal
+Make the "Quick Play" button match the width of the "Customize Game" button on the Start screen.
 
-## 1. Equal-width Quick Play + Customize Game buttons
-Both buttons currently size to their text content (Quick Play is narrower than Customize Game).
+## Why current approach fails
+Both buttons currently use `min-w-[260px]`, but "Customize Game" renders wider than 260px due to its longer text + `tracking-[0.18em]` + `px-10` padding, so each button sizes to its own content above the min-width.
 
-**Change:** in `src/components/StartScreen.tsx`, add `min-w-[260px]` to both the `PrimaryCTA` and `SecondaryCTA` className. This matches the wider button (Customize Game) without changing font size or vertical padding.
+## Change
+In `src/components/StartScreen.tsx`, wrap the two CTAs in a shared-width container so both stretch to the widest child:
 
-## 2. Settings menu closed on initial load
-In `src/components/TriviaGame.tsx` line 100:
+- Wrap `<PrimaryCTA>` and `<SecondaryCTA>` in `<div className="mt-8 flex flex-col items-stretch w-fit mx-auto">`.
+- Remove `min-w-[260px]` and the `mt-8` / `mt-3` margins from the buttons themselves.
+- Add `w-full` to both buttons so they fill the container.
+- Re-add `mt-3` to the SecondaryCTA for vertical spacing between the two.
+- Keep all other classes, animations, `animationDelay: "180ms"`, `trackId`, `aria-label`, and font sizes unchanged.
 
-```ts
-const [panelOpen, setPanelOpen] = useState(() => !matchesMedia("(max-width: 767px)", false));
-```
-
-Currently desktop opens the panel by default. Change to:
-
-```ts
-const [panelOpen, setPanelOpen] = useState(false);
-```
-
-So both mobile and desktop start with settings closed; "Customize Game" button toggles it open.
-
-## 3. Fix question-text pop-in animation
-Right now `animate-question-pop` is applied to the outer card container in `QuestionCard.tsx`, so the entire card pops. The card mounts once and stays, so subsequent questions don't visibly pop (the card never re-mounts despite `key={animKey}` — actually it does re-mount, but the pop covers the full card not the text). The user wants the question text itself to pop in (mirroring the answer's `animate-spring-rise`).
-
-**Change in `src/components/QuestionCard.tsx`:**
-- Remove `${entranceClass}` from the outer card `<div>` className.
-- Add `animate-question-pop` className to both the mobile `<p>` (question text, line ~131) and the desktop `<p>` (line ~178) that render `{question.text}`.
-- Use `key={animKey}` on each question `<p>` so the animation re-fires every new question.
-
-This makes the question text pop in on every reveal, matching the answer reveal feel.
+Result: container sizes to the natural width of "Customize Game" (the wider button), and "Quick Play" stretches to match exactly. No font-size change.
 
 ## Verification
-After build:
-- Visually confirm both CTAs match width on the start screen.
-- Confirm settings drawer is closed on load and opens via Customize Game.
-- Confirm question text pops in on game start and on each new question.
+Visually confirm in preview at desktop and mobile widths that both buttons share the same width and remain horizontally centered.

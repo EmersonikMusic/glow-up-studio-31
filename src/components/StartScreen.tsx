@@ -122,36 +122,40 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
             </svg>
           </div>
 
-          {/* Quick Play button — logo-aligned CTA */}
-          <PrimaryCTA
-            onClick={handleStart}
-            disabled={loading}
-            trackId="start_game"
-            className="mt-8 min-w-[260px] animate-fade-in"
-            style={{ animationDelay: "180ms" }}
-            aria-label={loading ? "Loading questions" : "Quick Play"}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                <span>Loading…</span>
-              </>
-            ) : (
-              "Quick Play"
-            )}
-          </PrimaryCTA>
+          {/* CTA stack — shared width so both buttons match */}
+          <div className="mt-8 flex flex-col items-stretch w-fit mx-auto">
+            {/* Quick Play button — logo-aligned CTA */}
+            <PrimaryCTA
+              onClick={handleStart}
+              disabled={loading}
+              trackId="start_game"
+              className="w-full animate-fade-in"
+              style={{ animationDelay: "180ms" }}
+              aria-label={loading ? "Loading questions" : "Quick Play"}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                  <span>Loading…</span>
+                </>
+              ) : (
+                "Quick Play"
+              )}
+            </PrimaryCTA>
 
-          {/* Customize Game — opens settings panel */}
-          <SecondaryCTA
-            onClick={onPanelToggle}
-            disabled={loading}
-            trackId="customize_game"
-            className="mt-3 min-w-[260px] animate-fade-in"
-            style={{ animationDelay: "180ms" }}
-            aria-label="Customize Game"
-          >
-            Customize Game
-          </SecondaryCTA>
+            {/* Customize Game — opens settings panel */}
+            <SecondaryCTA
+              onClick={onPanelToggle}
+              disabled={loading}
+              trackId="customize_game"
+              className="mt-3 w-full animate-fade-in"
+              style={{ animationDelay: "180ms" }}
+              aria-label="Customize Game"
+            >
+              Customize Game
+            </SecondaryCTA>
+          </div>
+
 
           {/* How Do I Play link */}
           <button
