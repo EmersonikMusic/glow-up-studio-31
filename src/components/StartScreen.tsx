@@ -5,6 +5,7 @@ import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
 import PrimaryCTA from "./PrimaryCTA";
+import SecondaryCTA from "./SecondaryCTA";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
 
@@ -121,14 +122,14 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
             </svg>
           </div>
 
-          {/* Start button — logo-aligned CTA */}
+          {/* Quick Play button — logo-aligned CTA */}
           <PrimaryCTA
             onClick={handleStart}
             disabled={loading}
             trackId="start_game"
             className="mt-8 animate-fade-in"
             style={{ animationDelay: "180ms" }}
-            aria-label={loading ? "Loading questions" : "Start Game"}
+            aria-label={loading ? "Loading questions" : "Quick Play"}
           >
             {loading ? (
               <>
@@ -136,9 +137,21 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
                 <span>Loading…</span>
               </>
             ) : (
-              "Start Game"
+              "Quick Play"
             )}
           </PrimaryCTA>
+
+          {/* Customize Game — opens settings panel */}
+          <SecondaryCTA
+            onClick={onPanelToggle}
+            disabled={loading}
+            trackId="customize_game"
+            className="mt-3 animate-fade-in"
+            style={{ animationDelay: "180ms" }}
+            aria-label="Customize Game"
+          >
+            Customize Game
+          </SecondaryCTA>
 
           {/* How Do I Play link */}
           <button

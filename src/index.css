@@ -99,8 +99,8 @@
 }
 
 @keyframes text-shimmer {
-  0%, 100% { fill: hsl(185 70% 55%); }
-  50%      { fill: hsl(185 80% 68%); }
+  0%, 94%, 100% { fill: hsl(185 70% 55%); }
+  97%           { fill: hsl(185 88% 74%); }
 }
 
 @keyframes cta-breathe {
@@ -111,7 +111,14 @@
 .animate-float-soft { animation: float-soft 4s ease-in-out infinite; }
 .animate-blob-a { animation: blob-drift-a 22s ease-in-out infinite; }
 .animate-blob-b { animation: blob-drift-b 18s ease-in-out infinite; }
-.animate-text-shimmer { animation: text-shimmer 4s ease-in-out infinite; }
+.animate-text-shimmer { animation: text-shimmer 17s ease-in-out infinite; }
+
+@keyframes question-pop {
+  0%   { opacity: 0; transform: scale(0.92); }
+  60%  { opacity: 1; transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-question-pop { animation: question-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 
 @keyframes pulse-gold {
   0%, 100% { box-shadow: 0 0 0 0 hsl(42 100% 55% / 0.4); }
@@ -265,6 +272,7 @@
   .confetti-piece,
   .animate-soft-zoom-in,
   .animate-fade-blur-in,
+  .animate-question-pop,
   .animate-border-flash,
   .milestone-particle {
     animation: none !important;

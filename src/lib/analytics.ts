@@ -18,6 +18,7 @@ const ALLOWED_CLICK_EVENTS = new Set<string>([
   "click_how_to_play",
   "click_settings",
   "cta_primary_result_play_again",
+  "cta_secondary__customize_game",
 ]);
 
 function getGtag(): ((...args: unknown[]) => void) | null {
