@@ -22,8 +22,6 @@ export default function QuestionCard({
 }: QuestionCardProps) {
   const isMobile = useIsMobile();
 
-  // Consistent pop-in entrance for every new question (mirrors answer reveal).
-  const entranceClass = "animate-question-pop";
 
   const questionRef = useRef<HTMLParagraphElement | null>(null);
   const answerRef = useRef<HTMLParagraphElement | null>(null);
