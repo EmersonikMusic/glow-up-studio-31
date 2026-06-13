@@ -272,6 +272,7 @@
   .confetti-piece,
   .animate-soft-zoom-in,
   .animate-fade-blur-in,
+  .animate-question-pop,
   .animate-border-flash,
   .milestone-particle {
     animation: none !important;
