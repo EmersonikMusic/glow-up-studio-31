@@ -13,13 +13,6 @@ interface QuestionCardProps {
 const FONT_SCALE_FLOOR = 0.7;
 const FONT_SCALE_STEP = 0.05;
 
-// Pool of entrance animation classes for variety across questions.
-const ENTRANCE_CLASSES = [
-  "animate-slide-in-up",
-  "animate-soft-zoom-in",
-  "animate-fade-blur-in",
-];
-
 export default function QuestionCard({
   question,
   animKey,
@@ -29,11 +22,8 @@ export default function QuestionCard({
 }: QuestionCardProps) {
   const isMobile = useIsMobile();
 
-  // Stable random entrance per question (keyed by animKey).
-  const entranceClass = useMemo(
-    () => ENTRANCE_CLASSES[animKey % ENTRANCE_CLASSES.length],
-    [animKey]
-  );
+  // Consistent pop-in entrance for every new question (mirrors answer reveal).
+  const entranceClass = "animate-question-pop";
 
   const questionRef = useRef<HTMLParagraphElement | null>(null);
   const answerRef = useRef<HTMLParagraphElement | null>(null);
