@@ -127,7 +127,7 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
             onClick={handleStart}
             disabled={loading}
             trackId="start_game"
-            className="mt-8 animate-fade-in"
+            className="mt-8 min-w-[260px] animate-fade-in"
             style={{ animationDelay: "180ms" }}
             aria-label={loading ? "Loading questions" : "Quick Play"}
           >
@@ -146,7 +146,7 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
             onClick={onPanelToggle}
             disabled={loading}
             trackId="customize_game"
-            className="mt-3 animate-fade-in"
+            className="mt-3 min-w-[260px] animate-fade-in"
             style={{ animationDelay: "180ms" }}
             aria-label="Customize Game"
           >
