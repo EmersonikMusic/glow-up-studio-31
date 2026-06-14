@@ -18,9 +18,10 @@ interface StartScreenProps {
   onPanelToggle: () => void;
   onPanelClose: () => void;
   loading?: boolean;
+  customized?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false, customized = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
 
@@ -131,13 +132,15 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
               trackId="start_game"
               className="w-full animate-fade-in"
               style={{ animationDelay: "180ms" }}
-              aria-label={loading ? "Loading questions" : "Quick Play"}
+              aria-label={loading ? "Loading questions" : customized ? "Start Game" : "Quick Play"}
             >
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
                   <span>Loading…</span>
                 </>
+              ) : customized ? (
+                "Start Game"
               ) : (
                 "Quick Play"
               )}

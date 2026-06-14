@@ -98,6 +98,7 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [hasCustomized, setHasCustomized] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -395,6 +396,7 @@ export default function TriviaGame() {
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
+    setHasCustomized(true);
     const wasInGame =
       gameStateRef.current === "playing" || gameStateRef.current === "answered";
     if (!wasInGame) return;
@@ -456,6 +458,7 @@ export default function TriviaGame() {
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
           loading={loading}
+          customized={hasCustomized}
         />
         {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
