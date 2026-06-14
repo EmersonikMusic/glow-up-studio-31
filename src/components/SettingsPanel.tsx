@@ -1,5 +1,5 @@
 import { ChevronDown, ArrowLeft } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PrimaryCTA from "./PrimaryCTA";
@@ -282,12 +282,28 @@ const arraysEqual = (a: string[], b: string[]) => {
 };
 
 export default function SettingsPanel({ open, onToggle, onClose, onAbout, onApply, gameInProgress = false, currentSettings }: SettingsPanelProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([...categories]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([...difficulties]);
-  const [selectedEras, setSelectedEras] = useState<string[]>([...eras]);
-  const [numQuestions, setNumQuestions] = useState(10);
-  const [timePerQuestion, setTimePerQuestion] = useState(10);
-  const [timePerAnswer, setTimePerAnswer] = useState(5);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(currentSettings?.selectedCategories ?? [...categories]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(currentSettings?.selectedDifficulties ?? [...difficulties]);
+  const [selectedEras, setSelectedEras] = useState<string[]>(currentSettings?.selectedEras ?? [...eras]);
+  const [numQuestions, setNumQuestions] = useState(currentSettings?.numQuestions ?? 10);
+  const [timePerQuestion, setTimePerQuestion] = useState(currentSettings?.timePerQuestion ?? 10);
+  const [timePerAnswer, setTimePerAnswer] = useState(currentSettings?.timePerAnswer ?? 5);
+
+  // Resync local state to currentSettings whenever the panel opens, so the
+  // user always sees their currently-active selections (not the defaults
+  // or stale uncommitted edits).
+  const prevOpen = useRef(open);
+  useEffect(() => {
+    if (open && !prevOpen.current && currentSettings) {
+      setSelectedCategories(currentSettings.selectedCategories);
+      setSelectedDifficulties(currentSettings.selectedDifficulties);
+      setSelectedEras(currentSettings.selectedEras);
+      setNumQuestions(currentSettings.numQuestions);
+      setTimePerQuestion(currentSettings.timePerQuestion);
+      setTimePerAnswer(currentSettings.timePerAnswer);
+    }
+    prevOpen.current = open;
+  }, [open, currentSettings]);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Single open section — accordion behavior. Game Settings open by default.
