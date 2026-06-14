@@ -458,6 +458,7 @@ export default function TriviaGame() {
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
           loading={loading}
+          customized={hasCustomized}
         />
         {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
