@@ -396,6 +396,7 @@ export default function TriviaGame() {
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
+    setHasCustomized(true);
     const wasInGame =
       gameStateRef.current === "playing" || gameStateRef.current === "answered";
     if (!wasInGame) return;
