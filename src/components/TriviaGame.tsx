@@ -98,6 +98,7 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [hasCustomized, setHasCustomized] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
