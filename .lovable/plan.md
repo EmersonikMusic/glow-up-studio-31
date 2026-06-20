@@ -1,100 +1,60 @@
-## Footer pill: Skip + Back navigation, keyboard shortcuts, results list, responsive pill text
+# Plan: Review modal styling + CTA placement
 
-Adds Back (left of pill) and Skip (right of pause) circular buttons, wires ←/→ keyboard shortcuts, tracks per-question status (played / skipped), renders a results list on the completion screen with skipped questions greyed out, and reduces footer-pill text size on mobile so the new buttons don't cause truncation.
+## 1. `ResultScreen.tsx` — move "Review Your Game" out of the CTA stack
 
-### 1. Footer layout
+- Remove the existing "Review Your Game" `<button>` from inside the `flex-col` CTA stack (between "Play Again" and "Change Settings").
+- Render it instead as a text link **below** the CTA stack, just above (or replacing the position next to) the "Contact us" mailto link.
+- Style to match the "How Do I Play?" link in `StartScreen.tsx`:
+  - `className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"`
+  - Plain `<button>` (no pill, no border, no background).
+- Keep `trackClick("click_review_game")` + `setReviewOpen(true)` behavior unchanged.
+- Only render when `hasList`.
 
-```text
-[ Back ] [ ——— metadata pill (timer) ——— ] [ Pause/Play ] [ Skip ]
-  40px              flex-1                       40px        40px
-```
+## 2. `ResultScreen.tsx` — restyle the Review modal to match About/HowToPlay
 
-- Back: `ChevronLeft` (lucide), circular glass button matching Pause/Play (`rgba(0,0,0,0.35)` bg, gold icon, 1.5px white/18% border, `active:scale-95`, `hover:brightness-110`). OUTSIDE the pill on its left.
-- Skip: `ChevronsRight` (lucide — chevron family is closer to existing iconography than the filled `FastForward`). Same circular glass style. Right of Pause/Play.
-- Hidden (not just disabled) on edges: Back hidden on Q1, Skip hidden on the last question. Pill flexes to absorb freed space.
-- ARIA: `Previous question` / `Skip question`.
+Update `DialogContent` styling:
+- Background: `rgba(0, 0, 0, 0.25)` with `backdropFilter: blur(24px)` (matches About card glass).
+- Border: `1.5px solid rgba(255, 255, 255, 0.18)`.
+- Title: keep gold (`hsl(var(--game-gold))`), `font-heading font-extrabold uppercase`, tracking tight — same family of treatment as About's "Endless Trivia World!" but without the gradient (gold solid is fine to match current).
+- Above the title, add the small teal eyebrow used on About: `text-xs font-subheading font-bold tracking-[0.2em] uppercase` in `hsl(185 70% 55%)`, e.g. "Round recap".
+- `DialogDescription`: `text-sm font-body font-semibold` in white/80.
 
-### 2. Pill text sizing (responsive)
+Update the table styling so it reads like the game UI rather than default shadcn:
+- Table wrapper border: `border-white/10` → `rgba(255,255,255,0.1)`; rounded `2xl`.
+- Header row: teal eyebrow style — `text-xs font-subheading font-bold tracking-[0.18em] uppercase` in `hsl(185 70% 55%)`. Sticky top with `rgba(0,0,0,0.6)` backdrop.
+- Body cells: `font-body font-semibold` in white/90, question column slightly larger weight, index in tabular-nums white/60.
+- "Skipped" pill: keep gold text, but use the same eyebrow `tracking-[0.2em]` and `text-[10px]` for consistency.
+- Row dividers: `border-white/10`.
+- No hover background on rows (per request, hover lives on the icons only).
 
-To prevent extra truncation now that two more buttons sit alongside the pill:
+## 3. `ResultScreen.tsx` — move thumbs to the right + restyle interaction
 
-- Mobile (default): `text-[11px]` for the metadata line (questionIndex/total · category · difficulty) and the timer numeral inside the pill.
-- `sm:` breakpoint and up: revert to existing `text-xs` (12px).
-- `truncate` stays on the category span as the final safety net.
-- Timer numeral keeps its `font-subheading font-bold` styling; only the size scales.
+Column order becomes: `#` | `Question` | `Answer` | `Feedback (thumbs)`.
 
-This is the only typography change — nothing else in the app touches `text-xs` in the footer.
+Thumbs cell:
+- Right-aligned, `w-24`, flex row `gap-2 justify-end`.
+- Each thumb button:
+  - Default: `ThumbsUp`/`ThumbsDown` outline icons (current lucide stroke), color `text-white/70`.
+  - Hover (pointer fine only — wrap in `@media (hover:hover)` via `md:hover:` is not enough; use `[@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]` to honor the "Hover effects pointer-only" core rule). Remove the current `hover:bg-white/10` background.
+  - Active/selected state (local component state, no persistence): on click, set `feedback[i] = "up" | "down"` (toggle off if same clicked again). When active:
+    - Scale bump animation: add a transient class that runs `transition-transform`, set `scale-110` for ~180ms then back to `scale-100` (use `setTimeout` + state, or CSS `animate-bounce-in`-style; reuse Tailwind's `animate-[bounce_0.4s]` is too much — use existing `active:scale-95` plus a one-shot `scale-110` toggle).
+    - Icon becomes solid/filled: lucide icons don't auto-fill, so add `fill="currentColor"` to the active variant and set color via gradient. Apply the PrimaryCTA gradient as text color using:
+      ```
+      background: linear-gradient(0deg,#e93e3a 0%,#ed683c 11%,#f3903f 33%,#fdc70c 72%,#fff33b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      ```
+      Because lucide icons render as SVG strokes (not text), this won't paint them. Instead, wrap the icon in a span and apply the gradient as `background` with `mask-image` using the icon as mask — OR simpler: apply gradient via SVG `<defs><linearGradient>` is overkill. The pragmatic approach: when active, render the icon with `fill="url(#thumb-gradient)" stroke="url(#thumb-gradient)"` and inject one shared `<svg>` `<defs>` `<linearGradient id="thumb-gradient">` at the top of the modal body matching the PrimaryCTA color stops.
+- Wire `feedback` state as `Record<number, "up" | "down" | undefined>` local to `ResultScreen`. No persistence, no analytics — placeholder per earlier scope.
 
-### 3. Navigation behavior
+## Out of scope
 
-Both buttons act in BOTH the question phase and the answer-reveal phase (reveal cancelled, fresh restart).
+- Persisting feedback, sending it anywhere, or analytics events on thumb clicks.
+- Touching any other screen, CTA, or copy.
+- Changing modal width/height behavior (10-row scroll cap stays).
 
-- **Skip** → mark the leaving question as `skipped`, advance to `questionIndex + 1`, restart its question countdown from full, `paused → false`.
-- **Back** → return to `questionIndex - 1`, restart its question countdown from full, `paused → false`. Clears any prior status for the question being revisited so it can be replayed.
-- Rapid presses are safe — existing `clearTimer()` + `setAnimKey(k=>k+1)` flow is idempotent.
+## Technical notes
 
-### 4. Timer bar re-key
-
-Reuse the existing `animKey` mechanism already wired for Settings → Restart:
-
-```text
-clearTimer() + clearAnswerTimer()
-  → setCountdown(settings.timePerQuestion), setAnswerCountdown(null)
-  → setAnimKey(k => k + 1)            ← forces remount, CSS keyframe restarts at 0%
-  → setPaused(false), setGameState("playing")
-  → deferCountdown(settings.timePerQuestion)
-```
-
-No changes to `GameFooter`'s bar element — its `key` already includes `animKey` and `questionIndex`.
-
-### 5. Keyboard shortcuts
-
-In the existing desktop power-user `keydown` listener in `TriviaGame.tsx` (gated to `pointer:fine` AND `innerWidth >= 1024`, skips when typing in inputs):
-
-- `ArrowLeft` → Back (no-op on Q1).
-- `ArrowRight` → Skip (no-op on last question).
-- Update `KeyboardShortcutsHelp.tsx` shortcut list:
-  ```text
-  Space  Pause / Resume
-  ←      Previous question
-  →      Skip question
-  S      Toggle settings
-  M      Mute / Unmute
-  ```
-
-### 6. Per-question status + results list
-
-Currently `ResultScreen` is a single "Trivia Complete!" card with Play Again + Change Settings CTAs. Extending it without disturbing that hero block.
-
-- Add `questionStatuses: ("played" | "skipped")[]` state in `TriviaGame.tsx`, indexed by original question position. Default: all `"played"`. Skip mutates the leaving index to `"skipped"`. Back clears any status for the revisited index (reverts to `"played"` once finished).
-- Result screen only renders when the player reaches the natural end (timer expired on the last question). Skip is hidden on the last question, so it can never end the game early.
-- Pass `questions={activeQuestions}` and `statuses={questionStatuses}` into `ResultScreen`.
-- New section in `ResultScreen` below the divider, above the CTAs:
-  - Heading: "Your round" (font-heading, small uppercase, tracking-wider).
-  - Vertical list, `max-h-[40vh]` with `overflow-y-auto` so 20+ questions don't push CTAs off-screen.
-  - Each row: `{index + 1}. {question.text}` truncated to 1 line, status badge on the right.
-  - Played row: white/85% text, default opacity.
-  - Skipped row: white/40% text, no strikethrough (keeps it readable), small "Skipped" pill on the right (gold-on-transparent, `border: 1px solid rgba(255,255,255,0.12)`).
-
-### 7. Analytics
-
-Extend `ALLOWED_CLICK_EVENTS` in `src/lib/analytics.ts`:
-
-- `click_skip_question`
-- `click_back_question`
-
-Fire via `trackClick` on each press. No schema change.
-
-### 8. Files to change
-
-- `src/components/GameFooter.tsx` — add `onSkip`, `onBack`, `canSkip`, `canBack` props; render Back outside the pill on the left and Skip after Pause/Play; apply `text-[11px] sm:text-xs` to the metadata spans and timer numeral inside the pill.
-- `src/components/TriviaGame.tsx` — add `questionStatuses` state, `handleSkip` / `handleBack` callbacks (sharing an internal `navigateTo(index)` helper that does the clearTimer/animKey/defer dance), arrow-key handlers in the existing desktop shortcut effect, pass statuses to `ResultScreen`.
-- `src/components/ResultScreen.tsx` — accept `questions` + `statuses`, render the per-question list section.
-- `src/components/KeyboardShortcutsHelp.tsx` — add ← and → entries.
-- `src/lib/analytics.ts` — add two allowed click event names.
-
-### 9. Out of scope / worth flagging
-
-1. **Skip on last Q** stays hidden — Skip will not double as a "finish now" button.
-2. **Sound** — navigation today plays `transition` on questionIndex change; Skip/Back inherit that automatically.
-3. **Results list overflow** — capped at ~40vh with internal scroll, CTAs stay pinned below.
+- Files touched: `src/components/ResultScreen.tsx` only.
+- No new dependencies. No changes to `analytics.ts`, `index.css`, or shadcn primitives.
+- Gradient `<defs>` lives once inside the `DialogContent` so both thumb columns reference the same `url(#thumb-gradient)`.
