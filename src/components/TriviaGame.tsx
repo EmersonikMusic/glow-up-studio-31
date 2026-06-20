@@ -91,6 +91,7 @@ type GameState = "start" | "loading" | "playing" | "answered" | "finished";
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
+  const [questionStatuses, setQuestionStatuses] = useState<("played" | "skipped")[]>([]);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<GameState>("start");
