@@ -91,6 +91,7 @@ type GameState = "start" | "loading" | "playing" | "answered" | "finished";
 export default function TriviaGame() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
+  const [questionStatuses, setQuestionStatuses] = useState<("played" | "skipped")[]>([]);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<GameState>("start");
@@ -136,6 +137,8 @@ export default function TriviaGame() {
   const activeQuestionsLenRef = useRef(0);
   const timePerQuestionRef = useRef(DEFAULT_SETTINGS.timePerQuestion);
   const startedAtRef = useRef<number>(0);
+  const handleSkipRef = useRef<(() => void) | null>(null);
+  const handleBackRef = useRef<(() => void) | null>(null);
 
   const {
     value: countdown,
@@ -241,6 +244,8 @@ export default function TriviaGame() {
     setPaused((prev) => !prev);
   }, []);
 
+
+
   // Spacebar toggles pause/play during active gameplay (desktop power-user shortcut).
   // Skips when focus is in a text input/contenteditable so future inputs don't break.
   useEffect(() => {
@@ -277,6 +282,23 @@ export default function TriviaGame() {
       if (e.code === "KeyM" && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
         toggleMuted();
+        return;
+      }
+      // Arrow Left → Back, Arrow Right → Skip (only during active gameplay).
+      const inGame =
+        gameStateRef.current === "playing" || gameStateRef.current === "answered";
+      if (inGame && e.code === "ArrowLeft" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (questionIndexRef.current > 0) {
+          e.preventDefault();
+          handleBackRef.current?.();
+        }
+        return;
+      }
+      if (inGame && e.code === "ArrowRight" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (questionIndexRef.current < activeQuestionsLenRef.current - 1) {
+          e.preventDefault();
+          handleSkipRef.current?.();
+        }
         return;
       }
     };
@@ -359,6 +381,49 @@ export default function TriviaGame() {
     });
   }, [startCountdown]);
 
+  // Shared navigation helper for Skip/Back — fresh restart of the target question.
+  const navigateTo = useCallback((targetIndex: number) => {
+    clearTimer();
+    clearAnswerTimer();
+    setCountdown(timePerQuestionRef.current);
+    setQuestionIndex(targetIndex);
+    setAnimKey((k) => k + 1);
+    setPaused(false);
+    setGameState("playing");
+    deferCountdown(timePerQuestionRef.current);
+  }, [clearTimer, clearAnswerTimer, setCountdown, deferCountdown]);
+
+  const handleSkip = useCallback(() => {
+    const idx = questionIndexRef.current;
+    const len = activeQuestionsLenRef.current;
+    if (idx >= len - 1) return;
+    setQuestionStatuses((prev) => {
+      const next = prev.slice();
+      next[idx] = "skipped";
+      return next;
+    });
+    navigateTo(idx + 1);
+  }, [navigateTo]);
+
+  const handleBack = useCallback(() => {
+    const idx = questionIndexRef.current;
+    if (idx <= 0) return;
+    const target = idx - 1;
+    setQuestionStatuses((prev) => {
+      const next = prev.slice();
+      next[target] = "played";
+      return next;
+    });
+    navigateTo(target);
+  }, [navigateTo]);
+
+  // Keep refs in sync so the desktop keydown effect (mounted once) can call
+  // the latest handlers without re-binding on every callback identity change.
+  useEffect(() => { handleSkipRef.current = handleSkip; }, [handleSkip]);
+  useEffect(() => { handleBackRef.current = handleBack; }, [handleBack]);
+
+
+
   // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
   const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
     setLoading(true);
@@ -377,6 +442,7 @@ export default function TriviaGame() {
       milestonesFiredRef.current.clear();
       lastCategoryRef.current = null;
       setActiveQuestions(data);
+      setQuestionStatuses(Array(data.length).fill("played"));
       setQuestionIndex(0);
       setScore(0);
       setAnimKey((k) => k + 1);
@@ -547,7 +613,13 @@ export default function TriviaGame() {
 
       {/* Row 2: Main content */}
       {gameState === "finished" ? (
-        <ResultScreen onRestart={handlePlayAgain} onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }} />
+        <ResultScreen
+          onRestart={handlePlayAgain}
+          onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }}
+          questions={activeQuestions}
+          statuses={questionStatuses}
+        />
+
       ) : (
         <main className="relative flex items-stretch h-full min-h-0 py-3 sm:py-6 px-3 sm:px-6 md:px-8 w-full max-w-none mx-auto overflow-visible">
           {/* Game area */}
@@ -667,6 +739,10 @@ export default function TriviaGame() {
           paused={paused}
           onTogglePause={handleTogglePause}
           animKey={animKey}
+          onSkip={handleSkip}
+          onBack={handleBack}
+          canSkip={questionIndex < activeQuestions.length - 1}
+          canBack={questionIndex > 0}
         />
       )}
 

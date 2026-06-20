@@ -67,6 +67,8 @@ export default function KeyboardShortcutsHelp() {
             <ul className="space-y-2 text-xs font-body font-semibold text-white/80">
               {[
                 ["Space", "Pause / Resume"],
+                ["←", "Previous question"],
+                ["→", "Skip question"],
                 ["S", "Toggle settings"],
                 ["M", "Mute / Unmute"],
               ].map(([k, v]) => (
