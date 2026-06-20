@@ -5,19 +5,26 @@ import PrimaryCTA from "./PrimaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
+import type { Question } from "@/data/questions";
+
+export type QuestionStatus = "played" | "skipped";
 
 interface ResultScreenProps {
   onRestart: () => void;
   onChangeSettings?: () => void;
+  questions?: Question[];
+  statuses?: QuestionStatus[];
 }
 
-export default function ResultScreen({ onRestart, onChangeSettings }: ResultScreenProps) {
+export default function ResultScreen({ onRestart, onChangeSettings, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
 
   // Fanfare on mount.
   useEffect(() => {
     play("complete");
   }, [play]);
+
+  const hasList = Array.isArray(questions) && questions.length > 0;
 
   return (
     <div
@@ -35,8 +42,8 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
         }}
       >
 
-        <div className="px-8 py-6 sm:py-10 flex flex-col items-center gap-5 sm:gap-8">
-          {/* Character + glow - larger for balance */}
+        <div className="px-8 py-6 sm:py-10 flex flex-col items-center gap-5 sm:gap-6">
+          {/* Character + glow */}
           <div className="relative flex items-center justify-center">
             <div
               className="absolute w-32 h-32 sm:w-40 sm:h-40 rounded-full"
@@ -68,6 +75,45 @@ export default function ResultScreen({ onRestart, onChangeSettings }: ResultScre
           {/* Decorative divider */}
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
+          {/* Per-question results list */}
+          {hasList && (
+            <div className="w-full">
+              <div className="text-xs font-heading font-extrabold uppercase tracking-widest text-white/80 mb-2 text-center">
+                Your round
+              </div>
+              <ul
+                className="space-y-1.5 overflow-y-auto pr-1"
+                style={{ maxHeight: "40vh" }}
+              >
+                {questions!.map((q, i) => {
+                  const status = statuses?.[i] ?? "played";
+                  const skipped = status === "skipped";
+                  return (
+                    <li
+                      key={i}
+                      className="flex items-center gap-2 text-xs font-body"
+                      style={{ color: skipped ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.85)" }}
+                    >
+                      <span className="tabular-nums opacity-70 flex-shrink-0 w-5 text-right">{i + 1}.</span>
+                      <span className="truncate flex-1">{q.text}</span>
+                      {skipped && (
+                        <span
+                          className="flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-semibold"
+                          style={{
+                            color: "hsl(var(--game-gold))",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            background: "rgba(255,255,255,0.04)",
+                          }}
+                        >
+                          Skipped
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
 
           {/* CTAs — equal width */}
           <div className="flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto">
