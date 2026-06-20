@@ -200,7 +200,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
               </DialogDescription>
             </DialogHeader>
 
-            <div className="px-6 md:px-8 py-6">
+            <div className="px-3 sm:px-6 md:px-8 pb-6 pt-2 sm:py-6">
               <div
                 className="overflow-y-auto rounded-2xl"
                 style={{
@@ -216,25 +216,25 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                   >
                     <TableRow className="border-white/10 hover:bg-transparent">
                       <TableHead
-                        className="w-10 text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        className="w-8 sm:w-10 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         #
                       </TableHead>
                       <TableHead
-                        className="text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        className="px-2 sm:px-3 text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         Question
                       </TableHead>
                       <TableHead
-                        className="text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        className="px-2 sm:px-3 text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         Answer
                       </TableHead>
                       <TableHead
-                        className="w-24 text-center text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        className="w-[88px] sm:w-24 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         Rate
@@ -254,10 +254,10 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                           className="border-white/10 hover:bg-transparent"
                           style={{ opacity: skipped ? 0.55 : 1 }}
                         >
-                          <TableCell className="tabular-nums text-white/60 p-3 font-body font-semibold align-top">
+                          <TableCell className="tabular-nums text-white/60 px-2 sm:px-3 py-2 sm:py-3 text-center text-xs sm:text-sm font-body font-semibold align-top">
                             {i + 1}
                           </TableCell>
-                          <TableCell className="p-3 font-body font-semibold text-white/90 align-top">
+                          <TableCell className="px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-body font-semibold text-white/90 align-top leading-snug break-words">
                             <span>{q.text}</span>
                             {skipped && (
                               <span
@@ -272,11 +272,11 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                               </span>
                             )}
                           </TableCell>
-                          <TableCell className="p-3 font-body font-semibold text-white/90 align-top">
+                          <TableCell className="px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-body font-semibold text-white/90 align-top leading-snug break-words">
                             {answerText}
                           </TableCell>
-                          <TableCell className="p-3 align-top">
-                            <div className="flex items-center justify-end gap-3">
+                          <TableCell className="px-1 sm:px-3 py-2 sm:py-3 align-top">
+                            <div className="flex items-center justify-center gap-1 sm:gap-2">
                               {(["up", "down"] as const).map((dir) => {
                                 const active = vote === dir;
                                 const bumping = bump[`${i}-${dir}`];
@@ -288,7 +288,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                                     aria-label={`Mark question ${i + 1} as ${dir === "up" ? "good" : "bad"}`}
                                     aria-pressed={active}
                                     onClick={() => handleVote(i, dir)}
-                                    className="p-1 rounded-md transition-transform duration-150 ease-out active:scale-95"
+                                    className="flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 rounded-full transition-transform duration-150 ease-out active:scale-95"
                                     style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
                                   >
                                     <Icon
