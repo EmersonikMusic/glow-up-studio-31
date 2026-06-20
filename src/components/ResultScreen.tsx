@@ -1,10 +1,25 @@
-import { RotateCcw } from "lucide-react";
-import { useEffect } from "react";
+import { RotateCcw, ThumbsUp, ThumbsDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 import type { Question } from "@/data/questions";
 
 export type QuestionStatus = "played" | "skipped";
@@ -16,8 +31,11 @@ interface ResultScreenProps {
   statuses?: QuestionStatus[];
 }
 
+const ROW_HEIGHT = 44; // px — keeps the 10-row cap predictable
+
 export default function ResultScreen({ onRestart, onChangeSettings, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   // Fanfare on mount.
   useEffect(() => {
@@ -75,46 +93,6 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
           {/* Decorative divider */}
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
-          {/* Per-question results list */}
-          {hasList && (
-            <div className="w-full">
-              <div className="text-xs font-heading font-extrabold uppercase tracking-widest text-white/80 mb-2 text-center">
-                Your round
-              </div>
-              <ul
-                className="space-y-1.5 overflow-y-auto pr-1"
-                style={{ maxHeight: "40vh" }}
-              >
-                {questions!.map((q, i) => {
-                  const status = statuses?.[i] ?? "played";
-                  const skipped = status === "skipped";
-                  return (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-xs font-body"
-                      style={{ color: skipped ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.85)" }}
-                    >
-                      <span className="tabular-nums opacity-70 flex-shrink-0 w-5 text-right">{i + 1}.</span>
-                      <span className="truncate flex-1">{q.text}</span>
-                      {skipped && (
-                        <span
-                          className="flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-semibold"
-                          style={{
-                            color: "hsl(var(--game-gold))",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            background: "rgba(255,255,255,0.04)",
-                          }}
-                        >
-                          Skipped
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-
           {/* CTAs — equal width */}
           <div className="flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto">
             <PrimaryCTA
@@ -126,6 +104,20 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
               <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
               Play Again
             </PrimaryCTA>
+            {hasList && (
+              <button
+                onClick={() => { trackClick("click_review_game"); setReviewOpen(true); }}
+                aria-label="Review Your Game"
+                className="nav-btn w-full rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  color: "hsl(var(--game-gold))",
+                }}
+              >
+                Review Your Game
+              </button>
+            )}
             {onChangeSettings && (
               <button
                 onClick={() => { trackClick("click_change_settings"); onChangeSettings(); }}
@@ -149,6 +141,97 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
           </div>
         </div>
       </div>
+
+      {/* Review modal */}
+      {hasList && (
+        <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+          <DialogContent
+            className="max-w-2xl backdrop-blur-xl text-white"
+            style={{
+              background: "rgba(0, 0, 0, 0.85)",
+              border: "1.5px solid rgba(255, 255, 255, 0.18)",
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle className="font-heading text-2xl" style={{ color: "hsl(var(--game-gold))" }}>
+                Review Your Game
+              </DialogTitle>
+              <DialogDescription className="text-white/70">
+                Take a look back at the questions from this round.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div
+              className="overflow-y-auto rounded-lg border border-white/10"
+              style={{ maxHeight: `${ROW_HEIGHT * 10 + 44}px` }}
+            >
+              <Table>
+                <TableHeader className="sticky top-0 z-10" style={{ background: "rgba(0,0,0,0.9)" }}>
+                  <TableRow className="border-white/10 hover:bg-transparent">
+                    <TableHead className="w-24 text-white/70"> </TableHead>
+                    <TableHead className="w-10 text-white/70">#</TableHead>
+                    <TableHead className="text-white/70">Question</TableHead>
+                    <TableHead className="text-white/70">Answer</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {questions!.map((q, i) => {
+                    const status = statuses?.[i] ?? "played";
+                    const skipped = status === "skipped";
+                    const answerText =
+                      q.answers.find((a) => a.id === q.correctId)?.text ?? q.answers[0]?.text ?? "";
+                    return (
+                      <TableRow
+                        key={i}
+                        className="border-white/10 hover:bg-white/5"
+                        style={{ height: ROW_HEIGHT, opacity: skipped ? 0.5 : 1 }}
+                      >
+                        <TableCell className="p-2">
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              aria-label={`Mark question ${i + 1} as good`}
+                              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                              onClick={() => { /* TODO: wire feedback */ }}
+                            >
+                              <ThumbsUp className="w-4 h-4 text-white/80" />
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={`Mark question ${i + 1} as bad`}
+                              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                              onClick={() => { /* TODO: wire feedback */ }}
+                            >
+                              <ThumbsDown className="w-4 h-4 text-white/80" />
+                            </button>
+                          </div>
+                        </TableCell>
+                        <TableCell className="tabular-nums text-white/70 p-2">{i + 1}</TableCell>
+                        <TableCell className="p-2 text-white/90">
+                          <span>{q.text}</span>
+                          {skipped && (
+                            <span
+                              className="ml-2 inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-semibold align-middle"
+                              style={{
+                                color: "hsl(var(--game-gold))",
+                                border: "1px solid rgba(255,255,255,0.12)",
+                                background: "rgba(255,255,255,0.04)",
+                              }}
+                            >
+                              Skipped
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="p-2 text-white/90">{answerText}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
