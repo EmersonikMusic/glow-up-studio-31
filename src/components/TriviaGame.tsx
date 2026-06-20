@@ -666,6 +666,7 @@ export default function TriviaGame() {
           totalAnswerTime={settings.timePerAnswer}
           paused={paused}
           onTogglePause={handleTogglePause}
+          animKey={animKey}
         />
       )}
 
