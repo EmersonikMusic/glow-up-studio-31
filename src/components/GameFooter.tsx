@@ -15,6 +15,7 @@ interface GameFooterProps {
   totalAnswerTime: number;
   paused: boolean;
   onTogglePause: () => void;
+  animKey?: number;
 }
 
 const difficultyColor: Record<string, string> = {
