@@ -31,18 +31,30 @@ interface ResultScreenProps {
   statuses?: QuestionStatus[];
 }
 
-const ROW_HEIGHT = 44; // px — keeps the 10-row cap predictable
+const ROW_HEIGHT = 56;
+
+type Feedback = "up" | "down";
 
 export default function ResultScreen({ onRestart, onChangeSettings, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [feedback, setFeedback] = useState<Record<number, Feedback | undefined>>({});
+  const [bump, setBump] = useState<Record<string, boolean>>({});
 
-  // Fanfare on mount.
   useEffect(() => {
     play("complete");
   }, [play]);
 
   const hasList = Array.isArray(questions) && questions.length > 0;
+
+  const handleVote = (i: number, choice: Feedback) => {
+    setFeedback((prev) => ({ ...prev, [i]: prev[i] === choice ? undefined : choice }));
+    const key = `${i}-${choice}`;
+    setBump((prev) => ({ ...prev, [key]: true }));
+    window.setTimeout(() => {
+      setBump((prev) => ({ ...prev, [key]: false }));
+    }, 220);
+  };
 
   return (
     <div
@@ -50,7 +62,6 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
       style={{ background: "hsl(var(--game-bg))" }}
     >
       <ConfettiBurst count={14} />
-      {/* Glassmorphism card */}
       <div
         className="relative w-full max-w-md rounded-3xl overflow-hidden backdrop-blur-xl"
         style={{
@@ -59,9 +70,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
           boxShadow: "0 16px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
         }}
       >
-
         <div className="px-8 py-6 sm:py-10 flex flex-col items-center gap-5 sm:gap-6">
-          {/* Character + glow */}
           <div className="relative flex items-center justify-center">
             <div
               className="absolute w-32 h-32 sm:w-40 sm:h-40 rounded-full"
@@ -77,7 +86,6 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
             />
           </div>
 
-          {/* Main heading */}
           <div className="text-center space-y-3">
             <h1
               className="text-3xl sm:text-5xl font-heading font-extrabold animate-bounce-in"
@@ -90,10 +98,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
             </p>
           </div>
 
-          {/* Decorative divider */}
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
-          {/* CTAs — equal width */}
           <div className="flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto">
             <PrimaryCTA
               onClick={onRestart}
@@ -104,20 +110,6 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
               <RotateCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-[360deg]" />
               Play Again
             </PrimaryCTA>
-            {hasList && (
-              <button
-                onClick={() => { trackClick("click_review_game"); setReviewOpen(true); }}
-                aria-label="Review Your Game"
-                className="nav-btn w-full rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
-                style={{
-                  background: "rgba(255, 255, 255, 0.08)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  color: "hsl(var(--game-gold))",
-                }}
-              >
-                Review Your Game
-              </button>
-            )}
             {onChangeSettings && (
               <button
                 onClick={() => { trackClick("click_change_settings"); onChangeSettings(); }}
@@ -132,6 +124,16 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                 Change Settings
               </button>
             )}
+
+            {hasList && (
+              <button
+                onClick={() => { trackClick("click_review_game"); setReviewOpen(true); }}
+                className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
+              >
+                Review Your Game
+              </button>
+            )}
+
             <a
               href="mailto:mark.mazurek@triviolivia.com"
               className="mt-3 text-xs sm:text-sm font-body text-white/70 hover:text-white transition-colors underline-offset-4 hover:underline text-center"
@@ -142,92 +144,157 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
         </div>
       </div>
 
-      {/* Review modal */}
       {hasList && (
         <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
           <DialogContent
-            className="max-w-2xl backdrop-blur-xl text-white"
+            className="max-w-2xl text-white p-0 overflow-hidden"
             style={{
-              background: "rgba(0, 0, 0, 0.85)",
+              background: "rgba(0, 0, 0, 0.25)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
               border: "1.5px solid rgba(255, 255, 255, 0.18)",
+              boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
             }}
           >
-            <DialogHeader>
-              <DialogTitle className="font-heading text-2xl" style={{ color: "hsl(var(--game-gold))" }}>
+            {/* Shared gradient for active thumb icons */}
+            <svg width="0" height="0" className="absolute" aria-hidden="true">
+              <defs>
+                <linearGradient id="thumb-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stopColor="#e93e3a" />
+                  <stop offset="11%" stopColor="#ed683c" />
+                  <stop offset="33%" stopColor="#f3903f" />
+                  <stop offset="72%" stopColor="#fdc70c" />
+                  <stop offset="100%" stopColor="#fff33b" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            <DialogHeader className="px-6 md:px-8 pt-8 pb-5" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <p
+                className="text-xs font-subheading font-bold tracking-[0.2em] uppercase mb-2"
+                style={{ color: "hsl(185 70% 55%)" }}
+              >
+                Round Recap
+              </p>
+              <DialogTitle
+                className="text-3xl font-heading font-extrabold uppercase tracking-tight"
+                style={{ color: "hsl(var(--game-gold))", lineHeight: 1.05 }}
+              >
                 Review Your Game
               </DialogTitle>
-              <DialogDescription className="text-white/70">
+              <DialogDescription className="text-sm font-body font-semibold text-white/80 mt-2">
                 Take a look back at the questions from this round.
               </DialogDescription>
             </DialogHeader>
 
-            <div
-              className="overflow-y-auto rounded-lg border border-white/10"
-              style={{ maxHeight: `${ROW_HEIGHT * 10 + 44}px` }}
-            >
-              <Table>
-                <TableHeader className="sticky top-0 z-10" style={{ background: "rgba(0,0,0,0.9)" }}>
-                  <TableRow className="border-white/10 hover:bg-transparent">
-                    <TableHead className="w-24 text-white/70"> </TableHead>
-                    <TableHead className="w-10 text-white/70">#</TableHead>
-                    <TableHead className="text-white/70">Question</TableHead>
-                    <TableHead className="text-white/70">Answer</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {questions!.map((q, i) => {
-                    const status = statuses?.[i] ?? "played";
-                    const skipped = status === "skipped";
-                    const answerText =
-                      q.answers.find((a) => a.id === q.correctId)?.text ?? q.answers[0]?.text ?? "";
-                    return (
-                      <TableRow
-                        key={i}
-                        className="border-white/10 hover:bg-white/5"
-                        style={{ height: ROW_HEIGHT, opacity: skipped ? 0.5 : 1 }}
+            <div className="px-6 md:px-8 py-6">
+              <div
+                className="overflow-y-auto rounded-2xl"
+                style={{
+                  maxHeight: `${ROW_HEIGHT * 10 + 48}px`,
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  background: "rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                <Table>
+                  <TableHeader
+                    className="sticky top-0 z-10"
+                    style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}
+                  >
+                    <TableRow className="border-white/10 hover:bg-transparent">
+                      <TableHead
+                        className="w-10 text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        style={{ color: "hsl(185 70% 55%)" }}
                       >
-                        <TableCell className="p-2">
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              aria-label={`Mark question ${i + 1} as good`}
-                              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                              onClick={() => { /* TODO: wire feedback */ }}
-                            >
-                              <ThumbsUp className="w-4 h-4 text-white/80" />
-                            </button>
-                            <button
-                              type="button"
-                              aria-label={`Mark question ${i + 1} as bad`}
-                              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                              onClick={() => { /* TODO: wire feedback */ }}
-                            >
-                              <ThumbsDown className="w-4 h-4 text-white/80" />
-                            </button>
-                          </div>
-                        </TableCell>
-                        <TableCell className="tabular-nums text-white/70 p-2">{i + 1}</TableCell>
-                        <TableCell className="p-2 text-white/90">
-                          <span>{q.text}</span>
-                          {skipped && (
-                            <span
-                              className="ml-2 inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-semibold align-middle"
-                              style={{
-                                color: "hsl(var(--game-gold))",
-                                border: "1px solid rgba(255,255,255,0.12)",
-                                background: "rgba(255,255,255,0.04)",
-                              }}
-                            >
-                              Skipped
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className="p-2 text-white/90">{answerText}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                        #
+                      </TableHead>
+                      <TableHead
+                        className="text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        style={{ color: "hsl(185 70% 55%)" }}
+                      >
+                        Question
+                      </TableHead>
+                      <TableHead
+                        className="text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        style={{ color: "hsl(185 70% 55%)" }}
+                      >
+                        Answer
+                      </TableHead>
+                      <TableHead
+                        className="w-24 text-right text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        style={{ color: "hsl(185 70% 55%)" }}
+                      >
+                        Rate
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {questions!.map((q, i) => {
+                      const status = statuses?.[i] ?? "played";
+                      const skipped = status === "skipped";
+                      const answerText =
+                        q.answers.find((a) => a.id === q.correctId)?.text ?? q.answers[0]?.text ?? "";
+                      const vote = feedback[i];
+                      return (
+                        <TableRow
+                          key={i}
+                          className="border-white/10 hover:bg-transparent"
+                          style={{ opacity: skipped ? 0.55 : 1 }}
+                        >
+                          <TableCell className="tabular-nums text-white/60 p-3 font-body font-semibold align-top">
+                            {i + 1}
+                          </TableCell>
+                          <TableCell className="p-3 font-body font-semibold text-white/90 align-top">
+                            <span>{q.text}</span>
+                            {skipped && (
+                              <span
+                                className="ml-2 inline-block px-2 py-0.5 rounded-full text-[10px] tracking-[0.2em] uppercase font-subheading font-bold align-middle"
+                                style={{
+                                  color: "hsl(var(--game-gold))",
+                                  border: "1px solid rgba(255,255,255,0.12)",
+                                  background: "rgba(255,255,255,0.04)",
+                                }}
+                              >
+                                Skipped
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="p-3 font-body font-semibold text-white/90 align-top">
+                            {answerText}
+                          </TableCell>
+                          <TableCell className="p-3 align-top">
+                            <div className="flex items-center justify-end gap-3">
+                              {(["up", "down"] as const).map((dir) => {
+                                const active = vote === dir;
+                                const bumping = bump[`${i}-${dir}`];
+                                const Icon = dir === "up" ? ThumbsUp : ThumbsDown;
+                                return (
+                                  <button
+                                    key={dir}
+                                    type="button"
+                                    aria-label={`Mark question ${i + 1} as ${dir === "up" ? "good" : "bad"}`}
+                                    aria-pressed={active}
+                                    onClick={() => handleVote(i, dir)}
+                                    className="p-1 rounded-md transition-transform duration-150 ease-out active:scale-95"
+                                    style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
+                                  >
+                                    <Icon
+                                      className="w-5 h-5 transition-colors [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"
+                                      style={{ color: active ? undefined : "rgba(255,255,255,0.65)" }}
+                                      stroke={active ? "url(#thumb-gradient)" : "currentColor"}
+                                      fill={active ? "url(#thumb-gradient)" : "none"}
+                                    />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
