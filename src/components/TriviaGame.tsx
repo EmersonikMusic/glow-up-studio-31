@@ -417,6 +417,13 @@ export default function TriviaGame() {
     navigateTo(target);
   }, [navigateTo]);
 
+  // Keep refs in sync so the desktop keydown effect (mounted once) can call
+  // the latest handlers without re-binding on every callback identity change.
+  useEffect(() => { handleSkipRef.current = handleSkip; }, [handleSkip]);
+  useEffect(() => { handleBackRef.current = handleBack; }, [handleBack]);
+
+
+
   // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
   const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
     setLoading(true);
