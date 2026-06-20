@@ -137,6 +137,8 @@ export default function TriviaGame() {
   const activeQuestionsLenRef = useRef(0);
   const timePerQuestionRef = useRef(DEFAULT_SETTINGS.timePerQuestion);
   const startedAtRef = useRef<number>(0);
+  const handleSkipRef = useRef<(() => void) | null>(null);
+  const handleBackRef = useRef<(() => void) | null>(null);
 
   const {
     value: countdown,
