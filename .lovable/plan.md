@@ -1,37 +1,100 @@
-## QA target
+## Footer pill: Skip + Back navigation, keyboard shortcuts, results list, responsive pill text
 
-The animated countdown bar in `GameFooter` (the dark filling/depleting bar behind the question metadata). Specifically: **does it re-key and restart cleanly when the user is mid-play, opens Settings, changes settings, and confirms "Restart Game" in the new AlertDialog?**
+Adds Back (left of pill) and Skip (right of pause) circular buttons, wires ←/→ keyboard shortcuts, tracks per-question status (played / skipped), renders a results list on the completion screen with skipped questions greyed out, and reduces footer-pill text size on mobile so the new buttons don't cause truncation.
 
-Confirmed expected behaviors (not bugs):
-- Opening Settings mid-game pauses the bar + numeric timer in sync.
-- Closing the Settings panel without applying leaves the game paused — user must hit Resume. **Intended.**
+### 1. Footer layout
 
-## Code path under test
+```text
+[ Back ] [ ——— metadata pill (timer) ——— ] [ Pause/Play ] [ Skip ]
+  40px              flex-1                       40px        40px
+```
 
-1. Mid-game: `gameState === "playing"`, bar animation running, `animKey = N`.
-2. User opens Settings → `useEffect` at `TriviaGame.tsx:194` flips `paused = true` → `animationPlayState: "paused"` on the bar (`GameFooter.tsx:79`, `:626`).
-3. User edits settings → confirm modal (`SettingsPanel.tsx:513`) → clicks "Restart Game" → `handleApply(newSettings)`.
-4. `TriviaGame.tsx:397-409` → `setPanelOpen(false)` → `clearTimer()` / `clearAnswerTimer()` → `runFetchAndStart(newSettings)`.
-5. `runFetchAndStart` (`:375-388`): `setCountdown(newSettings.timePerQuestion)` → `setActiveQuestions(data)` → `setQuestionIndex(0)` → `setAnimKey(k => k + 1)` → `setPaused(false)` → `setGameState("playing")` → `deferCountdown(newSettings.timePerQuestion)`.
+- Back: `ChevronLeft` (lucide), circular glass button matching Pause/Play (`rgba(0,0,0,0.35)` bg, gold icon, 1.5px white/18% border, `active:scale-95`, `hover:brightness-110`). OUTSIDE the pill on its left.
+- Skip: `ChevronsRight` (lucide — chevron family is closer to existing iconography than the filled `FastForward`). Same circular glass style. Right of Pause/Play.
+- Hidden (not just disabled) on edges: Back hidden on Q1, Skip hidden on the last question. Pill flexes to absorb freed space.
+- ARIA: `Previous question` / `Skip question`.
 
-The `animKey++` is what forces React to remount the bar element so its CSS keyframe animation restarts from frame 0 with the new `animation-duration` derived from `timePerQuestion`.
+### 2. Pill text sizing (responsive)
 
-## QA scenarios to verify with Playwright (headless, against `localhost:8080`)
+To prevent extra truncation now that two more buttons sit alongside the pill:
 
-For each scenario: start a game, wait until the bar is mid-animation, open Settings, change `timePerQuestion`, confirm Restart, then sample the bar's computed width over time.
+- Mobile (default): `text-[11px]` for the metadata line (questionIndex/total · category · difficulty) and the timer numeral inside the pill.
+- `sm:` breakpoint and up: revert to existing `text-xs` (12px).
+- `truncate` stays on the category span as the final safety net.
+- Timer numeral keeps its `font-subheading font-bold` styling; only the size scales.
 
-1. **Change `timePerQuestion` 10 s → 30 s mid-question.** Expect: bar resets to full, numeric countdown reads `30`, bar takes ~30 s to deplete, no visible jump/stutter from the prior animation state. animKey on the bar element should have incremented.
-2. **Change `timePerQuestion` 30 s → 5 s mid-question.** Expect: bar resets to full, deplete duration ~5 s (not the old 30 s), bar and number stay aligned the whole way down.
-3. **Same `timePerQuestion`, only change categories.** Expect: bar still re-keys (fresh full-bar start), doesn't continue from the paused fraction of the prior question.
-4. **Trigger Restart during the answer-reveal phase** (between Q and next Q): expect both reveal timer and bar end cleanly, new game starts at Q1 with the bar full.
-5. **Sanity: open Settings + click Cancel on the AlertDialog** (no settings change). Expect bar stays frozen at the same fraction it was at when paused; clicking Resume continues from that fraction.
+This is the only typography change — nothing else in the app touches `text-xs` in the footer.
 
-## How I'll run it (in build mode)
+### 3. Navigation behavior
 
-- Write a single Playwright script under `/tmp/browser/countdown-qa/` that runs all five scenarios, screenshotting (a) the frozen bar at pause, (b) the bar immediately after Restart, (c) the bar ~halfway through the new duration, (d) the bar at expiry.
-- For each scenario, log: `paused` class/state on the footer, the bar element's `data-anim-key` / React key proxy (read via the DOM's recreated node), measured deplete time, and the final numeric countdown.
-- Report pass/fail per scenario with screenshot references. No code changes unless a scenario fails.
+Both buttons act in BOTH the question phase and the answer-reveal phase (reveal cancelled, fresh restart).
 
-## Files
+- **Skip** → mark the leaving question as `skipped`, advance to `questionIndex + 1`, restart its question countdown from full, `paused → false`.
+- **Back** → return to `questionIndex - 1`, restart its question countdown from full, `paused → false`. Clears any prior status for the question being revisited so it can be replayed.
+- Rapid presses are safe — existing `clearTimer()` + `setAnimKey(k=>k+1)` flow is idempotent.
 
-Read-only QA. No source files modified.
+### 4. Timer bar re-key
+
+Reuse the existing `animKey` mechanism already wired for Settings → Restart:
+
+```text
+clearTimer() + clearAnswerTimer()
+  → setCountdown(settings.timePerQuestion), setAnswerCountdown(null)
+  → setAnimKey(k => k + 1)            ← forces remount, CSS keyframe restarts at 0%
+  → setPaused(false), setGameState("playing")
+  → deferCountdown(settings.timePerQuestion)
+```
+
+No changes to `GameFooter`'s bar element — its `key` already includes `animKey` and `questionIndex`.
+
+### 5. Keyboard shortcuts
+
+In the existing desktop power-user `keydown` listener in `TriviaGame.tsx` (gated to `pointer:fine` AND `innerWidth >= 1024`, skips when typing in inputs):
+
+- `ArrowLeft` → Back (no-op on Q1).
+- `ArrowRight` → Skip (no-op on last question).
+- Update `KeyboardShortcutsHelp.tsx` shortcut list:
+  ```text
+  Space  Pause / Resume
+  ←      Previous question
+  →      Skip question
+  S      Toggle settings
+  M      Mute / Unmute
+  ```
+
+### 6. Per-question status + results list
+
+Currently `ResultScreen` is a single "Trivia Complete!" card with Play Again + Change Settings CTAs. Extending it without disturbing that hero block.
+
+- Add `questionStatuses: ("played" | "skipped")[]` state in `TriviaGame.tsx`, indexed by original question position. Default: all `"played"`. Skip mutates the leaving index to `"skipped"`. Back clears any status for the revisited index (reverts to `"played"` once finished).
+- Result screen only renders when the player reaches the natural end (timer expired on the last question). Skip is hidden on the last question, so it can never end the game early.
+- Pass `questions={activeQuestions}` and `statuses={questionStatuses}` into `ResultScreen`.
+- New section in `ResultScreen` below the divider, above the CTAs:
+  - Heading: "Your round" (font-heading, small uppercase, tracking-wider).
+  - Vertical list, `max-h-[40vh]` with `overflow-y-auto` so 20+ questions don't push CTAs off-screen.
+  - Each row: `{index + 1}. {question.text}` truncated to 1 line, status badge on the right.
+  - Played row: white/85% text, default opacity.
+  - Skipped row: white/40% text, no strikethrough (keeps it readable), small "Skipped" pill on the right (gold-on-transparent, `border: 1px solid rgba(255,255,255,0.12)`).
+
+### 7. Analytics
+
+Extend `ALLOWED_CLICK_EVENTS` in `src/lib/analytics.ts`:
+
+- `click_skip_question`
+- `click_back_question`
+
+Fire via `trackClick` on each press. No schema change.
+
+### 8. Files to change
+
+- `src/components/GameFooter.tsx` — add `onSkip`, `onBack`, `canSkip`, `canBack` props; render Back outside the pill on the left and Skip after Pause/Play; apply `text-[11px] sm:text-xs` to the metadata spans and timer numeral inside the pill.
+- `src/components/TriviaGame.tsx` — add `questionStatuses` state, `handleSkip` / `handleBack` callbacks (sharing an internal `navigateTo(index)` helper that does the clearTimer/animKey/defer dance), arrow-key handlers in the existing desktop shortcut effect, pass statuses to `ResultScreen`.
+- `src/components/ResultScreen.tsx` — accept `questions` + `statuses`, render the per-question list section.
+- `src/components/KeyboardShortcutsHelp.tsx` — add ← and → entries.
+- `src/lib/analytics.ts` — add two allowed click event names.
+
+### 9. Out of scope / worth flagging
+
+1. **Skip on last Q** stays hidden — Skip will not double as a "finish now" button.
+2. **Sound** — navigation today plays `transition` on questionIndex change; Skip/Back inherit that automatically.
+3. **Results list overflow** — capped at ~40vh with internal scroll, CTAs stay pinned below.
