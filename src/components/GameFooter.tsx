@@ -1,4 +1,4 @@
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, ChevronLeft, ChevronsRight } from "lucide-react";
 import { Question } from "@/data/questions";
 import { trackClick } from "@/lib/analytics";
 
@@ -16,6 +16,10 @@ interface GameFooterProps {
   paused: boolean;
   onTogglePause: () => void;
   animKey?: number;
+  onSkip?: () => void;
+  onBack?: () => void;
+  canSkip?: boolean;
+  canBack?: boolean;
 }
 
 const difficultyColor: Record<string, string> = {
@@ -40,6 +44,10 @@ export default function GameFooter({
   paused,
   onTogglePause,
   animKey = 0,
+  onSkip,
+  onBack,
+  canSkip = false,
+  canBack = false,
 }: GameFooterProps) {
 
   const isAnswerPhase = answerCountdown !== null;
@@ -54,15 +62,34 @@ export default function GameFooter({
     else timerColor = "hsl(42 100% 55%)";
   }
 
+  const circleBtnStyle = {
+    background: "rgba(0, 0, 0, 0.35)",
+    border: "1.5px solid rgba(255, 255, 255, 0.18)",
+  };
+  const circleBtnClass =
+    "flex items-center justify-center flex-shrink-0 w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110";
+
   return (
     <footer
       className="px-3 sm:px-6 md:px-8 pt-2 w-full"
       style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="flex items-center gap-3 w-full md:w-[70%]">
+      <div className="flex items-center gap-2 sm:gap-3 w-full md:w-[70%]">
+        {/* Back button — hidden on Q1 */}
+        {canBack && onBack && (
+          <button
+            onClick={() => { trackClick("click_back_question"); onBack(); }}
+            className={circleBtnClass}
+            style={circleBtnStyle}
+            aria-label="Previous question"
+          >
+            <ChevronLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
+          </button>
+        )}
+
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
+          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-[11px] sm:text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
           style={{ background: "rgba(0, 0, 0, 0.5)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}
@@ -82,8 +109,6 @@ export default function GameFooter({
             }}
           />
 
-          {/* Urgency shimmer removed — too distracting during countdown. */}
-
           {/* Content — all relative z-10 to sit above the bar */}
           <span className="relative z-10 text-white tabular-nums whitespace-nowrap uppercase">
             {questionIndex + 1}/{totalQuestions}
@@ -100,7 +125,7 @@ export default function GameFooter({
           {/* Timer — absolute right */}
           <span className="absolute right-3 z-10 flex-shrink-0">
             <span
-              className={`tabular-nums font-subheading font-bold uppercase inline-block ${isUrgent ? "animate-pulse-urgent" : ""}`}
+              className={`tabular-nums font-subheading font-bold uppercase inline-block text-[11px] sm:text-xs ${isUrgent ? "animate-pulse-urgent" : ""}`}
               style={{ color: timerColor, transition: "color 0.3s ease" }}
             >
               {displayCountdown}<span className="normal-case">s</span>
@@ -108,14 +133,11 @@ export default function GameFooter({
           </span>
         </div>
 
-        {/* Pause / Play — matches gear icon style */}
+        {/* Pause / Play */}
         <button
           onClick={() => { trackClick(paused ? "click_resume" : "click_pause"); onTogglePause(); }}
-          className="flex items-center justify-center flex-shrink-0 w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95 hover:brightness-110"
-          style={{
-            background: "rgba(0, 0, 0, 0.35)",
-            border: "1.5px solid rgba(255, 255, 255, 0.18)",
-          }}
+          className={circleBtnClass}
+          style={circleBtnStyle}
           aria-label={paused ? "Resume" : "Pause"}
         >
           {paused ? (
@@ -124,6 +146,18 @@ export default function GameFooter({
             <Pause className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           )}
         </button>
+
+        {/* Skip button — hidden on last question */}
+        {canSkip && onSkip && (
+          <button
+            onClick={() => { trackClick("click_skip_question"); onSkip(); }}
+            className={circleBtnClass}
+            style={circleBtnStyle}
+            aria-label="Skip question"
+          >
+            <ChevronsRight className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
+          </button>
+        )}
       </div>
     </footer>
   );
