@@ -39,6 +39,7 @@ export default function GameFooter({
   totalAnswerTime,
   paused,
   onTogglePause,
+  animKey = 0,
 }: GameFooterProps) {
 
   const isAnswerPhase = answerCountdown !== null;
