@@ -362,6 +362,42 @@ export default function TriviaGame() {
     });
   }, [startCountdown]);
 
+  // Shared navigation helper for Skip/Back — fresh restart of the target question.
+  const navigateTo = useCallback((targetIndex: number) => {
+    clearTimer();
+    clearAnswerTimer();
+    setCountdown(timePerQuestionRef.current);
+    setQuestionIndex(targetIndex);
+    setAnimKey((k) => k + 1);
+    setPaused(false);
+    setGameState("playing");
+    deferCountdown(timePerQuestionRef.current);
+  }, [clearTimer, clearAnswerTimer, setCountdown, deferCountdown]);
+
+  const handleSkip = useCallback(() => {
+    const idx = questionIndexRef.current;
+    const len = activeQuestionsLenRef.current;
+    if (idx >= len - 1) return;
+    setQuestionStatuses((prev) => {
+      const next = prev.slice();
+      next[idx] = "skipped";
+      return next;
+    });
+    navigateTo(idx + 1);
+  }, [navigateTo]);
+
+  const handleBack = useCallback(() => {
+    const idx = questionIndexRef.current;
+    if (idx <= 0) return;
+    const target = idx - 1;
+    setQuestionStatuses((prev) => {
+      const next = prev.slice();
+      next[target] = "played";
+      return next;
+    });
+    navigateTo(target);
+  }, [navigateTo]);
+
   // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
   const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
     setLoading(true);
