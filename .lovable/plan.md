@@ -1,18 +1,24 @@
-Make three targeted styling changes to the round review recap modal in `src/components/ResultScreen.tsx`. No other files or dependencies will be touched.
+## Goal
+Make the background behind the game review modal the same as the About screen, instead of the current dark scrim.
 
-1. Center the "Rate" column header
-   - Change the `Rate` `<TableHead>` class from `text-right` to `text-center`.
-   - Keep the thumb icons in the body cells right-aligned (`justify-end`) as they are now.
+## Problem
+The review modal uses `DialogOverlay` from `src/components/ui/dialog.tsx`, which has `bg-black/80`. That dark scrim makes the whole review screen look much darker than the About screen, even though the modal card itself uses the same glass styling as About.
 
-2. Make thumb icons turn gold on hover (pointer-only)
-   - Remove the inline `style={{ color: ... }}` on the thumb `<Icon>`; it overrides the Tailwind hover class.
-   - Apply `text-white/65` via a Tailwind class for the default outline, and add `[@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]`.
-   - Keep the selected/filled state using the existing gradient fill and the 220 ms "bump" animation.
-   - The gold matches the header icons and pause/play buttons (`hsl(var(--game-gold))`).
+## Plan
+1. **Make the dialog overlay customizable**
+   - Update `src/components/ui/dialog.tsx` so `DialogContent` accepts an `overlayClassName` prop and forwards it to `DialogOverlay`.
+   - This keeps the default dark overlay for any other dialogs while letting the review modal override it.
 
-3. Replace the default dialog X close button with the About-screen back button
-   - Import `ArrowLeft` from `lucide-react` and `DialogClose` from `@/components/ui/dialog`.
-   - Add a custom `DialogClose` button inside `DialogContent`, absolutely positioned `top-4 right-4`, styled as a glass circle: `bg-white/8`, `border-white/15`, rounded-full, `w-9 h-9`, with a gold `ArrowLeft` icon (`hsl(var(--game-gold))`).
-   - Hide the default shadcn `DialogContent` X close button for this modal only using a scoped Tailwind child selector on `DialogContent` (`[&>button:last-of-type]:hidden`), so no changes to `src/components/ui/dialog.tsx` are needed.
+2. **Style the review modal overlay like AboutScreen**
+   - In `src/components/ResultScreen.tsx`, pass the new `overlayClassName` to the review `DialogContent`.
+   - Set the overlay background to `hsl(var(--game-bg))` (same as AboutScreen).
+   - Add the same ambient gradient blobs as AboutScreen (purple and blue radial gradients) using Tailwind pseudo-element classes on the overlay.
 
-Out of scope: behavior of the thumb voting, modal copy, table width/height, or any other screen.
+3. **Verify**
+   - Open the review modal in the preview and confirm the background matches the About screen's look.
+
+## Files to change
+- `src/components/ui/dialog.tsx`
+- `src/components/ResultScreen.tsx`
+
+No other dialogs in the app are affected, and the review modal card/table content stays unchanged.
