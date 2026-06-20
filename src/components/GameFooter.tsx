@@ -67,7 +67,7 @@ export default function GameFooter({
         >
           {/* Animated time bar */}
           <div
-            key={`${questionIndex}-${isAnswerPhase ? "answer" : "question"}`}
+            key={`${animKey}-${questionIndex}-${isAnswerPhase ? "answer" : "question"}`}
             className="absolute inset-y-0 left-0 rounded-full pointer-events-none"
             style={{
               width: "100%",
