@@ -1,4 +1,4 @@
-import { RotateCcw, ThumbsUp, ThumbsDown } from "lucide-react";
+import { RotateCcw, ThumbsUp, ThumbsDown, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -147,7 +148,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
       {hasList && (
         <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
           <DialogContent
-            className="max-w-2xl text-white p-0 overflow-hidden"
+            className="max-w-2xl text-white p-0 overflow-hidden [&>button:last-of-type]:hidden"
             style={{
               background: "rgba(0, 0, 0, 0.25)",
               backdropFilter: "blur(24px)",
@@ -156,6 +157,18 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
               boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
             }}
           >
+            {/* Back/close button — matches About screen */}
+            <DialogClose
+              className="nav-btn absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
+              aria-label="Close"
+              style={{
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+              }}
+            >
+              <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+            </DialogClose>
+
             {/* Shared gradient for active thumb icons */}
             <svg width="0" height="0" className="absolute" aria-hidden="true">
               <defs>
@@ -221,7 +234,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                         Answer
                       </TableHead>
                       <TableHead
-                        className="w-24 text-right text-xs font-subheading font-bold tracking-[0.18em] uppercase"
+                        className="w-24 text-center text-xs font-subheading font-bold tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         Rate
@@ -279,8 +292,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
                                     style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
                                   >
                                     <Icon
-                                      className="w-5 h-5 transition-colors [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"
-                                      style={{ color: active ? undefined : "rgba(255,255,255,0.65)" }}
+                                      className="w-5 h-5 transition-colors text-white/65 [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"
                                       stroke={active ? "url(#thumb-gradient)" : "currentColor"}
                                       fill={active ? "url(#thumb-gradient)" : "none"}
                                     />
