@@ -288,21 +288,21 @@ export default function TriviaGame() {
       if (inGame && e.code === "ArrowLeft" && !e.metaKey && !e.ctrlKey && !e.altKey) {
         if (questionIndexRef.current > 0) {
           e.preventDefault();
-          handleBack();
+          handleBackRef.current?.();
         }
         return;
       }
       if (inGame && e.code === "ArrowRight" && !e.metaKey && !e.ctrlKey && !e.altKey) {
         if (questionIndexRef.current < activeQuestionsLenRef.current - 1) {
           e.preventDefault();
-          handleSkip();
+          handleSkipRef.current?.();
         }
         return;
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [handleBack, handleSkip]);
+  }, []);
 
   // Tick sound for last 3s of question phase.
   const lastTickRef = useRef<number>(-1);
