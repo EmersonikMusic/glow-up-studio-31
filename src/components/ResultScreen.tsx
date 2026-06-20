@@ -149,6 +149,25 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
         <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
           <DialogContent
             className="max-w-2xl text-white p-0 overflow-hidden [&>button:last-of-type]:hidden"
+            overlayClassName="bg-[hsl(var(--game-bg))] overflow-hidden"
+            overlayChildren={
+              <>
+                <div
+                  className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle, hsl(280 60% 50% / 0.14) 0%, transparent 70%)",
+                    filter: "blur(60px)",
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle, hsl(210 70% 50% / 0.1) 0%, transparent 70%)",
+                    filter: "blur(60px)",
+                  }}
+                />
+              </>
+            }
             style={{
               background: "rgba(0, 0, 0, 0.25)",
               backdropFilter: "blur(24px)",
