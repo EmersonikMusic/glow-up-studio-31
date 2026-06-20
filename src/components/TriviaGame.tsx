@@ -739,6 +739,10 @@ export default function TriviaGame() {
           paused={paused}
           onTogglePause={handleTogglePause}
           animKey={animKey}
+          onSkip={handleSkip}
+          onBack={handleBack}
+          canSkip={questionIndex < activeQuestions.length - 1}
+          canBack={questionIndex > 0}
         />
       )}
 
