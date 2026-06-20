@@ -416,6 +416,7 @@ export default function TriviaGame() {
       milestonesFiredRef.current.clear();
       lastCategoryRef.current = null;
       setActiveQuestions(data);
+      setQuestionStatuses(Array(data.length).fill("played"));
       setQuestionIndex(0);
       setScore(0);
       setAnimKey((k) => k + 1);
