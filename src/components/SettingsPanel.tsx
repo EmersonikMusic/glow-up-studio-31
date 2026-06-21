@@ -524,8 +524,19 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader className="space-y-3">
-                  <AlertDialogTitle className="font-subheading font-bold">Restart with new settings?</AlertDialogTitle>
-                  <AlertDialogDescription className="font-body font-semibold">
+                  <AlertDialogTitle
+                    className="text-4xl font-heading font-extrabold uppercase tracking-tight"
+                    style={{
+                      background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      lineHeight: 1.05,
+                    }}
+                  >
+                    Restart with new settings?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm leading-relaxed font-body font-semibold text-white">
                     Your current game will end and a new game will start with the updated settings.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
