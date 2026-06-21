@@ -156,7 +156,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
       {hasList && (
         <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
           <DialogContent
-            className="max-w-2xl text-white p-0 overflow-hidden [&>button:last-of-type]:hidden"
+            className="max-w-2xl mx-4 text-white p-0 overflow-hidden flex flex-col top-4 sm:top-1/2 translate-y-0 sm:-translate-y-1/2 max-h-[calc(100dvh-2rem)] [&>button:last-of-type]:hidden"
+
             overlayClassName="bg-[hsl(var(--game-bg))] overflow-hidden"
             overlayChildren={
               <>
@@ -209,7 +210,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               </defs>
             </svg>
 
-            <DialogHeader className="px-6 md:px-8 pt-8 pb-5" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <DialogHeader className="px-6 md:px-8 pt-10 pb-5 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <p
                 className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2"
                 style={{ color: "hsl(185 70% 55%)" }}
@@ -217,7 +218,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                 Round Recap
               </p>
               <DialogTitle
-                className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+                className="text-3xl sm:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+
                 style={{
                   background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
                   WebkitBackgroundClip: "text",
@@ -243,15 +245,15 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               </DialogDescription>
             </DialogHeader>
 
-            <div className="px-3 sm:px-6 md:px-8 pb-6 pt-2 sm:py-6">
+            <div className="px-3 sm:px-6 md:px-8 pb-6 pt-2 sm:py-6 flex-1 min-h-0 flex flex-col">
               <div
-                className="overflow-y-auto rounded-2xl"
+                className="overflow-y-auto rounded-2xl flex-1 min-h-0"
                 style={{
-                  maxHeight: `${ROW_HEIGHT * 10 + 48}px`,
                   border: "1px solid rgba(255, 255, 255, 0.1)",
                   background: "rgba(0, 0, 0, 0.2)",
                 }}
               >
+
                 <Table>
                   <TableHeader
                     className="sticky top-0 z-10"
