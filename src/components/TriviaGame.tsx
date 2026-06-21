@@ -250,6 +250,7 @@ export default function TriviaGame() {
   // Skips when focus is in a text input/contenteditable so future inputs don't break.
   useEffect(() => {
     if (gameState !== "playing" && gameState !== "answered") return;
+    if (showAbout || showHowToPlay || panelOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code !== "Space") return;
       const t = e.target as HTMLElement | null;
@@ -260,7 +261,7 @@ export default function TriviaGame() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [gameState]);
+  }, [gameState, showAbout, showHowToPlay, panelOpen]);
 
   // Desktop power-user shortcuts: → / N (next), S (settings), M (mute).
   // Gated to true desktop — touch devices and tablets are excluded.
