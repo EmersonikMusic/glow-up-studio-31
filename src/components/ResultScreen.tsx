@@ -270,7 +270,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                         Answer
                       </TableHead>
                       <TableHead
-                        className="w-[88px] sm:w-24 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
+                        className="w-[96px] sm:w-24 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         Rate
