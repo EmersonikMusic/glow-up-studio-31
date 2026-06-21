@@ -617,6 +617,7 @@ export default function TriviaGame() {
         <ResultScreen
           onRestart={handlePlayAgain}
           onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }}
+          onBackToStart={handleRestart}
           questions={activeQuestions}
           statuses={questionStatuses}
         />

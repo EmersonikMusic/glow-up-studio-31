@@ -28,6 +28,7 @@ export type QuestionStatus = "played" | "skipped";
 interface ResultScreenProps {
   onRestart: () => void;
   onChangeSettings?: () => void;
+  onBackToStart?: () => void;
   questions?: Question[];
   statuses?: QuestionStatus[];
 }
@@ -36,7 +37,7 @@ const ROW_HEIGHT = 56;
 
 type Feedback = "up" | "down";
 
-export default function ResultScreen({ onRestart, onChangeSettings, questions, statuses }: ResultScreenProps) {
+export default function ResultScreen({ onRestart, onChangeSettings, onBackToStart, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [feedback, setFeedback] = useState<Record<number, Feedback | undefined>>({});
@@ -136,7 +137,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
             )}
 
             <p className="mt-3 text-xs font-body font-semibold text-white text-center">
-              Contact us at{" "}
+              Contact us at
+              <br />
               <a
                 href="mailto:mark.mazurek@triviolivia.com"
                 className="howto-link underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
@@ -217,8 +219,18 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
               >
                 Review Your Game
               </DialogTitle>
-              <DialogDescription className="text-sm font-body font-semibold text-white/80 mt-2">
-                Take a look back at the questions from this round.
+              <DialogDescription className="text-sm font-body font-semibold text-white mt-2">
+                Think you can do better?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackClick("click_review_play_again");
+                    onBackToStart?.();
+                  }}
+                  className="font-black underline underline-offset-[5px] text-[hsl(185_70%_55%)] [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))] transition-colors"
+                >
+                  Play Again
+                </button>
               </DialogDescription>
             </DialogHeader>
 

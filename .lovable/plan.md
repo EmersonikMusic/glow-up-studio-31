@@ -1,32 +1,22 @@
-## Goal
+## Plan
 
-Replace the off-brand AI-generated og:image with a 1200×630 card built from the **actual Start Screen assets**, so social previews match the in-app brand.
+### 1. Result screen: line break before the mailto link
+In `src/components/ResultScreen.tsx`, insert an unconditional `<br />` between "Contact us at" and the email hyperlink so the address sits on its own line on all breakpoints. The existing paragraph stays centered and styled exactly as it is today.
 
-## Source of truth (from `StartScreen.tsx`)
+### 2. Game review screen: new subline with "Play Again" CTA
+In `src/components/ResultScreen.tsx`:
+- Add a new optional prop `onBackToStart?: () => void` to `ResultScreenProps`.
+- Replace the review dialog's `DialogDescription` text from:  
+  "Take a look back at the questions from this round."  
+  with:  
+  "Think you can do better? Play Again."
+- Render "Think you can do better?" in white using the existing `text-sm font-body font-semibold text-white` styling.
+- Render "Play Again" as an inline text CTA that matches the "We got you" treatment in `AboutScreen.tsx`: `font-black` with color `hsl(185 70% 55%)` and a hover state that shifts to `hsl(var(--game-gold))`. Clicking it calls `onBackToStart` and is tracked with a `trackClick` event.
 
-- Logo: `src/assets/img-TO-logo-full-desktop-v2.svg` (full color Triviolivia wordmark)
-- Tagline: "Earth's Deepest Trivia Source" — Rubik 800, uppercase, letter-spacing 0.16em, teal `hsl(185 70% 55%)`, on the same concave-up arc used in-app (`M 30 46 Q 300 14 570 46`), with the same drop shadow
-- Background: `hsl(240 45% 16%)` (the `--game-bg` token), no gradients or extra ornamentation
+### 3. Wire up the new action in `TriviaGame.tsx`
+In `src/components/TriviaGame.tsx`, pass the existing `handleRestart` callback to `ResultScreen` as the new `onBackToStart` prop. This returns the user to the game start screen when the review subline's "Play Again" is clicked.
 
-## Build approach
-
-Use Playwright (already in the sandbox) to render an HTML page that mirrors the Start Screen's hero block, then screenshot at exactly 1200×630. This guarantees pixel-for-pixel brand fidelity — same SVG, same font, same arc, same color token — instead of an AI re-interpretation.
-
-Steps:
-
-1. Write a small standalone HTML at `/tmp/og/og.html`:
-   - Body sized 1200×630, background `hsl(240 45% 16%)`
-   - Centered column: inline the logo SVG (copied from `src/assets/img-TO-logo-full-desktop-v2.svg`) at ~880px wide
-   - Below it, the curved tagline SVG using the exact `<textPath>` + arc + filter + Rubik 800 styling from `StartScreen.tsx` lines 91–123
-   - Load Rubik 700/800 from Google Fonts (same `<link>` as `index.html`) and wait for `document.fonts.ready` before screenshotting
-2. Run Playwright headless Chromium at viewport 1200×630, `page.screenshot({ path: "/tmp/og/og.jpg", type: "jpeg", quality: 90 })` (no `full_page`)
-3. Verify the rendered PNG/JPG visually by viewing the screenshot
-4. Upload via `lovable-assets create --file /tmp/og/og.jpg --filename triviolivia-og-card.jpg` and overwrite `public/og-card.jpg.asset.json` with the CLI output
-5. Update `index.html` `og:image` and `twitter:image` URLs to the new CDN URL (width/height/alt tags already correct at 1200×630)
-6. Delete the old CDN asset using `assets--delete_asset` on the previous pointer if it's no longer referenced
-
-## Out of scope
-
-- No changes to Start Screen, no new brand assets, no copy changes
-- No SSR / per-route og:image work
-- Heads-up to user: social platforms (LinkedIn, Slack, X, Facebook) cache previews — already-shared links won't update until each platform re-scrapes or the user forces a refresh in that platform's link debugger
+### Technical details
+- Files changed: `src/components/ResultScreen.tsx`, `src/components/TriviaGame.tsx`.
+- No backend, no data model, no new dependencies, no changes to other screens or styling tokens.
+- The "Play Again" CTA will be an inline `<button>` element styled as text (same visual weight as the About screen's "We got you" span), not a primary button.
