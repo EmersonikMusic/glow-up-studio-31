@@ -210,7 +210,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               </defs>
             </svg>
 
-            <DialogHeader className="px-6 md:px-8 pt-8 pb-5" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+            <DialogHeader className="px-6 md:px-8 pt-10 pb-5 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <p
                 className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2"
                 style={{ color: "hsl(185 70% 55%)" }}
