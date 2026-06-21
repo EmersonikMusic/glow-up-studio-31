@@ -1,26 +1,54 @@
-## Issues in the screenshot
+Four targeted UI tweaks. Frontend-only, no logic or copy changes.
 
-1. **Backdrop is too dark.** The default `AlertDialogOverlay` ships with `bg-black/80`, which crushes the Settings drawer and the entire page behind it. The Review-Your-Game `Dialog` uses an app-themed overlay (`bg-[hsl(var(--game-bg))]` with blurred blobs) — the Restart dialog should match that softer treatment.
-2. **CTAs still touch the popup edge.** Cancel + Restart Game together are wider than `max-w-md` (~448px) minus `p-8` inset. With `sm:justify-center`, they stretch to fill, so "Restart Game" hits the inner border on the right. The popup needs to be wider so the buttons sit centered with real breathing room.
+## 1. Review Your Game modal — mobile width
 
-## Fix (no other changes)
+The dialog uses `w-full max-w-2xl mx-4` but `w-full` + `translate-x-[-50%]` ignores `mx-4`, so on 390px the right edge clips.
 
-Scope: `src/components/SettingsPanel.tsx` — the Restart AlertDialog only.
+Change the `DialogContent` className in `src/components/ResultScreen.tsx` so the width is constrained on mobile:
+- swap `max-w-2xl mx-4` → `w-[calc(100%-2rem)] max-w-2xl`
 
-### a. Lighter, themed backdrop
-Render a custom overlay via `AlertDialogPortal` + `AlertDialogOverlay` (instead of the auto overlay from `AlertDialogContent`) using the same pattern as the Review dialog: `bg-[hsl(var(--game-bg))]` opacity ~0.7 with a subtle backdrop blur. Net effect: the Settings drawer behind reads clearly instead of being blacked out.
+This guarantees 1rem gutter on both sides at every viewport, while staying max 672px on desktop.
 
-Alternative considered: keep auto overlay but pass a softer class. Rejected — `AlertDialogContent` mounts its own `AlertDialogOverlay` internally with no `className` hook, so we'd be stacking two overlays. The portal-based approach is cleaner.
+## 2. Thumbs up/down spacing
 
-### b. Wider popup, uniform padding preserved
-- Bump `max-w-md` → `max-w-xl` (576px) so the two CTAs fit side by side with margin on both sides.
-- Keep `p-6 sm:p-8` uniform inset (same on top/right/bottom/left).
-- Footer stays `flex flex-col sm:flex-row sm:justify-center gap-3` so CTAs are centered and never edge-aligned.
+Inside the Rate cell, bump the gap on mobile from `gap-1` → `gap-2` (keep `sm:gap-2`) and shrink the cell width slightly (`w-[88px]` → `w-[96px]`) so the two 44px tap targets have breathing room without re-clipping.
 
-### c. (Unchanged) Title, description, glass styling, mobile single-column footer.
+## 3. Active thumb visual — outline only, no gradient fill
+
+Today an active vote fills the icon with the `#thumb-gradient` (red→yellow). Change active state to match hover: stroke = `hsl(var(--game-gold))`, fill = `none`. Keep the bump scale animation.
+
+Implementation in `ResultScreen.tsx`:
+- Remove the `<svg>` defs block (no longer needed).
+- In the button's `Icon`: drop `stroke={active ? "url(#thumb-gradient)" : "currentColor"}` and `fill={active ? "url(#thumb-gradient)" : "none"}`.
+- Drive color via className: when `active`, add `text-[hsl(var(--game-gold))]`; otherwise keep `text-white/65` with existing hover class. Use `stroke="currentColor"` and `fill="none"`.
+
+## 4. Gold header gradient — match Primary CTA
+
+Current gold headers (Trivia Complete, Review Your Game) use:
+```
+linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)
+```
+
+Primary CTA uses (bottom → top):
+```
+linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)
+```
+
+To match the CTA's direction and color stops on text, switch both headers to:
+```
+linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)
+```
+(bottom-red → top-yellow, identical stops).
+
+Apply in:
+- `ResultScreen.tsx` `<h1>` "Trivia Complete!" inline style
+- `ResultScreen.tsx` `DialogTitle` "Review Your Game" inline style
+
+No other gold-gradient headers identified; if any surface later (e.g. About), they can adopt the same string.
 
 ## Verification
 
-- Drive Playwright at 1280×800 and 390×801: open Settings mid-game → change a setting → click Apply.
-- Screenshot the confirm dialog and crop the right edge of "Restart Game" to confirm equal gap to the popup border on both sides.
-- Confirm the Settings drawer behind the popup is still visible (not crushed by the overlay).
+Playwright at 390×801 and 1280×800:
+- screenshot Review modal — confirm equal left/right gutter and no horizontal scroll
+- click a thumbs up — confirm icon outline turns gold, no fill
+- visually compare header gradient direction vs Play Again CTA
