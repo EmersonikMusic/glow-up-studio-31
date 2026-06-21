@@ -198,18 +198,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
             </DialogClose>
 
-            {/* Shared gradient for active thumb icons */}
-            <svg width="0" height="0" className="absolute" aria-hidden="true">
-              <defs>
-                <linearGradient id="thumb-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                  <stop offset="0%" stopColor="#e93e3a" />
-                  <stop offset="11%" stopColor="#ed683c" />
-                  <stop offset="33%" stopColor="#f3903f" />
-                  <stop offset="72%" stopColor="#fdc70c" />
-                  <stop offset="100%" stopColor="#fff33b" />
-                </linearGradient>
-              </defs>
-            </svg>
+
+
 
             <DialogHeader className="px-6 md:px-8 pt-10 pb-5 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <p
