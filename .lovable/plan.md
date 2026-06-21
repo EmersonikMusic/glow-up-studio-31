@@ -1,54 +1,44 @@
-Four targeted UI tweaks. Frontend-only, no logic or copy changes.
+Final pre-deploy QA pass. Read-only — no code changes unless an issue is found, in which case I'll surface them and ask before fixing.
 
-## 1. Review Your Game modal — mobile width
+## Scope
 
-The dialog uses `w-full max-w-2xl mx-4` but `w-full` + `translate-x-[-50%]` ignores `mx-4`, so on 390px the right edge clips.
+Verify the recent UI work end-to-end:
 
-Change the `DialogContent` className in `src/components/ResultScreen.tsx` so the width is constrained on mobile:
-- swap `max-w-2xl mx-4` → `w-[calc(100%-2rem)] max-w-2xl`
+1. **Restart AlertDialog (Settings → Restart Game)**
+   - Backdrop is themed (game-bg @ ~70%, blurred), not pitch black
+   - Popup max-w-xl with equal left/right inset; CTAs don't touch edges
+   - Uniform p-6 / sm:p-8 padding; rounded-3xl
+   - Mobile: CTAs stack; Desktop: side-by-side, centered
 
-This guarantees 1rem gutter on both sides at every viewport, while staying max 672px on desktop.
+2. **Review Your Game Dialog**
+   - Mobile 390px: full container in frame, 1rem gutter both sides, no horizontal scroll
+   - Title "Review Your Game" fits on one line
+   - Back arrow positioned top-right, not clipped at top
+   - Thumbs up/down: adequate spacing (gap-2), tap targets not clipped
+   - Click thumb → outline turns gold, NO gradient fill, bump animation still fires
+   - Header gradient matches Primary CTA direction (bottom red → top yellow)
 
-## 2. Thumbs up/down spacing
+3. **Result Screen "Trivia Complete!" header**
+   - Gradient direction/colors match Primary CTA gradient
 
-Inside the Rate cell, bump the gap on mobile from `gap-1` → `gap-2` (keep `sm:gap-2`) and shrink the cell width slightly (`w-[88px]` → `w-[96px]`) so the two 44px tap targets have breathing room without re-clipping.
+4. **Regression check on adjacent surfaces**
+   - About screen back-arrow still positioned correctly
+   - Settings panel opens, sliders/toggles unaffected
+   - Play Again → game restarts cleanly
+   - No console errors during the flow
 
-## 3. Active thumb visual — outline only, no gradient fill
+## Method
 
-Today an active vote fills the icon with the `#thumb-gradient` (red→yellow). Change active state to match hover: stroke = `hsl(var(--game-gold))`, fill = `none`. Keep the bump scale animation.
+Drive Playwright headless against `localhost:8080` at:
+- 390 × 801 (mobile, matches current preview)
+- 1280 × 800 (desktop)
 
-Implementation in `ResultScreen.tsx`:
-- Remove the `<svg>` defs block (no longer needed).
-- In the button's `Icon`: drop `stroke={active ? "url(#thumb-gradient)" : "currentColor"}` and `fill={active ? "url(#thumb-gradient)" : "none"}`.
-- Drive color via className: when `active`, add `text-[hsl(var(--game-gold))]`; otherwise keep `text-white/65` with existing hover class. Use `stroke="currentColor"` and `fill="none"`.
+For each viewport, script the full path: Start → Settings → Restart dialog (screenshot) → close → play through 2 questions → End → Review Your Game (screenshot, click thumbs up + down, re-screenshot) → close → About (screenshot back arrow region).
 
-## 4. Gold header gradient — match Primary CTA
+Crop screenshots with image_tools--zoom_image to inspect: popup gutters, thumb fill state, header gradient direction, back-arrow position.
 
-Current gold headers (Trivia Complete, Review Your Game) use:
-```
-linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)
-```
+Capture browser console logs throughout; report any errors/warnings.
 
-Primary CTA uses (bottom → top):
-```
-linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)
-```
+## Deliverable
 
-To match the CTA's direction and color stops on text, switch both headers to:
-```
-linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)
-```
-(bottom-red → top-yellow, identical stops).
-
-Apply in:
-- `ResultScreen.tsx` `<h1>` "Trivia Complete!" inline style
-- `ResultScreen.tsx` `DialogTitle` "Review Your Game" inline style
-
-No other gold-gradient headers identified; if any surface later (e.g. About), they can adopt the same string.
-
-## Verification
-
-Playwright at 390×801 and 1280×800:
-- screenshot Review modal — confirm equal left/right gutter and no horizontal scroll
-- click a thumbs up — confirm icon outline turns gold, no fill
-- visually compare header gradient direction vs Play Again CTA
+A pass/fail report per check with screenshot evidence. If everything passes, give the green light to publish. If anything fails, list the issues and ask whether to fix before deploying.
