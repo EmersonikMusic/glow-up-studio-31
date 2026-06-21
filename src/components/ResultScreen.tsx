@@ -312,7 +312,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                             {answerText}
                           </TableCell>
                           <TableCell className="px-1 sm:px-3 py-2 sm:py-3 align-top">
-                            <div className="flex items-center justify-center gap-1 sm:gap-2">
+                            <div className="flex items-center justify-center gap-2">
                               {(["up", "down"] as const).map((dir) => {
                                 const active = vote === dir;
                                 const bumping = bump[`${i}-${dir}`];
