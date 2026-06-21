@@ -1,36 +1,26 @@
-## Goals
+## Issues in the screenshot
 
-1. Pop-up windows (`AlertDialog` / `Dialog`) need uniform padding so CTAs don't kiss the edge on desktop/tablet.
-2. On mobile, the "Review Your Game" dialog header wraps onto 2 lines and the back-arrow sits flush with (or above) the viewport edge. Match the About screen's safe-area positioning.
+1. **Backdrop is too dark.** The default `AlertDialogOverlay` ships with `bg-black/80`, which crushes the Settings drawer and the entire page behind it. The Review-Your-Game `Dialog` uses an app-themed overlay (`bg-[hsl(var(--game-bg))]` with blurred blobs) — the Restart dialog should match that softer treatment.
+2. **CTAs still touch the popup edge.** Cancel + Restart Game together are wider than `max-w-md` (~448px) minus `p-8` inset. With `sm:justify-center`, they stretch to fill, so "Restart Game" hits the inner border on the right. The popup needs to be wider so the buttons sit centered with real breathing room.
 
-## Scope
+## Fix (no other changes)
 
-- `src/components/SettingsPanel.tsx` — Restart-with-new-settings `AlertDialog`.
-- `src/components/ResultScreen.tsx` — Review Your Game `Dialog`.
-- (Optional) `src/components/ui/alert-dialog.tsx` — only if needed to apply themed padding without per-instance overrides. Prefer per-instance overrides to limit blast radius.
+Scope: `src/components/SettingsPanel.tsx` — the Restart AlertDialog only.
 
-Out of scope: copy changes, button styles, anything outside these two pop-ups, and any of the previously-locked screens (Pause Overlay, Settings Panel section header labels, 404).
+### a. Lighter, themed backdrop
+Render a custom overlay via `AlertDialogPortal` + `AlertDialogOverlay` (instead of the auto overlay from `AlertDialogContent`) using the same pattern as the Review dialog: `bg-[hsl(var(--game-bg))]` opacity ~0.7 with a subtle backdrop blur. Net effect: the Settings drawer behind reads clearly instead of being blacked out.
 
-## Changes
+Alternative considered: keep auto overlay but pass a softer class. Rejected — `AlertDialogContent` mounts its own `AlertDialogOverlay` internally with no `className` hook, so we'd be stacking two overlays. The portal-based approach is cleaner.
 
-### 1. Restart with New Settings — `SettingsPanel.tsx` (lines 524–561)
+### b. Wider popup, uniform padding preserved
+- Bump `max-w-md` → `max-w-xl` (576px) so the two CTAs fit side by side with margin on both sides.
+- Keep `p-6 sm:p-8` uniform inset (same on top/right/bottom/left).
+- Footer stays `flex flex-col sm:flex-row sm:justify-center gap-3` so CTAs are centered and never edge-aligned.
 
-- Override `AlertDialogContent` with themed glass styling and a generous, uniform inset on all sides, e.g.:
-  - `className="p-6 sm:p-8 gap-5 max-w-md rounded-2xl"` plus the existing app glass background tokens (matching About / Review dialogs — `rgba(0,0,0,0.45)` bg, `1.5px` white-18% border, blurred backdrop).
-- Update `AlertDialogFooter` to `flex flex-col sm:flex-row sm:justify-center gap-3` so the two CTAs stay centered with breathing room on both sides (prevents "Restart Game" touching the right edge).
-- Keep title and description text styles as already standardized.
-
-### 2. Review Your Game — `ResultScreen.tsx` (DialogContent + DialogHeader)
-
-- **Title wrap (mobile):** change `DialogTitle` from `text-4xl` to `text-3xl sm:text-4xl` so "Review Your Game" stays on one line at 390px. Heading style/gradient/casing unchanged.
-- **Back arrow cut off (mobile):** the dialog currently relies on default `top-[50%] translate-y-[-50%]`, which on short viewports clips the top. Fix:
-  - Add responsive sizing/positioning on `DialogContent`: `top-4 sm:top-[50%] translate-y-0 sm:-translate-y-1/2 max-h-[calc(100dvh-2rem)] overflow-hidden flex flex-col` (left/right inset already handled by `max-w-2xl` + screen padding; add `mx-4`).
-  - Bump header top padding from `pt-8` to `pt-10` to match About (gives the absolute `top-4 right-4` back button the same safe gap as About).
-  - Make the table body the flex child that scrolls (`flex-1 min-h-0`) instead of relying on a fixed pixel max-height, so the dialog always fits the viewport with the back arrow visible.
-- Uniform padding: confirm `px-6 md:px-8` header and `px-3 sm:px-6 md:px-8 pb-6` body padding remain symmetric; bump mobile bottom padding to `pb-6` (already) and ensure top inset isn't zero on mobile.
+### c. (Unchanged) Title, description, glass styling, mobile single-column footer.
 
 ## Verification
 
-- Drive Playwright at 390×801 and 1280×800:
-  - Open Settings mid-game, change a setting, click Apply → screenshot the Restart confirm dialog. Verify equal padding on all four sides and CTAs not touching edges.
-  - Finish a game → open "Review Your Game" → screenshot at mobile and desktop. Verify title is one line on mobile, back arrow is fully visible with the same offset as About, and the table scrolls inside the dialog.
+- Drive Playwright at 1280×800 and 390×801: open Settings mid-game → change a setting → click Apply.
+- Screenshot the confirm dialog and crop the right edge of "Restart Game" to confirm equal gap to the popup border on both sides.
+- Confirm the Settings drawer behind the popup is still visible (not crushed by the overlay).

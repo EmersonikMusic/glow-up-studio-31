@@ -523,7 +523,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             </PrimaryCTA>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
               <AlertDialogContent
-                className="p-6 sm:p-8 gap-5 max-w-md rounded-3xl text-white"
+                overlayClassName="bg-[hsl(var(--game-bg))]/70 backdrop-blur-sm"
+                className="p-6 sm:p-8 gap-5 max-w-xl rounded-3xl text-white"
                 style={{
                   background: "rgba(0, 0, 0, 0.45)",
                   backdropFilter: "blur(24px)",
@@ -532,6 +533,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                   boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
                 }}
               >
+
                 <AlertDialogHeader className="space-y-3">
                   <AlertDialogTitle
                     className="text-3xl sm:text-4xl font-heading font-extrabold uppercase tracking-tight"
