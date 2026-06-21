@@ -522,10 +522,19 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
               {applyLabel}
             </PrimaryCTA>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-              <AlertDialogContent>
+              <AlertDialogContent
+                className="p-6 sm:p-8 gap-5 max-w-md rounded-3xl text-white"
+                style={{
+                  background: "rgba(0, 0, 0, 0.45)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.18)",
+                  boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
+                }}
+              >
                 <AlertDialogHeader className="space-y-3">
                   <AlertDialogTitle
-                    className="text-4xl font-heading font-extrabold uppercase tracking-tight"
+                    className="text-3xl sm:text-4xl font-heading font-extrabold uppercase tracking-tight"
                     style={{
                       background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
                       WebkitBackgroundClip: "text",
@@ -540,7 +549,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                     Your current game will end and a new game will start with the updated settings.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 sm:gap-3 mt-2">
+                <AlertDialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-2">
                   <SecondaryCTA
                     trackId="settings_apply_cancel"
                     onClick={() => setConfirmOpen(false)}
@@ -559,6 +568,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
           </>
         ) : (
           <PrimaryCTA
