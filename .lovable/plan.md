@@ -1,22 +1,27 @@
-## Plan
+## Changes
 
-### 1. Result screen: line break before the mailto link
-In `src/components/ResultScreen.tsx`, insert an unconditional `<br />` between "Contact us at" and the email hyperlink so the address sits on its own line on all breakpoints. The existing paragraph stays centered and styled exactly as it is today.
+### 1. ResultScreen.tsx — CTA stack
+- Reduce mobile vertical gap between "Play Again" and "Change Settings" so it matches Start screen spacing.
+  - Current: `flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto`
+  - New: drop the gap, use `mt-3` on the Change Settings button to mirror StartScreen's `mt-3 w-full` pattern. Switch wrapper to `flex flex-col items-stretch w-full max-w-[280px] mx-auto`.
+- Replace the custom "Change Settings" `<button>` with the shared `SecondaryCTA` component (same styling as "Customize Game" on Start screen).
+  - Keep `trackClick("click_change_settings")` behavior via `trackId="change_settings"`.
+  - Pass `className="mt-3 w-full"`.
 
-### 2. Game review screen: new subline with "Play Again" CTA
-In `src/components/ResultScreen.tsx`:
-- Add a new optional prop `onBackToStart?: () => void` to `ResultScreenProps`.
-- Replace the review dialog's `DialogDescription` text from:  
-  "Take a look back at the questions from this round."  
-  with:  
-  "Think you can do better? Play Again."
-- Render "Think you can do better?" in white using the existing `text-sm font-body font-semibold text-white` styling.
-- Render "Play Again" as an inline text CTA that matches the "We got you" treatment in `AboutScreen.tsx`: `font-black` with color `hsl(185 70% 55%)` and a hover state that shifts to `hsl(var(--game-gold))`. Clicking it calls `onBackToStart` and is tracked with a `trackClick` event.
+### 2. SettingsPanel.tsx — "Restart with new settings?" confirm dialog
+- Add vertical breathing room inside the popup. Set `AlertDialogHeader` `className="space-y-3"` and `AlertDialogFooter` `className="gap-3 sm:gap-3 mt-2"` so the title, description, and buttons aren't crammed together.
+- Replace the custom Cancel button with `SecondaryCTA` (same look as Customize Game on Start screen) — keep `trackClick("settings_apply_cancel")`, `trackId="settings_apply_cancel"`.
+- Keep the existing `PrimaryCTA` "Restart Game" button (it already matches Start Game styling).
+- Result: confirm dialog matches Start screen's button pair visually and is properly spaced.
 
-### 3. Wire up the new action in `TriviaGame.tsx`
-In `src/components/TriviaGame.tsx`, pass the existing `handleRestart` callback to `ResultScreen` as the new `onBackToStart` prop. This returns the user to the game start screen when the review subline's "Play Again" is clicked.
+### 3. TriviaGame.tsx — "Loading next round…" header
+- Match the header treatment used on About/HowToPlay/Result screens.
+  - Update sizing/leading: change from `text-xl md:text-3xl ... lineHeight: 1.1` to `text-4xl md:text-5xl ... lineHeight: 1.05` (with `tracking-tight uppercase font-heading font-extrabold` retained), and remove the redundant inline `lineHeight: 1.1` override.
+  - Gold gradient already matches About screen — leave it unchanged.
 
-### Technical details
-- Files changed: `src/components/ResultScreen.tsx`, `src/components/TriviaGame.tsx`.
-- No backend, no data model, no new dependencies, no changes to other screens or styling tokens.
-- The "Play Again" CTA will be an inline `<button>` element styled as text (same visual weight as the About screen's "We got you" span), not a primary button.
+## Files
+- `src/components/ResultScreen.tsx`
+- `src/components/SettingsPanel.tsx`
+- `src/components/TriviaGame.tsx`
+
+No backend, no new dependencies, no other screens affected.

@@ -573,13 +573,13 @@ export default function TriviaGame() {
               aria-hidden="true"
             />
             <p
-              className="text-xl md:text-3xl font-heading font-extrabold leading-none tracking-tight uppercase"
+              className="text-4xl md:text-5xl font-heading font-extrabold tracking-tight uppercase"
               style={{
                 background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                lineHeight: 1.1,
+                lineHeight: 1.05,
               }}
             >
               Loading next round…
