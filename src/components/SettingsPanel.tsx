@@ -571,7 +571,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           </PrimaryCTA>
         )}
         {!canApply && (
-          <p className="text-xs font-body font-semibold text-[hsl(var(--muted-foreground))] text-center max-w-xs leading-snug">
+          <p className="text-sm leading-relaxed font-body font-semibold text-white text-center max-w-xs">
             In order to begin a game you must first select at least 1{" "}
             <span className="text-[hsl(185_70%_55%)] font-bold">category</span>, 1{" "}
             <span className="text-[hsl(185_70%_55%)] font-bold">era</span>, and set your{" "}
