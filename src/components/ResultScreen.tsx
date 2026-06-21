@@ -156,7 +156,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
       {hasList && (
         <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
           <DialogContent
-            className="max-w-2xl text-white p-0 overflow-hidden [&>button:last-of-type]:hidden"
+            className="max-w-2xl mx-4 text-white p-0 overflow-hidden flex flex-col top-4 sm:top-1/2 translate-y-0 sm:-translate-y-1/2 max-h-[calc(100dvh-2rem)] [&>button:last-of-type]:hidden"
+
             overlayClassName="bg-[hsl(var(--game-bg))] overflow-hidden"
             overlayChildren={
               <>
