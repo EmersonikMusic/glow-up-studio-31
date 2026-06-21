@@ -24,8 +24,25 @@ export default class AppErrorBoundary extends Component<AppErrorBoundaryProps, A
       return (
         <div className="min-h-screen flex items-center justify-center bg-background px-6 text-center text-foreground">
           <div className="max-w-md space-y-3">
-            <h1 className="font-heading text-2xl">Triviolivia couldn&apos;t finish loading</h1>
-            <p className="font-body text-sm text-muted-foreground">
+            <p
+              className="text-sm font-subheading font-bold tracking-[0.2em] uppercase"
+              style={{ color: "hsl(185 70% 55%)" }}
+            >
+              Hiccup
+            </p>
+            <h1
+              className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+              style={{
+                background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                lineHeight: 1.05,
+              }}
+            >
+              Triviolivia couldn&apos;t finish loading
+            </h1>
+            <p className="text-sm leading-relaxed font-body font-semibold text-white">
               This browser is missing something the game needs. Please try refreshing, or open the game on a newer browser if this screen stays here.
             </p>
           </div>
