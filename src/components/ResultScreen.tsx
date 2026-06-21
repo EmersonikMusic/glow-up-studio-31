@@ -1,4 +1,5 @@
 import { RotateCcw, ThumbsUp, ThumbsDown, ArrowLeft } from "lucide-react";
+import SecondaryCTA from "./SecondaryCTA";
 import { useEffect, useState } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
@@ -102,7 +103,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
 
           <div className="w-16 h-0.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.15)" }} />
 
-          <div className="flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto">
+          <div className="flex flex-col items-stretch w-full max-w-[280px] mx-auto">
             <PrimaryCTA
               onClick={onRestart}
               trackId="result_play_again"
@@ -113,18 +114,14 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               Play Again
             </PrimaryCTA>
             {onChangeSettings && (
-              <button
-                onClick={() => { trackClick("click_change_settings"); onChangeSettings(); }}
+              <SecondaryCTA
+                onClick={onChangeSettings}
+                trackId="change_settings"
+                className="mt-3 w-full"
                 aria-label="Change Settings"
-                className="nav-btn w-full rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
-                style={{
-                  background: "rgba(255, 255, 255, 0.08)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  color: "hsl(var(--game-gold))",
-                }}
               >
                 Change Settings
-              </button>
+              </SecondaryCTA>
             )}
 
             {hasList && (

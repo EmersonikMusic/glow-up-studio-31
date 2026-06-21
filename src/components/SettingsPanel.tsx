@@ -3,6 +3,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PrimaryCTA from "./PrimaryCTA";
+import SecondaryCTA from "./SecondaryCTA";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -522,24 +523,19 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             </PrimaryCTA>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
               <AlertDialogContent>
-                <AlertDialogHeader>
+                <AlertDialogHeader className="space-y-3">
                   <AlertDialogTitle className="font-subheading font-bold">Restart with new settings?</AlertDialogTitle>
                   <AlertDialogDescription className="font-body font-semibold">
                     Your current game will end and a new game will start with the updated settings.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <button
-                    onClick={() => { trackClick("settings_apply_cancel"); setConfirmOpen(false); }}
-                    className="nav-btn rounded-full px-10 min-h-14 py-2 font-body font-bold uppercase tracking-wider text-xl transition-all duration-200 active:scale-95"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.08)",
-                      border: "1px solid rgba(255, 255, 255, 0.15)",
-                      color: "hsl(var(--game-gold))",
-                    }}
+                <AlertDialogFooter className="gap-3 sm:gap-3 mt-2">
+                  <SecondaryCTA
+                    trackId="settings_apply_cancel"
+                    onClick={() => setConfirmOpen(false)}
                   >
                     Cancel
-                  </button>
+                  </SecondaryCTA>
                   <PrimaryCTA
                     trackId="settings_apply_confirm"
                     onClick={() => {
