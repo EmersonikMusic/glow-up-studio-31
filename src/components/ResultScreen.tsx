@@ -218,7 +218,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                 Round Recap
               </p>
               <DialogTitle
-                className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+                className="text-3xl sm:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+
                 style={{
                   background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
                   WebkitBackgroundClip: "text",
