@@ -245,15 +245,15 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               </DialogDescription>
             </DialogHeader>
 
-            <div className="px-3 sm:px-6 md:px-8 pb-6 pt-2 sm:py-6">
+            <div className="px-3 sm:px-6 md:px-8 pb-6 pt-2 sm:py-6 flex-1 min-h-0 flex flex-col">
               <div
-                className="overflow-y-auto rounded-2xl"
+                className="overflow-y-auto rounded-2xl flex-1 min-h-0"
                 style={{
-                  maxHeight: `${ROW_HEIGHT * 10 + 48}px`,
                   border: "1px solid rgba(255, 255, 255, 0.1)",
                   background: "rgba(0, 0, 0, 0.2)",
                 }}
               >
+
                 <Table>
                   <TableHeader
                     className="sticky top-0 z-10"
