@@ -166,7 +166,7 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
             className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
             style={{ animationDelay: "240ms" }}
           >
-            How Do I Play?
+            How to Play
           </button>
         </div>
       </div>

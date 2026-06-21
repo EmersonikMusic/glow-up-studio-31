@@ -135,12 +135,15 @@ export default function ResultScreen({ onRestart, onChangeSettings, questions, s
               </button>
             )}
 
-            <a
-              href="mailto:mark.mazurek@triviolivia.com"
-              className="mt-3 text-xs sm:text-sm font-body text-white/70 hover:text-white transition-colors underline-offset-4 hover:underline text-center"
-            >
-              Contact us at mark.mazurek@triviolivia.com
-            </a>
+            <p className="mt-3 text-xs font-body font-semibold text-white text-center">
+              Contact us at{" "}
+              <a
+                href="mailto:mark.mazurek@triviolivia.com"
+                className="howto-link underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
+              >
+                mark.mazurek@triviolivia.com
+              </a>
+            </p>
           </div>
         </div>
       </div>

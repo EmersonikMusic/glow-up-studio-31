@@ -675,7 +675,7 @@ export default function TriviaGame() {
               <MascotSvg
                 category={currentQuestion.category}
                 state={mascotState}
-                className="relative z-10 h-full w-full drop-shadow-xl"
+                className="relative z-10 h-full w-full drop-shadow-md"
               />
             </div>
           </div>
@@ -717,7 +717,7 @@ export default function TriviaGame() {
               <MascotSvg
                 category={currentQuestion.category}
                 state={mascotState}
-                className="relative z-10 h-full w-full drop-shadow-xl"
+                className="relative z-10 h-full w-full drop-shadow-md"
               />
             </div>
           </div>
