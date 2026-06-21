@@ -328,10 +328,11 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                                     style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
                                   >
                                     <Icon
-                                      className="w-5 h-5 transition-colors text-white/65 [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"
-                                      stroke={active ? "url(#thumb-gradient)" : "currentColor"}
-                                      fill={active ? "url(#thumb-gradient)" : "none"}
+                                      className={`w-5 h-5 transition-colors ${active ? "text-[hsl(var(--game-gold))]" : "text-white/65"} [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]`}
+                                      stroke="currentColor"
+                                      fill="none"
                                     />
+
                                   </button>
                                 );
                               })}
