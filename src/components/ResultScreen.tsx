@@ -93,7 +93,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
             <h1
               className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight animate-bounce-in"
               style={{
-                background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -156,7 +156,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
       {hasList && (
         <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
           <DialogContent
-            className="max-w-2xl mx-4 text-white p-0 overflow-hidden flex flex-col top-4 sm:top-1/2 translate-y-0 sm:-translate-y-1/2 max-h-[calc(100dvh-2rem)] [&>button:last-of-type]:hidden"
+            className="w-[calc(100%-2rem)] max-w-2xl text-white p-0 overflow-hidden flex flex-col top-4 sm:top-1/2 translate-y-0 sm:-translate-y-1/2 max-h-[calc(100dvh-2rem)] [&>button:last-of-type]:hidden"
+
 
             overlayClassName="bg-[hsl(var(--game-bg))] overflow-hidden"
             overlayChildren={
@@ -197,18 +198,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
             </DialogClose>
 
-            {/* Shared gradient for active thumb icons */}
-            <svg width="0" height="0" className="absolute" aria-hidden="true">
-              <defs>
-                <linearGradient id="thumb-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                  <stop offset="0%" stopColor="#e93e3a" />
-                  <stop offset="11%" stopColor="#ed683c" />
-                  <stop offset="33%" stopColor="#f3903f" />
-                  <stop offset="72%" stopColor="#fdc70c" />
-                  <stop offset="100%" stopColor="#fff33b" />
-                </linearGradient>
-              </defs>
-            </svg>
+
+
 
             <DialogHeader className="px-6 md:px-8 pt-10 pb-5 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <p
@@ -221,7 +212,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                 className="text-3xl sm:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
 
                 style={{
-                  background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                  background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -279,7 +270,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                         Answer
                       </TableHead>
                       <TableHead
-                        className="w-[88px] sm:w-24 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
+                        className="w-[96px] sm:w-24 px-2 sm:px-3 text-center text-[10px] sm:text-xs font-subheading font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase"
                         style={{ color: "hsl(185 70% 55%)" }}
                       >
                         Rate
@@ -321,7 +312,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                             {answerText}
                           </TableCell>
                           <TableCell className="px-1 sm:px-3 py-2 sm:py-3 align-top">
-                            <div className="flex items-center justify-center gap-1 sm:gap-2">
+                            <div className="flex items-center justify-center gap-2">
                               {(["up", "down"] as const).map((dir) => {
                                 const active = vote === dir;
                                 const bumping = bump[`${i}-${dir}`];
@@ -337,10 +328,11 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                                     style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
                                   >
                                     <Icon
-                                      className="w-5 h-5 transition-colors text-white/65 [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"
-                                      stroke={active ? "url(#thumb-gradient)" : "currentColor"}
-                                      fill={active ? "url(#thumb-gradient)" : "none"}
+                                      className={`w-5 h-5 transition-colors ${active ? "text-[hsl(var(--game-gold))]" : "text-white/65"} [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]`}
+                                      stroke="currentColor"
+                                      fill="none"
                                     />
+
                                   </button>
                                 );
                               })}
