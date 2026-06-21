@@ -365,6 +365,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       !arraysEqual(selectedEras, currentSettings.selectedEras)
     : false;
 
+  const canApply =
+    selectedCategories.length > 0 &&
+    selectedDifficulties.length > 0 &&
+    selectedEras.length > 0;
+
   const applyLabel = "Apply Settings";
 
   const panelContent = (
@@ -504,10 +509,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </section>
 
       {/* Apply button */}
-      <div className="px-5 pt-3 pb-3 md:pb-3 flex justify-center">
+      <div className="px-5 pt-3 pb-3 md:pb-3 flex flex-col items-center gap-3">
         {gameInProgress && hasChanges ? (
           <>
-            <PrimaryCTA trackId="settings_apply_request" onClick={() => setConfirmOpen(true)} aria-label={applyLabel}>
+            <PrimaryCTA
+              trackId="settings_apply_request"
+              onClick={() => setConfirmOpen(true)}
+              aria-label={applyLabel}
+              disabled={!canApply}
+            >
               {applyLabel}
             </PrimaryCTA>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
@@ -544,9 +554,22 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             </AlertDialog>
           </>
         ) : (
-          <PrimaryCTA trackId="settings_apply" onClick={handleApply} aria-label={applyLabel}>
+          <PrimaryCTA
+            trackId="settings_apply"
+            onClick={handleApply}
+            aria-label={applyLabel}
+            disabled={!canApply}
+          >
             {applyLabel}
           </PrimaryCTA>
+        )}
+        {!canApply && (
+          <p className="text-xs font-body font-semibold text-[hsl(var(--muted-foreground))] text-center max-w-xs leading-snug">
+            In order to begin a game you must first select at least 1{" "}
+            <span className="text-[hsl(185_70%_55%)] font-bold">category</span>, 1{" "}
+            <span className="text-[hsl(185_70%_55%)] font-bold">era</span>, and set your{" "}
+            <span className="text-[hsl(185_70%_55%)] font-bold">difficulty</span>.
+          </p>
         )}
       </div>
     </>
