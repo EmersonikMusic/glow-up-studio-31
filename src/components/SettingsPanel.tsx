@@ -396,13 +396,13 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Title */}
       <div className="px-5 pt-2 pb-2 md:px-6 md:pt-2 md:pb-3">
         <h2
-          className="text-xl md:text-3xl font-heading font-extrabold leading-none tracking-tight uppercase"
+          className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
           style={{
             background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            lineHeight: 1.1,
+            lineHeight: 1.05,
             textAlign: "center",
           }}
         >

@@ -91,12 +91,18 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
 
           <div className="text-center space-y-3">
             <h1
-              className="text-3xl sm:text-5xl font-heading font-extrabold animate-bounce-in"
-              style={{ color: "hsl(42 100% 55%)" }}
+              className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight animate-bounce-in"
+              style={{
+                background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                lineHeight: 1.05,
+              }}
             >
               Trivia Complete!
             </h1>
-            <p className="text-muted-foreground text-base max-w-xs mx-auto leading-relaxed font-body font-semibold">
+            <p className="text-sm font-body font-semibold text-white leading-relaxed max-w-xs mx-auto">
               Ready for another round?
             </p>
           </div>
@@ -205,18 +211,24 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
 
             <DialogHeader className="px-6 md:px-8 pt-8 pb-5" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
               <p
-                className="text-xs font-subheading font-bold tracking-[0.2em] uppercase mb-2"
+                className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2"
                 style={{ color: "hsl(185 70% 55%)" }}
               >
                 Round Recap
               </p>
               <DialogTitle
-                className="text-3xl font-heading font-extrabold uppercase tracking-tight"
-                style={{ color: "hsl(var(--game-gold))", lineHeight: 1.05 }}
+                className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+                style={{
+                  background: "linear-gradient(160deg, hsl(42 100% 62%) 0%, hsl(35 90% 48%) 45%, hsl(28 90% 40%) 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  lineHeight: 1.05,
+                }}
               >
                 Review Your Game
               </DialogTitle>
-              <DialogDescription className="text-sm font-body font-semibold text-white mt-2">
+              <DialogDescription className="text-sm font-body font-semibold text-white leading-relaxed mt-2">
                 Think you can do better?{" "}
                 <button
                   type="button"

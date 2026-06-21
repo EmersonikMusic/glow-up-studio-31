@@ -1,27 +1,31 @@
-## Changes
+## Typography Unification — Final Scope
 
-### 1. ResultScreen.tsx — CTA stack
-- Reduce mobile vertical gap between "Play Again" and "Change Settings" so it matches Start screen spacing.
-  - Current: `flex flex-col items-stretch gap-5 sm:gap-3 w-full max-w-[280px] mx-auto`
-  - New: drop the gap, use `mt-3` on the Change Settings button to mirror StartScreen's `mt-3 w-full` pattern. Switch wrapper to `flex flex-col items-stretch w-full max-w-[280px] mx-auto`.
-- Replace the custom "Change Settings" `<button>` with the shared `SecondaryCTA` component (same styling as "Customize Game" on Start screen).
-  - Keep `trackClick("click_change_settings")` behavior via `trackId="change_settings"`.
-  - Pass `className="mt-3 w-full"`.
+Reference standard:
+- **Eyebrow**: `text-sm font-subheading font-bold tracking-[0.2em] uppercase`, teal `hsl(185 70% 55%)`.
+- **H1**: `text-4xl font-heading font-extrabold uppercase leading-none tracking-tight`, gold gradient.
+- **Body**: `text-sm leading-relaxed font-body font-semibold`, white.
 
-### 2. SettingsPanel.tsx — "Restart with new settings?" confirm dialog
-- Add vertical breathing room inside the popup. Set `AlertDialogHeader` `className="space-y-3"` and `AlertDialogFooter` `className="gap-3 sm:gap-3 mt-2"` so the title, description, and buttons aren't crammed together.
-- Replace the custom Cancel button with `SecondaryCTA` (same look as Customize Game on Start screen) — keep `trackClick("settings_apply_cancel")`, `trackId="settings_apply_cancel"`.
-- Keep the existing `PrimaryCTA` "Restart Game" button (it already matches Start Game styling).
-- Result: confirm dialog matches Start screen's button pair visually and is properly spaced.
+### Fixes
 
-### 3. TriviaGame.tsx — "Loading next round…" header
-- Match the header treatment used on About/HowToPlay/Result screens.
-  - Update sizing/leading: change from `text-xl md:text-3xl ... lineHeight: 1.1` to `text-4xl md:text-5xl ... lineHeight: 1.05` (with `tracking-tight uppercase font-heading font-extrabold` retained), and remove the redundant inline `lineHeight: 1.1` override.
-  - Gold gradient already matches About screen — leave it unchanged.
+**ResultScreen.tsx**
+1. "Trivia Complete!" hero → H1 standard (text-4xl, uppercase, tracking-tight, gold gradient). Keep `animate-bounce-in`.
+2. "Ready for another round?" → `text-sm font-body font-semibold text-white leading-relaxed` (replaces muted/text-base).
+3. "Round Recap" eyebrow → `text-sm` (was `text-xs`).
+4. "Review Your Game" DialogTitle → H1 standard (`text-4xl` + gold gradient).
+5. DialogDescription → add `leading-relaxed`.
 
-## Files
-- `src/components/ResultScreen.tsx`
-- `src/components/SettingsPanel.tsx`
-- `src/components/TriviaGame.tsx`
+**SettingsPanel.tsx**
+6. "Customize Your Experience" title → `text-4xl font-heading font-extrabold uppercase leading-none tracking-tight` + gold gradient. Drop inline `lineHeight: 1.1`.
 
-No backend, no new dependencies, no other screens affected.
+**AppErrorBoundary.tsx**
+7. h1 → H1 standard. Body p → `text-sm leading-relaxed font-body font-semibold text-white`. Add eyebrow "Hiccup".
+
+**KeyboardShortcutsHelp.tsx**
+8. Popover title → `text-xs font-subheading font-bold tracking-[0.18em] uppercase`, teal.
+
+### Explicitly NOT changing (per user)
+- PauseOverlay
+- SettingsPanel section header labels / slider value labels
+- NotFound (404) page
+
+No backend changes. Files: `ResultScreen.tsx`, `SettingsPanel.tsx`, `AppErrorBoundary.tsx`, `KeyboardShortcutsHelp.tsx`.

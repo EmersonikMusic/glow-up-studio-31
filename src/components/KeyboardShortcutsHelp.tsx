@@ -61,7 +61,10 @@ export default function KeyboardShortcutsHelp() {
             role="dialog"
             aria-label="Keyboard shortcuts"
           >
-            <div className="text-xs font-heading font-extrabold uppercase tracking-widest text-white/90 mb-3">
+            <div
+              className="text-xs font-subheading font-bold uppercase tracking-[0.18em] mb-3"
+              style={{ color: "hsl(185 70% 55%)" }}
+            >
               Keyboard Shortcuts
             </div>
             <ul className="space-y-2 text-xs font-body font-semibold text-white/80">
