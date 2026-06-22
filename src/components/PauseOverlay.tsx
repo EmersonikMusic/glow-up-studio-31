@@ -20,7 +20,7 @@ export default function PauseOverlay({ visible }: PauseOverlayProps) {
       role="status"
     >
       <div
-        className="text-3xl sm:text-4xl font-heading font-extrabold tracking-wider uppercase"
+        className="text-3xl sm:text-2xl font-heading font-extrabold tracking-wider uppercase sm:whitespace-nowrap"
         style={{
           color: "hsl(var(--game-gold))",
           textShadow: "0 2px 12px rgba(0,0,0,0.6)",

@@ -536,7 +536,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
                 <AlertDialogHeader className="space-y-3">
                   <AlertDialogTitle
-                    className="text-3xl sm:text-4xl font-heading font-extrabold uppercase tracking-tight"
+                    className="text-3xl sm:text-2xl font-heading font-extrabold uppercase tracking-tight sm:whitespace-nowrap"
                     style={{
                       background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
                       WebkitBackgroundClip: "text",
