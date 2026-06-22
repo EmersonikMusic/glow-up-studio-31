@@ -91,7 +91,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
 
           <div className="text-center space-y-3">
             <h1
-              className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight animate-bounce-in"
+              className="text-3xl sm:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight whitespace-nowrap animate-bounce-in"
               style={{
                 background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
                 WebkitBackgroundClip: "text",
