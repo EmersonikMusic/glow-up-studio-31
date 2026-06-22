@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback } from "react";
 import PrimaryCTA from "./PrimaryCTA";
@@ -75,7 +75,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             border: "1px solid rgba(255, 255, 255, 0.15)",
           }}
         >
-          <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+          <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
         </button>
 
         {/* Header */}
@@ -84,7 +84,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             Welcome to your
           </p>
           <h1
-            className="text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+            className="text-4xl sm:text-3xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight sm:whitespace-nowrap"
             style={{
               background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
               WebkitBackgroundClip: "text",
@@ -93,9 +93,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               lineHeight: 1.05,
             }}
           >
-            Endless Trivia
-            <br />
-            World!
+            Endless Trivia{isMobile ? <br /> : " "}World!
           </h1>
         </div>
 

@@ -1,4 +1,4 @@
-import { ChevronDown, ArrowLeft } from "lucide-react";
+import { ChevronDown, ChevronsLeft } from "lucide-react";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -388,7 +388,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
               border: "1px solid rgba(255, 255, 255, 0.15)",
             }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+            <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           </button>
         </div>
       )}
@@ -508,9 +508,20 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           </div>
         </div>
       </section>
+    </>
+  );
 
-      {/* Apply button */}
-      <div className="px-5 pt-3 pb-3 md:pb-3 flex flex-col items-center gap-3">
+  const footerContent = (
+    <div
+      className="px-5 pt-3 pb-3 flex flex-col items-center gap-3 shrink-0"
+      style={{
+        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        background: "rgba(0, 0, 0, 0.35)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+      }}
+    >
         {gameInProgress && hasChanges ? (
           <>
             <PrimaryCTA
@@ -586,12 +597,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           <p className="text-sm leading-relaxed font-body font-semibold text-white text-center max-w-xs">
             In order to begin a game you must first select at least 1{" "}
             <span className="text-[hsl(185_70%_55%)] font-bold">category</span>, 1{" "}
-            <span className="text-[hsl(185_70%_55%)] font-bold">era</span>, and set your{" "}
-            <span className="text-[hsl(185_70%_55%)] font-bold">difficulty</span>.
+            <span className="text-[hsl(185_70%_55%)] font-bold">difficulty</span>, and 1{" "}
+            <span className="text-[hsl(185_70%_55%)] font-bold">era</span>.
           </p>
         )}
       </div>
-    </>
   );
 
   // ── MOBILE: Bottom sheet ──
@@ -642,7 +652,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           </div>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain pb-safe">{panelContent}</div>
+          <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">{panelContent}</div>
+          {footerContent}
         </div>
       </>
     );
@@ -667,17 +678,16 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         }}
       >
         <div
-          className="flex-1 overflow-y-auto"
+          className="flex-1 flex flex-col min-h-0"
           style={{
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)",
             boxShadow: "-8px 0 48px rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            flexDirection: "column",
           }}
         >
-          {panelContent}
+          <div className="flex-1 overflow-y-auto min-h-0">{panelContent}</div>
+          {footerContent}
         </div>
       </div>
     </>

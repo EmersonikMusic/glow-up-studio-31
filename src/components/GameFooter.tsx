@@ -1,4 +1,4 @@
-import { Pause, Play, ChevronLeft, ChevronsRight } from "lucide-react";
+import { Pause, Play, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Question } from "@/data/questions";
 import { trackClick } from "@/lib/analytics";
 
@@ -83,13 +83,13 @@ export default function GameFooter({
             style={circleBtnStyle}
             aria-label="Previous question"
           >
-            <ChevronLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
+            <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           </button>
         )}
 
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-2 rounded-full px-4 sm:px-10 py-2.5 text-[11px] sm:text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
+          className="relative flex-1 flex items-center justify-center gap-x-1.5 sm:gap-x-2 rounded-full px-3 sm:px-10 py-2.5 text-[10px] sm:text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
           style={{ background: "rgba(0, 0, 0, 0.5)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}
@@ -125,7 +125,7 @@ export default function GameFooter({
           {/* Timer — absolute right */}
           <span className="absolute right-3 z-10 flex-shrink-0">
             <span
-              className={`tabular-nums font-subheading font-bold uppercase inline-block text-[11px] sm:text-xs ${isUrgent ? "animate-pulse-urgent" : ""}`}
+              className={`tabular-nums font-subheading font-bold uppercase inline-block text-[10px] sm:text-xs ${isUrgent ? "animate-pulse-urgent" : ""}`}
               style={{ color: timerColor, transition: "color 0.3s ease" }}
             >
               {displayCountdown}<span className="normal-case">s</span>

@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback } from "react";
 import PrimaryCTA from "./PrimaryCTA";
@@ -73,7 +73,7 @@ export default function HowToPlayScreen({ onClose }: HowToPlayScreenProps) {
             border: "1px solid rgba(255, 255, 255, 0.15)",
           }}
         >
-          <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+          <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
         </button>
 
         {/* Header */}
