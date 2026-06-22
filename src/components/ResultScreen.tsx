@@ -209,7 +209,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                 Round Recap
               </p>
               <DialogTitle
-                className="text-3xl sm:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
+                className="text-3xl sm:text-2xl font-heading font-extrabold uppercase leading-none tracking-tight sm:whitespace-nowrap"
 
                 style={{
                   background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
