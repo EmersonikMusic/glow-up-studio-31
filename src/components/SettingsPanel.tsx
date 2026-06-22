@@ -508,9 +508,20 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           </div>
         </div>
       </section>
+    </>
+  );
 
-      {/* Apply button */}
-      <div className="px-5 pt-3 pb-3 md:pb-3 flex flex-col items-center gap-3">
+  const footerContent = (
+    <div
+      className="px-5 pt-3 pb-3 flex flex-col items-center gap-3 shrink-0"
+      style={{
+        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        background: "rgba(0, 0, 0, 0.35)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+      }}
+    >
         {gameInProgress && hasChanges ? (
           <>
             <PrimaryCTA
@@ -591,7 +602,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           </p>
         )}
       </div>
-    </>
   );
 
   // ── MOBILE: Bottom sheet ──
