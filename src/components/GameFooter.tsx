@@ -89,7 +89,7 @@ export default function GameFooter({
 
         {/* Metadata pill with integrated timer */}
         <div
-          className="relative flex-1 flex items-center justify-center gap-x-1.5 sm:gap-x-2 rounded-full px-3 sm:px-10 py-2.5 text-[10px] sm:text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
+          className="relative flex-1 flex items-center justify-center gap-x-1.5 sm:gap-x-2 rounded-full pl-3 pr-12 sm:pl-10 sm:pr-14 py-2.5 text-[10px] sm:text-xs font-body font-semibold overflow-hidden min-w-0 uppercase"
           style={{ background: "rgba(0, 0, 0, 0.5)", border: "1.5px solid rgba(255, 255, 255, 0.18)" }}
         >
           {/* Animated time bar */}

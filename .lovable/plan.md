@@ -1,15 +1,12 @@
-Update two UI elements in the trivia app.
+Problem: On mobile, the footer pill's category/difficulty text runs into the absolute-positioned countdown timer (e.g., "AVERAGE10s"). The pill content has no reserved space on the right, so long metadata overlaps the timer.
 
-1. Settings panel Apply Settings CTA footer
-   - Lighten the dark background behind the Apply Settings button.
-   - Center the button within the footer.
-   - Slightly increase the footer height if needed.
-   - File: `src/components/SettingsPanel.tsx`.
-   - Changes: reduce the footer `background` alpha (e.g., `rgba(0, 0, 0, 0.15)`), increase vertical padding, and keep the existing `items-center` flex alignment.
+Solution: Reserve a fixed space for the timer on the right side of the metadata pill so the text can never overlap it.
 
-2. Result screen mobile header
-   - Reduce the "Trivia Complete!" font size on mobile so it stays on one line instead of stacking.
-   - File: `src/components/ResultScreen.tsx`.
-   - Changes: replace `text-4xl` with a responsive size such as `text-3xl sm:text-4xl` (or `text-[28px] sm:text-4xl`) for the "Trivia Complete!" heading.
+Changes to `src/components/GameFooter.tsx`:
+- Wrap the metadata text content in a flex container with a right margin/padding large enough for the timer (e.g., `pr-8` or similar) on mobile.
+- Keep the timer absolute-positioned at `right-3` for vertical alignment, but ensure the content row has `overflow-hidden` and `text-ellipsis` fallback for very long categories/difficulty labels on small screens.
+- Leave desktop layout unchanged, since the issue only appears on mobile.
 
-Verification: open the settings panel and game-complete screen on mobile (390 px width) and desktop/tablet to confirm the CTA background is lighter, the button is centered, and the result header is single-line on mobile.
+Verification:
+- Test on a 390px mobile viewport and confirm the timer no longer overlaps the metadata text.
+- Test with a long category/difficulty combination to ensure text either truncates cleanly or the timer remains fully visible.
