@@ -1,4 +1,4 @@
-import { ChevronDown, ArrowLeft } from "lucide-react";
+import { ChevronDown, ChevronsLeft } from "lucide-react";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -388,7 +388,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
               border: "1px solid rgba(255, 255, 255, 0.15)",
             }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+            <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           </button>
         </div>
       )}
@@ -586,8 +586,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           <p className="text-sm leading-relaxed font-body font-semibold text-white text-center max-w-xs">
             In order to begin a game you must first select at least 1{" "}
             <span className="text-[hsl(185_70%_55%)] font-bold">category</span>, 1{" "}
-            <span className="text-[hsl(185_70%_55%)] font-bold">era</span>, and set your{" "}
-            <span className="text-[hsl(185_70%_55%)] font-bold">difficulty</span>.
+            <span className="text-[hsl(185_70%_55%)] font-bold">difficulty</span>, and 1{" "}
+            <span className="text-[hsl(185_70%_55%)] font-bold">era</span>.
           </p>
         )}
       </div>
