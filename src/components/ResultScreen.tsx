@@ -1,4 +1,4 @@
-import { RotateCcw, ThumbsUp, ThumbsDown, ArrowLeft } from "lucide-react";
+import { RotateCcw, ThumbsUp, ThumbsDown, ChevronsLeft } from "lucide-react";
 import SecondaryCTA from "./SecondaryCTA";
 import { useEffect, useState } from "react";
 import mascotImg from "@/assets/Mascot.svg";
@@ -123,7 +123,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               <SecondaryCTA
                 onClick={onChangeSettings}
                 trackId="change_settings"
-                className="mt-3 w-full"
+                className="mt-2 sm:mt-3 w-full"
                 aria-label="Change Settings"
               >
                 Change Settings
@@ -139,12 +139,12 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
               </button>
             )}
 
-            <p className="mt-3 text-xs font-body font-semibold text-white text-center">
+            <p className="mt-6 sm:mt-7 text-xs font-body font-semibold text-white text-center">
               Contact us at
               <br />
               <a
                 href="mailto:mark.mazurek@triviolivia.com"
-                className="howto-link underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
+                className="howto-link text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
               >
                 mark.mazurek@triviolivia.com
               </a>
@@ -195,7 +195,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                 border: "1px solid rgba(255, 255, 255, 0.15)",
               }}
             >
-              <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+              <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
             </DialogClose>
 
 
