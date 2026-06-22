@@ -652,7 +652,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           </div>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain pb-safe">{panelContent}</div>
+          <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">{panelContent}</div>
+          {footerContent}
         </div>
       </>
     );
@@ -677,17 +678,16 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         }}
       >
         <div
-          className="flex-1 overflow-y-auto"
+          className="flex-1 flex flex-col min-h-0"
           style={{
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             borderLeft: "1.5px solid rgba(255, 255, 255, 0.18)",
             boxShadow: "-8px 0 48px rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            flexDirection: "column",
           }}
         >
-          {panelContent}
+          <div className="flex-1 overflow-y-auto min-h-0">{panelContent}</div>
+          {footerContent}
         </div>
       </div>
     </>
