@@ -107,6 +107,27 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         {/* Scrollable body */}
         <div className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
           <div className="px-6 md:px-8 py-7 flex flex-col gap-6 game-text-white">
+            {/* Anchor nav */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: "Question Writing Philosophy", onClick: () => scrollTo(philosophyRef, "about_jump_philosophy") },
+                { label: "FAQ", onClick: () => scrollTo(faqRef, "about_jump_faq") },
+              ].map((btn) => (
+                <button
+                  key={btn.label}
+                  onClick={btn.onClick}
+                  className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid hsl(185 70% 55% / 0.5)",
+                    color: "hsl(var(--game-gold))",
+                  }}
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+
             {/* Who are we */}
             <div>
               <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
