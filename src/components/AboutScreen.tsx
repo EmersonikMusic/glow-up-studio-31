@@ -189,6 +189,117 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
             <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
+            {/* Question Writing Philosophy */}
+            <div ref={philosophyRef} className="scroll-mt-4">
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                Question Writing Philosophy
+              </h2>
+              <ol className="list-decimal pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(var(--game-gold))]">
+                <li>
+                  Questions must have clear cut, logical answers.
+                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                    <li>Nothing with many possible answers. A few is okay but all must be provided.</li>
+                    <li>Nothing vague, opinionated, or reasonably debatable.</li>
+                    <li>No loaded questions, guerilla advertising, or political campaigning. We are strictly a trivia game.</li>
+                  </ol>
+                </li>
+                <li>
+                  No multiple choice or true or false or something with very few, universally knowable, answers such as &lsquo;In which season&hellip;?&rsquo; Eight possible answers such as &lsquo;Which planet&hellip;?&rsquo; should be considered the minimum.
+                </li>
+                <li>
+                  Questions must be able to be read aloud to someone who cannot see the question text themselves, as well as read silently to one&rsquo;s self. That means no pictures/symbols/sound/etc. Just text and numbers. Questions must be reasonably easy to pronounce by an English speaker.
+                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                    <li>
+                      <span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad</span>
+                      <ol className="list-[lower-roman] pl-5 mt-1 flex flex-col gap-1">
+                        <li>What is this character called? ~ (Can&rsquo;t be read out loud to someone)</li>
+                        <li>How do you spell &lsquo;fortuitous&rsquo;? (Can&rsquo;t be read to yourself)</li>
+                        <li>What does 6! equal? (Potentially confusing)</li>
+                      </ol>
+                    </li>
+                    <li>
+                      <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better</span>
+                      <ol className="list-[lower-roman] pl-5 mt-1 flex flex-col gap-1">
+                        <li>What is the name of the character found on most QWERTY keyboards that looks like a squiggly line?</li>
+                        <li>Which four-syllable F word means the same thing as serendipitous?</li>
+                        <li>What does 6 factorial equal?</li>
+                      </ol>
+                    </li>
+                  </ol>
+                </li>
+                <li>Nothing inappropriate for children.</li>
+                <li>Don&rsquo;t ask for dates or years unless the event is MASSIVE. Instead, give dates or years in the questions as a learning experience. Specify years for movies and other media to avoid confusion.</li>
+                <li>
+                  Avoid things that are reasonably possible to change over time.
+                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                    <li><span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad:</span> Who is the NBA&rsquo;s only billionaire player?</li>
+                    <li><span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better:</span> In 2020, who made history by becoming the NBA&rsquo;s first billionaire player?</li>
+                  </ol>
+                </li>
+                <li>Global subject matter.</li>
+                <li>
+                  A question that also teaches is a good goal.
+                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                    <li><span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad:</span> Who wrote A Brief History of Time?</li>
+                    <li><span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better:</span> Which astrophysicist and science educator wrote the 1988 book A Brief History of Time?</li>
+                  </ol>
+                </li>
+                <li>No spoilers. Not even from things as old and ubiquitous as Star Wars or Lord of the Rings.</li>
+                <li>
+                  When assigning eras:
+                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                    <li>If the question is regarding an event, historical figure, or politician, it will be assigned that era.</li>
+                    <li>If it is regarding a scientific concept that was discovered, it will be from when it was discovered, onward.</li>
+                    <li>If it is a word or idiom, it will be from when it entered public parlance, onward.</li>
+                    <li>Art, Literature, Music, Movies, Performing Arts, Television, and Video Games on their release/premiere date.</li>
+                  </ol>
+                </li>
+              </ol>
+            </div>
+
+            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
+
+            {/* Frequently Asked Questions */}
+            <div ref={faqRef} className="scroll-mt-4">
+              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                Frequently Asked Questions
+              </h2>
+              <dl className="flex flex-col gap-4">
+                {[
+                  {
+                    q: "Is this AI?",
+                    a: "No! All of our questions are written, edited, and maintained by humans! We strive to keep them as evergreen as possible, as well as factual, current, and error-free. However, being the humans that we are, there are bound to be mistakes or \u2018expired\u2019 questions that are no longer true, or need an \u2018is\u2019 changed to a \u2018was\u2019 or something. Please let us know if you see a question that needs repair! Also, all the character designs were created by our lead designer in Adobe Illustrator.",
+                  },
+                  {
+                    q: "Is this gambling?",
+                    a: "Absolutely not! There is no money to be won or lost here. We are actively avoiding being anything even remotely resembling gambling.",
+                  },
+                  {
+                    q: "Where are you guys from?",
+                    a: "We are from Toronto, Canada! Come visit!",
+                  },
+                  {
+                    q: "How did this project begin?",
+                    a: "It all started in 2020 during COVID lockdown as a project to keep busy.",
+                  },
+                  {
+                    q: "Where do the questions come from?",
+                    a: "When each game is started, the questions are fetched from a database. Six years and counting of just writing stuff down every time we encounter something notable and interesting, and triviafying it.",
+                  },
+                ].map((item, i) => (
+                  <div key={i}>
+                    <dt className="text-sm font-heading font-black mb-1" style={{ color: "hsl(var(--game-gold))" }}>
+                      {item.q}
+                    </dt>
+                    <dd className="text-sm leading-relaxed font-body font-semibold pl-3">{item.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
+
+
             {/* How do I contribute */}
             <div>
               <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
