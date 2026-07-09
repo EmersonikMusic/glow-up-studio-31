@@ -179,7 +179,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                     <span>
                       {item}{" "}
                       <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>
-                        We got you.
+                        Start by knowing that we got you.
                       </span>
                     </span>
                   </li>
