@@ -11,6 +11,13 @@ interface AboutScreenProps {
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
   const [exiting, setExiting] = useState(false);
+  const philosophyRef = useRef<HTMLDivElement>(null);
+  const faqRef = useRef<HTMLDivElement>(null);
+
+  const scrollTo = useCallback((ref: React.RefObject<HTMLDivElement>, label: string) => {
+    trackClick(label);
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   const handleClose = useCallback(() => {
     if (exiting) return;
