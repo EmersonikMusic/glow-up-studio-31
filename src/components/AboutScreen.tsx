@@ -1,6 +1,6 @@
 import { ChevronsLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import PrimaryCTA from "./PrimaryCTA";
 import { trackClick } from "@/lib/analytics";
 
