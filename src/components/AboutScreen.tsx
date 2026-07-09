@@ -197,7 +197,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               <ol className="list-decimal pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(var(--game-gold))]">
                 <li>
                   Questions must have clear cut, logical answers.
-                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                     <li>Nothing with many possible answers. A few is okay but all must be provided.</li>
                     <li>Nothing vague, opinionated, or reasonably debatable.</li>
                     <li>No loaded questions, guerilla advertising, or political campaigning. We are strictly a trivia game.</li>
@@ -208,10 +208,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 </li>
                 <li>
                   Questions must be able to be read aloud to someone who cannot see the question text themselves, as well as read silently to one&rsquo;s self. That means no pictures/symbols/sound/etc. Just text and numbers. Questions must be reasonably easy to pronounce by an English speaker.
-                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                     <li>
                       <span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad</span>
-                      <ol className="list-[lower-roman] pl-5 mt-1 flex flex-col gap-1">
+                      <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                         <li>What is this character called? ~ (Can&rsquo;t be read out loud to someone)</li>
                         <li>How do you spell &lsquo;fortuitous&rsquo;? (Can&rsquo;t be read to yourself)</li>
                         <li>What does 6! equal? (Potentially confusing)</li>
@@ -219,7 +219,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                     </li>
                     <li>
                       <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better</span>
-                      <ol className="list-[lower-roman] pl-5 mt-1 flex flex-col gap-1">
+                      <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                         <li>What is the name of the character found on most QWERTY keyboards that looks like a squiggly line?</li>
                         <li>Which four-syllable F word means the same thing as serendipitous?</li>
                         <li>What does 6 factorial equal?</li>
@@ -231,7 +231,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 <li>Don&rsquo;t ask for dates or years unless the event is MASSIVE. Instead, give dates or years in the questions as a learning experience. Specify years for movies and other media to avoid confusion.</li>
                 <li>
                   Avoid things that are reasonably possible to change over time.
-                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                     <li><span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad:</span> Who is the NBA&rsquo;s only billionaire player?</li>
                     <li><span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better:</span> In 2020, who made history by becoming the NBA&rsquo;s first billionaire player?</li>
                   </ol>
@@ -239,7 +239,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 <li>Global subject matter.</li>
                 <li>
                   A question that also teaches is a good goal.
-                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                     <li><span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad:</span> Who wrote A Brief History of Time?</li>
                     <li><span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better:</span> Which astrophysicist and science educator wrote the 1988 book A Brief History of Time?</li>
                   </ol>
@@ -247,7 +247,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 <li>No spoilers. Not even from things as old and ubiquitous as Star Wars or Lord of the Rings.</li>
                 <li>
                   When assigning eras:
-                  <ol className="list-[lower-alpha] pl-5 mt-1 flex flex-col gap-1">
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
                     <li>If the question is regarding an event, historical figure, or politician, it will be assigned that era.</li>
                     <li>If it is regarding a scientific concept that was discovered, it will be from when it was discovered, onward.</li>
                     <li>If it is a word or idiom, it will be from when it entered public parlance, onward.</li>
