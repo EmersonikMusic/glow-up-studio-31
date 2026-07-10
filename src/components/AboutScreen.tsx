@@ -11,8 +11,12 @@ interface AboutScreenProps {
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
   const [exiting, setExiting] = useState(false);
+  const whoRef = useRef<HTMLDivElement>(null);
+  const apartRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
+  const contributeRef = useRef<HTMLDivElement>(null);
+  const nextRef = useRef<HTMLDivElement>(null);
 
   const scrollTo = useCallback((ref: React.RefObject<HTMLDivElement>, label: string) => {
     trackClick(label);
@@ -110,8 +114,12 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             {/* Anchor nav */}
             <div className="flex flex-wrap gap-2">
               {[
+                { label: "Who are we?", onClick: () => scrollTo(whoRef, "about_jump_who") },
+                { label: "What sets us apart?", onClick: () => scrollTo(apartRef, "about_jump_apart") },
                 { label: "Question Writing Philosophy", onClick: () => scrollTo(philosophyRef, "about_jump_philosophy") },
                 { label: "FAQ", onClick: () => scrollTo(faqRef, "about_jump_faq") },
+                { label: "How do I contribute?", onClick: () => scrollTo(contributeRef, "about_jump_contribute") },
+                { label: "What next?", onClick: () => scrollTo(nextRef, "about_jump_next") },
               ].map((btn) => (
                 <button
                   key={btn.label}
@@ -129,7 +137,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* Who are we */}
-            <div>
+            <div ref={whoRef} className="scroll-mt-4">
               <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Who are we?
               </h2>
@@ -143,7 +151,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
             {/* What sets us apart */}
-            <div>
+            <div ref={apartRef} className="scroll-mt-4">
               <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What sets us apart?
               </h2>
@@ -179,7 +187,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                     <span>
                       {item}{" "}
                       <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>
-                        Start by knowing that we got you.
+                        {i === 12 ? "Start by knowing that we got you." : "We got you."}
                       </span>
                     </span>
                   </li>
@@ -301,7 +309,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
 
             {/* How do I contribute */}
-            <div>
+            <div ref={contributeRef} className="scroll-mt-4">
               <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 How do I contribute?
               </h2>
@@ -317,7 +325,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
 
             {/* What next */}
-            <div>
+            <div ref={nextRef} className="scroll-mt-4">
               <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What next?
               </h2>
