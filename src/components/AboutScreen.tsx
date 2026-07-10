@@ -163,7 +163,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 <span className="font-black">12 time periods</span>. 1500 ways to play. Let us handle the questions. How
                 you use them is up to you.
               </p>
-              <ul className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 flex flex-col gap-2">
+              <ul className="list-disc pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(185_70%_55%)]">
                 {[
                   "Need some fresh questions for your dated trivia board game?",
                   "Want to make better use of your kid's screen time?",
@@ -179,7 +179,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   "Tired of AI hallucination questions?",
                   "Want to just eventually know everything?",
                 ].map((item, i) => (
-                  <li key={i} className="text-sm leading-relaxed font-body font-semibold">
+                  <li key={i}>
                     {item}{" "}
                     <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>
                       {i === 12 ? "Start by knowing that we got you." : "We got you."}
