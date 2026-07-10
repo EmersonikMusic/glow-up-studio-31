@@ -179,7 +179,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   "Tired of AI hallucination questions?",
                   "Want to just eventually know everything?",
                 ].map((item, i) => (
-                  <li key={i} className="text-sm leading-relaxed font-body font-semibold">
+                  <li key={i}>
                     {item}{" "}
                     <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>
                       {i === 12 ? "Start by knowing that we got you." : "We got you."}
