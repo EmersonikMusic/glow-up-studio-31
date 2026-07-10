@@ -163,7 +163,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 <span className="font-black">12 time periods</span>. 1500 ways to play. Let us handle the questions. How
                 you use them is up to you.
               </p>
-              <ul className="list-disc pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(185_70%_55%)]">
+              <ul className="list-disc pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(var(--game-gold))]">
                 {[
                   "Need some fresh questions for your dated trivia board game?",
                   "Want to make better use of your kid's screen time?",
