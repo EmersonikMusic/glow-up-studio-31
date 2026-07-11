@@ -4,10 +4,27 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import LegalContent from "@/components/LegalContent";
 import PrimaryCTA from "@/components/PrimaryCTA";
 import GameHeader from "@/components/GameHeader";
+import TermsFooter from "@/components/TermsFooter";
 
 export default function Terms() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Terms of Service & Privacy Policy — Triviolivia",
+    description:
+      "Triviolivia's Terms of Service and Privacy Policy governing use of the Triviolivia trivia app and website.",
+    url: "https://triviolivia.com/terms",
+    datePublished: "2026-07-11",
+    dateModified: "2026-07-11",
+    publisher: {
+      "@type": "Organization",
+      name: "Triviolivia",
+      url: "https://triviolivia.com",
+    },
+  };
 
   return (
     <>
@@ -25,6 +42,7 @@ export default function Terms() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Terms of Service & Privacy Policy — Triviolivia" />
         <meta name="twitter:description" content="Triviolivia's Terms of Service and Privacy Policy governing use of the Triviolivia trivia app and website." />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
       <main
@@ -49,36 +67,42 @@ export default function Terms() {
 
         <GameHeader showNav={false} onHome={() => navigate("/")} />
 
-        <div className="flex-1 flex items-center justify-center relative overflow-hidden p-0 sm:p-6">
-          <div
-            className={`relative z-10 overflow-hidden backdrop-blur-xl flex flex-col ${
-              isMobile ? "w-full h-full rounded-none" : "rounded-3xl"
-            }`}
-            style={{
-              ...(!isMobile && {
-                width: "70vw",
-                minWidth: "300px",
-                maxHeight: "calc(100vh - 6rem)",
-              }),
-              background: "rgba(0, 0, 0, 0.25)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-              border: isMobile ? "none" : "1.5px solid rgba(255, 255, 255, 0.18)",
-              boxShadow: isMobile
-                ? "12px 0 48px rgba(0, 0, 0, 0.5)"
-                : "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
-            }}
-          >
-            <LegalContent />
-
+        <div className="flex-1 flex flex-col relative overflow-hidden">
+          <div className="flex-1 flex items-center justify-center relative overflow-hidden p-0 sm:p-6">
             <div
-              className="px-6 md:px-8 pb-8 pt-4 shrink-0 flex justify-center"
-              style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}
+              className={`relative z-10 overflow-hidden backdrop-blur-xl flex flex-col ${
+                isMobile ? "w-full h-full rounded-none" : "rounded-3xl"
+              }`}
+              style={{
+                ...(!isMobile && {
+                  width: "70vw",
+                  minWidth: "300px",
+                  maxHeight: "calc(100vh - 6rem)",
+                }),
+                background: "rgba(0, 0, 0, 0.25)",
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)",
+                border: isMobile ? "none" : "1.5px solid rgba(255, 255, 255, 0.18)",
+                boxShadow: isMobile
+                  ? "12px 0 48px rgba(0, 0, 0, 0.5)"
+                  : "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
+              }}
             >
-              <Link to="/">
-                <PrimaryCTA aria-label="Back to Home">Back to Home</PrimaryCTA>
-              </Link>
+              <LegalContent />
+
+              <div
+                className="px-6 md:px-8 pb-8 pt-4 shrink-0 flex justify-center"
+                style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}
+              >
+                <Link to="/">
+                  <PrimaryCTA aria-label="Back to Home">Back to Home</PrimaryCTA>
+                </Link>
+              </div>
             </div>
+          </div>
+
+          <div className="shrink-0 flex justify-center py-3 sm:py-4 px-4">
+            <TermsFooter />
           </div>
         </div>
       </main>
