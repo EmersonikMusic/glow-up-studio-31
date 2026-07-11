@@ -1,12 +1,14 @@
 import { ChevronsLeft, ChevronDown } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import PrimaryCTA from "./PrimaryCTA";
 import { trackClick } from "@/lib/analytics";
 
 interface AboutScreenProps {
   onClose: () => void;
 }
+
+type SectionKey = "who" | "apart" | "faq" | "philosophy";
 
 function Tag({ variant, children }: { variant: "bad" | "good"; children: React.ReactNode }) {
   return (
@@ -22,15 +24,68 @@ function Tag({ variant, children }: { variant: "bad" | "good"; children: React.R
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
   const [exiting, setExiting] = useState(false);
+  const [navHeight, setNavHeight] = useState(0);
+  const [activeSection, setActiveSection] = useState<SectionKey>("who");
   const whoRef = useRef<HTMLDivElement>(null);
   const apartRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
-  const scrollTo = useCallback((ref: React.RefObject<HTMLDivElement>, label: string) => {
-    trackClick(label);
-    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Measure sticky nav height
+  useEffect(() => {
+    if (!navRef.current) return;
+    const el = navRef.current;
+    const update = () => setNavHeight(el.offsetHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
+
+  // Scroll-spy for active section
+  useEffect(() => {
+    const scroller = scrollAreaRef.current;
+    if (!scroller || navHeight === 0) return;
+    const sections: { key: SectionKey; ref: React.RefObject<HTMLDivElement> }[] = [
+      { key: "who", ref: whoRef },
+      { key: "apart", ref: apartRef },
+      { key: "faq", ref: faqRef },
+      { key: "philosophy", ref: philosophyRef },
+    ];
+    const onScroll = () => {
+      const triggerY = navHeight + 16;
+      let current: SectionKey = "who";
+      for (const s of sections) {
+        const el = s.ref.current;
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+        if (top - triggerY <= 0) current = s.key;
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    return () => scroller.removeEventListener("scroll", onScroll);
+  }, [navHeight]);
+
+  const scrollTo = useCallback(
+    (ref: React.RefObject<HTMLDivElement>, label: string) => {
+      trackClick(label);
+      const scroller = scrollAreaRef.current;
+      const target = ref.current;
+      if (!scroller || !target) return;
+      const top =
+        target.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scroller.scrollTop -
+        navHeight -
+        8;
+      scroller.scrollTo({ top, behavior: "smooth" });
+    },
+    [navHeight]
+  );
 
   const handleClose = useCallback(() => {
     if (exiting) return;
