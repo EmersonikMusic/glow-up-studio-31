@@ -217,7 +217,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
           <div className="px-6 md:px-8 py-7 flex flex-col gap-10 game-text-white">
             {/* Who are we */}
-            <div ref={whoRef} className="scroll-mt-20">
+            <div ref={whoRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Who are we?
               </h2>
@@ -229,7 +229,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* What sets us apart */}
-            <div ref={apartRef} className="scroll-mt-20">
+            <div ref={apartRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What sets us apart?
               </h2>
@@ -268,7 +268,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* Frequently Asked Questions */}
-            <div ref={faqRef} className="scroll-mt-20">
+            <div ref={faqRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Frequently Asked Questions
               </h2>
@@ -322,7 +322,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* Question Writing Philosophy */}
-            <div ref={philosophyRef} className="scroll-mt-20">
+            <div ref={philosophyRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Question Writing Philosophy
               </h2>
