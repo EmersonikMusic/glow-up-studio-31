@@ -288,7 +288,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 fontFamily: "'Fredoka One', 'Rubik', sans-serif",
               }}
             >
-              <LogIn className="w-5 h-5" />
+              {!isSignup && <LogIn className="w-5 h-5" />}
               {isSignup ? "Sign Up" : "Sign In"}
             </button>
           </form>
