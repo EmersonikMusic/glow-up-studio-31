@@ -165,18 +165,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {isSignup ? "Sign up to save your progress" : "Sign in to continue"}
           </DialogDescription>
 
-          {/* Social buttons */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={handleGoogle}
-              disabled={loading}
-              className="flex items-center justify-center gap-2 h-12 rounded-full transition-all active:scale-95 disabled:opacity-60"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.15)",
-              }}
-            >
           {/* Social buttons - stacked, brand-standard */}
           <div className="flex flex-col gap-3">
             <button
