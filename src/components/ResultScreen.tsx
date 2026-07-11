@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
+import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
 import {
