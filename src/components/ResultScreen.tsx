@@ -353,9 +353,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
 
       {/* Copyright legal line — matches Start screen position */}
       <div className="absolute bottom-[12px] left-0 w-full flex justify-center pointer-events-none">
-        <p className="text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap animate-fade-in">
-          Copyright © 2026 Triviolivia Inc. All rights reserved.
-        </p>
+        <LegalFooter onPrivacy={onPrivacy} className="animate-fade-in" />
       </div>
     </div>
   );
