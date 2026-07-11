@@ -101,11 +101,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         target.getBoundingClientRect().top -
         scroller.getBoundingClientRect().top +
         scroller.scrollTop -
-        navHeight -
         8;
       scroller.scrollTo({ top, behavior: "smooth" });
     },
-    [navHeight]
+    []
   );
 
   const handleClose = useCallback(() => {
