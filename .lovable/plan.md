@@ -1,45 +1,37 @@
-## Add Privacy Policy Link + Screen
+## Update Privacy Policy Page + Footer Link
 
 ### Goal
-Add a privacy policy link to the app's legal footer wherever the copyright line is shown, plus a full-screen privacy policy overlay with placeholder content styled like the existing About Us / How To Play screens.
+Replace the placeholder privacy policy page with the provided Terms of Service & Privacy Policy copy, rename the footer link to "Terms of Service & Privacy Policy", and stack the footer text on mobile.
 
 ### Scope
-- Visible only on screens that already display the copyright line: **StartScreen** and **ResultScreen**.
-- Hidden during active gameplay (playing / answered / loading), consistent with the current copyright behavior.
-- No backend changes; no legal copy changes beyond placeholder text.
+- Only `src/components/PrivacyScreen.tsx` and `src/components/LegalFooter.tsx` are affected.
+- No backend or routing changes.
 
-### 1. Shared Legal Footer component
-Create `src/components/LegalFooter.tsx`:
-- Replaces the inline copyright lines in both StartScreen and ResultScreen.
-- Keeps existing copyright text and styling (white, centered, `text-[10px] sm:text-xs`).
-- Adds a "Privacy Policy" link to the right of the copyright with a separator.
-- Link: white, underlined, same font as copyright; hover turns teal and uses the same `translateY(-2px)` lift animation already defined for `.howto-link`.
-- Tracks click via `trackClick("click_privacy_policy")`.
+### 1. Update PrivacyScreen content
+Rewrite `src/components/PrivacyScreen.tsx` to use the provided copy:
+- Header label: "Legal"
+- Header headline: "Triviolivia Terms of Service & Privacy Policy"
+- Effective date line under the headline.
+- Intro paragraph about agreeing to the Terms and Privacy Policy.
+- Section: "Part 1: Terms of Service" with the 6 numbered items (Eligibility, Intellectual Property, User Conduct, Termination, Limitation of Liability, Governing Law).
+- Section: "Part 2: Privacy Policy" with the 7 numbered items (Information We Collect, How We Use, Sharing, Data Security & Retention, Your Rights, Changes, Contact Us).
+- Keep the existing teal sub-heading / white body text styling, glass card, close button, and "Back to Game" CTA.
+- Keep the contact email link styled consistently with the rest of the app.
 
-### 2. Privacy Policy overlay
-Create `src/components/PrivacyScreen.tsx` based on `AboutScreen` and `HowToPlayScreen`:
-- Full-screen fixed overlay (`z-50`) with ambient background blobs.
-- Glass card: `backdrop-blur-xl`, rounded corners on desktop, full-screen on mobile.
-- Close button (top-right, `ChevronsLeft`, matches About/How To Play).
-- Header: small teal label "Legal" + large gradient headline "Privacy Policy".
-- Scrollable body containing placeholder sections, each with a teal sub-headline and white body paragraph.
-- Footer CTA "Back to Game" that closes the screen.
-- Entry/exit animation matching the About screen (slide on mobile, fade on desktop).
+### 2. Rename the footer link
+Update `src/components/LegalFooter.tsx`:
+- Change the link text from "Privacy Policy" to "Terms of Service & Privacy Policy".
+- Update the aria-label to match.
 
-### 3. TriviaGame wiring
-Update `src/components/TriviaGame.tsx`:
-- Add `showPrivacy` state.
-- Render `<PrivacyScreen onClose={() => setShowPrivacy(false)} />` when `showPrivacy` is true.
-- Pass `onPrivacy={() => setShowPrivacy(true)}` to both `StartScreen` and `ResultScreen`.
+### 3. Mobile stacking
+Update `src/components/LegalFooter.tsx`:
+- On mobile: copyright and link are stacked vertically (`flex-col`).
+- On desktop (`sm:` and up): copyright and link are on the same horizontal line (`sm:flex-row`).
+- Hide the separator dot on mobile, show it on desktop.
+- Keep the copyright text and link in the same white font and underline styling; hover behavior unchanged.
 
-### 4. Update StartScreen and ResultScreen
-Update `src/components/StartScreen.tsx` and `src/components/ResultScreen.tsx`:
-- Accept the new `onPrivacy` prop.
-- Replace the existing inline copyright markup with `<LegalFooter onPrivacy={onPrivacy} />`.
-- Keep the existing responsive positioning and animation delay.
-
-### 5. Verify
-- Type-check the project.
-- Confirm the link appears on the start screen and result screen.
-- Confirm it is absent during active gameplay (question footer shows only the game timer/progress bar).
-- Confirm clicking the link opens the Privacy overlay and the close button returns to the previous screen.
+### 4. Verify
+- Type-check and build the project.
+- Confirm the start screen and result screen show the new link text.
+- Confirm the footer text stacks on mobile and sits on one line on desktop.
+- Confirm opening the screen shows the new Terms of Service & Privacy Policy copy.
