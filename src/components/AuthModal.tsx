@@ -161,17 +161,15 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               type="button"
               onClick={handleGoogle}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 h-12 rounded-full transition-all active:scale-95 disabled:opacity-60"
-              style={{
-                background: "#ffffff",
-                border: "1px solid #dadce0",
-                fontFamily: "'Roboto', 'Arial', sans-serif",
-              }}
+              aria-label="Sign in with Google"
+              className="w-full h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
             >
-              <GoogleIcon className="w-5 h-5" />
-              <span className="text-sm font-medium" style={{ color: "#3c4043", letterSpacing: "0.25px" }}>
-                Continue with Google
-              </span>
+              <img
+                src={googleBtnAsset.url}
+                alt=""
+                className="h-12 w-auto"
+                draggable={false}
+              />
             </button>
             <button
               type="button"
