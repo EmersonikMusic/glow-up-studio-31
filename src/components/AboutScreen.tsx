@@ -26,12 +26,40 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   const [exiting, setExiting] = useState(false);
   const [navHeight, setNavHeight] = useState(0);
   const [activeSection, setActiveSection] = useState<SectionKey>("who");
+  const [menuOpen, setMenuOpen] = useState(false);
   const whoRef = useRef<HTMLDivElement>(null);
   const apartRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+
+  const sections: { key: SectionKey; label: string; ref: React.RefObject<HTMLDivElement>; event: string }[] = [
+    { key: "who", label: "Who are we?", ref: whoRef, event: "about_jump_who" },
+    { key: "apart", label: "What sets us apart?", ref: apartRef, event: "about_jump_apart" },
+    { key: "faq", label: "FAQ", ref: faqRef, event: "about_jump_faq" },
+    { key: "philosophy", label: "Question Crafting", ref: philosophyRef, event: "about_jump_philosophy" },
+  ];
+
+  // Close mobile menu on outside click / Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
 
   // Measure sticky nav height
   useEffect(() => {
