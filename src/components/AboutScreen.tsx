@@ -173,37 +173,47 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </div>
 
         {/* Scrollable body */}
-        <div className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
+        <div ref={scrollAreaRef} className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
           {/* Sticky anchor nav */}
           <div
+            ref={navRef}
             className="sticky top-0 z-10 px-6 md:px-8 py-3 backdrop-blur-xl"
             style={{
-              background: "rgba(0, 0, 0, 0.55)",
+              background: "rgba(10, 10, 14, 0.92)",
               borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              boxShadow: "0 8px 16px -8px rgba(0, 0, 0, 0.5)",
             }}
           >
             <div className="flex flex-wrap gap-2">
-              {[
-                { label: "Who are we?", onClick: () => scrollTo(whoRef, "about_jump_who") },
-                { label: "What sets us apart?", onClick: () => scrollTo(apartRef, "about_jump_apart") },
-                { label: "FAQ", onClick: () => scrollTo(faqRef, "about_jump_faq") },
-                { label: "Question Writing Philosophy", onClick: () => scrollTo(philosophyRef, "about_jump_philosophy") },
-              ].map((btn) => (
-                <button
-                  key={btn.label}
-                  onClick={btn.onClick}
-                  className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.06)",
-                    border: "1px solid hsl(185 70% 55% / 0.5)",
-                    color: "hsl(var(--game-gold))",
-                  }}
-                >
-                  {btn.label}
-                </button>
-              ))}
+              {([
+                { key: "who", label: "Who are we?", ref: whoRef, event: "about_jump_who" },
+                { key: "apart", label: "What sets us apart?", ref: apartRef, event: "about_jump_apart" },
+                { key: "faq", label: "FAQ", ref: faqRef, event: "about_jump_faq" },
+                { key: "philosophy", label: "Question Writing Philosophy", ref: philosophyRef, event: "about_jump_philosophy" },
+              ] as { key: SectionKey; label: string; ref: React.RefObject<HTMLDivElement>; event: string }[]).map((btn) => {
+                const isActive = activeSection === btn.key;
+                return (
+                  <button
+                    key={btn.key}
+                    onClick={() => scrollTo(btn.ref, btn.event)}
+                    aria-current={isActive ? "location" : undefined}
+                    className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95"
+                    style={{
+                      background: isActive ? "hsl(var(--game-gold) / 0.18)" : "rgba(255, 255, 255, 0.06)",
+                      border: isActive
+                        ? "1px solid hsl(var(--game-gold))"
+                        : "1px solid hsl(185 70% 55% / 0.5)",
+                      color: "hsl(var(--game-gold))",
+                      boxShadow: isActive ? "0 0 0 2px hsl(var(--game-gold) / 0.15)" : undefined,
+                    }}
+                  >
+                    {btn.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
+
 
           <div className="px-6 md:px-8 py-7 flex flex-col gap-10 game-text-white">
             {/* Who are we */}
