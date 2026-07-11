@@ -175,7 +175,7 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, 
 
       {/* Copyright legal line — shifts with game area when settings open */}
       <div
-        className="absolute bottom-[12px] left-0 flex justify-center pointer-events-none"
+        className="absolute bottom-[12px] left-0 flex justify-center"
         style={{
           transition: "width 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
           width: !isMobile && panelOpen ? "70%" : "100%",
