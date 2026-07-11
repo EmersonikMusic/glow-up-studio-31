@@ -6,21 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
+import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
 
 interface AuthModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function GoogleIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.66 4.1-5.5 4.1-3.3 0-6-2.73-6-6.1s2.7-6.1 6-6.1c1.88 0 3.14.8 3.86 1.5l2.63-2.53C16.8 3.4 14.63 2.4 12 2.4 6.86 2.4 2.7 6.56 2.7 11.7S6.86 21 12 21c6.9 0 9.3-4.85 9.3-7.35 0-.5-.06-.9-.14-1.35H12z" />
-      <path fill="#34A853" d="M3.88 7.56l3.2 2.35C7.98 8 9.83 6.4 12 6.4c1.88 0 3.14.8 3.86 1.5l2.63-2.53C16.8 3.4 14.63 2.4 12 2.4 8.28 2.4 5.08 4.55 3.88 7.56z" />
-      <path fill="#FBBC05" d="M12 21c2.6 0 4.78-.85 6.37-2.32l-3.04-2.35c-.83.57-1.94.97-3.33.97-2.56 0-4.73-1.7-5.5-4.05l-3.16 2.44C4.77 18.9 8.1 21 12 21z" />
-      <path fill="#4285F4" d="M21.3 12.35c0-.5-.06-.9-.14-1.35H12v3.9h5.5c-.26 1.4-1.1 2.4-2.17 3.13l3.04 2.35c1.78-1.65 2.93-4.1 2.93-8.03z" />
-    </svg>
-  );
 }
 
 function AppleIcon({ className }: { className?: string }) {
@@ -171,17 +161,15 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               type="button"
               onClick={handleGoogle}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 h-12 rounded-full transition-all active:scale-95 disabled:opacity-60"
-              style={{
-                background: "#ffffff",
-                border: "1px solid #dadce0",
-                fontFamily: "'Roboto', 'Arial', sans-serif",
-              }}
+              aria-label="Sign in with Google"
+              className="w-full h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
             >
-              <GoogleIcon className="w-5 h-5" />
-              <span className="text-sm font-medium" style={{ color: "#3c4043", letterSpacing: "0.25px" }}>
-                Continue with Google
-              </span>
+              <img
+                src={googleBtnAsset.url}
+                alt=""
+                className="h-12 w-auto"
+                draggable={false}
+              />
             </button>
             <button
               type="button"
