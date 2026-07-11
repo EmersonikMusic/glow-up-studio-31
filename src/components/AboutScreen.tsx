@@ -26,13 +26,18 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   const [exiting, setExiting] = useState(false);
   const [navHeight, setNavHeight] = useState(0);
   const [activeSection, setActiveSection] = useState<SectionKey>("who");
-  const [menuOpen, setMenuOpen] = useState(false);
   const whoRef = useRef<HTMLDivElement>(null);
   const apartRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  const chipRefs = useRef<Record<SectionKey, HTMLButtonElement | null>>({
+    who: null,
+    apart: null,
+    faq: null,
+    philosophy: null,
+  });
 
   const sections: { key: SectionKey; label: string; ref: React.RefObject<HTMLDivElement>; event: string }[] = [
     { key: "who", label: "Who are we?", ref: whoRef, event: "about_jump_who" },
@@ -41,24 +46,16 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
     { key: "philosophy", label: "Question Crafting", ref: philosophyRef, event: "about_jump_philosophy" },
   ];
 
-  // Close mobile menu on outside click / Escape
+  // Keep active chip visible in the mobile scroll strip (scroll strip only, not ancestors)
   useEffect(() => {
-    if (!menuOpen) return;
-    const onDown = (e: MouseEvent | TouchEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) setMenuOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("touchstart", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("touchstart", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [menuOpen]);
+    if (!isMobile) return;
+    const el = chipRefs.current[activeSection];
+    const parent = el?.parentElement;
+    if (!el || !parent) return;
+    const target = el.offsetLeft - (parent.clientWidth - el.offsetWidth) / 2;
+    const max = parent.scrollWidth - parent.clientWidth;
+    parent.scrollTo({ left: Math.max(0, Math.min(target, max)), behavior: "smooth" });
+  }, [activeSection, isMobile]);
 
 
   // Measure sticky nav height
@@ -108,11 +105,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         target.getBoundingClientRect().top -
         scroller.getBoundingClientRect().top +
         scroller.scrollTop -
-        navHeight -
         8;
       scroller.scrollTo({ top, behavior: "smooth" });
     },
-    [navHeight]
+    []
   );
 
   const handleClose = useCallback(() => {
@@ -152,9 +148,9 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
       {/* Card — full-screen on mobile, centered card on desktop */}
       <div
-        className={`relative z-10 overflow-hidden animate-slide-in-up backdrop-blur-xl flex flex-col ${
+        className={`relative z-10 overflow-hidden animate-slide-in-up backdrop-blur-xl flex flex-col min-w-0 ${
           isMobile
-            ? "absolute inset-0 rounded-none"
+            ? "absolute inset-0 rounded-none w-full"
             : "rounded-3xl mx-4"
         }`}
         style={{
@@ -182,23 +178,25 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </button>
 
         {/* Header */}
-        <div className="px-6 md:px-8 pt-10 pb-6 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+        <div className="px-6 md:px-8 pt-10 pb-6 shrink-0 min-w-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <p className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
             Welcome to your
           </p>
           <h1
-            className="text-4xl sm:text-3xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight sm:whitespace-nowrap"
+            className="font-heading font-extrabold uppercase leading-none tracking-tight whitespace-nowrap sm:text-3xl md:text-4xl"
             style={{
               background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
               lineHeight: 1.05,
+              ...(isMobile && { fontSize: "clamp(14px, 6.2vw, 24px)" }),
             }}
           >
-            Endless Trivia{isMobile ? <br /> : " "}World!
+            Endless Trivia World!
           </h1>
         </div>
+
 
         {/* Anchor nav — part of the header, sits above the scroll area */}
         <div
@@ -209,73 +207,32 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
           }}
         >
           {isMobile ? (
-            <>
-              {(() => {
-                const active = sections.find((s) => s.key === activeSection) ?? sections[0];
+            <div className="about-nav-scroll flex gap-2 overflow-x-auto -mx-6 px-6">
+              {sections.map((btn) => {
+                const isActive = activeSection === btn.key;
                 return (
                   <button
-                    type="button"
-                    onClick={() => setMenuOpen((o) => !o)}
-                    aria-haspopup="menu"
-                    aria-expanded={menuOpen}
-                    aria-controls="about-jump-menu"
-                    className="w-full flex items-center justify-between gap-3 px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 active:scale-[0.99]"
+                    key={btn.key}
+                    ref={(el) => {
+                      chipRefs.current[btn.key] = el;
+                    }}
+                    onClick={() => scrollTo(btn.ref, btn.event)}
+                    aria-current={isActive ? "location" : undefined}
+                    className="shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 active:scale-95"
                     style={{
-                      background: "hsl(185 70% 55% / 0.18)",
-                      border: "1px solid hsl(185 70% 55%)",
-                      color: "hsl(185 70% 55%)",
-                      boxShadow: "0 0 0 2px hsl(185 70% 55% / 0.15)",
+                      background: isActive ? "hsl(185 70% 55% / 0.18)" : "rgba(255, 255, 255, 0.06)",
+                      border: isActive
+                        ? "1px solid hsl(185 70% 55%)"
+                        : "1px solid hsl(185 70% 55% / 0.5)",
+                      color: isActive ? "hsl(185 70% 55%)" : "hsl(var(--game-gold))",
+                      boxShadow: isActive ? "0 0 0 2px hsl(185 70% 55% / 0.15)" : undefined,
                     }}
                   >
-                    <span className="truncate">Jump to: {active.label}</span>
-                    <ChevronDown
-                      className="w-4 h-4 shrink-0 transition-transform duration-200"
-                      style={{
-                        color: "hsl(185 70% 55%)",
-                        transform: menuOpen ? "rotate(180deg)" : undefined,
-                      }}
-                      strokeWidth={2.5}
-                    />
+                    {btn.label}
                   </button>
                 );
-              })()}
-              {menuOpen && (
-                <div
-                  id="about-jump-menu"
-                  role="menu"
-                  className="absolute left-6 right-6 top-full mt-2 z-20 rounded-xl overflow-hidden flex flex-col"
-                  style={{
-                    background: "hsl(240 45% 16%)",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    boxShadow: "0 16px 40px rgba(0, 0, 0, 0.5)",
-                  }}
-                >
-                  {sections.map((s) => {
-                    const isActive = activeSection === s.key;
-                    return (
-                      <button
-                        key={s.key}
-                        type="button"
-                        role="menuitem"
-                        aria-current={isActive ? "location" : undefined}
-                        onClick={() => {
-                          scrollTo(s.ref, s.event);
-                          setMenuOpen(false);
-                        }}
-                        className="text-left px-4 py-3 text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-colors duration-150 active:scale-[0.99]"
-                        style={{
-                          background: isActive ? "hsl(185 70% 55% / 0.18)" : "transparent",
-                          color: isActive ? "hsl(185 70% 55%)" : "hsl(var(--game-gold))",
-                          borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-                        }}
-                      >
-                        {s.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </>
+              })}
+            </div>
           ) : (
             <div className="flex flex-wrap gap-2">
               {sections.map((btn) => {
@@ -302,6 +259,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
           )}
         </div>
+
 
 
         {/* Scrollable body */}
