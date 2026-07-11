@@ -1,41 +1,45 @@
-## Goal
+## Add Privacy Policy Link + Screen
 
-Replace the "to continue to Lovable" label on the Google sign-in consent screen with "to continue to Triviolivia".
+### Goal
+Add a privacy policy link to the app's legal footer wherever the copyright line is shown, plus a full-screen privacy policy overlay with placeholder content styled like the existing About Us / How To Play screens.
 
-## Why the current screen says "Lovable"
+### Scope
+- Visible only on screens that already display the copyright line: **StartScreen** and **ResultScreen**.
+- Hidden during active gameplay (playing / answered / loading), consistent with the current copyright behavior.
+- No backend changes; no legal copy changes beyond placeholder text.
 
-The Google consent screen text is controlled entirely by Google, based on the OAuth client that initiates the sign-in. Today, Triviolivia uses Lovable Cloud's **managed Google OAuth credentials**, so Google shows the app name registered on that client — "Lovable".
+### 1. Shared Legal Footer component
+Create `src/components/LegalFooter.tsx`:
+- Replaces the inline copyright lines in both StartScreen and ResultScreen.
+- Keeps existing copyright text and styling (white, centered, `text-[10px] sm:text-xs`).
+- Adds a "Privacy Policy" link to the right of the copyright with a separator.
+- Link: white, underlined, same font as copyright; hover turns teal and uses the same `translateY(-2px)` lift animation already defined for `.howto-link`.
+- Tracks click via `trackClick("click_privacy_policy")`.
 
-No frontend/backend code change in this project can rename that screen. The only fix is to register a Triviolivia-owned OAuth client in Google Cloud and plug its credentials into the Cloud auth settings.
+### 2. Privacy Policy overlay
+Create `src/components/PrivacyScreen.tsx` based on `AboutScreen` and `HowToPlayScreen`:
+- Full-screen fixed overlay (`z-50`) with ambient background blobs.
+- Glass card: `backdrop-blur-xl`, rounded corners on desktop, full-screen on mobile.
+- Close button (top-right, `ChevronsLeft`, matches About/How To Play).
+- Header: small teal label "Legal" + large gradient headline "Privacy Policy".
+- Scrollable body containing placeholder sections, each with a teal sub-headline and white body paragraph.
+- Footer CTA "Back to Game" that closes the screen.
+- Entry/exit animation matching the About screen (slide on mobile, fade on desktop).
 
-## What you need to do (in Google Cloud Console)
+### 3. TriviaGame wiring
+Update `src/components/TriviaGame.tsx`:
+- Add `showPrivacy` state.
+- Render `<PrivacyScreen onClose={() => setShowPrivacy(false)} />` when `showPrivacy` is true.
+- Pass `onPrivacy={() => setShowPrivacy(true)}` to both `StartScreen` and `ResultScreen`.
 
-1. Create (or open) a Google Cloud project named e.g. **Triviolivia**.
-2. Open **OAuth consent screen**:
-   - App name: `Triviolivia`
-   - User support email + developer contact: your address
-   - App logo (optional): upload the Triviolivia mark
-   - Authorized domains: `triviolivia.com`, `lovable.app`
-   - Scopes: `.../auth/userinfo.email`, `.../auth/userinfo.profile`, `openid`
-3. Open **Credentials → Create credentials → OAuth Client ID**:
-   - Application type: **Web application**
-   - Name: `Triviolivia Web`
-   - Authorized redirect URI: the callback URL shown in your Cloud project's Google auth settings (Users → Authentication Settings → Sign-in Methods → Google → expand). It will look like `https://<project>.supabase.co/auth/v1/callback`.
-4. Copy the generated **Client ID** and **Client Secret**.
+### 4. Update StartScreen and ResultScreen
+Update `src/components/StartScreen.tsx` and `src/components/ResultScreen.tsx`:
+- Accept the new `onPrivacy` prop.
+- Replace the existing inline copyright markup with `<LegalFooter onPrivacy={onPrivacy} />`.
+- Keep the existing responsive positioning and animation delay.
 
-## What I do in the app
-
-1. Open **Cloud → Users → Authentication Settings → Sign-in Methods → Google** and paste in your Client ID and Client Secret, replacing the managed credentials.
-2. Verify by clicking **Login → Google** in the preview — the consent screen should now say **"to continue to Triviolivia"** and show your logo.
-
-No code changes to `AuthModal.tsx`, `AuthButton.tsx`, or `lovable.auth.signInWithOAuth` are needed; the switch is purely a credentials swap.
-
-## Notes / caveats
-
-- While the app is in Google's **Testing** publishing status, only test users you add will be able to sign in. To let anyone in, submit the consent screen for **Production** (unverified apps still work but show a "Google hasn't verified this app" warning until Google reviews it). Verification is only required for sensitive scopes; email/profile/openid usually clear quickly.
-- Existing users who signed in via the managed Lovable client will keep working — Supabase links them by email, so they won't get duplicate accounts after the swap.
-- Nothing changes in `src/integrations/lovable/*`, RLS, or the `profiles` table.
-
-## Open question
-
-Do you want me to proceed as soon as you paste the Client ID + Secret here (I'll store the secret via the secret tool and configure the provider), or would you prefer to enter them yourself in the Cloud dashboard?
+### 5. Verify
+- Type-check the project.
+- Confirm the link appears on the start screen and result screen.
+- Confirm it is absent during active gameplay (question footer shows only the game timer/progress bar).
+- Confirm clicking the link opens the Privacy overlay and the close button returns to the previous screen.

@@ -6,6 +6,7 @@ import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
 import PrimaryCTA from "./PrimaryCTA";
 import SecondaryCTA from "./SecondaryCTA";
+import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
 
@@ -13,6 +14,7 @@ interface StartScreenProps {
   onStart: () => void;
   onAbout: () => void;
   onHowToPlay: () => void;
+  onPrivacy: () => void;
   onApply: (settings: GameSettings) => void;
   panelOpen: boolean;
   onPanelToggle: () => void;
@@ -21,7 +23,7 @@ interface StartScreenProps {
   customized?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false, customized = false }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false, customized = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
 
@@ -173,18 +175,17 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, pa
 
       {/* Copyright legal line — shifts with game area when settings open */}
       <div
-        className="absolute bottom-[12px] left-0 flex justify-center pointer-events-none"
+        className="absolute bottom-[12px] left-0 flex justify-center"
         style={{
           transition: "width 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
           width: !isMobile && panelOpen ? "70%" : "100%",
         }}
       >
-        <p
-          className="text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap animate-fade-in"
+        <LegalFooter
+          onPrivacy={onPrivacy}
+          className="animate-fade-in"
           style={{ animationDelay: "300ms" }}
-        >
-          Copyright © 2026 Triviolivia Inc. All rights reserved.
-        </p>
+        />
       </div>
 
       {/* Settings panel */}

@@ -16,6 +16,7 @@ import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
+import PrivacyScreen from "./PrivacyScreen";
 import SettingsPanel from "./SettingsPanel";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
@@ -103,6 +104,7 @@ export default function TriviaGame() {
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const pausedByAboutRef = useRef(false);
 
   const handleOpenAbout = useCallback(() => {
@@ -520,6 +522,7 @@ export default function TriviaGame() {
           onStart={handleStart}
           onAbout={handleOpenAbout}
           onHowToPlay={() => setShowHowToPlay(true)}
+          onPrivacy={() => setShowPrivacy(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
@@ -529,6 +532,7 @@ export default function TriviaGame() {
         />
         {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
+        {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
       </>
     );
   }
@@ -618,6 +622,7 @@ export default function TriviaGame() {
           onRestart={handlePlayAgain}
           onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }}
           onBackToStart={handleRestart}
+          onPrivacy={() => setShowPrivacy(true)}
           questions={activeQuestions}
           statuses={questionStatuses}
         />
@@ -766,6 +771,7 @@ export default function TriviaGame() {
       <MascotDebugOverlay />
 
       {showAbout && <AboutScreen onClose={handleCloseAbout} />}
+      {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
     </div>
   );
 }
