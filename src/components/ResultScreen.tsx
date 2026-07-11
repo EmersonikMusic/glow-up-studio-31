@@ -352,7 +352,7 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
       )}
 
       {/* Copyright legal line — matches Start screen position */}
-      <div className="absolute bottom-[12px] left-0 w-full flex justify-center pointer-events-none">
+      <div className="absolute bottom-[12px] left-0 w-full flex justify-center">
         <LegalFooter onPrivacy={onPrivacy} className="animate-fade-in" />
       </div>
     </div>
