@@ -91,7 +91,7 @@ export default function PrivacyScreen({ onClose }: PrivacyScreenProps) {
               lineHeight: 1.05,
             }}
           >
-            Triviolivia Terms of Service & Privacy Policy
+            TERMS OF SERVICE & PRIVACY POLICY
           </h1>
           <p className="mt-3 text-sm font-body font-semibold text-white/80">
             Effective Date: July 11, 2026
