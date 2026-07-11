@@ -40,7 +40,7 @@ const ROW_HEIGHT = 56;
 
 type Feedback = "up" | "down";
 
-export default function ResultScreen({ onRestart, onChangeSettings, onBackToStart, questions, statuses }: ResultScreenProps) {
+export default function ResultScreen({ onRestart, onChangeSettings, onBackToStart, onPrivacy, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [feedback, setFeedback] = useState<Record<number, Feedback | undefined>>({});
