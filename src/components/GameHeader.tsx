@@ -5,6 +5,7 @@ import settingsIcon from "@/assets/icon-settings.svg";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
+import AuthButton from "./AuthButton";
 
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
@@ -86,6 +87,11 @@ export default function GameHeader({
 
         {/* Right: About → Settings → Fullscreen */}
         <div className="flex items-center gap-1 sm:gap-2">
+
+          {/* Auth (Sign in / account) */}
+          <AuthButton />
+
+
 
           {/* About */}
           {onAbout && (
