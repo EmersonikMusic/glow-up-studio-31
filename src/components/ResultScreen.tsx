@@ -31,6 +31,7 @@ interface ResultScreenProps {
   onRestart: () => void;
   onChangeSettings?: () => void;
   onBackToStart?: () => void;
+  onPrivacy: () => void;
   questions?: Question[];
   statuses?: QuestionStatus[];
 }
