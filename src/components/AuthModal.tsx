@@ -177,24 +177,38 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 border: "1px solid rgba(255,255,255,0.15)",
               }}
             >
+          {/* Social buttons - stacked, brand-standard */}
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={handleGoogle}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 h-12 rounded-full transition-all active:scale-95 disabled:opacity-60"
+              style={{
+                background: "#ffffff",
+                border: "1px solid #dadce0",
+                fontFamily: "'Roboto', 'Arial', sans-serif",
+              }}
+            >
               <GoogleIcon className="w-5 h-5" />
-              <span className="text-sm font-bold uppercase tracking-wider text-white">
-                Google
+              <span className="text-sm font-medium" style={{ color: "#3c4043", letterSpacing: "0.25px" }}>
+                Continue with Google
               </span>
             </button>
             <button
               type="button"
               disabled
               title="Coming soon"
-              className="flex items-center justify-center gap-2 h-12 rounded-full opacity-50 cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 h-12 rounded-full opacity-50 cursor-not-allowed"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                background: "#000000",
+                border: "1px solid #000000",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
               }}
             >
               <AppleIcon className="w-5 h-5 text-white" />
-              <span className="text-sm font-bold uppercase tracking-wider text-white">
-                Apple
+              <span className="text-sm font-medium text-white" style={{ letterSpacing: "0.2px" }}>
+                Continue with Apple
               </span>
             </button>
           </div>
@@ -205,6 +219,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <span className="text-xs uppercase tracking-widest text-white/40">or</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
+
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
