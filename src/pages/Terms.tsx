@@ -45,7 +45,7 @@ export default function Terms() {
 
         <GameHeader showNav={false} onHome={() => navigate("/")} />
 
-        <div className="flex-1 flex items-center justify-center relative overflow-hidden p-4 sm:p-6">
+        <div className="flex-1 flex items-center justify-center relative overflow-hidden p-0 sm:p-6">
           <div
             className={`relative z-10 overflow-hidden backdrop-blur-xl flex flex-col ${
               isMobile ? "w-full h-full rounded-none" : "rounded-3xl"
