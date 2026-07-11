@@ -1,12 +1,14 @@
 import { ChevronsLeft, ChevronDown } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import PrimaryCTA from "./PrimaryCTA";
 import { trackClick } from "@/lib/analytics";
 
 interface AboutScreenProps {
   onClose: () => void;
 }
+
+type SectionKey = "who" | "apart" | "faq" | "philosophy";
 
 function Tag({ variant, children }: { variant: "bad" | "good"; children: React.ReactNode }) {
   return (
@@ -22,15 +24,68 @@ function Tag({ variant, children }: { variant: "bad" | "good"; children: React.R
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
   const [exiting, setExiting] = useState(false);
+  const [navHeight, setNavHeight] = useState(0);
+  const [activeSection, setActiveSection] = useState<SectionKey>("who");
   const whoRef = useRef<HTMLDivElement>(null);
   const apartRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
-  const scrollTo = useCallback((ref: React.RefObject<HTMLDivElement>, label: string) => {
-    trackClick(label);
-    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Measure sticky nav height
+  useEffect(() => {
+    if (!navRef.current) return;
+    const el = navRef.current;
+    const update = () => setNavHeight(el.offsetHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
+
+  // Scroll-spy for active section
+  useEffect(() => {
+    const scroller = scrollAreaRef.current;
+    if (!scroller || navHeight === 0) return;
+    const sections: { key: SectionKey; ref: React.RefObject<HTMLDivElement> }[] = [
+      { key: "who", ref: whoRef },
+      { key: "apart", ref: apartRef },
+      { key: "faq", ref: faqRef },
+      { key: "philosophy", ref: philosophyRef },
+    ];
+    const onScroll = () => {
+      const triggerY = navHeight + 16;
+      let current: SectionKey = "who";
+      for (const s of sections) {
+        const el = s.ref.current;
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+        if (top - triggerY <= 0) current = s.key;
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    return () => scroller.removeEventListener("scroll", onScroll);
+  }, [navHeight]);
+
+  const scrollTo = useCallback(
+    (ref: React.RefObject<HTMLDivElement>, label: string) => {
+      trackClick(label);
+      const scroller = scrollAreaRef.current;
+      const target = ref.current;
+      if (!scroller || !target) return;
+      const top =
+        target.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scroller.scrollTop -
+        navHeight -
+        8;
+      scroller.scrollTo({ top, behavior: "smooth" });
+    },
+    [navHeight]
+  );
 
   const handleClose = useCallback(() => {
     if (exiting) return;
@@ -118,41 +173,51 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </div>
 
         {/* Scrollable body */}
-        <div className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
+        <div ref={scrollAreaRef} className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
           {/* Sticky anchor nav */}
           <div
+            ref={navRef}
             className="sticky top-0 z-10 px-6 md:px-8 py-3 backdrop-blur-xl"
             style={{
-              background: "rgba(0, 0, 0, 0.55)",
+              background: "rgba(10, 10, 14, 0.92)",
               borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              boxShadow: "0 8px 16px -8px rgba(0, 0, 0, 0.5)",
             }}
           >
             <div className="flex flex-wrap gap-2">
-              {[
-                { label: "Who are we?", onClick: () => scrollTo(whoRef, "about_jump_who") },
-                { label: "What sets us apart?", onClick: () => scrollTo(apartRef, "about_jump_apart") },
-                { label: "FAQ", onClick: () => scrollTo(faqRef, "about_jump_faq") },
-                { label: "Question Writing Philosophy", onClick: () => scrollTo(philosophyRef, "about_jump_philosophy") },
-              ].map((btn) => (
-                <button
-                  key={btn.label}
-                  onClick={btn.onClick}
-                  className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.06)",
-                    border: "1px solid hsl(185 70% 55% / 0.5)",
-                    color: "hsl(var(--game-gold))",
-                  }}
-                >
-                  {btn.label}
-                </button>
-              ))}
+              {([
+                { key: "who", label: "Who are we?", ref: whoRef, event: "about_jump_who" },
+                { key: "apart", label: "What sets us apart?", ref: apartRef, event: "about_jump_apart" },
+                { key: "faq", label: "FAQ", ref: faqRef, event: "about_jump_faq" },
+                { key: "philosophy", label: "Question Writing Philosophy", ref: philosophyRef, event: "about_jump_philosophy" },
+              ] as { key: SectionKey; label: string; ref: React.RefObject<HTMLDivElement>; event: string }[]).map((btn) => {
+                const isActive = activeSection === btn.key;
+                return (
+                  <button
+                    key={btn.key}
+                    onClick={() => scrollTo(btn.ref, btn.event)}
+                    aria-current={isActive ? "location" : undefined}
+                    className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95"
+                    style={{
+                      background: isActive ? "hsl(var(--game-gold) / 0.18)" : "rgba(255, 255, 255, 0.06)",
+                      border: isActive
+                        ? "1px solid hsl(var(--game-gold))"
+                        : "1px solid hsl(185 70% 55% / 0.5)",
+                      color: "hsl(var(--game-gold))",
+                      boxShadow: isActive ? "0 0 0 2px hsl(var(--game-gold) / 0.15)" : undefined,
+                    }}
+                  >
+                    {btn.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+
           <div className="px-6 md:px-8 py-7 flex flex-col gap-10 game-text-white">
             {/* Who are we */}
-            <div ref={whoRef} className="scroll-mt-20">
+            <div ref={whoRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Who are we?
               </h2>
@@ -164,7 +229,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* What sets us apart */}
-            <div ref={apartRef} className="scroll-mt-20">
+            <div ref={apartRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What sets us apart?
               </h2>
@@ -203,7 +268,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* Frequently Asked Questions */}
-            <div ref={faqRef} className="scroll-mt-20">
+            <div ref={faqRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Frequently Asked Questions
               </h2>
@@ -257,7 +322,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
 
             {/* Question Writing Philosophy */}
-            <div ref={philosophyRef} className="scroll-mt-20">
+            <div ref={philosophyRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Question Writing Philosophy
               </h2>
