@@ -771,6 +771,7 @@ export default function TriviaGame() {
       <MascotDebugOverlay />
 
       {showAbout && <AboutScreen onClose={handleCloseAbout} />}
+      {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
     </div>
   );
 }
