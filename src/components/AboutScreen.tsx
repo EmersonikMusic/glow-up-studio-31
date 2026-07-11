@@ -179,15 +179,12 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             ref={navRef}
             className="sticky top-0 z-10 px-6 md:px-8 py-3 backdrop-blur-xl"
             style={{
-              background: "rgba(0, 0, 0, 0.25)",
+              background: "hsl(var(--game-bg))",
               borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
               boxShadow: "0 8px 16px -8px rgba(0, 0, 0, 0.5)",
             }}
           >
-            <div
-              className="flex flex-wrap gap-2 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&::-webkit-scrollbar]:hidden"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
+            <div className="flex flex-wrap gap-2">
               {([
                 { key: "who", label: "Who are we?", ref: whoRef, event: "about_jump_who" },
                 { key: "apart", label: "What sets us apart?", ref: apartRef, event: "about_jump_apart" },
@@ -200,7 +197,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                     key={btn.key}
                     onClick={() => scrollTo(btn.ref, btn.event)}
                     aria-current={isActive ? "location" : undefined}
-                    className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95 shrink-0"
+                    className="px-4 py-2 rounded-full text-[11px] font-subheading font-bold tracking-[0.18em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-95"
                     style={{
                       background: isActive ? "hsl(185 70% 55% / 0.18)" : "rgba(255, 255, 255, 0.06)",
                       border: isActive
