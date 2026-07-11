@@ -300,6 +300,10 @@
   scrollbar-color: hsl(185 70% 55% / 0.75) hsl(240 35% 28% / 0.5);
 }
 
+/* About nav horizontal scroll strip — hide scrollbar */
+.about-nav-scroll { scrollbar-width: none; }
+.about-nav-scroll::-webkit-scrollbar { display: none; }
+
 
 
 /* ── Step Slider ── */
