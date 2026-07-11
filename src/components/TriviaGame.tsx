@@ -16,6 +16,7 @@ import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
 import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
+import PrivacyScreen from "./PrivacyScreen";
 import SettingsPanel from "./SettingsPanel";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
