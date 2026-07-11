@@ -13,6 +13,7 @@ interface StartScreenProps {
   onStart: () => void;
   onAbout: () => void;
   onHowToPlay: () => void;
+  onPrivacy: () => void;
   onApply: (settings: GameSettings) => void;
   panelOpen: boolean;
   onPanelToggle: () => void;
