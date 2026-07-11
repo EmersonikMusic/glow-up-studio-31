@@ -148,9 +148,9 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
       {/* Card — full-screen on mobile, centered card on desktop */}
       <div
-        className={`relative z-10 overflow-hidden animate-slide-in-up backdrop-blur-xl flex flex-col ${
+        className={`relative z-10 overflow-hidden animate-slide-in-up backdrop-blur-xl flex flex-col min-w-0 ${
           isMobile
-            ? "absolute inset-0 rounded-none"
+            ? "absolute inset-0 rounded-none w-full"
             : "rounded-3xl mx-4"
         }`}
         style={{
@@ -178,23 +178,25 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
         </button>
 
         {/* Header */}
-        <div className="px-6 md:px-8 pt-10 pb-6 shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+        <div className="px-6 md:px-8 pt-10 pb-6 shrink-0 min-w-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
           <p className="text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2" style={{ color: "hsl(185 70% 55%)" }}>
             Welcome to your
           </p>
           <h1
-            className="text-2xl sm:text-3xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight whitespace-nowrap"
+            className="font-heading font-extrabold uppercase leading-none tracking-tight whitespace-nowrap sm:text-3xl md:text-4xl"
             style={{
               background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
               lineHeight: 1.05,
+              ...(isMobile && { fontSize: "clamp(14px, 6.2vw, 24px)" }),
             }}
           >
             Endless Trivia World!
           </h1>
         </div>
+
 
         {/* Anchor nav — part of the header, sits above the scroll area */}
         <div
