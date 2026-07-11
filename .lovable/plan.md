@@ -1,23 +1,12 @@
-Visual and copy tweaks to the About page sticky anchor bar and the question philosophy section.
+Visual tweaks to the About page sticky anchor bar.
 
-1. Sticky bar background colour
-   - Replace the current near-black `rgba(10, 10, 14, 0.92)` with the deep page background purple `hsl(var(--game-bg))` (HSL 240 45% 16%).
-   - Keep `backdrop-blur-xl` and the bottom border, so the bar reads as a solid continuation of the page rather than a dark overlay.
+1. Match sticky bar background to footer
+   - In `src/components/AboutScreen.tsx`, change the sticky anchor nav's `background` from `hsl(var(--game-bg))` to `rgba(0, 0, 0, 0.25)` (the same semi-transparent value used by the card container and the Back to Game footer area).
+   - Keep the `backdrop-blur-xl`, bottom border, and all other existing styles unchanged.
 
-2. Active-section highlight colour
-   - Switch the active anchor button styling from gold to teal `hsl(185 70% 55%)`:
-     - background: `hsl(185 70% 55% / 0.18)`
-     - border: `hsl(185 70% 55%)`
-     - text: `hsl(185 70% 55%)`
-     - box-shadow glow: `hsl(185 70% 55% / 0.15)`
-   - Inactive button styling remains unchanged.
+2. Mobile-only layout optimization
+   - On small screens, make the sticky anchor button row horizontally scrollable so every button stays at a readable, tappable size without wrapping into a cramped multi-line block.
+   - Implementation approach: use a media-query / Tailwind breakpoint (e.g., `max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:scrollbar-hide`) on mobile, while keeping the existing wrapped layout on desktop/tablet.
+   - Preserve existing button padding, font sizes, and tap targets.
 
-3. Add divider before sign-off
-   - Insert a 1 px hairline divider between the "Question Writing Philosophy" section and the "Go play..." sign-off block, matching the existing divider style (`rgba(255, 255, 255, 0.1)`).
-
-4. Rename section to "Question Crafting"
-   - Update the sticky nav button label from "Question Writing Philosophy" to "Question Crafting".
-   - Update the section heading from "Question Writing Philosophy" to "Question Crafting".
-
-5. Add intro line to the renamed section
-   - Insert a single paragraph directly under the "Question Crafting" heading that summarises the question writing philosophy, so the original phrase is still present on the page. Suggested line: "Our questions are designed to be clear, fair, and fun for every kind of trivia player."
+No copy, section structure, or functionality changes elsewhere.
