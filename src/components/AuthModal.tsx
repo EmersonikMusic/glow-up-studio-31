@@ -35,7 +35,9 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,6 +71,16 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     if (!email || !password) {
       setError("Please enter your email and password.");
       return;
+    }
+    if (isSignup) {
+      if (!confirmPassword) {
+        setError("Please confirm your password.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
     }
     setLoading(true);
     trackClick(isSignup ? "click_sign_up_email" : "click_sign_in_email");
@@ -153,36 +165,38 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {isSignup ? "Sign up to save your progress" : "Sign in to continue"}
           </DialogDescription>
 
-          {/* Social buttons */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Social buttons - stacked, brand-standard */}
+          <div className="flex flex-col gap-3">
             <button
               type="button"
               onClick={handleGoogle}
               disabled={loading}
-              className="flex items-center justify-center gap-2 h-12 rounded-full transition-all active:scale-95 disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-3 h-12 rounded-full transition-all active:scale-95 disabled:opacity-60"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                background: "#ffffff",
+                border: "1px solid #dadce0",
+                fontFamily: "'Roboto', 'Arial', sans-serif",
               }}
             >
               <GoogleIcon className="w-5 h-5" />
-              <span className="text-sm font-bold uppercase tracking-wider text-white">
-                Google
+              <span className="text-sm font-medium" style={{ color: "#3c4043", letterSpacing: "0.25px" }}>
+                Continue with Google
               </span>
             </button>
             <button
               type="button"
               disabled
               title="Coming soon"
-              className="flex items-center justify-center gap-2 h-12 rounded-full opacity-50 cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 h-12 rounded-full opacity-50 cursor-not-allowed"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                background: "#000000",
+                border: "1px solid #000000",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
               }}
             >
               <AppleIcon className="w-5 h-5 text-white" />
-              <span className="text-sm font-bold uppercase tracking-wider text-white">
-                Apple
+              <span className="text-sm font-medium text-white" style={{ letterSpacing: "0.2px" }}>
+                Continue with Apple
               </span>
             </button>
           </div>
@@ -193,6 +207,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <span className="text-xs uppercase tracking-widest text-white/40">or</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
+
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -230,6 +245,30 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            {isSignup && (
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm password"
+                  autoComplete="new-password"
+                  className="w-full h-12 px-4 pr-12 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--game-gold))]/40"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((s) => !s)}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            )}
 
             {error && (
               <p className="text-xs text-red-400 text-center">{error}</p>
@@ -249,7 +288,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 fontFamily: "'Fredoka One', 'Rubik', sans-serif",
               }}
             >
-              <LogIn className="w-5 h-5" />
+              {!isSignup && <LogIn className="w-5 h-5" />}
               {isSignup ? "Sign Up" : "Sign In"}
             </button>
           </form>
@@ -261,6 +300,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               type="button"
               onClick={() => {
                 setError(null);
+                setConfirmPassword("");
                 setMode(isSignup ? "signin" : "signup");
               }}
               className="text-white/80 underline underline-offset-2 hover:text-[hsl(var(--game-gold))]"
