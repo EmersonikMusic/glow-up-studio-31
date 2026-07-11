@@ -46,11 +46,15 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
     { key: "philosophy", label: "Question Crafting", ref: philosophyRef, event: "about_jump_philosophy" },
   ];
 
-  // Keep active chip visible in the mobile scroll strip
+  // Keep active chip visible in the mobile scroll strip (scroll strip only, not ancestors)
   useEffect(() => {
     if (!isMobile) return;
     const el = chipRefs.current[activeSection];
-    if (el) el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    const parent = el?.parentElement;
+    if (!el || !parent) return;
+    const target = el.offsetLeft - (parent.clientWidth - el.offsetWidth) / 2;
+    const max = parent.scrollWidth - parent.clientWidth;
+    parent.scrollTo({ left: Math.max(0, Math.min(target, max)), behavior: "smooth" });
   }, [activeSection, isMobile]);
 
 
