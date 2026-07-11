@@ -72,6 +72,16 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       setError("Please enter your email and password.");
       return;
     }
+    if (isSignup) {
+      if (!confirmPassword) {
+        setError("Please confirm your password.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
+    }
     setLoading(true);
     trackClick(isSignup ? "click_sign_up_email" : "click_sign_in_email");
     try {
