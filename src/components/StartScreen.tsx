@@ -22,7 +22,7 @@ interface StartScreenProps {
   customized?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onHowToPlay, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false, customized = false }: StartScreenProps) {
+export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, onApply, panelOpen, onPanelToggle, onPanelClose, loading = false, customized = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
 
