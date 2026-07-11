@@ -300,6 +300,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               type="button"
               onClick={() => {
                 setError(null);
+                setConfirmPassword("");
                 setMode(isSignup ? "signin" : "signup");
               }}
               className="text-white/80 underline underline-offset-2 hover:text-[hsl(var(--game-gold))]"
