@@ -104,6 +104,7 @@ export default function TriviaGame() {
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const pausedByAboutRef = useRef(false);
 
   const handleOpenAbout = useCallback(() => {
