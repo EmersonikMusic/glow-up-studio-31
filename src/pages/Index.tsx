@@ -41,9 +41,9 @@ export default function Index() {
           name="description"
           content="Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup."
         />
-        <link rel="canonical" href="/" />
+        <link rel="canonical" href="https://triviolivia.com/" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
-        <meta property="og:url" content="/" />
+        <meta property="og:url" content="https://triviolivia.com/" />
         <meta property="og:site_name" content="Triviolivia" />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>

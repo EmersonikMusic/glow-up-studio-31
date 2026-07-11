@@ -19,8 +19,12 @@ export default function Terms() {
         />
         <link rel="canonical" href="https://triviolivia.com/terms" />
         <meta property="og:title" content="Terms of Service & Privacy Policy — Triviolivia" />
+        <meta property="og:description" content="Triviolivia's Terms of Service and Privacy Policy governing use of the Triviolivia trivia app and website." />
         <meta property="og:url" content="https://triviolivia.com/terms" />
         <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Terms of Service & Privacy Policy — Triviolivia" />
+        <meta name="twitter:description" content="Triviolivia's Terms of Service and Privacy Policy governing use of the Triviolivia trivia app and website." />
       </Helmet>
 
       <main
