@@ -1,4 +1,4 @@
-import { ChevronsLeft } from "lucide-react";
+import { ChevronsLeft, ChevronDown } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback, useRef } from "react";
 import PrimaryCTA from "./PrimaryCTA";
@@ -8,15 +8,24 @@ interface AboutScreenProps {
   onClose: () => void;
 }
 
+function Tag({ variant, children }: { variant: "bad" | "good"; children: React.ReactNode }) {
+  return (
+    <span
+      className="font-black"
+      style={{ color: variant === "bad" ? "hsl(0 70% 65%)" : "hsl(185 70% 55%)" }}
+    >
+      {children}
+    </span>
+  );
+}
+
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
   const [exiting, setExiting] = useState(false);
   const whoRef = useRef<HTMLDivElement>(null);
   const apartRef = useRef<HTMLDivElement>(null);
-  const philosophyRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
-  const contributeRef = useRef<HTMLDivElement>(null);
-  const nextRef = useRef<HTMLDivElement>(null);
+  const philosophyRef = useRef<HTMLDivElement>(null);
 
   const scrollTo = useCallback((ref: React.RefObject<HTMLDivElement>, label: string) => {
     trackClick(label);
@@ -110,16 +119,20 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
         {/* Scrollable body */}
         <div className="about-scroll-area flex-1 overflow-y-auto overscroll-contain">
-          <div className="px-6 md:px-8 py-7 flex flex-col gap-6 game-text-white">
-            {/* Anchor nav */}
+          {/* Sticky anchor nav */}
+          <div
+            className="sticky top-0 z-10 px-6 md:px-8 py-3 backdrop-blur-xl"
+            style={{
+              background: "rgba(0, 0, 0, 0.55)",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
+          >
             <div className="flex flex-wrap gap-2">
               {[
                 { label: "Who are we?", onClick: () => scrollTo(whoRef, "about_jump_who") },
                 { label: "What sets us apart?", onClick: () => scrollTo(apartRef, "about_jump_apart") },
-                { label: "Question Writing Philosophy", onClick: () => scrollTo(philosophyRef, "about_jump_philosophy") },
                 { label: "FAQ", onClick: () => scrollTo(faqRef, "about_jump_faq") },
-                { label: "How do I contribute?", onClick: () => scrollTo(contributeRef, "about_jump_contribute") },
-                { label: "What next?", onClick: () => scrollTo(nextRef, "about_jump_next") },
+                { label: "Question Writing Philosophy", onClick: () => scrollTo(philosophyRef, "about_jump_philosophy") },
               ].map((btn) => (
                 <button
                   key={btn.label}
@@ -135,10 +148,12 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 </button>
               ))}
             </div>
+          </div>
 
+          <div className="px-6 md:px-8 py-7 flex flex-col gap-10 game-text-white">
             {/* Who are we */}
-            <div ref={whoRef} className="scroll-mt-4">
-              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+            <div ref={whoRef} className="scroll-mt-20">
+              <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Who are we?
               </h2>
               <p className="text-sm leading-relaxed font-body font-semibold">
@@ -148,11 +163,9 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </p>
             </div>
 
-            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
-
             {/* What sets us apart */}
-            <div ref={apartRef} className="scroll-mt-4">
-              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+            <div ref={apartRef} className="scroll-mt-20">
+              <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 What sets us apart?
               </h2>
               <p className="text-sm leading-relaxed font-body font-semibold mb-4">
@@ -189,84 +202,12 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </ul>
             </div>
 
-            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
-
-            {/* Question Writing Philosophy */}
-            <div ref={philosophyRef} className="scroll-mt-4">
-              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
-                Question Writing Philosophy
-              </h2>
-              <ol className="list-decimal pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(var(--game-gold))]">
-                <li>
-                  Questions must have clear cut, logical answers.
-                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                    <li>Nothing with many possible answers. A few is okay but all must be provided.</li>
-                    <li>Nothing vague, opinionated, or reasonably debatable.</li>
-                    <li>No loaded questions, guerilla advertising, or political campaigning. We are strictly a trivia game.</li>
-                  </ol>
-                </li>
-                <li>
-                  No multiple choice or true or false or something with very few, universally knowable, answers such as &lsquo;In which season&hellip;?&rsquo; Eight possible answers such as &lsquo;Which planet&hellip;?&rsquo; should be considered the minimum.
-                </li>
-                <li>
-                  Questions must be able to be read aloud to someone who cannot see the question text themselves, as well as read silently to one&rsquo;s self. That means no pictures/symbols/sound/etc. Just text and numbers. Questions must be reasonably easy to pronounce by an English speaker.
-                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                    <li>
-                      <span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad</span>
-                      <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                        <li>What is this character called? ~ (Can&rsquo;t be read out loud to someone)</li>
-                        <li>How do you spell &lsquo;fortuitous&rsquo;? (Can&rsquo;t be read to yourself)</li>
-                        <li>What does 6! equal? (Potentially confusing)</li>
-                      </ol>
-                    </li>
-                    <li>
-                      <span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better</span>
-                      <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                        <li>What is the name of the character found on most QWERTY keyboards that looks like a squiggly line?</li>
-                        <li>Which four-syllable F word means the same thing as serendipitous?</li>
-                        <li>What does 6 factorial equal?</li>
-                      </ol>
-                    </li>
-                  </ol>
-                </li>
-                <li>Nothing inappropriate for children.</li>
-                <li>Don&rsquo;t ask for dates or years unless the event is MASSIVE. Instead, give dates or years in the questions as a learning experience. Specify years for movies and other media to avoid confusion.</li>
-                <li>
-                  Avoid things that are reasonably possible to change over time.
-                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                    <li><span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad:</span> Who is the NBA&rsquo;s only billionaire player?</li>
-                    <li><span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better:</span> In 2020, who made history by becoming the NBA&rsquo;s first billionaire player?</li>
-                  </ol>
-                </li>
-                <li>Global subject matter.</li>
-                <li>
-                  A question that also teaches is a good goal.
-                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                    <li><span className="font-black" style={{ color: "hsl(0 70% 65%)" }}>Bad:</span> Who wrote A Brief History of Time?</li>
-                    <li><span className="font-black" style={{ color: "hsl(185 70% 55%)" }}>Better:</span> Which astrophysicist and science educator wrote the 1988 book A Brief History of Time?</li>
-                  </ol>
-                </li>
-                <li>No spoilers. Not even from things as old and ubiquitous as Star Wars or Lord of the Rings.</li>
-                <li>
-                  When assigning eras:
-                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
-                    <li>If the question is regarding an event, historical figure, or politician, it will be assigned that era.</li>
-                    <li>If it is regarding a scientific concept that was discovered, it will be from when it was discovered, onward.</li>
-                    <li>If it is a word or idiom, it will be from when it entered public parlance, onward.</li>
-                    <li>Art, Literature, Music, Movies, Performing Arts, Television, and Video Games on their release/premiere date.</li>
-                  </ol>
-                </li>
-              </ol>
-            </div>
-
-            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
-
             {/* Frequently Asked Questions */}
-            <div ref={faqRef} className="scroll-mt-4">
-              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+            <div ref={faqRef} className="scroll-mt-20">
+              <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Frequently Asked Questions
               </h2>
-              <dl className="flex flex-col gap-4">
+              <div className="flex flex-col">
                 {[
                   {
                     q: "Is this AI?",
@@ -288,46 +229,106 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                     q: "Where do the questions come from?",
                     a: "When each game is started, the questions are fetched from a database. Six years and counting of just writing stuff down every time we encounter something notable and interesting, and triviafying it.",
                   },
+                  {
+                    q: "How do I contribute?",
+                    a: "Our meticulously crafted and curated questions are designed to entertain, educate, challenge, and spark curiosity. We are always adding to our database and we're always looking for new questions. Show us what you got! If your submitted questions survive our rigorous quality control process, they will be added to our database and you will be credited as the author of the question, or you can remain anonymous.",
+                  },
                 ].map((item, i) => (
-                  <div key={i}>
-                    <dt className="text-sm font-heading font-black mb-1" style={{ color: "hsl(var(--game-gold))" }}>
-                      {item.q}
-                    </dt>
-                    <dd className="text-sm leading-relaxed font-body font-semibold pl-3">{item.a}</dd>
-                  </div>
+                  <details
+                    key={i}
+                    className="group border-b py-3 [&_summary::-webkit-details-marker]:hidden"
+                    style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
+                  >
+                    <summary
+                      className="flex items-center justify-between gap-3 cursor-pointer list-none text-sm font-heading font-black"
+                      style={{ color: "hsl(var(--game-gold))" }}
+                    >
+                      <span>{item.q}</span>
+                      <ChevronDown
+                        className="w-4 h-4 shrink-0 transition-transform duration-200 group-open:rotate-180"
+                        style={{ color: "hsl(var(--game-gold))" }}
+                        strokeWidth={2.5}
+                      />
+                    </summary>
+                    <dd className="text-sm leading-relaxed font-body font-semibold pl-3 pt-2">{item.a}</dd>
+                  </details>
                 ))}
-              </dl>
+              </div>
             </div>
 
-            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
-
-
-            {/* How do I contribute */}
-            <div ref={contributeRef} className="scroll-mt-4">
-              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
-                How do I contribute?
+            {/* Question Writing Philosophy */}
+            <div ref={philosophyRef} className="scroll-mt-20">
+              <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                Question Writing Philosophy
               </h2>
-              <p className="text-sm leading-relaxed font-body font-semibold">
-                Our meticulously crafted and curated questions are designed to entertain, educate, challenge, and spark
-                curiosity. We are always adding to our database and we're always looking for new questions.{" "}
-                <span className="font-black">Show us what you got!</span> If your submitted questions survive our
-                rigorous quality control process, they will be added to our database and you will be credited as the
-                author of the question, or you can remain anonymous.
-              </p>
-            </div>
-
-            <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />
-
-            {/* What next */}
-            <div ref={nextRef} className="scroll-mt-4">
-              <h2 className="text-xs font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
-                What next?
-              </h2>
-              <p className="text-sm leading-relaxed font-body font-semibold font-black">Go play. Good luck. Have fun. Nerd up!</p>
+              <ol className="list-decimal pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(var(--game-gold))]">
+                <li>
+                  Questions must have clear cut, logical answers.
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                    <li>Nothing with many possible answers. A few is okay but all must be provided.</li>
+                    <li>Nothing vague, opinionated, or reasonably debatable.</li>
+                    <li>No loaded questions, guerilla advertising, or political campaigning. We are strictly a trivia game.</li>
+                  </ol>
+                </li>
+                <li>
+                  No multiple choice or true or false or something with very few, universally knowable, answers such as &lsquo;In which season&hellip;?&rsquo; Eight possible answers such as &lsquo;Which planet&hellip;?&rsquo; should be considered the minimum.
+                </li>
+                <li>
+                  Questions must be able to be read aloud to someone who cannot see the question text themselves, as well as read silently to one&rsquo;s self. That means no pictures/symbols/sound/etc. Just text and numbers. Questions must be reasonably easy to pronounce by an English speaker.
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                    <li>
+                      <Tag variant="bad">Bad</Tag>
+                      <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                        <li>What is this character called? ~ (Can&rsquo;t be read out loud to someone)</li>
+                        <li>How do you spell &lsquo;fortuitous&rsquo;? (Can&rsquo;t be read to yourself)</li>
+                        <li>What does 6! equal? (Potentially confusing)</li>
+                      </ol>
+                    </li>
+                    <li>
+                      <Tag variant="good">Better</Tag>
+                      <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                        <li>What is the name of the character found on most QWERTY keyboards that looks like a squiggly line?</li>
+                        <li>Which four-syllable F word means the same thing as serendipitous?</li>
+                        <li>What does 6 factorial equal?</li>
+                      </ol>
+                    </li>
+                  </ol>
+                </li>
+                <li>Nothing inappropriate for children.</li>
+                <li>Don&rsquo;t ask for dates or years unless the event is MASSIVE. Instead, give dates or years in the questions as a learning experience. Specify years for movies and other media to avoid confusion.</li>
+                <li>
+                  Avoid things that are reasonably possible to change over time.
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                    <li><Tag variant="bad">Bad:</Tag> Who is the NBA&rsquo;s only billionaire player?</li>
+                    <li><Tag variant="good">Better:</Tag> In 2020, who made history by becoming the NBA&rsquo;s first billionaire player?</li>
+                  </ol>
+                </li>
+                <li>Global subject matter.</li>
+                <li>
+                  A question that also teaches is a good goal.
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                    <li><Tag variant="bad">Bad:</Tag> Who wrote A Brief History of Time?</li>
+                    <li><Tag variant="good">Better:</Tag> Which astrophysicist and science educator wrote the 1988 book A Brief History of Time?</li>
+                  </ol>
+                </li>
+                <li>No spoilers. Not even from things as old and ubiquitous as Star Wars or Lord of the Rings.</li>
+                <li>
+                  When assigning eras:
+                  <ol className="list-disc marker:text-[hsl(185_70%_55%)] pl-5 mt-1 flex flex-col gap-1">
+                    <li>If the question is regarding an event, historical figure, or politician, it will be assigned that era.</li>
+                    <li>If it is regarding a scientific concept that was discovered, it will be from when it was discovered, onward.</li>
+                    <li>If it is a word or idiom, it will be from when it entered public parlance, onward.</li>
+                    <li>Art, Literature, Music, Movies, Performing Arts, Television, and Video Games on their release/premiere date.</li>
+                  </ol>
+                </li>
+              </ol>
             </div>
 
             {/* Sign-off */}
             <div className="pt-1 pb-2">
+              <p className="text-sm leading-relaxed font-body font-semibold font-black mb-3">
+                Go play. Good luck. Have fun. Nerd up!
+              </p>
               <p className="text-sm leading-relaxed font-body font-semibold" style={{ color: "hsl(185 70% 55%)" }}>
                 With love,
                 <br />
