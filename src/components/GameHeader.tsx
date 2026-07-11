@@ -12,6 +12,7 @@ interface GameHeaderProps {
   onAbout?: () => void;
   onHome?: () => void;
   settingsOpen?: boolean;
+  showNav?: boolean;
 }
 
 export default function GameHeader({
@@ -19,6 +20,7 @@ export default function GameHeader({
   onAbout,
   onHome,
   settingsOpen = false,
+  showNav = true,
 }: GameHeaderProps) {
 
   const fsSupported =
@@ -86,83 +88,85 @@ export default function GameHeader({
         </div>
 
         {/* Right: About → Settings → Fullscreen */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        {showNav && (
+          <div className="flex items-center gap-1 sm:gap-2">
 
-          {/* Auth (Sign in / account) */}
-          <AuthButton />
+            {/* Auth (Sign in / account) */}
+            <AuthButton />
 
 
 
-          {/* About */}
-          {onAbout && (
-            <button
-              onClick={() => { trackClick("click_about"); onAbout(); }}
-              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
-              style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-              }}
-              aria-label="About"
-            >
-              <Info className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
-              <span
-                className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
-                style={{ color: "hsl(var(--game-gold))" }}
+            {/* About */}
+            {onAbout && (
+              <button
+                onClick={() => { trackClick("click_about"); onAbout(); }}
+                className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95"
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                }}
+                aria-label="About"
               >
-                About
-              </span>
-            </button>
-          )}
+                <Info className="nav-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                <span
+                  className="hidden sm:inline ml-1.5 text-xs font-body font-bold uppercase tracking-wider"
+                  style={{ color: "hsl(var(--game-gold))" }}
+                >
+                  About
+                </span>
+              </button>
+            )}
 
-          {/* Settings gear — always icon-only */}
-          {onSettingsToggle && (
-            <button
-              onClick={() => { if (!settingsOpen) trackClick("click_settings"); onSettingsToggle(); }}
-              className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
-              style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-              }}
-              aria-label={settingsOpen ? "Close settings" : "Open settings"}
-            >
-              <img
-                src={settingsIcon}
-                alt="Settings"
-                className="gear-icon w-5 h-5"
-                data-open={settingsOpen ? "true" : "false"}
-                style={
-                  settingsOpen ? { transform: "rotate(60deg)" } : undefined
-                }
-              />
-            </button>
-          )}
+            {/* Settings gear — always icon-only */}
+            {onSettingsToggle && (
+              <button
+                onClick={() => { if (!settingsOpen) trackClick("click_settings"); onSettingsToggle(); }}
+                className="nav-btn flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                }}
+                aria-label={settingsOpen ? "Close settings" : "Open settings"}
+              >
+                <img
+                  src={settingsIcon}
+                  alt="Settings"
+                  className="gear-icon w-5 h-5"
+                  data-open={settingsOpen ? "true" : "false"}
+                  style={
+                    settingsOpen ? { transform: "rotate(60deg)" } : undefined
+                  }
+                />
+              </button>
+            )}
 
-          {/* Sound toggle */}
-          <SoundToggle />
+            {/* Sound toggle */}
+            <SoundToggle />
 
 
-          {/* Keyboard shortcuts help (desktop only) */}
-          <KeyboardShortcutsHelp />
+            {/* Keyboard shortcuts help (desktop only) */}
+            <KeyboardShortcutsHelp />
 
-          {/* Fullscreen toggle */}
-          {fsSupported && (
-            <button
-              onClick={toggleFullscreen}
-              className="nav-btn hidden sm:flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
-              style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-              }}
-              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-            >
-              {isFullscreen ? (
-                <Minimize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
-              ) : (
-                <Maximize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
-              )}
-            </button>
-          )}
-        </div>
+            {/* Fullscreen toggle */}
+            {fsSupported && (
+              <button
+                onClick={toggleFullscreen}
+                className="nav-btn hidden sm:flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-full transition-all duration-200 active:scale-95"
+                style={{
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                }}
+                aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                ) : (
+                  <Maximize2 className="fs-icon w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+                )}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );
