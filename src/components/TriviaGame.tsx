@@ -522,6 +522,7 @@ export default function TriviaGame() {
           onStart={handleStart}
           onAbout={handleOpenAbout}
           onHowToPlay={() => setShowHowToPlay(true)}
+          onPrivacy={() => setShowPrivacy(true)}
           onApply={handleApply}
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
@@ -531,6 +532,7 @@ export default function TriviaGame() {
         />
         {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
+        {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
       </>
     );
   }
