@@ -88,6 +88,11 @@ export default function GameHeader({
         {/* Right: About → Settings → Fullscreen */}
         <div className="flex items-center gap-1 sm:gap-2">
 
+          {/* Auth (Sign in / account) */}
+          <AuthButton />
+
+
+
           {/* About */}
           {onAbout && (
             <button
