@@ -180,12 +180,11 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, 
           width: !isMobile && panelOpen ? "70%" : "100%",
         }}
       >
-        <p
-          className="text-[10px] sm:text-xs font-body font-semibold text-white whitespace-nowrap animate-fade-in"
+        <LegalFooter
+          onPrivacy={onPrivacy}
+          className="animate-fade-in"
           style={{ animationDelay: "300ms" }}
-        >
-          Copyright © 2026 Triviolivia Inc. All rights reserved.
-        </p>
+        />
       </div>
 
       {/* Settings panel */}
