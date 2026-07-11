@@ -392,6 +392,8 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </ol>
             </div>
 
+            <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }} aria-hidden="true" />
+
             {/* Sign-off */}
             <div className="pt-1 pb-2">
               <p className="text-sm leading-relaxed font-body font-semibold font-black mb-3">
