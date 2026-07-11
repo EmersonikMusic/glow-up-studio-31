@@ -1,49 +1,40 @@
-Three targeted fixes in `src/components/AboutScreen.tsx` (+ small CSS helper in `src/index.css`).
+## Goal
 
-## 1. Fix anchor offset when jumping to a section
+Replace the current header sign-in flow with a Triviolivia-branded auth modal that matches the attached mockups. The Lovable OAuth call stays under the hood — only the UI changes.
 
-The anchor nav sits outside `scrollAreaRef`, so subtracting `navHeight` in `scrollTo` under-scrolls by the nav's height and leaves the previous section's tail visible. Remove the `navHeight` term:
+## Scope
 
-```ts
-const top =
-  target.getBoundingClientRect().top -
-  scroller.getBoundingClientRect().top +
-  scroller.scrollTop -
-  8;
-```
+**In:**
+1. Update `AuthButton.tsx` header states to match the reference pills:
+   - Signed out: gold outlined pill with `LogIn` icon + gold "LOGIN" label (image 16).
+   - Signed in: teal outlined pill with `User` icon + teal uppercase username (image 17). Dropdown for sign-out stays.
+2. New `AuthModal.tsx` — Triviolivia-branded sign-in dialog (image 15):
+   - Dark rounded card with subtle gold glow, close/back button top-left, small TRIVIOLIVIA logo top-center.
+   - Heading "WELCOME BACK" (Fredoka One, gold gradient), subtitle "Sign in to continue".
+   - Two social buttons side-by-side: **Google** (functional, Google G icon) and **Apple** (rendered but disabled with a small "coming soon" tooltip — Apple provider is not configured).
+   - "OR" divider.
+   - Email + Password fields (password with show/hide eye).
+   - Gold gradient "SIGN IN" primary button with arrow icon.
+   - Footer link "Don't have an account? Sign up" — toggles the same modal into a sign-up variant (heading "CREATE ACCOUNT", CTA "SIGN UP", footer flips to "Already have an account? Sign in").
+3. Wire the "LOGIN" header pill to open the modal (replaces the direct Google redirect).
+4. Email/password auth via `supabase.auth.signInWithPassword` and `supabase.auth.signUp` (with `emailRedirectTo: window.location.origin`). Google button still calls `lovable.auth.signInWithOAuth("google", ...)`.
+5. Basic form UX: inline error text under the form, disabled state while submitting, toast on success/failure, modal closes on successful session.
 
-Drop `navHeight` from the `useCallback` deps. Scroll-spy `triggerY` is unaffected.
+**Out of scope (not requested):**
+- Apple sign-in wiring (button shown but disabled).
+- Forgot-password flow / `/reset-password` route.
+- Any change to the profile trigger, `profiles` table, or the account dropdown behavior beyond restyling the trigger pill.
+- Gating game features behind auth.
 
-## 2. Replace mobile dropdown with a horizontal scroll strip
+## Technical notes
 
-Remove `menuOpen` state, the outside-click/Escape effect, the "Jump to…" trigger button and its popover menu.
+- New file: `src/components/AuthModal.tsx` using shadcn `Dialog` primitive already in the project.
+- `AuthButton.tsx`: replace signed-out button with the gold "LOGIN" pill and open `<AuthModal />`; restyle signed-in trigger to the teal "GOOGLEUSER"-style pill (username uppercased, truncated). Dropdown content unchanged.
+- Styling uses existing tokens: `hsl(var(--game-gold))` for the gold pill/heading/CTA gradient, `hsl(185 70% 55%)` (existing teal) for the signed-in pill. Fredoka One for the heading and SIGN IN label, matching the rest of the app.
+- Gold gradient CTA reuses the same treatment as `PrimaryCTA` for consistency.
+- `lovable.auth.signInWithOAuth` result handling unchanged (redirect vs error vs session set).
+- Nothing changes in `src/integrations/lovable/*`, `src/integrations/supabase/client.ts`, migrations, or `GameHeader.tsx` layout beyond the pill it already renders.
 
-On mobile, render the same chip list as desktop but in one horizontally-scrollable row so every section is a single-tap target:
+## Open question
 
-- Container: `flex gap-2 overflow-x-auto -mx-6 px-6 about-nav-scroll` (no wrap).
-- Each chip: `shrink-0 whitespace-nowrap` with the existing pill styling (teal border + gold text, active = teal fill + teal text + focus ring).
-- Store each chip's DOM node in a `chipRefs` map keyed by `SectionKey`.
-- `useEffect` on `activeSection` (mobile only) calls `chipRefs.current[activeSection]?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" })` so the active chip stays visible as the page scrolls.
-
-Add to `src/index.css` (near `.about-scroll-area`):
-
-```css
-.about-nav-scroll { scrollbar-width: none; }
-.about-nav-scroll::-webkit-scrollbar { display: none; }
-```
-
-Desktop nav (`flex flex-wrap gap-2`) is untouched.
-
-## 3. Fit "Endless Trivia World!" on one mobile line
-
-In the header `<h1>`:
-- Remove the `isMobile ? <br/> : " "` split; always render `Endless Trivia World!` as a single string.
-- Change class from `text-4xl sm:text-3xl md:text-4xl … sm:whitespace-nowrap` to `text-2xl sm:text-3xl md:text-4xl … whitespace-nowrap` so the gradient renders across one line at all widths.
-
-## Cleanup
-
-Remove the now-unused `ChevronDown` import from the nav area (still used inside FAQ `<summary>`, so keep the import overall).
-
-## Out of scope
-
-No changes to section content, header/footer chrome, colours, or desktop nav behavior.
+Email/password sign-in/sign-up is included because the mockup shows those fields. If you'd rather the modal be **Google-only** (drop email/password + Apple, keep the branded shell), say the word and I'll trim the plan before building.
