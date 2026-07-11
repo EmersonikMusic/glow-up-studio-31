@@ -1,16 +1,25 @@
-Goal: Make `/terms` shareable/OAuth-ready and give it a footer that mirrors the homepage style, without a privacy modal.
+## Update AuthModal login popup
 
-What I’ll do:
+**File:** `src/components/AuthModal.tsx`
 
-1. SEO verification on `/terms`.
-   - Confirm title, description, canonical, Open Graph, and Twitter tags are present.
-   - Add a JSON-LD `Article` schema in the Helmet for richer search/OAuth context.
+### 1. Standard-branded social buttons (stacked, full-width)
+- Replace the custom Google/Apple buttons with the official brand button styles:
+  - **Google**: white background, `#dadce0` 1px border, `#3c4043` text in Roboto/Medium, official 4-color "G" logo (keep current SVG which matches Google's brand asset), left-aligned icon with centered "Continue with Google" label. Follows Google's Sign-In branding guidelines.
+  - **Apple**: solid black background, white text, official Apple logo glyph (keep current SVG — it matches Apple's guideline glyph), label "Continue with Apple". Follows Apple's Sign in with Apple button guidelines.
+- Change layout from `grid grid-cols-2` to a vertical stack (`flex flex-col gap-3`), each button `w-full` so they match the Sign In/Sign Up submit button width.
+- Keep the Apple button as disabled/"Coming soon" (unchanged behavior).
+- Buttons remain rounded pills (`rounded-full`) to stay consistent with the submit button shape; sizing/height (`h-12`) unchanged.
 
-2. Add a footer to `/terms`.
-   - Create `src/components/TermsFooter.tsx` styled like the homepage `LegalFooter`.
-   - It will include: copyright line, a `Home` link back to `/`, and a non-modal “Terms of Service & Privacy Policy” span (since the user is already on that page and explicitly does not want the modal).
+### 2. Submit button icon
+- Show the `LogIn` icon only in Sign In mode. Remove it when `isSignup` is true.
 
-3. Update the `/terms` layout.
-   - Wrap the centered legal card and the new footer in a flex container so the card fills the remaining space and the footer sits visibly at the bottom on both mobile and desktop.
+### 3. Sign Up: confirm password
+- Add a `confirmPassword` state and, when `isSignup`, render a second password field ("Confirm password") below the password field with the same eye toggle styling.
+- In `handleSubmit`, when `isSignup`:
+  - require `confirmPassword` non-empty
+  - if `password !== confirmPassword`, set error "Passwords do not match." and abort before calling `supabase.auth.signUp`.
+- Reset `confirmPassword` when toggling between modes (same place `error` is reset).
+- `autoComplete="new-password"` on both password fields in signup mode.
 
-Result: `/terms` keeps its SEO tags and gets a homepage-style footer with a back-to-start link and the legal link, without triggering the Privacy modal.
+### Out of scope
+- No changes to auth logic, OAuth flow, routes, or other components.
