@@ -321,11 +321,14 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
               </div>
             </div>
 
-            {/* Question Writing Philosophy */}
+            {/* Question Crafting */}
             <div ref={philosophyRef} className="">
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
-                Question Writing Philosophy
+                Question Crafting
               </h2>
+              <p className="text-sm leading-relaxed font-body font-semibold mb-4">
+                Our question writing philosophy is simple: every question should be clear, fair, and fun for every kind of trivia player.
+              </p>
               <ol className="list-decimal pl-5 flex flex-col gap-3 text-sm leading-relaxed font-body font-semibold marker:font-black marker:text-[hsl(var(--game-gold))]">
                 <li>
                   Questions must have clear cut, logical answers.
