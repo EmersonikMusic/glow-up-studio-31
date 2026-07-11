@@ -622,6 +622,7 @@ export default function TriviaGame() {
           onRestart={handlePlayAgain}
           onChangeSettings={() => { handleRestart(); setTimeout(() => setPanelOpen(true), 50); }}
           onBackToStart={handleRestart}
+          onPrivacy={() => setShowPrivacy(true)}
           questions={activeQuestions}
           statuses={questionStatuses}
         />
