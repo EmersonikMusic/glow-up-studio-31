@@ -239,6 +239,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 : "Sign in to continue"}
           </DialogDescription>
 
+          {!isForgot && (<>
           {/* Social buttons - stacked on mobile, side-by-side on tablet+ */}
           <div className="flex flex-col sm:flex-row sm:justify-center gap-3">
             <button
