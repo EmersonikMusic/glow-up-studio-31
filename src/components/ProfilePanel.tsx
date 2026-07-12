@@ -321,6 +321,11 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
         )}
 
         <div className="text-xs font-body text-white/60 truncate max-w-full">{email}</div>
+        {memberSince && (
+          <div className="text-[10px] font-body uppercase tracking-widest text-white/40">
+            Member since {memberSince}
+          </div>
+        )}
 
         <button
           onClick={handleSignOut}
