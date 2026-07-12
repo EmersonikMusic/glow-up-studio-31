@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
+import appleLogoWhite from "@/assets/apple-logo-white.svg";
 import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
 
 interface AuthModalProps {
