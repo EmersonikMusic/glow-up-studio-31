@@ -173,18 +173,17 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </button>
             <button
               type="button"
-              disabled
-              title="Coming soon"
-              className="w-full flex items-center justify-center gap-3 h-12 rounded-full opacity-50 cursor-not-allowed"
+              onClick={() => toast("Apple sign-in coming soon")}
+              aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
+              className="w-full flex items-center justify-center gap-2 h-12 rounded-full transition-all active:scale-95"
               style={{
                 background: "#000000",
-                border: "1px solid #000000",
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
               }}
             >
               <AppleIcon className="w-5 h-5 text-white" />
-              <span className="text-sm font-medium text-white" style={{ letterSpacing: "0.2px" }}>
-                Continue with Apple
+              <span className="text-[15px] font-medium text-white" style={{ letterSpacing: "-0.01em" }}>
+                {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               </span>
             </button>
           </div>
