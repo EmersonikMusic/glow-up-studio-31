@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Eye, EyeOff, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -13,13 +13,11 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function AppleIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-      <path d="M16.365 1.43c0 1.14-.45 2.23-1.19 3.02-.78.85-2.03 1.5-3.08 1.42-.13-1.11.42-2.26 1.15-3.02.8-.85 2.15-1.47 3.12-1.42zM20.5 17.14c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.38 3.5-4.1 3.51-1.54.02-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.72-.01-3.04-1.76-4.03-3.32C.02 15.44-.28 10.16 1.84 7.32c1.51-2.02 3.88-3.2 6.11-3.2 2.27 0 3.7 1.24 5.58 1.24 1.82 0 2.93-1.25 5.56-1.25 1.99 0 4.1 1.08 5.6 2.96-4.92 2.7-4.12 9.72.81 10.07z" />
-    </svg>
-  );
-}
+// Filled in once the Apple Developer Services ID is provisioned.
+// While empty, the Apple button renders visually via Apple's SDK but clicks
+// are intercepted and only show a "coming soon" toast.
+const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
+const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -32,6 +30,59 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const isSignup = mode === "signup";
+  const appleContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Initialize Apple's Sign in with Apple JS SDK once the script loads and
+  // (re-)render the official Apple button whenever the modal opens or the
+  // sign-in / sign-up mode toggles. The SDK auto-scans on load, but our div
+  // lives inside a modal that mounts after the initial scan.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    const initAndRender = () => {
+      if (cancelled) return;
+      const AppleID = window.AppleID;
+      if (!AppleID?.auth) return false;
+      try {
+        AppleID.auth.init({
+          clientId: APPLE_SERVICES_ID || "pending.services.id",
+          scope: "name email",
+          redirectURI: window.location.origin,
+          usePopup: true,
+        });
+        AppleID.auth.renderButton?.();
+      } catch {
+        // Init/render can throw if called before the placeholder div mounts —
+        // the retry loop below will pick it up on the next tick.
+      }
+      return true;
+    };
+
+    if (!initAndRender()) {
+      const interval = window.setInterval(() => {
+        if (initAndRender()) window.clearInterval(interval);
+      }, 100);
+      window.setTimeout(() => window.clearInterval(interval), 5000);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, isSignup]);
+
+  const handleAppleClick = (e: React.MouseEvent) => {
+    // Until the Apple Developer Services ID is configured, keep the button
+    // inert: swallow the click so Apple's SDK doesn't open an auth window
+    // against a placeholder client ID (which would show `invalid_client`).
+    if (!APPLE_AUTH_READY) {
+      e.preventDefault();
+      e.stopPropagation();
+      trackClick("click_sign_in_apple");
+      toast("Apple sign-in coming soon");
+    }
+  };
+
 
   const handleGoogle = async () => {
     trackClick("click_sign_in_google");
@@ -171,21 +222,37 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 draggable={false}
               />
             </button>
-            <button
-              type="button"
-              onClick={() => toast("Apple sign-in coming soon")}
+            {/* Official Sign in with Apple button — rendered by Apple's JS SDK.
+                Kept inert (click-catcher overlay) until VITE_APPLE_SERVICES_ID is set. */}
+            <div
+              ref={appleContainerRef}
+              onClickCapture={handleAppleClick}
+              role="button"
+              tabIndex={0}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-full transition-all active:scale-95"
-              style={{
-                background: "#000000",
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-              }}
+              aria-disabled={!APPLE_AUTH_READY}
+              className="relative w-full h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{ background: "#000000" }}
             >
-              <AppleIcon className="w-5 h-5 text-white" />
-              <span className="text-[15px] font-medium text-white" style={{ letterSpacing: "-0.01em" }}>
-                {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
-              </span>
-            </button>
+              <div
+                key={isSignup ? "apple-signup" : "apple-signin"}
+                id="appleid-signin"
+                data-mode="center-align"
+                data-type={isSignup ? "sign-up" : "sign-in"}
+                data-color="black"
+                data-border="false"
+                data-border-radius="50"
+                data-width="375"
+                data-height="48"
+                className="w-full h-full"
+              />
+              {!APPLE_AUTH_READY && (
+                // Transparent overlay so clicks never reach Apple's iframe while
+                // credentials are still being provisioned.
+                <span aria-hidden="true" className="absolute inset-0" />
+              )}
+            </div>
+
           </div>
 
           {/* OR divider */}

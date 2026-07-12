@@ -1,39 +1,62 @@
-## Apple Sign In button styling (visual only, not wired up)
+## Wire up Apple's official Sign in with Apple JS button (visual + inert until credentials arrive)
 
-Per Apple's Sign in with Apple JS guidelines (https://developer.apple.com/documentation/signinwithapplejs/incorporating-sign-in-with-apple-into-other-platforms and HIG), the button has strict specs. We'll match them for the dark modal.
+Replace the hand-rolled Apple button with Apple's own SDK-rendered button. The glyph, spacing, and typography then come from Apple directly and are guaranteed correct. Everything gets set up now except the two values the Apple Developer account will produce (Services ID + verified redirect URL).
 
-### Spec (from Apple)
-- **Label**: "Sign in with Apple" (Sign In mode) / "Sign up with Apple" (Sign Up mode). Apple allows "Continue with Apple" too, but the standard pair is Sign in / Sign up.
-- **Logo**: Official Apple  glyph, always paired with text at the same font size.
-- **Colors**: Black button with white logo + white text (matches our dark modal). Alt is white with black logo, or white with black outline. We'll use black.
-- **Corner radius**: Between 0 and half the button height. Our other buttons are pill-shaped (`rounded-full`), so match that.
-- **Height**: Minimum 32px. We use `h-12` (48px) to match the Google button.
-- **Font**: SF Pro (system font stack: `-apple-system, BlinkMacSystemFont, "SF Pro Text", ...`) — already set.
-- **Font weight**: Medium (500).
-- **Padding**: Logo left, text centered. Minimum internal padding equal to logo height.
-- **Logo size**: ~43% of button height (per Apple sizing rules → ~20px for a 48px button).
+### What we build now
 
-### Changes to `src/components/AuthModal.tsx`
+1. **Load Apple's JS SDK** once, globally, via `index.html`:
+   ```html
+   <script type="text/javascript"
+     src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"
+     defer></script>
+   ```
+   Placed at the end of `<body>` so it doesn't block first paint.
 
-1. **Replace the current Apple button** (currently `disabled opacity-50`). Keep it non-functional but visually correct:
-   - Remove `disabled`, `opacity-50`, `cursor-not-allowed`, and `title="Coming soon"`.
-   - Add `onClick` that shows a toast: "Apple sign-in coming soon" (or no-op). Kept purely visual — no OAuth call.
-   - Keep `w-full h-12 rounded-full` (matches Google button).
-   - Background `#000`, text `#fff`, no border needed on dark bg (Apple's spec says border only if the button color matches page bg).
-   - Update label to be mode-aware: `{isSignup ? "Sign up with Apple" : "Sign in with Apple"}`.
-   - Font size 17px (Apple's recommended for body button text) or 15px to match Google's rendered text — we'll use `text-[15px]` for visual parity with the Google asset next to it.
-   - Font weight `font-medium` (500).
-   - Letter-spacing per Apple: subtle, use `-0.01em` or leave default.
+2. **Add ambient TS types** in `src/types/appleid.d.ts` declaring `window.AppleID.auth.init(...)`, `renderButton()`, and `signIn()` (the three methods we touch).
 
-2. **Refine `AppleIcon`**: current path is fine but we'll size it at `w-5 h-5` (20px) which is ~42% of 48px — within Apple's range. White fill via `text-white` + `fill="currentColor"` (already set).
+3. **Add a placeholder env var** `VITE_APPLE_SERVICES_ID` in `.env` set to an empty string, with a comment explaining it will be filled in once the Apple Developer account is ready. The Vite config already exposes `import.meta.env.VITE_*`.
 
-3. **Symmetry with Google**: The Google asset already includes its own glyph + text baked into the SVG. Our Apple button will be a native `<button>` with `<AppleIcon>` + `<span>` — same outer dimensions (`w-full h-12 rounded-full`) so they stack as a matched pair.
+4. **Update `src/components/AuthModal.tsx`**:
+   - Delete the custom `<button>` + `AppleIcon` implementation and the `AppleIcon` component.
+   - Add a `useEffect` that runs when the modal opens:
+     - If `window.AppleID` exists, call `AppleID.auth.init({ clientId: import.meta.env.VITE_APPLE_SERVICES_ID || "pending.services.id", scope: "name email", redirectURI: window.location.origin, usePopup: true })`.
+     - Then call `AppleID.auth.renderButton()` to paint the button into the placeholder div.
+     - Re-run when `isSignup` toggles so the label swaps between "Sign in with Apple" / "Sign up with Apple".
+   - Render Apple's placeholder div in the social buttons stack, using the exact snippet the user provided but adapted to fill the row:
+     ```html
+     <div
+       id="appleid-signin"
+       data-mode="center-align"
+       data-type={isSignup ? "sign-up" : "sign-in"}
+       data-color="black"
+       data-border="false"
+       data-border-radius="50"
+       data-width="375"
+       data-height="48"
+     />
+     ```
+     Wrap it in a container styled `w-full h-12 rounded-full overflow-hidden` so it visually matches the Google button. Apple's SDK inserts an `<iframe>` inside the div — that's expected.
+   - Wrap the container in a `<button>`-like clickable region that intercepts pointer events until credentials exist:
+     - If `VITE_APPLE_SERVICES_ID` is empty (current state): overlay a transparent click-catcher that shows `toast("Apple sign-in coming soon")` and prevents the SDK's default flow.
+     - If it's set: remove the overlay so the SDK's native `AppleID.auth.signIn()` flow runs on click. We handle the returned `id_token` in a small `onSuccess` handler that calls `lovable.auth.signInWithOAuth("apple", { redirect_uri: window.location.origin })` — or, if the user prefers to go entirely through Apple's JS SDK popup, we exchange the returned `id_token` with Supabase via `supabase.auth.signInWithIdToken({ provider: "apple", token })`. Decision deferred until credentials are in hand; today the button stays inert.
 
-### Out of scope
-- Wiring `lovable.auth.signInWithOAuth("apple", ...)` — the button stays inert per the request.
-- Configuring the Apple provider in the backend.
-- Changes to the Google button, form, or any other modal content.
+5. **Analytics + a11y**: `aria-label` on the container is set from `isSignup` for screen readers (Apple's iframe blocks external labeling of the inner button).
+
+### What stays TODO until Apple Developer is ready
+
+- Fill `VITE_APPLE_SERVICES_ID` with the Services ID (e.g. `com.triviolivia.web`).
+- Register `https://triviolivia.com`, `https://www.triviolivia.com`, and `https://triviolivia.lovable.app` as Web Domains and their `/` (or `/auth/callback`) as Return URLs in the Apple Developer console.
+- Choose the runtime path: (a) call Lovable Cloud managed Apple provider via `lovable.auth.signInWithOAuth("apple", ...)` — needs Apple provider enabled in the backend, or (b) use Apple's JS `AppleID.auth.signIn()` popup and pass the `id_token` to Supabase via `signInWithIdToken`. I'll recommend (a) once credentials arrive since we already use `lovable.auth.signInWithOAuth("google", ...)`.
+- Remove the click-catcher overlay so the SDK button becomes live.
 
 ### Verification
+
 - Typecheck.
-- Playwright screenshot of the open modal in both Sign In and Sign Up modes to confirm the label swaps and the button visually matches Apple's spec next to the Google button.
+- Load the modal in Playwright (Sign In + Sign Up) and screenshot. Confirm Apple's iframe renders the official button at the correct height, with the correct label per mode, matching the Google button width.
+- Confirm clicking the button while `VITE_APPLE_SERVICES_ID` is empty triggers only the "coming soon" toast and does not open Apple's auth window.
+
+### Out of scope
+
+- Wiring `lovable.auth.signInWithOAuth("apple", ...)` end-to-end (waits on credentials).
+- Any changes to the Google button, email form, or modal chrome.
+- Enabling the Apple provider on Lovable Cloud (will do after Services ID exists).
