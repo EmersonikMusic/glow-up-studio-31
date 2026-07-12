@@ -167,6 +167,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       <DialogContent
         className="max-w-md p-0 border-0 bg-transparent shadow-none sm:rounded-3xl"
         overlayClassName="bg-[hsl(240_45%_10%_/_0.6)]"
+        hideClose
       >
         <div
           className="relative rounded-3xl p-6 sm:p-8"
