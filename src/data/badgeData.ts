@@ -97,7 +97,7 @@ const RAW: Omit<Badge, "id">[] = [
   { badgeType: "Category Specialists", setting: "Pop Culture", tier: 1, badgeName: "Pop Icon", requirement: "Play 10 games including Pop Culture categories", visualDesign: "A bronze retro broadcast microphone with neon pink accents." },
   { badgeType: "Category Specialists", setting: "Pop Culture", tier: 2, badgeName: "Silver Screen", requirement: "Play 50 games including Pop Culture categories", visualDesign: "A classic Hollywood clapperboard rendered in polished silver." },
   { badgeType: "Category Specialists", setting: "Pop Culture", tier: 3, badgeName: "Hall of Famer", requirement: "Play 100 games including Pop Culture categories", visualDesign: "A radiant, neon-lined gold star on a dark terrazzo-style background." },
-  { badgeType: "Category Specialists", setting: "Sports", tier: 1, badgeName: "The Warm-Up", requirement: "Play 10 games including Sports", visualDesign: "A simple bronze referee whistle" },
+  { badgeType: "Category Specialists", setting: "Sports", tier: 1, badgeName: "The Whistle", requirement: "Play 10 games including Sports", visualDesign: "A simple bronze referee whistle" },
   { badgeType: "Category Specialists", setting: "Sports", tier: 2, badgeName: "The Striker", requirement: "Play 50 games including Sports", visualDesign: "A sleek silver soccer ball" },
   { badgeType: "Category Specialists", setting: "Sports", tier: 3, badgeName: "The Champion", requirement: "Play 100 games including Sports", visualDesign: "A large, shining gold trophy cup" },
 
