@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
-import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trophy, Lock, Trash2 } from "lucide-react";
+import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trash2 } from "lucide-react";
+import AchievementsSection from "./AchievementsSection";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -61,42 +62,6 @@ function formatMonthYear(iso: string | null) {
   }
 }
 
-function Badge({
-  label,
-  unlocked,
-}: {
-  label: string;
-  unlocked: boolean;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <div
-        className="w-16 h-16 rounded-full flex items-center justify-center transition-all"
-        style={{
-          background: unlocked ? GOLD_GRADIENT : "rgba(255,255,255,0.06)",
-          border: unlocked
-            ? "2px solid rgba(255,255,255,0.35)"
-            : "2px solid rgba(255,255,255,0.1)",
-          boxShadow: unlocked ? "0 4px 20px rgba(253,199,12,0.35)" : "none",
-          opacity: unlocked ? 1 : 0.45,
-          filter: unlocked ? "none" : "grayscale(1)",
-        }}
-      >
-        {unlocked ? (
-          <Trophy className="w-7 h-7" style={{ color: "hsl(240 45% 10%)" }} strokeWidth={2.5} />
-        ) : (
-          <Lock className="w-6 h-6 text-white/60" />
-        )}
-      </div>
-      <span
-        className="text-[10px] font-body font-bold uppercase tracking-widest leading-tight"
-        style={{ color: unlocked ? "#fff" : "hsl(var(--muted-foreground))" }}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
 
 export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps) {
   const isMobile = useIsMobile();
@@ -139,7 +104,12 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const gamesCompleted = profile?.games_completed ?? 0;
   const memberSince = formatMonthYear(profile?.created_at ?? user?.created_at ?? null);
 
-  const firstUnlocked = gamesCompleted >= 1;
+  // TODO: wire to real unlock data from Cloud. Newest-earned first.
+  const unlockedBadgeIds = [
+    "progression-and-consistency-n-a-the-regular",
+    "progression-and-consistency-n-a-decathlon",
+    "progression-and-consistency-n-a-the-icebreaker",
+  ];
 
   const startEdit = () => {
     setDraftUsername(username);
@@ -377,11 +347,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
         <div className="text-xs font-subheading font-bold tracking-widest uppercase mb-4" style={{ color: "hsl(185 70% 55%)" }}>
           Achievements & Awards
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <Badge label="First Game" unlocked={firstUnlocked} />
-          <Badge label="10 Games" unlocked={false} />
-          <Badge label="25 Games" unlocked={false} />
-        </div>
+        <AchievementsSection unlockedIds={unlockedBadgeIds} />
       </section>
 
       {/* Danger zone */}

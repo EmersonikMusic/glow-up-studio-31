@@ -1,67 +1,71 @@
 ## Goal
 
-Extend the User Profile panel with two new fields, add a Delete Account action, and require a unique **Username** at email signup.
+Replace the current 3 hard-coded placeholder circles inside `ProfilePanel.tsx` → "Achievements & Awards" with a scalable, data-driven grid. Keep visual style (circular gold/locked treatment) consistent with the existing badge look.
 
 ---
 
-## 1. Database
+## 1. New data file — `src/data/badgeData.ts`
 
-Migration adds:
-- `profiles.created_at` is already present — reuse it as "Member since".
-- Add a **unique index** on `profiles.username` (case-insensitive) so signup can enforce uniqueness. Trim + lowercase check.
-- Add a `public.delete_current_user()` SECURITY DEFINER function that deletes the caller from `auth.users` (cascades to `profiles`). Called via RPC by the authenticated user.
+- Export `Badge` type: `{ badgeType, setting, tier, badgeName, requirement, visualDesign }` plus a derived stable `id` (slug of `badgeType + setting + badgeName`).
+- Export `BADGES: Badge[]` — the full JSON list the user provided, typed and frozen.
+- Export a `BADGE_CATEGORIES` order constant used for grouping/fallbacks:
+  `["Progression & Consistency", "Mode & Difficulty Mastery", "Time Travelers (Eras)", "Category Specialists", "Custom Combo Games"]`.
 
-No new columns needed — everything else already exists.
-
----
-
-## 2. Signup screen (`AuthModal.tsx`)
-
-Email signup flow only (Google/Apple unchanged — they keep auto-filling username from provider name, editable later in the panel).
-
-- Add a **Username** field **above Email address**, required.
-- Client validation (zod):
-  - Trim, 3–20 chars, allowed: `a-z`, `0–9`, `_`, `.` (case-insensitive; stored as entered but uniqueness checked lowercase).
-  - Not empty, no leading/trailing dot/underscore.
-- Before calling `signUp`, run a `select` on `profiles` to check availability; show inline error "That username is taken" if it exists.
-- Pass `username` into `options.data` so the `handle_new_user` trigger picks it up. Update the trigger to prefer `raw_user_meta_data->>'username'` over name/email fallback.
-- Login and password reset screens: no change.
-- Google/Apple: no change (they don't hit this form).
+No unlock logic in the data file — data only.
 
 ---
 
-## 3. Profile panel (`ProfilePanel.tsx`)
+## 2. New component — `src/components/BadgeItem.tsx`
 
-Additions inside the existing profile header card, below the email line:
+Props: `{ badge: Badge; unlocked: boolean }`.
 
-- **Member since** — small muted line, e.g. `Member since Jul 2026` (formatted from `profiles.created_at`).
-
-New destructive action at the bottom of the panel, visually separated from the rest:
-
-- **Delete account** button — outlined red, full width, inside its own section under Achievements.
-- Clicking opens an AlertDialog (shadcn) with:
-  - Title: "Delete your account?"
-  - Body: "This permanently deletes your profile, progress, and achievements. This can't be undone."
-  - Type-to-confirm: user must type `DELETE` to enable the confirm button.
-  - Confirm → call `supabase.rpc('delete_current_user')` → on success, `supabase.auth.signOut()`, close panel, toast "Account deleted".
-
-Existing "Sign out" button stays where it is.
-
-Username edit (already implemented) keeps working; validation aligned with signup rules.
+- Perfectly circular (`rounded-full`, fixed `w-16 h-16`), matching the current gold gradient treatment for unlocked and the muted lock icon for locked (reuse the existing `GOLD_GRADIENT`, `Trophy`, `Lock` visuals so nothing else changes visually).
+- Under the circle: badge name label (10px uppercase, same as today).
+- Tooltip/popover on hover (pointer) and on tap (touch) for **unlocked** badges only, showing `badgeName` (bold) and `requirement` (muted). Use existing shadcn `Tooltip` primitives for pointer + a controlled open state toggled on click for touch (so mobile taps reveal it, tap-outside closes). Locked badges get no tooltip (they're either hidden or a generic placeholder).
+- No new icon art yet — `visualDesign` is stored in data for future use but not rendered.
 
 ---
 
-## 4. Verification
+## 3. New component — `src/components/AchievementsSection.tsx`
 
-- Sign up with a fresh email + username → account created, username stored, profile row created via trigger with that username.
-- Sign up with a duplicate username → inline error, no account created.
-- Open profile panel → "Member since" shows the join date.
-- Click Delete account → dialog → type `DELETE` → account is removed, user is signed out, and re-login with the same email fails ("user not found").
-- Google/Apple sign-ins still work; username is auto-filled from the provider and editable in the panel as before.
+Owns all list logic so `ProfilePanel` stays lean.
+
+Props: `{ unlockedIds: string[] }`.
+
+Behavior:
+- Compute `unlockedBadges` = `BADGES.filter(b => unlockedIds.includes(b.id))`, ordered by **most recently earned first**. Since we don't yet track per-badge earn time, order by the position of the id in `unlockedIds` (caller passes newest-first). Add a code comment noting this contract.
+- Compute `lockedFillers`: only used when `unlockedBadges.length < 3`. Take the first `3 - unlockedBadges.length` badges from the "Progression & Consistency" track (by `tier` ascending, tier 0 last) that are **not** already unlocked. These render as the existing locked/greyed placeholder circles with the badge's real name label.
+- **Displayed set**: `unlockedBadges` first, then `lockedFillers` (only when applicable). Locked badges beyond fillers are **hidden entirely**.
+- **Collapsed view**: show up to 3 items. If `unlockedBadges.length > 3`, render a "View more" button below the grid that expands to show all unlocked badges. Button toggles to "Show less". Locked fillers never appear when there are 3+ unlocked.
+- Grid: `grid grid-cols-3 gap-3` (unchanged from today).
+- Empty section title stays "Achievements & Awards" (already in `ProfilePanel`).
+
+---
+
+## 4. Wiring in `ProfilePanel.tsx`
+
+- Remove the inline `Badge` component and the three hard-coded `<Badge ... />` calls inside the Achievements section.
+- Replace with `<AchievementsSection unlockedIds={unlockedIds} />`.
+- Build `unlockedIds` in `ProfilePanel`:
+  - **Temporary demo state (per user's step 3)**: hard-code `unlockedIds = ["progression-consistency-the-icebreaker", "progression-consistency-decathlon", "progression-consistency-the-regular"]`, newest-first order. Add a `// TODO: wire to real unlock data` comment.
+  - Existing `firstUnlocked = gamesCompleted >= 1` logic is retired (the new component handles fillers).
+
+No changes to Score Card, header card, Danger Zone, or delete flow.
+
+---
+
+## 5. Verification
+
+- Open Profile panel → Achievements shows exactly 3 unlocked circles (The Icebreaker, Decathlon, The Regular), gold gradient, correct labels. No locked placeholders visible (since 3 are unlocked, fillers don't apply).
+- Hover an unlocked badge on desktop → tooltip with name + requirement. Tap on mobile → tooltip toggles open, tap outside closes.
+- Temporarily set `unlockedIds` to `[]` and 1 id to confirm: 0 unlocked → 3 locked Progression fillers; 1 unlocked → 1 unlocked + 2 locked Progression fillers.
+- Temporarily set `unlockedIds` to 5 ids → grid shows 3, "View more" appears, expands to all 5, "Show less" collapses back.
+- Typecheck passes; no console errors; no other panel sections changed.
 
 ---
 
 ## Out of scope
 
-- Sign-in provider badge, extended stats (best streak, favorite category), password-change flow — not selected.
-- No changes to Login screen or existing OAuth flows.
+- Real unlock detection from gameplay (game counts, difficulty coverage, era coverage, etc.). Wiring to Cloud/profile stats is a follow-up.
+- Custom badge artwork rendering from `visualDesign`. Trophy icon is used for all unlocked badges for now.
+- Persisting earn timestamps. Order is driven by the caller-supplied `unlockedIds` order until real timestamps exist.
