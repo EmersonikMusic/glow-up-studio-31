@@ -556,12 +556,18 @@ export default function TriviaGame() {
           panelOpen={panelOpen}
           onPanelToggle={() => setPanelOpen((v) => !v)}
           onPanelClose={() => setPanelOpen(false)}
+          onOpenProfile={() => setProfileOpen(true)}
           loading={loading}
           customized={hasCustomized}
         />
         {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
         {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
+        <ProfilePanel
+          open={profileOpen}
+          onClose={() => setProfileOpen(false)}
+          user={currentUser}
+        />
       </>
     );
   }
