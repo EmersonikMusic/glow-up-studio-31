@@ -19,12 +19,14 @@ interface AuthModalProps {
 const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
 const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 
-// Google's dark pill SVG has an intrinsic 180x40 viewBox. Rendered at h-12
-// (48px tall) with preserved aspect ratio it is 48 * 180 / 40 = 216px wide.
-// Apple's SDK accepts data-width in [130, 375], so we lock Apple to the same
-// natural width to make both social buttons align — without distorting the
-// Google brand asset.
-const APPLE_BTN_WIDTH = 216;
+// Google's dark pill SVG is intrinsically 180x40. Rendering both social
+// buttons at that exact size (a) keeps Google's asset unscaled, and
+// (b) lets Apple's SDK auto-scale its text/logo to match as closely as
+// Apple's proportions allow. Both changes are compliant with each brand's
+// guidelines (Google allows uniform scaling only; Apple's SDK derives its
+// text and logo sizes from data-height).
+const SOCIAL_BTN_WIDTH = 180;
+const SOCIAL_BTN_HEIGHT = 40;
 
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -236,13 +238,13 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               onClick={handleGoogle}
               disabled={loading}
               aria-label="Sign in with Google"
-              className="mx-auto h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
-              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%" }}
+              className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
             >
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-12 w-auto"
+                className="h-full w-auto"
                 draggable={false}
               />
             </button>
@@ -255,8 +257,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               tabIndex={0}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
-              className="relative mx-auto h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%", background: "#000000" }}
+              className="relative mx-auto rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%", background: "#000000" }}
             >
               <div
                 key={isSignup ? "apple-signup" : "apple-signin"}
@@ -266,8 +268,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 data-color="black"
                 data-border="false"
                 data-border-radius="50"
-                data-width={String(APPLE_BTN_WIDTH)}
-                data-height="48"
+                data-width={String(SOCIAL_BTN_WIDTH)}
+                data-height={String(SOCIAL_BTN_HEIGHT)}
                 className="w-full h-full"
               />
               {!APPLE_AUTH_READY && (
