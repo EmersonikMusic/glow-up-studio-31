@@ -63,6 +63,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       } catch {
         // init can throw if called twice on some SDK builds — safe to ignore.
       }
+      try {
+        AppleID.renderButton?.();
+      } catch {
+        // renderButton may not exist on older SDK builds — safe to ignore.
+      }
       return true;
     };
 
