@@ -25,6 +25,7 @@ export type Database = {
           email: string | null
           era_counts: Json
           first_game_completed_at: string | null
+          game_settings_history: Json
           id: string
           last_played_at: string | null
           min_timer_games: number
@@ -45,6 +46,7 @@ export type Database = {
           email?: string | null
           era_counts?: Json
           first_game_completed_at?: string | null
+          game_settings_history?: Json
           id: string
           last_played_at?: string | null
           min_timer_games?: number
@@ -65,6 +67,7 @@ export type Database = {
           email?: string | null
           era_counts?: Json
           first_game_completed_at?: string | null
+          game_settings_history?: Json
           id?: string
           last_played_at?: string | null
           min_timer_games?: number

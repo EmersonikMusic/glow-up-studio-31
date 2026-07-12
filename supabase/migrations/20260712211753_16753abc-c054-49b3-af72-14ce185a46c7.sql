@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN game_settings_history jsonb NOT NULL DEFAULT '[]'::jsonb;
