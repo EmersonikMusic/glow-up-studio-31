@@ -459,10 +459,20 @@ export default function TriviaGame() {
   // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
   const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
     setLoading(true);
+    // If we entered a blocking loading screen (Play Again), remember it so we
+    // can restore a usable screen on failure instead of stranding the user.
+    const enteredFromLoading = gameStateRef.current === "loading";
+    const restoreOnFailure = () => {
+      if (enteredFromLoading) {
+        // Come back to the results screen so Play Again / Home stay reachable.
+        setGameState("finished");
+      }
+    };
     try {
       const data = await fetchAndStartGame(newSettings);
       if (!data.length) {
         toast.error("No questions matched your filters. Try widening them.");
+        restoreOnFailure();
         return;
       }
       // Reset all per-game state BEFORE entering countdown so the playing
@@ -486,6 +496,7 @@ export default function TriviaGame() {
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
       toast.error("Couldn't load questions. Check your connection or try again with different settings.");
+      restoreOnFailure();
     } finally {
       setLoading(false);
     }
