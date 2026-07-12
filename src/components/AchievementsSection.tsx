@@ -54,7 +54,7 @@ export default function AchievementsSection({ unlockedIds }: AchievementsSection
             badge={badge}
             unlocked={unlocked}
             flipped={flippedId === badge.id}
-            onFlipChange={(v) => setFlippedId(v ? badge.id : (cur) => (cur === badge.id ? null : cur) as any)}
+            onFlipChange={(v) => setFlippedId((cur) => (v ? badge.id : cur === badge.id ? null : cur))}
           />
         ))}
       </div>
