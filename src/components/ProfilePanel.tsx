@@ -1,10 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
-import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trophy, Lock } from "lucide-react";
+import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trophy, Lock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { trackClick } from "@/lib/analytics";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ProfilePanelProps {
   open: boolean;
@@ -20,6 +30,7 @@ interface ProfileRow {
   games_completed: number;
   last_played_at: string | null;
   first_game_completed_at: string | null;
+  created_at: string | null;
 }
 
 const GOLD_GRADIENT =
