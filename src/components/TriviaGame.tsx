@@ -640,7 +640,7 @@ export default function TriviaGame() {
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
         onAbout={handleOpenAbout}
-        
+        onOpenProfile={() => setProfileOpen(true)}
         onHome={handleRestart}
         settingsOpen={panelOpen}
       />
@@ -790,6 +790,13 @@ export default function TriviaGame() {
         onApply={handleApply}
         gameInProgress={gameState === "playing" || gameState === "answered"}
         currentSettings={settings}
+      />
+
+      {/* Profile panel */}
+      <ProfilePanel
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        user={currentUser}
       />
 
 
