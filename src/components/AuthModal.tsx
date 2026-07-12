@@ -238,13 +238,13 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               onClick={handleGoogle}
               disabled={loading}
               aria-label="Sign in with Google"
-              className="mx-auto h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
-              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%" }}
+              className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
             >
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-12 w-auto"
+                className="h-full w-auto"
                 draggable={false}
               />
             </button>
@@ -257,8 +257,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               tabIndex={0}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
-              className="relative mx-auto h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%", background: "#000000" }}
+              className="relative mx-auto rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%", background: "#000000" }}
             >
               <div
                 key={isSignup ? "apple-signup" : "apple-signin"}
@@ -268,8 +268,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 data-color="black"
                 data-border="false"
                 data-border-radius="50"
-                data-width={String(APPLE_BTN_WIDTH)}
-                data-height="48"
+                data-width={String(SOCIAL_BTN_WIDTH)}
+                data-height={String(SOCIAL_BTN_HEIGHT)}
                 className="w-full h-full"
               />
               {!APPLE_AUTH_READY && (
