@@ -28,6 +28,15 @@ function chunk(s: string, size: number): string[] {
   return out;
 }
 
+export function formatTimestamp(date: Date): string {
+  const y = date.getUTCFullYear();
+  const mo = pad(date.getUTCMonth() + 1, 2);
+  const d = pad(date.getUTCDate(), 2);
+  const h = pad(date.getUTCHours(), 2);
+  const mi = pad(date.getUTCMinutes(), 2);
+  return `${y}-${mo}-${d}T${h}:${mi}Z`;
+}
+
 export function encodeGameSettings(params: {
   categories: readonly string[];
   difficulties: readonly string[];
@@ -35,11 +44,14 @@ export function encodeGameSettings(params: {
   numQuestions: number;
   timePerQuestion: number;
   timePerAnswer: number;
+  completedAt?: Date;
 }): string {
-  const cats = chunk(mask(CATEGORY_ORDER, params.categories), 5).join("-");
+  const cats = chunk(mask(CATEGORY_ORDER, params.categories), 5).join(" ");
   const diffs = mask(DIFFICULTY_ORDER, params.difficulties);
-  const eras = chunk(mask(ERA_ORDER, params.eras), 6).join("-");
+  const eras = chunk(mask(ERA_ORDER, params.eras), 6).join(" ");
+  const ts = formatTimestamp(params.completedAt ?? new Date());
   return [
+    ts,
     cats,
     diffs,
     eras,
