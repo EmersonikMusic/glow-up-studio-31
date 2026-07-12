@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { trackClick } from "@/lib/analytics";
+
+type Status = "form" | "success" | "invalid";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [hasRecoverySession, setHasRecoverySession] = useState<boolean | null>(null);
+  const [status, setStatus] = useState<Status>("form");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -15,9 +19,6 @@ export default function ResetPassword() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Supabase parses the URL hash on load. If a recovery session lands,
-    // it fires PASSWORD_RECOVERY. Also check for any existing session as
-    // a fallback (some flows land with an active session already).
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setHasRecoverySession(true);
@@ -26,7 +27,6 @@ export default function ResetPassword() {
       }
     });
 
-    // Initial check after mount to catch already-hydrated sessions.
     const t = setTimeout(async () => {
       const { data } = await supabase.auth.getSession();
       setHasRecoverySession((prev) => prev ?? !!data.session);
@@ -56,13 +56,26 @@ export default function ResetPassword() {
         setError(error.message);
         return;
       }
-      toast.success("Password updated. Please sign in.");
-      await supabase.auth.signOut();
-      navigate("/");
+      trackClick("password_reset_success");
+      toast.success("Password updated.");
+      setStatus("success");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleContinue = async () => {
+    trackClick("click_continue_after_reset");
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
+  // Effective view: invalid link overrides form; success is set explicitly.
+  const view: Status = status === "success"
+    ? "success"
+    : hasRecoverySession === false
+      ? "invalid"
+      : "form";
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-[hsl(240_45%_10%)]">
@@ -87,17 +100,44 @@ export default function ResetPassword() {
             lineHeight: 1.05,
           }}
         >
-          Reset Password
+          {view === "success" ? "Password Updated" : "Reset Password"}
         </h1>
         <p className="text-center text-sm text-white/60 mt-1 mb-6">
-          Choose a new password for your account
+          {view === "success"
+            ? "You're all set — sign in with your new password."
+            : view === "invalid"
+              ? "This reset link is invalid or has expired."
+              : "Choose a new password for your account"}
         </p>
 
-        {hasRecoverySession === false ? (
+        {view === "success" ? (
+          <div className="flex flex-col items-center gap-5">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{
+                background: "hsl(185 70% 55% / 0.15)",
+                border: "1px solid hsl(185 70% 55% / 0.35)",
+              }}
+            >
+              <CheckCircle2 className="w-8 h-8" style={{ color: "hsl(185 70% 55%)" }} strokeWidth={2.25} />
+            </div>
+            <button
+              type="button"
+              onClick={handleContinue}
+              className="w-full min-h-14 py-2 px-10 rounded-full border-2 border-[#221948] whitespace-nowrap
+                bg-[linear-gradient(0deg,#e93e3a_0%,#ed683c_11%,#f3903f_33%,#fdc70c_72%,#fff33b_100%)]
+                text-white text-xl font-heading font-extrabold tracking-[0.18em] uppercase
+                shadow-lg shadow-black/30 active:scale-95"
+              style={{
+                textShadow: "0 2px 3px rgba(87,33,91,0.6)",
+                fontFamily: "'Fredoka One', 'Rubik', sans-serif",
+              }}
+            >
+              Continue to Sign In
+            </button>
+          </div>
+        ) : view === "invalid" ? (
           <div className="text-center">
-            <p className="text-sm text-white/70 mb-5">
-              This reset link is invalid or has expired.
-            </p>
             <button
               type="button"
               onClick={() => navigate("/")}
