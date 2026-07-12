@@ -342,11 +342,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
         <div className="text-xs font-subheading font-bold tracking-widest uppercase mb-4" style={{ color: "hsl(185 70% 55%)" }}>
           Achievements & Awards
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <Badge label="First Game" unlocked={firstUnlocked} />
-          <Badge label="10 Games" unlocked={false} />
-          <Badge label="25 Games" unlocked={false} />
-        </div>
+        <AchievementsSection unlockedIds={unlockedBadgeIds} />
       </section>
 
       {/* Danger zone */}
