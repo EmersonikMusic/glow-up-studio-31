@@ -40,21 +40,29 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const isSignup = mode === "signup";
 
-  // Initialize Apple's Sign in with Apple JS SDK once the script loads. We
-  // render a custom Sign in with Apple button (per Apple HIG's custom-button
-  // guidelines) so we control font size and layout, then dispatch to
-  // AppleID.auth.signIn() from that button once credentials are provisioned.
+  // Apple's SDK (appleid.auth.js) scans the DOM for #appleid-signin at
+  // script-load time and paints the official button in place. Because our
+  // modal — and the #appleid-signin div — mount after any initial script
+  // load, we (re-)inject a fresh script tag every time the modal opens so
+  // the SDK re-scans and renders the button now.
   useEffect(() => {
     if (!open) return;
-    let cancelled = false;
-    let interval: number | undefined;
+    const SCRIPT_SRC =
+      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
 
-    const tryInit = () => {
-      if (cancelled) return true;
-      const AppleID = window.AppleID;
-      if (!AppleID?.auth) return false;
+    // Remove any previously-injected instance so the browser re-executes the
+    // script and re-runs its DOM scan.
+    document
+      .querySelectorAll("script[data-appleid-injected]")
+      .forEach((el) => el.remove());
+
+    const script = document.createElement("script");
+    script.src = SCRIPT_SRC;
+    script.async = true;
+    script.setAttribute("data-appleid-injected", "true");
+    script.onload = () => {
       try {
-        AppleID.auth.init({
+        window.AppleID?.auth.init({
           clientId: APPLE_SERVICES_ID || "pending.services.id",
           scope: "name email",
           redirectURI: window.location.origin,
@@ -63,26 +71,14 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       } catch {
         // init can throw if called twice on some SDK builds — safe to ignore.
       }
-      try {
-        AppleID.auth.renderButton?.();
-      } catch {
-        // renderButton may not exist on older SDK builds — safe to ignore.
-      }
-      return true;
     };
-
-    if (!tryInit()) {
-      interval = window.setInterval(() => {
-        if (tryInit()) window.clearInterval(interval);
-      }, 100);
-      window.setTimeout(() => interval && window.clearInterval(interval), 5000);
-    }
+    document.head.appendChild(script);
 
     return () => {
-      cancelled = true;
-      if (interval) window.clearInterval(interval);
+      script.remove();
     };
-  }, [open, isSignup]);
+  }, [open]);
+
 
 
   const handleAppleClick = (e: React.MouseEvent) => {
@@ -230,7 +226,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-full w-auto"
+                className="w-full h-full block"
                 draggable={false}
               />
             </button>
