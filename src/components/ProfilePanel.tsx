@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
 import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trash2 } from "lucide-react";
 import AchievementsSection from "./AchievementsSection";
+import { BADGES } from "@/data/badgeData";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -28,7 +29,8 @@ interface ProfileRow {
   display_name: string | null;
   email: string | null;
   avatar_url: string | null;
-  games_completed: number;
+  total_games_played: number;
+  unlocked_badges: string[] | null;
   last_played_at: string | null;
   first_game_completed_at: string | null;
   created_at: string | null;
@@ -78,7 +80,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     let cancelled = false;
     supabase
       .from("profiles")
-      .select("username, display_name, email, avatar_url, games_completed, last_played_at, first_game_completed_at, created_at")
+      .select("username, display_name, email, avatar_url, total_games_played, unlocked_badges, last_played_at, first_game_completed_at, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -101,15 +103,14 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     user?.email ??
     "";
   const email = profile?.email ?? user?.email ?? "";
-  const gamesCompleted = profile?.games_completed ?? 0;
+  const gamesCompleted = profile?.total_games_played ?? 0;
   const memberSince = formatMonthYear(profile?.created_at ?? user?.created_at ?? null);
 
-  // TODO: wire to real unlock data from Cloud. Newest-earned first.
-  const unlockedBadgeIds = [
-    "progression-and-consistency-n-a-the-regular",
-    "progression-and-consistency-n-a-decathlon",
-    "progression-and-consistency-n-a-the-icebreaker",
-  ];
+  // Map earned badge names (stored in DB) to badge IDs for the achievements grid.
+  const unlockedBadgeIds = useMemo(() => {
+    const names = new Set(profile?.unlocked_badges ?? []);
+    return BADGES.filter((b) => names.has(b.badgeName)).map((b) => b.id);
+  }, [profile?.unlocked_badges]);
 
   const startEdit = () => {
     setDraftUsername(username);

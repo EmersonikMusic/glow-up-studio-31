@@ -21,7 +21,8 @@ import SettingsPanel from "./SettingsPanel";
 import ProfilePanel from "./ProfilePanel";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { recordGameCompletion } from "@/lib/profileProgress";
+import { handleGameCompletion } from "@/lib/gameCompletion";
+import type { GameSessionData } from "@/lib/badgeEvaluator";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
@@ -129,12 +130,25 @@ export default function TriviaGame() {
   useEffect(() => {
     if (gameState === "finished" && currentUser && !recordedGameRef.current) {
       recordedGameRef.current = true;
-      void recordGameCompletion(currentUser.id);
+      const session: GameSessionData = {
+        categories: settings.selectedCategories,
+        eras: settings.selectedEras,
+        difficulties: settings.selectedDifficulties,
+        isMinimumTimer: settings.timePerQuestion <= 5 && settings.timePerAnswer <= 5,
+        isQuickplay: !hasCustomized,
+        isCustom: hasCustomized,
+        completedAt: new Date(),
+      };
+      void handleGameCompletion(currentUser.id, session).then((newBadges) => {
+        for (const b of newBadges) {
+          toast.success("Badge Unlocked!", { description: b.badgeName });
+        }
+      });
     }
     if (gameState !== "finished") {
       recordedGameRef.current = false;
     }
-  }, [gameState, currentUser]);
+  }, [gameState, currentUser, hasCustomized, settings]);
 
   const handleOpenAbout = useCallback(() => {
     const inGame =
