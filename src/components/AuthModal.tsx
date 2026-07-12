@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Eye, EyeOff, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -13,13 +13,11 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function AppleIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-      <path d="M16.365 1.43c0 1.14-.45 2.23-1.19 3.02-.78.85-2.03 1.5-3.08 1.42-.13-1.11.42-2.26 1.15-3.02.8-.85 2.15-1.47 3.12-1.42zM20.5 17.14c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.38 3.5-4.1 3.51-1.54.02-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.72-.01-3.04-1.76-4.03-3.32C.02 15.44-.28 10.16 1.84 7.32c1.51-2.02 3.88-3.2 6.11-3.2 2.27 0 3.7 1.24 5.58 1.24 1.82 0 2.93-1.25 5.56-1.25 1.99 0 4.1 1.08 5.6 2.96-4.92 2.7-4.12 9.72.81 10.07z" />
-    </svg>
-  );
-}
+// Filled in once the Apple Developer Services ID is provisioned.
+// While empty, the Apple button renders visually via Apple's SDK but clicks
+// are intercepted and only show a "coming soon" toast.
+const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
+const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
