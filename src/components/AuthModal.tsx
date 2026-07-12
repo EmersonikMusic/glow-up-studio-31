@@ -201,18 +201,18 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
           }}
         >
-          {/* Back / close */}
+          {/* Back / close — matches Settings / About styling */}
           <button
             type="button"
             onClick={() => onOpenChange(false)}
             aria-label="Close"
-            className="absolute left-4 top-4 w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-95"
+            className="nav-btn absolute left-4 top-4 z-20 flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 active:scale-95"
             style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
             }}
           >
-            <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
+            <ChevronsLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} strokeWidth={2.5} />
           </button>
 
           {/* Heading - matches About page header styling */}
