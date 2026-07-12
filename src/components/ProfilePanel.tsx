@@ -104,7 +104,12 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const gamesCompleted = profile?.games_completed ?? 0;
   const memberSince = formatMonthYear(profile?.created_at ?? user?.created_at ?? null);
 
-  const firstUnlocked = gamesCompleted >= 1;
+  // TODO: wire to real unlock data from Cloud. Newest-earned first.
+  const unlockedBadgeIds = [
+    "progression-and-consistency-n-a-the-regular",
+    "progression-and-consistency-n-a-decathlon",
+    "progression-and-consistency-n-a-the-icebreaker",
+  ];
 
   const startEdit = () => {
     setDraftUsername(username);
