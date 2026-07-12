@@ -383,7 +383,6 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
           <Badge label="25 Games" unlocked={false} />
         </div>
       </section>
-      </section>
 
       {/* Danger zone */}
       <section
