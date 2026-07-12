@@ -22,6 +22,12 @@ function pad(n: number, width: number): string {
   return String(v).padStart(width, "0").slice(-width);
 }
 
+function chunk(s: string, size: number): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < s.length; i += size) out.push(s.slice(i, i + size));
+  return out;
+}
+
 export function encodeGameSettings(params: {
   categories: readonly string[];
   difficulties: readonly string[];
@@ -30,12 +36,15 @@ export function encodeGameSettings(params: {
   timePerQuestion: number;
   timePerAnswer: number;
 }): string {
+  const cats = chunk(mask(CATEGORY_ORDER, params.categories), 5).join("-");
+  const diffs = mask(DIFFICULTY_ORDER, params.difficulties);
+  const eras = chunk(mask(ERA_ORDER, params.eras), 6).join("-");
   return [
-    mask(CATEGORY_ORDER, params.categories),
-    mask(DIFFICULTY_ORDER, params.difficulties),
-    mask(ERA_ORDER, params.eras),
+    cats,
+    diffs,
+    eras,
     pad(params.numQuestions, 3),
     pad(params.timePerQuestion, 2),
     pad(params.timePerAnswer, 2),
-  ].join("-");
+  ].join("|");
 }
