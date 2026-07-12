@@ -19,6 +19,13 @@ interface AuthModalProps {
 const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
 const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 
+// Google's dark pill SVG has an intrinsic 180x40 viewBox. Rendered at h-12
+// (48px tall) with preserved aspect ratio it is 48 * 180 / 40 = 216px wide.
+// Apple's SDK accepts data-width in [130, 375], so we lock Apple to the same
+// natural width to make both social buttons align — without distorting the
+// Google brand asset.
+const APPLE_BTN_WIDTH = 216;
+
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -230,12 +237,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               disabled={loading}
               aria-label="Sign in with Google"
               className="mx-auto h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
-              style={{ width: 375, maxWidth: "100%" }}
+              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%" }}
             >
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-12 w-full object-contain"
+                className="h-12 w-auto"
                 draggable={false}
               />
             </button>
@@ -249,7 +256,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
               className="relative mx-auto h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ width: 375, maxWidth: "100%", background: "#000000" }}
+              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%", background: "#000000" }}
             >
               <div
                 key={isSignup ? "apple-signup" : "apple-signin"}
@@ -259,7 +266,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 data-color="black"
                 data-border="false"
                 data-border-radius="50"
-                data-width="375"
+                data-width={String(APPLE_BTN_WIDTH)}
                 data-height="48"
                 className="w-full h-full"
               />
