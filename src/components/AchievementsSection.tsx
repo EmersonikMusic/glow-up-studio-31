@@ -8,51 +8,51 @@ interface AchievementsSectionProps {
   unlockedIds: string[];
 }
 
+const COLLAPSED_LIMIT = 6;
+
 export default function AchievementsSection({ unlockedIds }: AchievementsSectionProps) {
   const [expanded, setExpanded] = useState(false);
   const [flippedId, setFlippedId] = useState<string | null>(null);
 
-
-  const { unlockedBadges, lockedFillers } = useMemo(() => {
+  const unlockedBadges = useMemo<Badge[]>(() => {
     const byId = new Map(BADGES.map((b) => [b.id, b]));
-    const unlocked: Badge[] = [];
+    const out: Badge[] = [];
+    const seen = new Set<string>();
     for (const id of unlockedIds) {
       const b = byId.get(id);
-      if (b && !unlocked.find((u) => u.id === b.id)) unlocked.push(b);
+      if (b && !seen.has(b.id)) {
+        seen.add(b.id);
+        out.push(b);
+      }
     }
-
-    let fillers: Badge[] = [];
-    if (unlocked.length < 3) {
-      const unlockedSet = new Set(unlocked.map((b) => b.id));
-      const progression = BADGES.filter(
-        (b) => b.badgeType === "Progression & Consistency" && !unlockedSet.has(b.id),
-      ).sort((a, b) => {
-        // tier 0 goes last; otherwise ascending
-        const at = a.tier === 0 ? 99 : a.tier;
-        const bt = b.tier === 0 ? 99 : b.tier;
-        return at - bt;
-      });
-      fillers = progression.slice(0, 3 - unlocked.length);
-    }
-
-    return { unlockedBadges: unlocked, lockedFillers: fillers };
+    return out;
   }, [unlockedIds]);
 
-  const hasMore = unlockedBadges.length > 3;
-  const visibleUnlocked = expanded || !hasMore ? unlockedBadges : unlockedBadges.slice(0, 3);
-  const items = [
-    ...visibleUnlocked.map((b) => ({ badge: b, unlocked: true })),
-    ...lockedFillers.map((b) => ({ badge: b, unlocked: false })),
-  ];
+  if (unlockedBadges.length === 0) {
+    return (
+      <div
+        className="rounded-xl px-4 py-6 text-center text-xs font-body text-white/60"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px dashed rgba(255,255,255,0.12)",
+        }}
+      >
+        Play a game to earn your first badge.
+      </div>
+    );
+  }
+
+  const hasMore = unlockedBadges.length > COLLAPSED_LIMIT;
+  const visible = expanded || !hasMore ? unlockedBadges : unlockedBadges.slice(0, COLLAPSED_LIMIT);
 
   return (
     <div>
       <div className="grid grid-cols-3 gap-4">
-        {items.map(({ badge, unlocked }) => (
+        {visible.map((badge) => (
           <BadgeItem
             key={badge.id}
             badge={badge}
-            unlocked={unlocked}
+            unlocked
             flipped={flippedId === badge.id}
             onFlipChange={(v) => setFlippedId((cur) => (v ? badge.id : cur === badge.id ? null : cur))}
           />
@@ -74,7 +74,7 @@ export default function AchievementsSection({ unlockedIds }: AchievementsSection
             </>
           ) : (
             <>
-              View more <ChevronDown className="w-3 h-3" />
+              View all {unlockedBadges.length} <ChevronDown className="w-3 h-3" />
             </>
           )}
         </button>
