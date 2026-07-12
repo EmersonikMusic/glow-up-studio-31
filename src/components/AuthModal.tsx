@@ -39,6 +39,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const isSignup = mode === "signup";
+  const isForgot = mode === "forgot";
 
   // Apple's SDK (appleid.auth.js) scans the DOM for #appleid-signin at
   // script-load time and paints the official button in place. Because our
