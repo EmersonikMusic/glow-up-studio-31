@@ -1,10 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
-import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trophy, Lock } from "lucide-react";
+import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trophy, Lock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { trackClick } from "@/lib/analytics";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ProfilePanelProps {
   open: boolean;
@@ -20,6 +30,7 @@ interface ProfileRow {
   games_completed: number;
   last_played_at: string | null;
   first_game_completed_at: string | null;
+  created_at: string | null;
 }
 
 const GOLD_GRADIENT =
@@ -35,6 +46,18 @@ function formatDate(iso: string | null) {
     });
   } catch {
     return "—";
+  }
+}
+
+function formatMonthYear(iso: string | null) {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+    });
+  } catch {
+    return null;
   }
 }
 
@@ -81,13 +104,16 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const [editing, setEditing] = useState(false);
   const [draftUsername, setDraftUsername] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!open || !user) return;
     let cancelled = false;
     supabase
       .from("profiles")
-      .select("username, display_name, email, avatar_url, games_completed, last_played_at, first_game_completed_at")
+      .select("username, display_name, email, avatar_url, games_completed, last_played_at, first_game_completed_at, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -111,6 +137,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     "";
   const email = profile?.email ?? user?.email ?? "";
   const gamesCompleted = profile?.games_completed ?? 0;
+  const memberSince = formatMonthYear(profile?.created_at ?? user?.created_at ?? null);
 
   const firstUnlocked = gamesCompleted >= 1;
 
@@ -146,6 +173,24 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const handleSignOut = async () => {
     trackClick("profile_sign_out");
     await supabase.auth.signOut();
+    onClose();
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user || deleteConfirmText !== "DELETE") return;
+    setDeleting(true);
+    trackClick("profile_delete_account");
+    const { error } = await supabase.rpc("delete_current_user");
+    if (error) {
+      setDeleting(false);
+      toast.error("Couldn't delete account. Please try again.");
+      return;
+    }
+    await supabase.auth.signOut();
+    setDeleting(false);
+    setDeleteOpen(false);
+    setDeleteConfirmText("");
+    toast.success("Your account has been deleted.");
     onClose();
   };
 
@@ -276,6 +321,11 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
         )}
 
         <div className="text-xs font-body text-white/60 truncate max-w-full">{email}</div>
+        {memberSince && (
+          <div className="text-[10px] font-body uppercase tracking-widest text-white/40">
+            Member since {memberSince}
+          </div>
+        )}
 
         <button
           onClick={handleSignOut}
@@ -333,6 +383,66 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
           <Badge label="25 Games" unlocked={false} />
         </div>
       </section>
+
+      {/* Danger zone */}
+      <section
+        className="mx-5 mb-6 rounded-2xl p-5"
+        style={{
+          background: "rgba(233, 62, 58, 0.06)",
+          border: "1px solid rgba(233, 62, 58, 0.25)",
+        }}
+      >
+        <div className="text-xs font-subheading font-bold tracking-widest uppercase mb-2" style={{ color: "rgb(255, 120, 116)" }}>
+          Danger Zone
+        </div>
+        <p className="text-xs font-body text-white/60 mb-3 leading-relaxed">
+          Permanently delete your account, profile, and progress. This can't be undone.
+        </p>
+        <button
+          onClick={() => {
+            setDeleteConfirmText("");
+            setDeleteOpen(true);
+          }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-body font-bold uppercase tracking-widest transition-all active:scale-95"
+          style={{
+            background: "rgba(233, 62, 58, 0.12)",
+            border: "1px solid rgba(233, 62, 58, 0.5)",
+            color: "rgb(255, 140, 136)",
+          }}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          Delete Account
+        </button>
+      </section>
+
+      <AlertDialog open={deleteOpen} onOpenChange={(o) => { if (!deleting) setDeleteOpen(o); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes your profile, progress, and achievements. This can't be undone.
+              Type <span className="font-bold text-foreground">DELETE</span> to confirm.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <input
+            value={deleteConfirmText}
+            onChange={(e) => setDeleteConfirmText(e.target.value)}
+            placeholder="Type DELETE to confirm"
+            autoFocus
+            className="w-full h-11 px-3 rounded-lg bg-background border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-destructive/50"
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={deleteConfirmText !== "DELETE" || deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting…" : "Delete account"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 

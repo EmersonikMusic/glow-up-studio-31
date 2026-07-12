@@ -27,8 +27,21 @@ const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 const SOCIAL_BTN_WIDTH = 180;
 const SOCIAL_BTN_HEIGHT = 40;
 
+const USERNAME_RE = /^[a-zA-Z0-9](?:[a-zA-Z0-9._]{1,18})[a-zA-Z0-9]$/;
+
+function validateUsername(u: string): string | null {
+  const trimmed = u.trim();
+  if (!trimmed) return "Please choose a username.";
+  if (trimmed.length < 3) return "Username must be at least 3 characters.";
+  if (trimmed.length > 20) return "Username must be 20 characters or fewer.";
+  if (!USERNAME_RE.test(trimmed))
+    return "Use letters, numbers, dots and underscores. No leading/trailing dot or underscore.";
+  return null;
+}
+
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -171,18 +184,45 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         setError("Passwords do not match.");
         return;
       }
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+        setError(usernameError);
+        return;
+      }
     }
     setLoading(true);
     trackClick(isSignup ? "click_sign_up_email" : "click_sign_in_email");
     try {
       if (isSignup) {
+        const trimmedUsername = username.trim();
+        // Pre-check availability (case-insensitive). Note: RLS restricts
+        // profile reads to the owner, so this may return null even for a
+        // taken username; the DB unique index is the ultimate guard.
+        const { data: taken } = await supabase
+          .from("profiles")
+          .select("id")
+          .ilike("username", trimmedUsername)
+          .maybeSingle();
+        if (taken) {
+          setError("That username is already taken.");
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { username: trimmedUsername },
+          },
         });
         if (error) {
-          setError(error.message);
+          // 23505 = unique violation on username index (thrown by trigger)
+          if (error.message?.toLowerCase().includes("username") || (error as { code?: string }).code === "23505") {
+            setError("That username is already taken.");
+          } else {
+            setError(error.message);
+          }
           return;
         }
         toast.success("Account created! Check your email to confirm.");
@@ -344,6 +384,21 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           ) : (
             /* Form */
             <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3">
+              {isSignup && (
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Username"
+                  autoComplete="username"
+                  maxLength={20}
+                  className="h-12 px-4 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--game-gold))]/40"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}
+                />
+              )}
               <input
                 type="email"
                 value={email}
