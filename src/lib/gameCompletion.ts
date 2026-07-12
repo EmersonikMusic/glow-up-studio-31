@@ -40,16 +40,16 @@ export async function handleGameCompletion(
   const priorSettings = Array.isArray(data.game_settings_history)
     ? (data.game_settings_history as unknown[])
     : [];
-  const game_settings_history = [
-    ...priorSettings,
-    {
-      played_at: completedAtIso,
-      mode: session.isQuickplay ? "quickplay" : "custom",
-      categories: session.categories,
-      difficulties: session.difficulties,
-      eras: session.eras,
-    },
-  ] as unknown as import("@/integrations/supabase/types").Json;
+  const newSettingsEntry = {
+    played_at: completedAtIso,
+    mode: session.isQuickplay ? "quickplay" : "custom",
+    categories: session.categories,
+    difficulties: session.difficulties,
+    eras: session.eras,
+  };
+  const game_settings_history = JSON.parse(
+    JSON.stringify([...priorSettings, newSettingsEntry]),
+  ) as import("@/integrations/supabase/types").Json;
 
 
   let category_counts = (data.category_counts as Record<string, number>) ?? {};
