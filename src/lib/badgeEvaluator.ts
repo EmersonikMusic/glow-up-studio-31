@@ -24,6 +24,9 @@ export interface GameSessionData {
   isQuickplay: boolean;
   isCustom: boolean;
   completedAt: Date;
+  numQuestions: number;
+  timePerQuestion: number;
+  timePerAnswer: number;
 }
 
 /** Badge "Medium" tier uses the engine name "Average". */
