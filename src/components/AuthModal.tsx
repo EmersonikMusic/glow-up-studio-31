@@ -287,6 +287,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <span className="text-xs uppercase tracking-widest text-white/40">or</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
+          </>)}
+
 
 
           {/* Form */}
