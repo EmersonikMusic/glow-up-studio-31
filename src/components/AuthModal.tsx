@@ -29,7 +29,7 @@ const SOCIAL_BTN_WIDTH = 180;
 const SOCIAL_BTN_HEIGHT = 40;
 
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
-  const [mode, setMode] = useState<"signin" | "signup">("signup");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
