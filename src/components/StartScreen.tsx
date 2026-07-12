@@ -166,6 +166,18 @@ export default function StartScreen({ onStart, onStartKids, onAbout, onHowToPlay
             >
               Customize Game
             </SecondaryCTA>
+
+            {/* Kids Mode — starts a game using only Kids-difficulty questions */}
+            <SecondaryCTA
+              onClick={handleStartKids}
+              disabled={loading}
+              trackId="kids_mode"
+              className="mt-3 w-full animate-fade-in"
+              style={{ animationDelay: "180ms" }}
+              aria-label="Kids Mode"
+            >
+              Kids Mode
+            </SecondaryCTA>
           </div>
 
 
