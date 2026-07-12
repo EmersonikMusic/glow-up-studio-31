@@ -8,6 +8,7 @@ import AppErrorBoundary from "@/components/AppErrorBoundary";
 import Index from "./pages/Index.tsx";
 import Terms from "./pages/Terms.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 
 const queryClient = new QueryClient();
 
