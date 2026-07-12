@@ -27,8 +27,21 @@ const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 const SOCIAL_BTN_WIDTH = 180;
 const SOCIAL_BTN_HEIGHT = 40;
 
+const USERNAME_RE = /^[a-zA-Z0-9](?:[a-zA-Z0-9._]{1,18})[a-zA-Z0-9]$/;
+
+function validateUsername(u: string): string | null {
+  const trimmed = u.trim();
+  if (!trimmed) return "Please choose a username.";
+  if (trimmed.length < 3) return "Username must be at least 3 characters.";
+  if (trimmed.length > 20) return "Username must be 20 characters or fewer.";
+  if (!USERNAME_RE.test(trimmed))
+    return "Use letters, numbers, dots and underscores. No leading/trailing dot or underscore.";
+  return null;
+}
+
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
