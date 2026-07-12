@@ -62,42 +62,6 @@ function formatMonthYear(iso: string | null) {
   }
 }
 
-function Badge({
-  label,
-  unlocked,
-}: {
-  label: string;
-  unlocked: boolean;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <div
-        className="w-16 h-16 rounded-full flex items-center justify-center transition-all"
-        style={{
-          background: unlocked ? GOLD_GRADIENT : "rgba(255,255,255,0.06)",
-          border: unlocked
-            ? "2px solid rgba(255,255,255,0.35)"
-            : "2px solid rgba(255,255,255,0.1)",
-          boxShadow: unlocked ? "0 4px 20px rgba(253,199,12,0.35)" : "none",
-          opacity: unlocked ? 1 : 0.45,
-          filter: unlocked ? "none" : "grayscale(1)",
-        }}
-      >
-        {unlocked ? (
-          <Trophy className="w-7 h-7" style={{ color: "hsl(240 45% 10%)" }} strokeWidth={2.5} />
-        ) : (
-          <Lock className="w-6 h-6 text-white/60" />
-        )}
-      </div>
-      <span
-        className="text-[10px] font-body font-bold uppercase tracking-widest leading-tight"
-        style={{ color: unlocked ? "#fff" : "hsl(var(--muted-foreground))" }}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
 
 export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps) {
   const isMobile = useIsMobile();
