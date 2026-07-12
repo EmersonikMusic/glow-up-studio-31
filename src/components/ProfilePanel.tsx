@@ -80,7 +80,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     let cancelled = false;
     supabase
       .from("profiles")
-      .select("username, display_name, email, avatar_url, games_completed, last_played_at, first_game_completed_at, created_at")
+      .select("username, display_name, email, avatar_url, total_games_played, unlocked_badges, last_played_at, first_game_completed_at, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
