@@ -1,28 +1,24 @@
-## Match Google and Apple button widths
+## Match Apple's width to Google's natural button width
 
-Apple's SDK caps `data-width` at 375px, and we already render Apple at 375×48. Google is currently `w-auto` on the SVG asset so its width follows the asset's intrinsic aspect ratio (~380–400px depending on the SVG). Result: the two buttons don't line up.
+Google's SVG asset has a fixed aspect ratio and must not be distorted. So we adjust the Apple button (whose SDK exposes `data-width`) to match whatever pixel width the Google pill naturally renders at `h-12` (48px tall).
 
-Cleanest fix: pick 375px as the shared target width, center both in the stack.
+### Steps in build mode
 
-### Changes to `src/components/AuthModal.tsx`
+1. Measure Google's rendered pill width via Playwright: open the modal, read `document.querySelector('button[aria-label="Sign in with Google"] img').getBoundingClientRect().width`. Call this `W`.
+2. Clamp: `W_apple = Math.min(Math.max(Math.round(W), 130), 375)` — Apple's SDK only accepts widths in that range.
+3. In `src/components/AuthModal.tsx`:
+   - Add `const APPLE_BTN_WIDTH = <measured value>;` near the top (with a comment: "matches the Google Sign-In asset's intrinsic width at 48px tall").
+   - Revert Google button:
+     - Outer `<button>`: drop the fixed `style={{ width: 375, maxWidth: "100%" }}`, use `className="mx-auto h-12 ..."` and let the image dictate width via `h-12 w-auto` (image intrinsic size).
+   - Apple wrapper `<div>`: set `style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%", background: "#000000" }}`.
+   - Apple inner `<div id="appleid-signin">`: set `data-width={APPLE_BTN_WIDTH}` (string form for the SDK).
+4. Re-run Playwright: assert both buttons' bounding-rect widths are equal to the pixel; screenshot Sign In + Sign Up modes for the user.
 
-Google button:
-- Wrap the outer `<button>` with `mx-auto` and set `style={{ width: 375, maxWidth: "100%" }}` so it renders identically to Apple's container.
-- Change the inner `<img>` from `h-12 w-auto` to `h-12 w-full object-contain` so the Google pill SVG scales down to fill the 375px width while preserving its aspect ratio (the asset is already a pill shape at ~48px tall).
-- If needed, use `object-cover` instead of `object-contain` — I'll pick `contain` first and adjust if the pill visibly shrinks.
+### Fallback if `W > 375`
 
-Apple button:
-- No change — already 375px wide, centered.
-
-Stack container:
-- `flex flex-col gap-3` already centers via each child's `mx-auto`. No change needed.
-
-### Verification
-
-- Playwright: open modal, screenshot the two buttons side-by-side, confirm identical width and vertical alignment in both Sign In and Sign Up modes.
-- Typecheck.
+Apple's SDK cap is 375. If Google's natural width exceeds 375 at h-12, I'll instead set Apple to 375 and constrain Google to `max-w-[375px]` with `object-contain` (still preserves aspect ratio, just scales the whole pill down proportionally — no distortion). That case is unlikely with Google's standard pill asset but I'll handle it if measurement shows it.
 
 ### Out of scope
 
-- Changes to the Google asset itself.
-- Changes to the Apple SDK config.
+- Editing the Google asset.
+- Changing Apple's SDK options beyond `data-width`.
