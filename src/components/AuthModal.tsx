@@ -254,15 +254,15 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 alt=""
                 aria-hidden="true"
                 draggable={false}
-                style={{ height: SOCIAL_BTN_HEIGHT, width: "auto", display: "block" }}
+                style={{ height: 16, width: "auto", display: "block", marginRight: 6, marginTop: -2 }}
               />
               <span
                 style={{
                   fontFamily:
                     "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
                   fontSize: 14,
-                  fontWeight: 500,
-                  letterSpacing: "-0.24px",
+                  fontWeight: 600,
+                  letterSpacing: "-0.32px",
                   lineHeight: 1,
                 }}
               >
