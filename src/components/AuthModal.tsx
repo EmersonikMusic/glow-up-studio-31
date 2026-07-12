@@ -229,12 +229,13 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               onClick={handleGoogle}
               disabled={loading}
               aria-label="Sign in with Google"
-              className="w-full h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+              className="mx-auto h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+              style={{ width: 375, maxWidth: "100%" }}
             >
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-12 w-auto"
+                className="h-12 w-full object-contain"
                 draggable={false}
               />
             </button>
