@@ -543,13 +543,14 @@ export default function TriviaGame() {
   }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
 
   // Play Again: show loading overlay, then restart with the same settings.
+  // NOTE: we intentionally do NOT clear activeQuestions/score/questionIndex
+  // here — runFetchAndStart resets them on success, and keeping them means
+  // failure paths can safely restore the ResultScreen instead of stranding
+  // the player on the loading spinner.
   const handlePlayAgain = useCallback(async () => {
     clearTimer();
     clearAnswerTimer();
     setPaused(false);
-    setQuestionIndex(0);
-    setScore(0);
-    setActiveQuestions([]);
     setAnimKey((k) => k + 1);
     setGameState("loading");
     await runFetchAndStart(settings);
