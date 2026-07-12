@@ -61,6 +61,7 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, 
       <GameHeader
         onSettingsToggle={onPanelToggle}
         onAbout={onAbout}
+        onOpenProfile={onOpenProfile}
         settingsOpen={panelOpen}
       />
 
