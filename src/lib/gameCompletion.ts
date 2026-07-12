@@ -9,6 +9,7 @@ import {
   type BadgeStats,
   type GameSessionData,
 } from "@/lib/badgeEvaluator";
+import { encodeGameSettings } from "@/lib/gameSettingsCode";
 
 const HISTORY_LIMIT = 50;
 
