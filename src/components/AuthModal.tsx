@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
-import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import appleLogoWhite from "@/assets/apple-logo-white.svg";
 import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
 
@@ -191,18 +190,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <ArrowLeft className="w-4 h-4" style={{ color: "hsl(var(--game-gold))" }} />
           </button>
 
-          {/* Logo */}
-          <div className="flex justify-center mt-1 mb-4">
-            <img src={toLogoSm} alt="Triviolivia" className="h-8 w-auto" draggable={false} />
-          </div>
-
           {/* Heading - matches About page header styling */}
-          <p
-            className="text-center text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2"
-            style={{ color: "hsl(185 70% 55%)" }}
-          >
-            {isSignup ? "Join" : "Welcome to"}
-          </p>
           <DialogTitle asChild>
             <h2
               className="text-center font-heading font-extrabold uppercase leading-none tracking-tight whitespace-nowrap text-[clamp(14px,6.2vw,24px)] sm:text-3xl md:text-4xl"

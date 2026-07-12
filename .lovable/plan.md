@@ -1,10 +1,10 @@
-Update the custom Sign in with Apple button text to match the Google button.
+Remove the logo and eyebrow label from the login modal header.
 
-1. In `src/components/AuthModal.tsx`, change the Apple button label span:
-   - Reduce `fontSize` from `16` to `14` (matches the standard Google Sign-In button text size).
-   - Keep the label text as `"Sign in with Apple"` at all times; remove the `isSignup` conditional so it no longer switches to `"Sign up with Apple"`.
-   - Update the `aria-label` to always read `"Sign in with Apple"`.
+1. In `src/components/AuthModal.tsx`:
+   - Delete the logo `<div>` that shows the Triviolivia small logo.
+   - Delete the teal "Welcome to" / "Join" eyebrow paragraph above the heading.
+   - Remove the now-unused `toLogoSm` import.
 
-2. Verify by opening the login modal at desktop and mobile widths and confirming the Apple text is smaller and reads "Sign in with Apple" in both sign-in and sign-up modes.
+2. Leave the main "Welcome Back" / "Create Account" heading and the description subtext unchanged.
 
-No changes to the main yellow CTA, Google button, or the modal header styling introduced in the previous task.
+3. Verify by opening the login modal at desktop and mobile widths and confirming only the heading and description remain at the top of the modal.
