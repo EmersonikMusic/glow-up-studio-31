@@ -45,10 +45,17 @@ export function encodeGameSettings(params: {
   timePerQuestion: number;
   timePerAnswer: number;
   completedAt?: Date;
+  isKidsMode?: boolean;
 }): string {
-  const cats = chunk(mask(CATEGORY_ORDER, params.categories), 5).join(" ");
-  const diffs = mask(DIFFICULTY_ORDER, params.difficulties);
-  const eras = chunk(mask(ERA_ORDER, params.eras), 6).join(" ");
+  const catsMask = mask(CATEGORY_ORDER, params.categories);
+  const diffsMask = mask(DIFFICULTY_ORDER, params.difficulties);
+  const erasMask = mask(ERA_ORDER, params.eras);
+  // Kids Mode: replace every o/x slot with 'k' across all three masks,
+  // preserving segment widths and chunk spacing.
+  const toK = (s: string) => s.replace(/[ox]/g, "k");
+  const cats = chunk(params.isKidsMode ? toK(catsMask) : catsMask, 5).join(" ");
+  const diffs = params.isKidsMode ? toK(diffsMask) : diffsMask;
+  const eras = chunk(params.isKidsMode ? toK(erasMask) : erasMask, 6).join(" ");
   const ts = formatTimestamp(params.completedAt ?? new Date());
   return [
     ts,
