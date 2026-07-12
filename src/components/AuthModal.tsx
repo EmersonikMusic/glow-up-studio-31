@@ -166,14 +166,16 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="max-w-md p-0 border-0 bg-transparent shadow-none sm:rounded-3xl"
+        overlayClassName="bg-[hsl(240_45%_10%_/_0.6)]"
       >
         <div
           className="relative rounded-3xl p-6 sm:p-8"
           style={{
-            background: "linear-gradient(180deg, hsl(240 30% 8%) 0%, hsl(240 25% 5%) 100%)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow:
-              "0 0 60px hsl(var(--game-gold) / 0.15), 0 20px 60px rgba(0,0,0,0.6)",
+            background: "rgba(0, 0, 0, 0.25)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1.5px solid rgba(255, 255, 255, 0.18)",
+            boxShadow: "0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)",
           }}
         >
           {/* Back / close */}
