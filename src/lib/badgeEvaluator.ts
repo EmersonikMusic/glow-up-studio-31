@@ -91,14 +91,12 @@ function marathoner(history: string[], completedAt: Date): number {
 export function evaluateBadges(stats: BadgeStats, session: GameSessionData): Badge[] {
   const hour = session.completedAt.getHours();
   const dow = session.completedAt.getDay();
-  const distinctEras = Object.values(stats.era_counts).filter((n) => n > 0).length;
-  const distinctCategories = Object.entries(stats.category_counts).filter(
-    ([, n]) => n > 0,
-  ).length;
-  const allDifficultiesPlayed = (ALL_DIFFICULTIES as readonly string[]).every(
-    (d) => (stats.difficulty_counts[d] ?? 0) >= 1,
-  );
+  const distinctEras = Object.keys(stats.era_counts).length;
+  const distinctCategories = Object.keys(stats.category_counts).length;
+  const allDifficultiesPlayed =
+    Object.keys(stats.difficulty_counts).length >= ALL_DIFFICULTIES.length;
   const marathonCount = marathoner(stats.play_history, session.completedAt);
+
 
   const satisfied: Badge[] = [];
 
