@@ -37,6 +37,19 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Forgot-password: after sending, keep the user on the forgot view with
+  // a "sent" confirmation panel + throttled Resend button.
+  const [resetSent, setResetSent] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // 30s countdown for the Resend button.
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const id = setInterval(() => {
+      setResendCooldown((s) => (s <= 1 ? 0 : s - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [resendCooldown]);
 
   const isSignup = mode === "signup";
   const isForgot = mode === "forgot";
