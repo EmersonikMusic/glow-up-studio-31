@@ -1,55 +1,23 @@
-## Goal
+## Changes
 
-Replace the verbose object entries in `profiles.game_settings_history` with a compact fixed-width string per game, and include number of questions, question time, and answer time.
+Prefix each `game_settings_history` entry with an ISO-like UTC timestamp `YYYY-MM-DDTHH:MMZ`, separated from the rest by `|`, and replace the `-` separators inside the code with spaces.
 
-## Encoding format
-
+New entry example:
 ```
-CCCCCCCCCCCCCCCCCCCCCCCCC-DDDDD-EEEEEEEEEEEE-NNN-QQ-AA
-```
-
-- 25 chars — categories, alphabetical (matches `ALL_CATEGORIES` order after sorting)
-- 5 chars — difficulties, ascending (Casual, Easy, Average, Hard, Genius)
-- 12 chars — eras, chronological (Pre-1500 → 2020s)
-- 3 chars — number of questions, zero-padded (e.g. `050`)
-- 2 chars — time per question, zero-padded seconds
-- 2 chars — time per answer, zero-padded seconds
-
-Each slot is `o` when the option is selected for that game, `x` otherwise. Groups separated by `-`. Total length: 25+1+5+1+12+1+3+1+2+1+2 = **54 chars**.
-
-Example (all cats/diffs/eras, 10 questions, 10s/5s):
-```
-ooooooooooooooooooooooooo-ooooo-oooooooooooo-010-10-05
+2026-07-12T21:40Z|ooooo ooooo ooooo ooooo ooooo|ooooo|oooooo oooooo|010|10|05
 ```
 
-## Plan
+### 1. `src/lib/gameSettingsCode.ts`
+- Add `formatTimestamp(date: Date)` returning `YYYY-MM-DDTHH:MMZ` (UTC, minute precision).
+- `encodeGameSettings` accepts an optional `completedAt: Date`; joins category/era chunks with a space instead of `-`; prepends `${timestamp}|` to the result.
 
-1. **`src/lib/gameSettingsCode.ts`** (new)
-   - Export ordered constants for the three axes (sorted copies of `ALL_CATEGORIES`, ascending `ALL_DIFFICULTIES`, chronological `ALL_ERAS` — these already match the required orders in `src/data/gameOptions.ts`).
-   - `encodeGameSettings(session, numQuestions, timePerQuestion, timePerAnswer): string` builds the 54-char code by mapping each ordered list to `o`/`x`, then appending the three zero-padded numbers.
-   - Small unit-testable pure function.
+### 2. `src/lib/gameCompletion.ts`
+- Pass `session.completedAt` into `encodeGameSettings`.
 
-2. **`src/lib/badgeEvaluator.ts`**
-   - Extend `GameSessionData` with `numQuestions`, `timePerQuestion`, `timePerAnswer` (numbers). No change to badge logic.
+### 3. Migration — convert existing entries
+- For each string entry in `profiles.game_settings_history`:
+  - If it already starts with a `YYYY-MM-DDTHH:MMZ|` prefix, leave it.
+  - Otherwise, split on `|`, replace `-` with space inside the categories segment (first) and eras segment (third), rejoin with `|`, and prepend `<profile.last_played_at or now, formatted YYYY-MM-DDTHH:MMZ>|`. Since we don't have per-game timestamps for historical entries, this is a best-effort backfill using the profile's `last_played_at`.
+- Non-string (legacy object) entries are dropped, matching the previous migration.
 
-3. **`src/components/TriviaGame.tsx`**
-   - When constructing the `GameSessionData` passed to `handleGameCompletion`, include the three new numeric fields from the active `GameSettings`.
-
-4. **`src/lib/gameCompletion.ts`**
-   - Replace the object entry with the encoded string from `encodeGameSettings(...)`.
-   - Keep `game_settings_history` as a JSONB array of strings (still valid `Json`). Preserve the append + 50-entry logic; no schema change (column stays `jsonb`, still accepts an array of strings).
-
-## Out of scope
-
-- Guest (signed-out) tracking, extra profile fields (country/locale/timezone), and any UI to display the history — those remain in the earlier deferred plan.
-- No migration or backfill of existing entries; old object entries stay as-is until they age out of the 50-entry window.
-
-## Technical details
-
-Files touched:
-- new `src/lib/gameSettingsCode.ts`
-- `src/lib/badgeEvaluator.ts` — extend `GameSessionData`
-- `src/components/TriviaGame.tsx` — pass 3 new fields into the session
-- `src/lib/gameCompletion.ts` — push encoded string instead of object
-
-No DB migration. No changes to badge evaluation, counters, or UI.
+No schema change; column stays `jsonb` array of strings.
