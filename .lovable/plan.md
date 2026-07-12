@@ -1,71 +1,31 @@
-## Goal
+## Badge flip-to-reveal interaction
 
-Replace the current 3 hard-coded placeholder circles inside `ProfilePanel.tsx` → "Achievements & Awards" with a scalable, data-driven grid. Keep visual style (circular gold/locked treatment) consistent with the existing badge look.
+Replace the current tooltip on unlocked badges with a 3D card-flip animation that reveals the earning criteria on the back of the badge. Keep the label static beneath the badge.
 
----
+### Interaction
+- **Desktop (pointer)**: hover flips the badge; leaving flips it back.
+- **Mobile / touch**: tap toggles the flip; tapping again (or tapping another badge) flips it back. Only one badge flipped at a time within the grid.
+- **Locked badges**: no flip (nothing to reveal). Keep the lock icon and grayscale styling.
+- **Label**: stays below the circle in both states, unchanged.
 
-## 1. New data file — `src/data/badgeData.ts`
+### Visual
+- Increase badge circle from `w-16 h-16` → `w-20 h-20` so the requirement text is legible on the back. Grid stays 3-column; gap slightly increased.
+- **Front**: current gold gradient + trophy icon (unchanged aesthetic).
+- **Back**: dark glass panel (`rgba(0,0,0,0.4)` + subtle gold border) with the requirement text centered, ~10px font, tight leading, up to ~4 lines. No badge name on the back — the label under the badge already provides it, per the request ("only need to include the requirement description").
+- Smooth 3D flip: ~500ms cubic-bezier, `transform-style: preserve-3d`, `backface-visibility: hidden`, `perspective` on the wrapper.
+- Preserve the gold glow shadow on the front face only.
 
-- Export `Badge` type: `{ badgeType, setting, tier, badgeName, requirement, visualDesign }` plus a derived stable `id` (slug of `badgeType + setting + badgeName`).
-- Export `BADGES: Badge[]` — the full JSON list the user provided, typed and frozen.
-- Export a `BADGE_CATEGORIES` order constant used for grouping/fallbacks:
-  `["Progression & Consistency", "Mode & Difficulty Mastery", "Time Travelers (Eras)", "Category Specialists", "Custom Combo Games"]`.
+### Technical
 
-No unlock logic in the data file — data only.
+Files:
+- **`src/components/BadgeItem.tsx`** — rewrite the unlocked branch:
+  - Remove `Tooltip`, `TooltipProvider`, `TooltipContent`, `TooltipTrigger` imports and usage.
+  - Add local `flipped` state; toggle on click, and on `onMouseEnter` / `onMouseLeave` (pointer devices).
+  - Render a `perspective` wrapper containing a flipper div with two absolutely-positioned faces (front = current circle, back = requirement panel).
+  - `button` remains the interactive element for a11y; `aria-pressed={flipped}` and `aria-label` includes the requirement so screen readers still get it.
+- **`src/components/AchievementsSection.tsx`** — lift a single `flippedId` state and pass `flipped` + `onFlip` down to `BadgeItem` so tapping one badge auto-closes another. Grid gap bumped from `gap-3` to `gap-4`.
+- No changes to `ProfilePanel.tsx`, `badgeData.ts`, or data flow.
 
----
-
-## 2. New component — `src/components/BadgeItem.tsx`
-
-Props: `{ badge: Badge; unlocked: boolean }`.
-
-- Perfectly circular (`rounded-full`, fixed `w-16 h-16`), matching the current gold gradient treatment for unlocked and the muted lock icon for locked (reuse the existing `GOLD_GRADIENT`, `Trophy`, `Lock` visuals so nothing else changes visually).
-- Under the circle: badge name label (10px uppercase, same as today).
-- Tooltip/popover on hover (pointer) and on tap (touch) for **unlocked** badges only, showing `badgeName` (bold) and `requirement` (muted). Use existing shadcn `Tooltip` primitives for pointer + a controlled open state toggled on click for touch (so mobile taps reveal it, tap-outside closes). Locked badges get no tooltip (they're either hidden or a generic placeholder).
-- No new icon art yet — `visualDesign` is stored in data for future use but not rendered.
-
----
-
-## 3. New component — `src/components/AchievementsSection.tsx`
-
-Owns all list logic so `ProfilePanel` stays lean.
-
-Props: `{ unlockedIds: string[] }`.
-
-Behavior:
-- Compute `unlockedBadges` = `BADGES.filter(b => unlockedIds.includes(b.id))`, ordered by **most recently earned first**. Since we don't yet track per-badge earn time, order by the position of the id in `unlockedIds` (caller passes newest-first). Add a code comment noting this contract.
-- Compute `lockedFillers`: only used when `unlockedBadges.length < 3`. Take the first `3 - unlockedBadges.length` badges from the "Progression & Consistency" track (by `tier` ascending, tier 0 last) that are **not** already unlocked. These render as the existing locked/greyed placeholder circles with the badge's real name label.
-- **Displayed set**: `unlockedBadges` first, then `lockedFillers` (only when applicable). Locked badges beyond fillers are **hidden entirely**.
-- **Collapsed view**: show up to 3 items. If `unlockedBadges.length > 3`, render a "View more" button below the grid that expands to show all unlocked badges. Button toggles to "Show less". Locked fillers never appear when there are 3+ unlocked.
-- Grid: `grid grid-cols-3 gap-3` (unchanged from today).
-- Empty section title stays "Achievements & Awards" (already in `ProfilePanel`).
-
----
-
-## 4. Wiring in `ProfilePanel.tsx`
-
-- Remove the inline `Badge` component and the three hard-coded `<Badge ... />` calls inside the Achievements section.
-- Replace with `<AchievementsSection unlockedIds={unlockedIds} />`.
-- Build `unlockedIds` in `ProfilePanel`:
-  - **Temporary demo state (per user's step 3)**: hard-code `unlockedIds = ["progression-consistency-the-icebreaker", "progression-consistency-decathlon", "progression-consistency-the-regular"]`, newest-first order. Add a `// TODO: wire to real unlock data` comment.
-  - Existing `firstUnlocked = gamesCompleted >= 1` logic is retired (the new component handles fillers).
-
-No changes to Score Card, header card, Danger Zone, or delete flow.
-
----
-
-## 5. Verification
-
-- Open Profile panel → Achievements shows exactly 3 unlocked circles (The Icebreaker, Decathlon, The Regular), gold gradient, correct labels. No locked placeholders visible (since 3 are unlocked, fillers don't apply).
-- Hover an unlocked badge on desktop → tooltip with name + requirement. Tap on mobile → tooltip toggles open, tap outside closes.
-- Temporarily set `unlockedIds` to `[]` and 1 id to confirm: 0 unlocked → 3 locked Progression fillers; 1 unlocked → 1 unlocked + 2 locked Progression fillers.
-- Temporarily set `unlockedIds` to 5 ids → grid shows 3, "View more" appears, expands to all 5, "Show less" collapses back.
-- Typecheck passes; no console errors; no other panel sections changed.
-
----
-
-## Out of scope
-
-- Real unlock detection from gameplay (game counts, difficulty coverage, era coverage, etc.). Wiring to Cloud/profile stats is a follow-up.
-- Custom badge artwork rendering from `visualDesign`. Trophy icon is used for all unlocked badges for now.
-- Persisting earn timestamps. Order is driven by the caller-supplied `unlockedIds` order until real timestamps exist.
+### Out of scope
+- No changes to which badges are unlocked, filler logic, or the "View more" toggle.
+- No changes to locked-badge appearance beyond size.

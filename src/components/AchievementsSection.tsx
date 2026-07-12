@@ -10,6 +10,8 @@ interface AchievementsSectionProps {
 
 export default function AchievementsSection({ unlockedIds }: AchievementsSectionProps) {
   const [expanded, setExpanded] = useState(false);
+  const [flippedId, setFlippedId] = useState<string | null>(null);
+
 
   const { unlockedBadges, lockedFillers } = useMemo(() => {
     const byId = new Map(BADGES.map((b) => [b.id, b]));
@@ -45,9 +47,15 @@ export default function AchievementsSection({ unlockedIds }: AchievementsSection
 
   return (
     <div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-4">
         {items.map(({ badge, unlocked }) => (
-          <BadgeItem key={badge.id} badge={badge} unlocked={unlocked} />
+          <BadgeItem
+            key={badge.id}
+            badge={badge}
+            unlocked={unlocked}
+            flipped={flippedId === badge.id}
+            onFlipChange={(v) => setFlippedId((cur) => (v ? badge.id : cur === badge.id ? null : cur))}
+          />
         ))}
       </div>
       {hasMore && (
