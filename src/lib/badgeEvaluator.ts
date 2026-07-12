@@ -23,6 +23,7 @@ export interface GameSessionData {
   isMinimumTimer: boolean;
   isQuickplay: boolean;
   isCustom: boolean;
+  isKidsMode: boolean;
   completedAt: Date;
   numQuestions: number;
   timePerQuestion: number;

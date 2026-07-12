@@ -12,6 +12,7 @@ import { trackClick } from "@/lib/analytics";
 
 interface StartScreenProps {
   onStart: () => void;
+  onStartKids: () => void;
   onAbout: () => void;
   onHowToPlay: () => void;
   onPrivacy: () => void;
@@ -24,13 +25,17 @@ interface StartScreenProps {
   customized?: boolean;
 }
 
-export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, onApply, panelOpen, onPanelToggle, onPanelClose, onOpenProfile, loading = false, customized = false }: StartScreenProps) {
+export default function StartScreen({ onStart, onStartKids, onAbout, onHowToPlay, onPrivacy, onApply, panelOpen, onPanelToggle, onPanelClose, onOpenProfile, loading = false, customized = false }: StartScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
 
   const handleStart = () => {
     play("start");
     onStart();
+  };
+  const handleStartKids = () => {
+    play("start");
+    onStartKids();
   };
   return (
     <div
@@ -160,6 +165,18 @@ export default function StartScreen({ onStart, onAbout, onHowToPlay, onPrivacy, 
               aria-label="Customize Game"
             >
               Customize Game
+            </SecondaryCTA>
+
+            {/* Kids Mode — starts a game using only Kids-difficulty questions */}
+            <SecondaryCTA
+              onClick={handleStartKids}
+              disabled={loading}
+              trackId="kids_mode"
+              className="mt-3 w-full animate-fade-in"
+              style={{ animationDelay: "180ms" }}
+              aria-label="Kids Mode"
+            >
+              Kids Mode
             </SecondaryCTA>
           </div>
 

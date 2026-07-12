@@ -49,6 +49,7 @@ export async function handleGameCompletion(
     timePerQuestion: session.timePerQuestion,
     timePerAnswer: session.timePerAnswer,
     completedAt: session.completedAt,
+    isKidsMode: session.isKidsMode,
   });
   const game_settings_history = [...priorSettings, newSettingsEntry].slice(
     -HISTORY_LIMIT,
@@ -60,13 +61,16 @@ export async function handleGameCompletion(
   let difficulty_counts = (data.difficulty_counts as Record<string, number>) ?? {};
   let min_timer_games = data.min_timer_games ?? 0;
   let custom_games = data.custom_games ?? 0;
-  const quickplay_games = (data.quickplay_games ?? 0) + (session.isQuickplay ? 1 : 0);
+  const quickplay_games =
+    (data.quickplay_games ?? 0) +
+    (session.isQuickplay && !session.isKidsMode ? 1 : 0);
 
 
-  // Quickplay only updates global stats and the quickplay counter.
-  // Custom games are the only path that increments category/era/difficulty
-  // JSONB counters so that all-encompassing badges require genuine variety.
-  if (!session.isQuickplay) {
+  // Kids Mode only bumps total_games_played + play_history (handled above).
+  // Quickplay bumps global counters + its own counter.
+  // Custom is the only path that increments category/era/difficulty JSONB
+  // counters so variety badges require genuine variety.
+  if (!session.isKidsMode && !session.isQuickplay) {
     category_counts = bump(category_counts, session.categories);
     era_counts = bump(era_counts, session.eras);
     difficulty_counts = bump(difficulty_counts, session.difficulties);

@@ -1,23 +1,47 @@
-## Changes
+# Kids Mode
 
-Prefix each `game_settings_history` entry with an ISO-like UTC timestamp `YYYY-MM-DDTHH:MMZ`, separated from the rest by `|`, and replace the `-` separators inside the code with spaces.
+A dedicated play mode that pulls exclusively from the new backend `Kids` difficulty. All existing modes (Quick Play, Customize) must never surface Kids questions.
 
-New entry example:
-```
-2026-07-12T21:40Z|ooooo ooooo ooooo ooooo ooooo|ooooo|oooooo oooooo|010|10|05
-```
+## Assumptions
 
-### 1. `src/lib/gameSettingsCode.ts`
-- Add `formatTimestamp(date: Date)` returning `YYYY-MM-DDTHH:MMZ` (UTC, minute precision).
-- `encodeGameSettings` accepts an optional `completedAt: Date`; joins category/era chunks with a space instead of `-`; prepends `${timestamp}|` to the result.
+- Django difficulty ID for **Kids = 0** (from your note that its score is 0). Tell me if the ID is different.
 
-### 2. `src/lib/gameCompletion.ts`
-- Pass `session.completedAt` into `encodeGameSettings`.
+## UX
 
-### 3. Migration — convert existing entries
-- For each string entry in `profiles.game_settings_history`:
-  - If it already starts with a `YYYY-MM-DDTHH:MMZ|` prefix, leave it.
-  - Otherwise, split on `|`, replace `-` with space inside the categories segment (first) and eras segment (third), rejoin with `|`, and prepend `<profile.last_played_at or now, formatted YYYY-MM-DDTHH:MMZ>|`. Since we don't have per-game timestamps for historical entries, this is a best-effort backfill using the profile's `last_played_at`.
-- Non-string (legacy object) entries are dropped, matching the previous migration.
+- **Entry point**: third CTA on the Start Screen, below "Customize Game", labeled **"Kids Mode"**. Reuses `SecondaryCTA` styling. Tapping it fetches Kids questions and starts immediately (like Quick Play).
+- **Settings panel**: unchanged. `Kids` is not user-selectable.
+- **Gameplay**: same engine, timers, and result screen. No visual reskin in this pass.
 
-No schema change; column stays `jsonb` array of strings.
+## Data / API wiring
+
+`src/lib/triviaApi.ts`:
+- Add `Kids: 0` to `DIFFICULTY_IDS`.
+- Add optional `kidsMode?: boolean` on the settings passed to `fetchAndStartGame`:
+  - When `true`: exclude every difficulty ID *except* `0`; ignore `selectedDifficulties`.
+  - When `false`/absent: always append `0` to the excluded difficulty list so Kids questions never leak into other modes.
+
+`src/data/gameOptions.ts`: unchanged. `Kids` is a mode, not a difficulty checkbox.
+
+## Wire-through
+
+- `StartScreen.tsx`: add `onStartKids` prop + third CTA.
+- `TriviaGame.tsx` / `Index.tsx`: new `handleStartKids` path calling `fetchAndStartGame` with `kidsMode: true` and Quick Play defaults. Sets `isKidsMode` on the session.
+- `gameCompletion.ts` + `gameSettingsCode.ts`: accept `isKidsMode`. When true, encode the entry with the same segment structure and widths as usual, but **replace every `o` and `x` in the categories, difficulties, and eras masks with `k`**. Timestamp, chunk spacing, pipes, and the numeric fields (`NNN|QQ|AA`) stay exactly the same. Example:
+
+  ```
+  2026-07-12T21:40Z|kkkkk kkkkk kkkkk kkkkk kkkkk|kkkkk|kkkkkk kkkkkk|010|10|05
+  ```
+
+- **Counters**: Kids games increment `total_games_played` and `play_history` only. They do NOT increment `category_counts`, `era_counts`, `difficulty_counts`, `quickplay_games`, or `custom_games`.
+
+## Files touched
+
+- `src/lib/triviaApi.ts` — add Kids ID, `kidsMode` param, always-exclude guard.
+- `src/lib/gameSettingsCode.ts` — accept `isKidsMode`, emit all-`k` masks.
+- `src/lib/gameCompletion.ts` — pass `isKidsMode` through; skip counter bumps.
+- `src/lib/badgeEvaluator.ts` — add `isKidsMode` to `GameSessionData` type.
+- `src/components/TriviaGame.tsx` — new start path, session flag.
+- `src/components/StartScreen.tsx` — third CTA.
+- `.lovable/plan.md` — updated.
+
+No DB migration needed.

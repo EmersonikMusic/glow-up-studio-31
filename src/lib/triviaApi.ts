@@ -19,8 +19,12 @@ const CATEGORY_ALIAS_IDS: Record<string, number[]> = {
 };
 
 export const DIFFICULTY_IDS: Record<string, number> = {
-  Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5,
+  Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5, Kids: 0,
 };
+
+// Backend ID for the Kids-only difficulty. Kids Mode pulls exclusively from
+// this pool; every other mode must exclude it.
+const KIDS_DIFFICULTY_ID = 0;
 
 export const ERA_IDS: Record<string, number> = {
   "Pre-1500": 1, "1500-1800": 2, "1800-1900": 3, "1900-1950": 4,
@@ -96,7 +100,7 @@ function buildExcluded(
   return allIds.filter((id) => !selectedIds.has(id));
 }
 
-function buildUrl(settings: GameSettings): string {
+function buildUrl(settings: GameSettings, kidsMode: boolean): string {
   const params = new URLSearchParams();
   params.append("questions", String(settings.numQuestions || 10));
 
@@ -110,7 +114,21 @@ function buildUrl(settings: GameSettings): string {
     params.append("category", excludedCats.join(","));
   }
 
-  const excludedDiffs = buildExcluded(settings.selectedDifficulties, DIFFICULTY_IDS);
+  let excludedDiffs: number[];
+  if (kidsMode) {
+    // Kids Mode: exclude every difficulty except Kids.
+    excludedDiffs = Object.values(DIFFICULTY_IDS).filter(
+      (id) => id !== KIDS_DIFFICULTY_ID,
+    );
+  } else {
+    excludedDiffs = buildExcluded(settings.selectedDifficulties, DIFFICULTY_IDS);
+    // Guardrail: Kids questions must never leak into non-Kids modes, even if
+    // the user has selected all difficulties (which would otherwise omit 0
+    // from the excluded set once Kids became part of DIFFICULTY_IDS).
+    if (!excludedDiffs.includes(KIDS_DIFFICULTY_ID)) {
+      excludedDiffs.push(KIDS_DIFFICULTY_ID);
+    }
+  }
   if (excludedDiffs.length > 0) {
     params.append("difficulty", excludedDiffs.join(","));
   }
@@ -126,9 +144,16 @@ function buildUrl(settings: GameSettings): string {
 /**
  * Fetch & prepare a randomized batch of trivia questions from the API.
  * Throws on network error, non-2xx, or 20s timeout.
+ *
+ * Pass `kidsMode: true` to pull exclusively from the Kids-difficulty pool
+ * (ignores `settings.selectedDifficulties`). All other calls automatically
+ * exclude the Kids pool.
  */
-export async function fetchAndStartGame(settings: GameSettings): Promise<Question[]> {
-  const url = buildUrl(settings);
+export async function fetchAndStartGame(
+  settings: GameSettings,
+  options: { kidsMode?: boolean } = {},
+): Promise<Question[]> {
+  const url = buildUrl(settings, options.kidsMode === true);
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);

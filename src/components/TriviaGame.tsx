@@ -108,6 +108,7 @@ export default function TriviaGame() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
+  const [kidsMode, setKidsMode] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -135,8 +136,9 @@ export default function TriviaGame() {
         eras: settings.selectedEras,
         difficulties: settings.selectedDifficulties,
         isMinimumTimer: settings.timePerQuestion <= 5 && settings.timePerAnswer <= 5,
-        isQuickplay: !hasCustomized,
-        isCustom: hasCustomized,
+        isQuickplay: !hasCustomized && !kidsMode,
+        isCustom: hasCustomized && !kidsMode,
+        isKidsMode: kidsMode,
         completedAt: new Date(),
         numQuestions: settings.numQuestions,
         timePerQuestion: settings.timePerQuestion,
@@ -151,7 +153,7 @@ export default function TriviaGame() {
     if (gameState !== "finished") {
       recordedGameRef.current = false;
     }
-  }, [gameState, currentUser, hasCustomized, settings]);
+  }, [gameState, currentUser, hasCustomized, kidsMode, settings]);
 
   const handleOpenAbout = useCallback(() => {
     const inGame =
@@ -474,7 +476,7 @@ export default function TriviaGame() {
 
 
   // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
-  const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
+  const runFetchAndStart = useCallback(async (newSettings: GameSettings, opts: { kidsMode?: boolean } = {}) => {
     setLoading(true);
     // If we entered a blocking loading screen (Play Again), remember it so we
     // can restore a usable screen on failure instead of stranding the user.
@@ -486,7 +488,7 @@ export default function TriviaGame() {
       }
     };
     try {
-      const data = await fetchAndStartGame(newSettings);
+      const data = await fetchAndStartGame(newSettings, { kidsMode: opts.kidsMode });
       if (!data.length) {
         toast.error("No questions matched your filters. Try widening them.");
         restoreOnFailure();
@@ -523,6 +525,7 @@ export default function TriviaGame() {
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
     setHasCustomized(true);
+    setKidsMode(false);
     const wasInGame =
       gameStateRef.current === "playing" || gameStateRef.current === "answered";
     if (!wasInGame) return;
@@ -531,14 +534,25 @@ export default function TriviaGame() {
     setPanelOpen(false);
     clearTimer();
     clearAnswerTimer();
-    await runFetchAndStart(newSettings);
+    await runFetchAndStart(newSettings, { kidsMode: false });
   }, [clearTimer, clearAnswerTimer, runFetchAndStart]);
 
   const handleStart = useCallback(async () => {
     if (loading) return;
+    setKidsMode(false);
     setPanelOpen(false);
     clearAnswerTimer();
-    await runFetchAndStart(settings);
+    await runFetchAndStart(settings, { kidsMode: false });
+  }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
+
+  const handleStartKids = useCallback(async () => {
+    if (loading) return;
+    setKidsMode(true);
+    setPanelOpen(false);
+    clearAnswerTimer();
+    // Kids Mode uses the user's current timer + question-count settings but
+    // pulls exclusively from the Kids difficulty pool.
+    await runFetchAndStart(settings, { kidsMode: true });
   }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
 
   const handleNext = useCallback(() => {
@@ -553,6 +567,7 @@ export default function TriviaGame() {
     setQuestionIndex(0);
     setScore(0);
     setActiveQuestions([]);
+    setKidsMode(false);
     setCountdown(settings.timePerQuestion);
     setGameState("start");
     setPanelOpen(!matchesMedia("(max-width: 767px)", false));
@@ -570,14 +585,15 @@ export default function TriviaGame() {
     setPaused(false);
     setAnimKey((k) => k + 1);
     setGameState("loading");
-    await runFetchAndStart(settings);
-  }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
+    await runFetchAndStart(settings, { kidsMode });
+  }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings, kidsMode]);
 
   if (gameState === "start") {
     return (
       <>
         <StartScreen
           onStart={handleStart}
+          onStartKids={handleStartKids}
           onAbout={handleOpenAbout}
           onHowToPlay={() => setShowHowToPlay(true)}
           onPrivacy={() => setShowPrivacy(true)}
