@@ -39,7 +39,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const isSignup = mode === "signup";
-  const appleContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize Apple's Sign in with Apple JS SDK once the script loads. We
   // render a custom Sign in with Apple button (per Apple HIG's custom-button
