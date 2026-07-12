@@ -112,6 +112,29 @@ export default function TriviaGame() {
   const [showAbout, setShowAbout] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const pausedByAboutRef = useRef(false);
+  const recordedGameRef = useRef(false);
+
+  // Track auth state for profile panel + completion recording.
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setCurrentUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUser(data.session?.user ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // Record game completion once per finished game, if signed in.
+  useEffect(() => {
+    if (gameState === "finished" && currentUser && !recordedGameRef.current) {
+      recordedGameRef.current = true;
+      void recordGameCompletion(currentUser.id);
+    }
+    if (gameState !== "finished") {
+      recordedGameRef.current = false;
+    }
+  }, [gameState, currentUser]);
 
   const handleOpenAbout = useCallback(() => {
     const inGame =
