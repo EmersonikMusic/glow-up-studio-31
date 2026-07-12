@@ -90,7 +90,7 @@ export async function handleGameCompletion(
     ...newlyUnlocked.map((b) => b.badgeName),
   ];
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("profiles")
     .update({
       total_games_played,
@@ -106,8 +106,10 @@ export async function handleGameCompletion(
       unlocked_badges,
       game_settings_history,
     })
-
     .eq("id", userId);
+  if (updateError) {
+    console.error("[gameCompletion] profile update failed", updateError);
+  }
 
   return newlyUnlocked;
 }
