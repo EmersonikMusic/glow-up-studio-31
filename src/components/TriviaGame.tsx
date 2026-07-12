@@ -476,7 +476,7 @@ export default function TriviaGame() {
 
 
   // Shared fetch → init → start flow used by both initial Start and mid-game Apply.
-  const runFetchAndStart = useCallback(async (newSettings: GameSettings) => {
+  const runFetchAndStart = useCallback(async (newSettings: GameSettings, opts: { kidsMode?: boolean } = {}) => {
     setLoading(true);
     // If we entered a blocking loading screen (Play Again), remember it so we
     // can restore a usable screen on failure instead of stranding the user.
@@ -488,7 +488,7 @@ export default function TriviaGame() {
       }
     };
     try {
-      const data = await fetchAndStartGame(newSettings);
+      const data = await fetchAndStartGame(newSettings, { kidsMode: opts.kidsMode });
       if (!data.length) {
         toast.error("No questions matched your filters. Try widening them.");
         restoreOnFailure();
