@@ -384,6 +384,21 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           ) : (
             /* Form */
             <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3">
+              {isSignup && (
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Username"
+                  autoComplete="username"
+                  maxLength={20}
+                  className="h-12 px-4 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--game-gold))]/40"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}
+                />
+              )}
               <input
                 type="email"
                 value={email}
