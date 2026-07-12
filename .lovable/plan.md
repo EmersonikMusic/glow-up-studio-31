@@ -1,33 +1,36 @@
-## Findings from runtime check
+# Add Password Reset Flow
 
-- `#appleid-signin` mounts at 180×40 with correct `data-*` attrs, `window.AppleID` is loaded, no console errors — but the SDK never paints into the div (empty innerHTML, transparent bg, 0px radius). Apple's `appleid.auth.js` only scans for `#appleid-signin` once at script load; because the modal mounts later, the scan misses it, and `AppleID.auth.renderButton?.()` is a no-op on the shipped SDK build.
-- The Google button also failed to render in the same screenshot — needs a look while we're in there.
+Add a "Forgot password?" link to the sign-in view of `AuthModal`, plus a dedicated `/reset-password` page so users can actually set a new password after clicking the email link.
 
-## Fix plan
+## User flow
 
-### 1. `src/components/AuthModal.tsx` — force Apple SDK re-scan when modal opens
-Replace the current `AppleID.auth.renderButton?.()` call (which does nothing) with a reliable re-injection of Apple's script tag *after* the `#appleid-signin` div is in the DOM. Apple's SDK re-scans and paints the button on each fresh script load.
+1. On the Sign In view of the auth modal, user clicks **Forgot password?**
+2. Modal switches to a "Reset password" view: single email field + Send reset link button (+ Back to sign in).
+3. On submit, call `supabase.auth.resetPasswordForEmail(email, { redirectTo: ${origin}/reset-password })`. Show a success toast ("Check your email for a reset link") and return to sign-in view. Always show the same confirmation regardless of whether the email exists (avoid account enumeration).
+4. User clicks link in email → lands on `/reset-password` with a recovery session.
+5. Page shows New password + Confirm password fields. On submit, call `supabase.auth.updateUser({ password })`. On success, toast + redirect to `/`.
 
-- After the modal opens and `#appleid-signin` is mounted:
-  - Remove any prior `<script data-appleid-injected>` tag from `<head>`.
-  - Append a fresh `<script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" data-appleid-injected>`.
-  - On its `load`, call `AppleID.auth.init({...})` (unchanged args) — the SDK auto-renders the button during its scan.
-- Keep the existing `handleAppleClick` (still swallows clicks while `VITE_APPLE_SERVICES_ID` is unset).
-- Clean up the injected script on `useEffect` cleanup.
+## Changes
 
-Remove the now-unused polling `tryInit` block; the load event is deterministic.
+**`src/components/AuthModal.tsx`**
+- Extend `mode` union to `"signin" | "signup" | "forgot"`.
+- Add "Forgot password?" text link below the password field, visible only in signin mode.
+- Add a `forgot` view: heading "Reset Password", email input, submit button, "Back to sign in" link. Reuse the existing glassmorphism styling.
+- Add `handleForgotSubmit` calling `resetPasswordForEmail` with `redirectTo: ${window.location.origin}/reset-password`.
+- Add allowlisted analytics events `click_forgot_password` and `click_send_reset_link` to `src/lib/analytics.ts`.
 
-### 2. Google button render regression
-Investigate in the same session:
-- Confirm `googleBtnAsset.url` resolves at runtime (log the src, check network 200).
-- If the asset URL is empty/broken, restore a working source (e.g., inline the pill SVG or reference `src/assets/google-signin-dark-pill.svg` directly).
-Only patch this if the log confirms the asset is the cause; otherwise report back before touching styling.
+**`src/pages/ResetPassword.tsx`** (new)
+- Public route. Listens for `onAuthStateChange` with event `PASSWORD_RECOVERY` (Supabase fires this after processing the recovery hash) to confirm a recovery session is present.
+- If no recovery session detected after mount, show an "Invalid or expired link" state with a button back to `/`.
+- Form: new password + confirm password, with the same show/hide toggles and gradient CTA used in `AuthModal`. Validates non-empty and match; enforces min length 8.
+- On submit: `supabase.auth.updateUser({ password })`. On success: toast, sign out to force a clean re-login, then `navigate('/')`.
+- Reuses the same glassmorphism card styling as the modal for visual consistency, wrapped in a full-screen centered layout.
 
-### 3. Re-verify with Playwright
-Same script as before at 1280×900:
-- Assert `#appleid-signin` has non-empty innerHTML AND either an `<iframe>` or `<svg>` child.
-- Assert Google button `<img>` has `naturalWidth > 0`.
-- Screenshot the modal + each button element; view screenshots.
+**`src/App.tsx`**
+- Register `<Route path="/reset-password" element={<ResetPassword />} />` above the catch-all NotFound route.
 
-## Follow-up (not this turn)
-Add `state` (CSRF) and `nonce` (replay) to `AppleID.auth.init` — Apple lists both as optional but recommended for production. Do this once a real `VITE_APPLE_SERVICES_ID` is provisioned so we can test the full popup flow end-to-end.
+## Notes / non-goals
+
+- No backend/schema changes. Supabase auth handles token exchange from the URL hash automatically when the SDK loads on `/reset-password`.
+- No auth email template customization in this task — default Lovable auth emails are fine. Can be branded later via `scaffold_auth_email_templates` if the user wants.
+- The Site URL / redirect URL allowlist in the auth config must include the deployed origin(s); this is already the case for this project's preview and custom domains.
