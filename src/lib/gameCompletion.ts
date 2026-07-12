@@ -48,6 +48,7 @@ export async function handleGameCompletion(
     numQuestions: session.numQuestions,
     timePerQuestion: session.timePerQuestion,
     timePerAnswer: session.timePerAnswer,
+    completedAt: session.completedAt,
   });
   const game_settings_history = [...priorSettings, newSettingsEntry].slice(
     -HISTORY_LIMIT,
