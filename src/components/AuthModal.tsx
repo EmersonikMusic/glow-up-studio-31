@@ -237,12 +237,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               disabled={loading}
               aria-label="Sign in with Google"
               className="mx-auto h-12 flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
-              style={{ width: 375, maxWidth: "100%" }}
+              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%" }}
             >
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-12 w-full object-contain"
+                className="h-12 w-auto"
                 draggable={false}
               />
             </button>
@@ -256,7 +256,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
               className="relative mx-auto h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ width: 375, maxWidth: "100%", background: "#000000" }}
+              style={{ width: APPLE_BTN_WIDTH, maxWidth: "100%", background: "#000000" }}
             >
               <div
                 key={isSignup ? "apple-signup" : "apple-signin"}
@@ -266,7 +266,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 data-color="black"
                 data-border="false"
                 data-border-radius="50"
-                data-width="375"
+                data-width={String(APPLE_BTN_WIDTH)}
                 data-height="48"
                 className="w-full h-full"
               />
