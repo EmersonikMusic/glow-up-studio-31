@@ -1,30 +1,34 @@
-Three polish changes to the login modal.
+## Goal
+Bring the Sign in with Apple button into full compliance with Apple's web guidance (the page you linked). That page documents Apple's SDK-rendered button (`<div id="appleid-signin">` styled via `data-*` attributes) — not custom HTML. Our current button is hand-built, so switching to the SDK-rendered variant matches the on-brand reference and Apple's rules automatically (logo size, font, kerning, localization).
 
-## 1. Remove the redundant top-right close button
+## Changes in `src/components/AuthModal.tsx`
 
-The shared `src/components/ui/dialog.tsx` bakes a `DialogPrimitive.Close` (X) into every `DialogContent`. The AuthModal already has its own back/close arrow in the top-left.
+1. Remove the custom `<button>` + `<img>` + `<span>` block for Apple.
+2. Render Apple's official element instead:
+   ```tsx
+   <div
+     id="appleid-signin"
+     className="mx-auto cursor-pointer"
+     style={{ width: 180, height: 40 }}
+     data-color="black"
+     data-border="false"
+     data-type="sign-in"
+     data-mode="center-align"
+     data-border-radius="20"   // pill, matches Google button
+     onClick={handleAppleClick}
+   />
+   ```
+   - `data-border-radius="20"` on a 40px-high button yields a full pill matching the Google pill.
+   - `data-color="black"` + `data-border="false"` = solid black, no outline.
+   - Width 180 / height 40 stays inside Apple's allowed ranges (130–375 / 30–64) and keeps parity with the Google button.
+3. After `AppleID.auth.init(...)` runs in the existing `useEffect`, call `window.AppleID.auth.renderButton?.()` so the SDK paints the button into `#appleid-signin`. Keep the click-swallow behavior (`handleAppleClick`) until `VITE_APPLE_SERVICES_ID` is set — the SDK still renders the visual even with a placeholder client ID.
+4. Keep `SOCIAL_BTN_WIDTH` / `SOCIAL_BTN_HEIGHT` for the Google button; the Apple sizing now lives on the `#appleid-signin` div directly.
+5. Remove the now-unused `appleLogoWhite` import and the local `appleContainerRef` (SDK targets the element by id).
 
-- Add an optional `hideClose?: boolean` prop to `DialogContent` in `src/components/ui/dialog.tsx`. When true, skip rendering the built-in close. Default false so other dialogs are unaffected.
-- In `src/components/AuthModal.tsx`, pass `hideClose` on `DialogContent`.
-
-## 2. Make the Apple button match the on-brand reference
-
-Reference: black pill, Apple logo sitting tight beside bold "Sign in with Apple" text, logo optically the same height as the text cap-height.
-
-In `src/components/AuthModal.tsx`:
-
-- Keep width/height parity with the Google pill (same `SOCIAL_BTN_WIDTH` / `SOCIAL_BTN_HEIGHT`, black background, white text, fully rounded).
-- Render the Apple logo at ~16px tall (not the full 40px button height) with a small right margin, so it hugs the label instead of floating in whitespace.
-- Bump the label to `fontWeight: 600`, keep the SF/system font stack, tighten letter-spacing slightly, and center icon+text as a single inline group.
-- Keep the existing click behavior (toast "coming soon" until `VITE_APPLE_SERVICES_ID` is set).
-
-## 3. Default the modal to Sign Up
-
-In `src/components/AuthModal.tsx`, change the initial `useState<"signin" | "signup">("signin")` to `"signup"` so the modal opens on the Sign Up view by default. The toggle link at the bottom still lets users switch to Sign In. No other logic changes — the primary CTA elsewhere in the app that opens this modal is unaffected (it just opens the modal; it no longer implies a specific mode).
+## Notes
+- No changes needed to `index.html`; Apple's `appleid.auth.js` script is already loaded.
+- Google button is unaffected.
+- Layout (side-by-side on ≥sm, stacked on mobile) is unchanged.
 
 ## Verification
-
-Playwright screenshot at desktop (1280×900) and mobile (390×850) with the login modal open, confirming:
-- No X in the top-right.
-- Apple button matches the reference and lines up with the Google pill.
-- Modal opens on "Create Account" / "Sign Up" by default.
+Playwright screenshots at 1280×900 and 390×850 with the modal open, confirming the SDK-rendered Apple pill matches the Google pill in height and radius and shows the correct Apple logo + "Sign in with Apple" label.

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Eye, EyeOff, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
-import appleLogoWhite from "@/assets/apple-logo-white.svg";
+
 import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
 
 interface AuthModalProps {
@@ -39,7 +39,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const isSignup = mode === "signup";
-  const appleContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize Apple's Sign in with Apple JS SDK once the script loads. We
   // render a custom Sign in with Apple button (per Apple HIG's custom-button
@@ -63,6 +62,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         });
       } catch {
         // init can throw if called twice on some SDK builds — safe to ignore.
+      }
+      try {
+        AppleID.auth.renderButton?.();
+      } catch {
+        // renderButton may not exist on older SDK builds — safe to ignore.
       }
       return true;
     };
@@ -230,45 +234,28 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 draggable={false}
               />
             </button>
-            {/* Custom Sign in with Apple button — Apple HIG allows custom
-                buttons with adjustable title font size, provided the official
-                Apple logo file and "Sign in with Apple" title text are used.
-                Clicks are swallowed until VITE_APPLE_SERVICES_ID is set. */}
-            <button
-              ref={appleContainerRef as unknown as React.RefObject<HTMLButtonElement>}
-              type="button"
+            {/* Official Sign in with Apple button — rendered by Apple's JS SDK
+                into #appleid-signin per Apple's web guidance. data-* attrs
+                control appearance (color, border, radius, mode). Click is
+                swallowed until VITE_APPLE_SERVICES_ID is set. */}
+            <div
               onClick={handleAppleClick}
+              className="mx-auto cursor-pointer"
+              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
+              role="button"
               aria-label="Sign in with Apple"
               aria-disabled={!APPLE_AUTH_READY}
-              className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{
-                width: SOCIAL_BTN_WIDTH,
-                height: SOCIAL_BTN_HEIGHT,
-                maxWidth: "100%",
-                background: "#000000",
-                color: "#FFFFFF",
-              }}
             >
-              <img
-                src={appleLogoWhite}
-                alt=""
-                aria-hidden="true"
-                draggable={false}
-                style={{ height: 16, width: "auto", display: "block", marginRight: 6, marginTop: -2 }}
+              <div
+                id="appleid-signin"
+                style={{ width: "100%", height: "100%" }}
+                data-color="black"
+                data-border="false"
+                data-type="sign-in"
+                data-mode="center-align"
+                data-border-radius="20"
               />
-              <span
-                style={{
-                  fontFamily:
-                    "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  letterSpacing: "-0.32px",
-                  lineHeight: 1,
-                }}
-              >
-                Sign in with Apple
-              </span>
-            </button>
+            </div>
           </div>
 
           {/* OR divider */}
