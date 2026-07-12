@@ -19,8 +19,12 @@ const CATEGORY_ALIAS_IDS: Record<string, number[]> = {
 };
 
 export const DIFFICULTY_IDS: Record<string, number> = {
-  Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5,
+  Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5, Kids: 0,
 };
+
+// Backend ID for the Kids-only difficulty. Kids Mode pulls exclusively from
+// this pool; every other mode must exclude it.
+const KIDS_DIFFICULTY_ID = 0;
 
 export const ERA_IDS: Record<string, number> = {
   "Pre-1500": 1, "1500-1800": 2, "1800-1900": 3, "1900-1950": 4,
