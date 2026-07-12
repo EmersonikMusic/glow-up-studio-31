@@ -217,8 +217,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {isSignup ? "Sign up to save your progress" : "Sign in to continue"}
           </DialogDescription>
 
-          {/* Social buttons - stacked, brand-standard */}
-          <div className="flex flex-col gap-3">
+          {/* Social buttons - stacked on mobile, side-by-side on tablet+ */}
+          <div className="flex flex-col sm:flex-row sm:justify-center gap-3">
             <button
               type="button"
               onClick={handleGoogle}
@@ -234,38 +234,46 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 draggable={false}
               />
             </button>
-            {/* Official Sign in with Apple button — rendered by Apple's JS SDK.
-                Kept inert (click-catcher overlay) until VITE_APPLE_SERVICES_ID is set. */}
-            <div
-              ref={appleContainerRef}
-              onClickCapture={handleAppleClick}
-              role="button"
-              tabIndex={0}
+            {/* Custom Sign in with Apple button — Apple HIG allows custom
+                buttons with adjustable title font size, provided the official
+                Apple logo file and title text ("Sign in with Apple" /
+                "Sign up with Apple") are used. Clicks are swallowed until
+                VITE_APPLE_SERVICES_ID is set. */}
+            <button
+              ref={appleContainerRef as unknown as React.RefObject<HTMLButtonElement>}
+              type="button"
+              onClick={handleAppleClick}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
-              className="relative mx-auto rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%", background: "#000000" }}
+              className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{
+                width: SOCIAL_BTN_WIDTH,
+                height: SOCIAL_BTN_HEIGHT,
+                maxWidth: "100%",
+                background: "#000000",
+                color: "#FFFFFF",
+              }}
             >
-              <div
-                key={isSignup ? "apple-signup" : "apple-signin"}
-                id="appleid-signin"
-                data-mode="center-align"
-                data-type={isSignup ? "sign-up" : "sign-in"}
-                data-color="black"
-                data-border="false"
-                data-border-radius="50"
-                data-width={String(SOCIAL_BTN_WIDTH)}
-                data-height={String(SOCIAL_BTN_HEIGHT)}
-                className="w-full h-full"
+              <img
+                src={appleLogoWhite}
+                alt=""
+                aria-hidden="true"
+                draggable={false}
+                style={{ height: SOCIAL_BTN_HEIGHT, width: "auto", display: "block" }}
               />
-              {!APPLE_AUTH_READY && (
-                // Transparent overlay so clicks never reach Apple's iframe while
-                // credentials are still being provisioned.
-                <span aria-hidden="true" className="absolute inset-0" />
-              )}
-            </div>
-
-
+              <span
+                style={{
+                  fontFamily:
+                    "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
+                  fontSize: 16,
+                  fontWeight: 500,
+                  letterSpacing: "-0.24px",
+                  lineHeight: 1,
+                }}
+              >
+                {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
+              </span>
+            </button>
           </div>
 
           {/* OR divider */}
