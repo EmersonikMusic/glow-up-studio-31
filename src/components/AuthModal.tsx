@@ -29,7 +29,7 @@ const SOCIAL_BTN_WIDTH = 180;
 const SOCIAL_BTN_HEIGHT = 40;
 
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -167,6 +167,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       <DialogContent
         className="max-w-md p-0 border-0 bg-transparent shadow-none sm:rounded-3xl"
         overlayClassName="bg-[hsl(240_45%_10%_/_0.6)]"
+        hideClose
       >
         <div
           className="relative rounded-3xl p-6 sm:p-8"
@@ -253,15 +254,15 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 alt=""
                 aria-hidden="true"
                 draggable={false}
-                style={{ height: SOCIAL_BTN_HEIGHT, width: "auto", display: "block" }}
+                style={{ height: 16, width: "auto", display: "block", marginRight: 6, marginTop: -2 }}
               />
               <span
                 style={{
                   fontFamily:
                     "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
                   fontSize: 14,
-                  fontWeight: 500,
-                  letterSpacing: "-0.24px",
+                  fontWeight: 600,
+                  letterSpacing: "-0.32px",
                   lineHeight: 1,
                 }}
               >
