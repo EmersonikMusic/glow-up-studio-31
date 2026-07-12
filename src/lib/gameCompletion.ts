@@ -37,8 +37,9 @@ export async function handleGameCompletion(
   const priorHistory = (data.play_history as string[] | null) ?? [];
   const play_history = [...priorHistory, completedAtIso].slice(-HISTORY_LIMIT);
 
-  const priorSettings =
-    (data.game_settings_history as Array<Record<string, unknown>> | null) ?? [];
+  const priorSettings = Array.isArray(data.game_settings_history)
+    ? (data.game_settings_history as unknown[])
+    : [];
   const game_settings_history = [
     ...priorSettings,
     {
@@ -48,7 +49,8 @@ export async function handleGameCompletion(
       difficulties: session.difficulties,
       eras: session.eras,
     },
-  ];
+  ] as unknown as import("@/integrations/supabase/types").Json;
+
 
   let category_counts = (data.category_counts as Record<string, number>) ?? {};
   let era_counts = (data.era_counts as Record<string, number>) ?? {};
