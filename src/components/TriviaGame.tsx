@@ -153,7 +153,7 @@ export default function TriviaGame() {
     if (gameState !== "finished") {
       recordedGameRef.current = false;
     }
-  }, [gameState, currentUser, hasCustomized, settings]);
+  }, [gameState, currentUser, hasCustomized, kidsMode, settings]);
 
   const handleOpenAbout = useCallback(() => {
     const inGame =
