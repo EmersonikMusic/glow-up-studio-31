@@ -9,6 +9,7 @@ import {
   type BadgeStats,
   type GameSessionData,
 } from "@/lib/badgeEvaluator";
+import { encodeGameSettings } from "@/lib/gameSettingsCode";
 
 const HISTORY_LIMIT = 50;
 
@@ -40,16 +41,17 @@ export async function handleGameCompletion(
   const priorSettings = Array.isArray(data.game_settings_history)
     ? (data.game_settings_history as unknown[])
     : [];
-  const newSettingsEntry = {
-    played_at: completedAtIso,
-    mode: session.isQuickplay ? "quickplay" : "custom",
+  const newSettingsEntry = encodeGameSettings({
     categories: session.categories,
     difficulties: session.difficulties,
     eras: session.eras,
-  };
-  const game_settings_history = JSON.parse(
-    JSON.stringify([...priorSettings, newSettingsEntry]),
-  ) as import("@/integrations/supabase/types").Json;
+    numQuestions: session.numQuestions,
+    timePerQuestion: session.timePerQuestion,
+    timePerAnswer: session.timePerAnswer,
+  });
+  const game_settings_history = [...priorSettings, newSettingsEntry].slice(
+    -HISTORY_LIMIT,
+  ) as unknown as import("@/integrations/supabase/types").Json;
 
 
   let category_counts = (data.category_counts as Record<string, number>) ?? {};

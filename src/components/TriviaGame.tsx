@@ -138,6 +138,9 @@ export default function TriviaGame() {
         isQuickplay: !hasCustomized,
         isCustom: hasCustomized,
         completedAt: new Date(),
+        numQuestions: settings.numQuestions,
+        timePerQuestion: settings.timePerQuestion,
+        timePerAnswer: settings.timePerAnswer,
       };
       void handleGameCompletion(currentUser.id, session).then((newBadges) => {
         for (const b of newBadges) {

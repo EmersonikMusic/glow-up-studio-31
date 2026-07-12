@@ -1,39 +1,55 @@
 ## Goal
 
-Figure out why `game_settings_history` stays `[]` even though other profile counters update on game completion, and fix it.
+Replace the verbose object entries in `profiles.game_settings_history` with a compact fixed-width string per game, and include number of questions, question time, and answer time.
 
-## What we know
+## Encoding format
 
-- Migration ran; column exists with default `'[]'::jsonb`.
-- After 4 completed games, `total_games_played`, `category_counts`, `difficulty_counts`, `era_counts`, `play_history` all update correctly on the same row — so the `.update()` call itself reaches Postgres and RLS is fine.
-- Only `game_settings_history` stays `[]`. The code in `src/lib/gameCompletion.ts` appends an entry and includes the key in the update payload, so on paper it should work.
-- The `.update()` call has no `.select()` / error check, so a silent per-column rejection or a stale client bundle would look identical from our side.
+```
+CCCCCCCCCCCCCCCCCCCCCCCCC-DDDDD-EEEEEEEEEEEE-NNN-QQ-AA
+```
+
+- 25 chars — categories, alphabetical (matches `ALL_CATEGORIES` order after sorting)
+- 5 chars — difficulties, ascending (Casual, Easy, Average, Hard, Genius)
+- 12 chars — eras, chronological (Pre-1500 → 2020s)
+- 3 chars — number of questions, zero-padded (e.g. `050`)
+- 2 chars — time per question, zero-padded seconds
+- 2 chars — time per answer, zero-padded seconds
+
+Each slot is `o` when the option is selected for that game, `x` otherwise. Groups separated by `-`. Total length: 25+1+5+1+12+1+3+1+2+1+2 = **54 chars**.
+
+Example (all cats/diffs/eras, 10 questions, 10s/5s):
+```
+ooooooooooooooooooooooooo-ooooo-oooooooooooo-010-10-05
+```
 
 ## Plan
 
-1. **Add error visibility to the update in `src/lib/gameCompletion.ts`.**
-   - Destructure `{ error }` from the `await supabase.from("profiles").update({...}).eq("id", userId)` call.
-   - `console.error("[gameCompletion] profile update failed", error)` when present. This is what will actually tell us if PostgREST is rejecting the JSONB payload.
+1. **`src/lib/gameSettingsCode.ts`** (new)
+   - Export ordered constants for the three axes (sorted copies of `ALL_CATEGORIES`, ascending `ALL_DIFFICULTIES`, chronological `ALL_ERAS` — these already match the required orders in `src/data/gameOptions.ts`).
+   - `encodeGameSettings(session, numQuestions, timePerQuestion, timePerAnswer): string` builds the 54-char code by mapping each ordered list to `o`/`x`, then appending the three zero-padded numbers.
+   - Small unit-testable pure function.
 
-2. **Harden the JSONB payload** so a bad value can't cause a silent reject:
-   - Build the new entry as a plain object first.
-   - Cast the full array via `JSON.parse(JSON.stringify(...))` before assigning, so it's guaranteed serializable and matches the `Json` type without a `as unknown as` chain. This removes the current `as unknown as Json` cast, which can mask a shape mismatch.
-   - Keep the existing `Array.isArray(data.game_settings_history)` guard for the prior array.
+2. **`src/lib/badgeEvaluator.ts`**
+   - Extend `GameSessionData` with `numQuestions`, `timePerQuestion`, `timePerAnswer` (numbers). No change to badge logic.
 
-3. **Verify end-to-end.**
-   - Ask the user to hard-refresh the preview once (Cmd/Ctrl-Shift-R) and play one more game — a stale HMR bundle is the most likely non-code cause given the other columns work.
-   - Then query `profiles.game_settings_history` for that user via `supabase--read_query`; expect at least one entry with `played_at`, `mode`, `categories`, `difficulties`, `eras`.
-   - If it's still `[]`, the console error from step 1 will point at the real cause (schema cache, column type, RLS on the specific column, etc.) and we address that next.
+3. **`src/components/TriviaGame.tsx`**
+   - When constructing the `GameSessionData` passed to `handleGameCompletion`, include the three new numeric fields from the active `GameSettings`.
+
+4. **`src/lib/gameCompletion.ts`**
+   - Replace the object entry with the encoded string from `encodeGameSettings(...)`.
+   - Keep `game_settings_history` as a JSONB array of strings (still valid `Json`). Preserve the append + 50-entry logic; no schema change (column stays `jsonb`, still accepts an array of strings).
 
 ## Out of scope
 
-- No schema changes (column already exists and is correctly typed).
-- No changes to badge logic, counters, or the UI.
-- No new UI surface for the history yet.
+- Guest (signed-out) tracking, extra profile fields (country/locale/timezone), and any UI to display the history — those remain in the earlier deferred plan.
+- No migration or backfill of existing entries; old object entries stay as-is until they age out of the 50-entry window.
 
 ## Technical details
 
 Files touched:
-- `src/lib/gameCompletion.ts` — add `{ error }` destructure + `console.error`, and switch the `game_settings_history` value construction to a JSON round-trip instead of `as unknown as Json`.
+- new `src/lib/gameSettingsCode.ts`
+- `src/lib/badgeEvaluator.ts` — extend `GameSessionData`
+- `src/components/TriviaGame.tsx` — pass 3 new fields into the session
+- `src/lib/gameCompletion.ts` — push encoded string instead of object
 
-No other files change.
+No DB migration. No changes to badge evaluation, counters, or UI.
