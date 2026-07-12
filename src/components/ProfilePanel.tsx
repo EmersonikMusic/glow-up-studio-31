@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
-import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trophy, Lock, Trash2 } from "lucide-react";
+import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trash2 } from "lucide-react";
+import AchievementsSection from "./AchievementsSection";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
