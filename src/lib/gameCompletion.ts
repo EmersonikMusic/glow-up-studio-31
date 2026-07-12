@@ -40,16 +40,16 @@ export async function handleGameCompletion(
   const priorSettings = Array.isArray(data.game_settings_history)
     ? (data.game_settings_history as unknown[])
     : [];
-  const game_settings_history = [
-    ...priorSettings,
-    {
-      played_at: completedAtIso,
-      mode: session.isQuickplay ? "quickplay" : "custom",
-      categories: session.categories,
-      difficulties: session.difficulties,
-      eras: session.eras,
-    },
-  ] as unknown as import("@/integrations/supabase/types").Json;
+  const newSettingsEntry = {
+    played_at: completedAtIso,
+    mode: session.isQuickplay ? "quickplay" : "custom",
+    categories: session.categories,
+    difficulties: session.difficulties,
+    eras: session.eras,
+  };
+  const game_settings_history = JSON.parse(
+    JSON.stringify([...priorSettings, newSettingsEntry]),
+  ) as import("@/integrations/supabase/types").Json;
 
 
   let category_counts = (data.category_counts as Record<string, number>) ?? {};
@@ -90,7 +90,7 @@ export async function handleGameCompletion(
     ...newlyUnlocked.map((b) => b.badgeName),
   ];
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("profiles")
     .update({
       total_games_played,
@@ -106,8 +106,10 @@ export async function handleGameCompletion(
       unlocked_badges,
       game_settings_history,
     })
-
     .eq("id", userId);
+  if (updateError) {
+    console.error("[gameCompletion] profile update failed", updateError);
+  }
 
   return newlyUnlocked;
 }
