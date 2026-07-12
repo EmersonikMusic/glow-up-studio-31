@@ -1,34 +1,32 @@
 ## Goal
-Bring the Sign in with Apple button into full compliance with Apple's web guidance (the page you linked). That page documents Apple's SDK-rendered button (`<div id="appleid-signin">` styled via `data-*` attributes) — not custom HTML. Our current button is hand-built, so switching to the SDK-rendered variant matches the on-brand reference and Apple's rules automatically (logo size, font, kerning, localization).
+Confirm the Sign in with Apple button (a) is configured per Apple's web guidance and (b) actually renders visibly in the login modal.
 
-## Changes in `src/components/AuthModal.tsx`
+## What Apple's page actually requires
 
-1. Remove the custom `<button>` + `<img>` + `<span>` block for Apple.
-2. Render Apple's official element instead:
-   ```tsx
-   <div
-     id="appleid-signin"
-     className="mx-auto cursor-pointer"
-     style={{ width: 180, height: 40 }}
-     data-color="black"
-     data-border="false"
-     data-type="sign-in"
-     data-mode="center-align"
-     data-border-radius="20"   // pill, matches Google button
-     onClick={handleAppleClick}
-   />
-   ```
-   - `data-border-radius="20"` on a 40px-high button yields a full pill matching the Google pill.
-   - `data-color="black"` + `data-border="false"` = solid black, no outline.
-   - Width 180 / height 40 stays inside Apple's allowed ranges (130–375 / 30–64) and keeps parity with the Google button.
-3. After `AppleID.auth.init(...)` runs in the existing `useEffect`, call `window.AppleID.auth.renderButton?.()` so the SDK paints the button into `#appleid-signin`. Keep the click-swallow behavior (`handleAppleClick`) until `VITE_APPLE_SERVICES_ID` is set — the SDK still renders the visual even with a placeholder client ID.
-4. Keep `SOCIAL_BTN_WIDTH` / `SOCIAL_BTN_HEIGHT` for the Google button; the Apple sizing now lives on the `#appleid-signin` div directly.
-5. Remove the now-unused `appleLogoWhite` import and the local `appleContainerRef` (SDK targets the element by id).
+Two distinct sets of properties — do not conflate them:
 
-## Notes
-- No changes needed to `index.html`; Apple's `appleid.auth.js` script is already loaded.
-- Google button is unaffected.
-- Layout (side-by-side on ≥sm, stacked on mobile) is unchanged.
+1. **Auth configuration** (client ID, redirect URI, scope, state, nonce) — provided EITHER via `<meta name="appleid-signin-*">` tags in `<head>` OR via `AppleID.auth.init({...})`. We already use `AppleID.auth.init()` inside `AuthModal.tsx`, so `data-client-id` / `data-redirect-uri` / `data-state` on the div are not required and would be redundant.
+2. **Appearance** `data-*` attributes on `#appleid-signin` — `data-color`, `data-border`, `data-type`, `data-mode`, `data-border-radius`, optional `data-width` / `data-height`. Our current div sets: `color=black`, `border=false`, `type=sign-in`, `mode=center-align`, `border-radius=20`. All valid per the doc.
 
-## Verification
-Playwright screenshots at 1280×900 and 390×850 with the modal open, confirming the SDK-rendered Apple pill matches the Google pill in height and radius and shows the correct Apple logo + "Sign in with Apple" label.
+Current `init` call passes `clientId`, `scope`, `redirectURI`, `usePopup`. It does NOT pass `state` or `nonce`. Apple's page lists both as optional; for a placeholder client id and popup-mode preview they can stay omitted, but for production we should add a random `state` (CSRF) and `nonce` (replay protection) — noting this as a follow-up, not a blocker for the visibility check.
+
+## Verification steps (build mode)
+
+1. **Static audit** — re-read `AuthModal.tsx` around the `#appleid-signin` div and the `AppleID.auth.init` call to confirm the attribute set above, and confirm `AppleID.auth.renderButton?.()` is invoked after `init`.
+2. **Runtime verification via Playwright** at 1280×900:
+   - Load `http://localhost:8080/`.
+   - Open the login modal (click the auth entry point).
+   - Wait for `#appleid-signin` and log:
+     - `getBoundingClientRect()` (width/height > 0, visible in viewport)
+     - `innerHTML` (Apple's SDK injects an `<iframe>` or inline SVG+text once `renderButton()` succeeds)
+     - `getComputedStyle` background/border-radius
+   - Screenshot the modal, then screenshot the Apple button element alone.
+   - Capture console errors and any failed `appleid.cdn-apple.com` network requests.
+3. **Report findings**:
+   - Attributes present vs. Apple's spec.
+   - Whether the SDK actually rendered content into `#appleid-signin` (not just an empty div).
+   - Screenshot evidence of the visible button next to the Google pill.
+   - Any errors (invalid_client is expected while `VITE_APPLE_SERVICES_ID` is unset; note it but don't treat as failure).
+
+## Out of scope
+No code changes unless the runtime check shows the button is missing or misconfigured — in which case I'll come back with a follow-up plan.
