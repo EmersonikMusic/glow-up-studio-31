@@ -19,6 +19,13 @@ interface AuthModalProps {
 const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
 const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 
+// Google's dark pill SVG has an intrinsic 180x40 viewBox. Rendered at h-12
+// (48px tall) with preserved aspect ratio it is 48 * 180 / 40 = 216px wide.
+// Apple's SDK accepts data-width in [130, 375], so we lock Apple to the same
+// natural width to make both social buttons align — without distorting the
+// Google brand asset.
+const APPLE_BTN_WIDTH = 216;
+
 export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
