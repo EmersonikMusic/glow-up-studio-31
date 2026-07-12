@@ -33,6 +33,10 @@ export default function StartScreen({ onStart, onStartKids, onAbout, onHowToPlay
     play("start");
     onStart();
   };
+  const handleStartKids = () => {
+    play("start");
+    onStartKids();
+  };
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
