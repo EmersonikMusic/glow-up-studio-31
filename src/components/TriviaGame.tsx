@@ -18,6 +18,10 @@ import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import PrivacyScreen from "./PrivacyScreen";
 import SettingsPanel from "./SettingsPanel";
+import ProfilePanel from "./ProfilePanel";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
+import { recordGameCompletion } from "@/lib/profileProgress";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
@@ -100,6 +104,8 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
