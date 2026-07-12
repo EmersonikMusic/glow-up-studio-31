@@ -32,18 +32,23 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const isSignup = mode === "signup";
   const appleContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Initialize Apple's Sign in with Apple JS SDK once the script loads and
+  // Initialize Apple's Sign in with Apple JS SDK once the script loads, then
   // (re-)render the official Apple button whenever the modal opens or the
   // sign-in / sign-up mode toggles. The SDK auto-scans on load, but our div
-  // lives inside a modal that mounts after the initial scan.
+  // mounts inside a Radix modal after the initial scan, so we call
+  // renderButton() ourselves. renderButton() paints asynchronously, so we
+  // give the DOM a tick before deciding it worked.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
+    let interval: number | undefined;
+    let paintTimeout: number | undefined;
 
-    const initAndRender = () => {
-      if (cancelled) return;
+    const tryRender = () => {
+      if (cancelled) return true;
       const AppleID = window.AppleID;
-      if (!AppleID?.auth) return false;
+      const container = appleContainerRef.current?.querySelector<HTMLDivElement>("#appleid-signin");
+      if (!AppleID?.auth || !container) return false;
       try {
         AppleID.auth.init({
           clientId: APPLE_SERVICES_ID || "pending.services.id",
@@ -51,25 +56,36 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           redirectURI: window.location.origin,
           usePopup: true,
         });
-        AppleID.auth.renderButton?.();
       } catch {
-        // Init/render can throw if called before the placeholder div mounts —
-        // the retry loop below will pick it up on the next tick.
+        // init can throw if called twice on some SDK builds — safe to ignore.
       }
+      // Kick renderButton after a paint tick so the placeholder div is fully
+      // laid out; without this the SDK sometimes no-ops silently.
+      paintTimeout = window.setTimeout(() => {
+        if (cancelled) return;
+        try {
+          AppleID.auth.renderButton?.();
+        } catch {
+          // no-op
+        }
+      }, 0);
       return true;
     };
 
-    if (!initAndRender()) {
-      const interval = window.setInterval(() => {
-        if (initAndRender()) window.clearInterval(interval);
+    if (!tryRender()) {
+      interval = window.setInterval(() => {
+        if (tryRender()) window.clearInterval(interval);
       }, 100);
-      window.setTimeout(() => window.clearInterval(interval), 5000);
+      window.setTimeout(() => interval && window.clearInterval(interval), 5000);
     }
 
     return () => {
       cancelled = true;
+      if (interval) window.clearInterval(interval);
+      if (paintTimeout) window.clearTimeout(paintTimeout);
     };
   }, [open, isSignup]);
+
 
   const handleAppleClick = (e: React.MouseEvent) => {
     // Until the Apple Developer Services ID is configured, keep the button
