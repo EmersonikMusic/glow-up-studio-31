@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
+import appleLogoWhite from "@/assets/apple-logo-white.svg";
 import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
 
 interface AuthModalProps {
@@ -41,23 +42,19 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const isSignup = mode === "signup";
   const appleContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Initialize Apple's Sign in with Apple JS SDK once the script loads, then
-  // (re-)render the official Apple button whenever the modal opens or the
-  // sign-in / sign-up mode toggles. The SDK auto-scans on load, but our div
-  // mounts inside a Radix modal after the initial scan, so we call
-  // renderButton() ourselves. renderButton() paints asynchronously, so we
-  // give the DOM a tick before deciding it worked.
+  // Initialize Apple's Sign in with Apple JS SDK once the script loads. We
+  // render a custom Sign in with Apple button (per Apple HIG's custom-button
+  // guidelines) so we control font size and layout, then dispatch to
+  // AppleID.auth.signIn() from that button once credentials are provisioned.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
     let interval: number | undefined;
-    let paintTimeout: number | undefined;
 
-    const tryRender = () => {
+    const tryInit = () => {
       if (cancelled) return true;
       const AppleID = window.AppleID;
-      const container = appleContainerRef.current?.querySelector<HTMLDivElement>("#appleid-signin");
-      if (!AppleID?.auth || !container) return false;
+      if (!AppleID?.auth) return false;
       try {
         AppleID.auth.init({
           clientId: APPLE_SERVICES_ID || "pending.services.id",
@@ -68,22 +65,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       } catch {
         // init can throw if called twice on some SDK builds — safe to ignore.
       }
-      // Kick renderButton after a paint tick so the placeholder div is fully
-      // laid out; without this the SDK sometimes no-ops silently.
-      paintTimeout = window.setTimeout(() => {
-        if (cancelled) return;
-        try {
-          AppleID.auth.renderButton?.();
-        } catch {
-          // no-op
-        }
-      }, 0);
       return true;
     };
 
-    if (!tryRender()) {
+    if (!tryInit()) {
       interval = window.setInterval(() => {
-        if (tryRender()) window.clearInterval(interval);
+        if (tryInit()) window.clearInterval(interval);
       }, 100);
       window.setTimeout(() => interval && window.clearInterval(interval), 5000);
     }
@@ -91,7 +78,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     return () => {
       cancelled = true;
       if (interval) window.clearInterval(interval);
-      if (paintTimeout) window.clearTimeout(paintTimeout);
     };
   }, [open, isSignup]);
 
@@ -231,8 +217,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {isSignup ? "Sign up to save your progress" : "Sign in to continue"}
           </DialogDescription>
 
-          {/* Social buttons - stacked, brand-standard */}
-          <div className="flex flex-col gap-3">
+          {/* Social buttons - stacked on mobile, side-by-side on tablet+ */}
+          <div className="flex flex-col sm:flex-row sm:justify-center gap-3">
             <button
               type="button"
               onClick={handleGoogle}
@@ -248,38 +234,46 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 draggable={false}
               />
             </button>
-            {/* Official Sign in with Apple button — rendered by Apple's JS SDK.
-                Kept inert (click-catcher overlay) until VITE_APPLE_SERVICES_ID is set. */}
-            <div
-              ref={appleContainerRef}
-              onClickCapture={handleAppleClick}
-              role="button"
-              tabIndex={0}
+            {/* Custom Sign in with Apple button — Apple HIG allows custom
+                buttons with adjustable title font size, provided the official
+                Apple logo file and title text ("Sign in with Apple" /
+                "Sign up with Apple") are used. Clicks are swallowed until
+                VITE_APPLE_SERVICES_ID is set. */}
+            <button
+              ref={appleContainerRef as unknown as React.RefObject<HTMLButtonElement>}
+              type="button"
+              onClick={handleAppleClick}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
-              className="relative mx-auto rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%", background: "#000000" }}
+              className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{
+                width: SOCIAL_BTN_WIDTH,
+                height: SOCIAL_BTN_HEIGHT,
+                maxWidth: "100%",
+                background: "#000000",
+                color: "#FFFFFF",
+              }}
             >
-              <div
-                key={isSignup ? "apple-signup" : "apple-signin"}
-                id="appleid-signin"
-                data-mode="center-align"
-                data-type={isSignup ? "sign-up" : "sign-in"}
-                data-color="black"
-                data-border="false"
-                data-border-radius="50"
-                data-width={String(SOCIAL_BTN_WIDTH)}
-                data-height={String(SOCIAL_BTN_HEIGHT)}
-                className="w-full h-full"
+              <img
+                src={appleLogoWhite}
+                alt=""
+                aria-hidden="true"
+                draggable={false}
+                style={{ height: SOCIAL_BTN_HEIGHT, width: "auto", display: "block" }}
               />
-              {!APPLE_AUTH_READY && (
-                // Transparent overlay so clicks never reach Apple's iframe while
-                // credentials are still being provisioned.
-                <span aria-hidden="true" className="absolute inset-0" />
-              )}
-            </div>
-
-
+              <span
+                style={{
+                  fontFamily:
+                    "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
+                  fontSize: 16,
+                  fontWeight: 500,
+                  letterSpacing: "-0.24px",
+                  lineHeight: 1,
+                }}
+              >
+                {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
+              </span>
+            </button>
           </div>
 
           {/* OR divider */}
