@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
-import { LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { LogIn, User as UserIcon } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { trackClick } from "@/lib/analytics";
 import AuthModal from "./AuthModal";
 
@@ -17,9 +9,14 @@ interface Profile {
   display_name: string | null;
   avatar_url: string | null;
   email: string | null;
+  username: string | null;
 }
 
-export default function AuthButton() {
+interface AuthButtonProps {
+  onOpenProfile?: () => void;
+}
+
+export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -42,7 +39,7 @@ export default function AuthButton() {
     let cancelled = false;
     supabase
       .from("profiles")
-      .select("display_name, avatar_url, email")
+      .select("display_name, avatar_url, email, username")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -56,6 +53,7 @@ export default function AuthButton() {
               null,
             avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
             email: user.email ?? null,
+            username: null,
           },
         );
       });
@@ -63,11 +61,6 @@ export default function AuthButton() {
       cancelled = true;
     };
   }, [user]);
-
-  const handleSignOut = async () => {
-    trackClick("click_sign_out");
-    await supabase.auth.signOut();
-  };
 
   if (!user) {
     return (
@@ -97,7 +90,7 @@ export default function AuthButton() {
     );
   }
 
-  const name = profile?.display_name ?? user.email ?? "Account";
+  const name = profile?.username ?? profile?.display_name ?? user.email ?? "Account";
   const avatar = profile?.avatar_url;
   const initials = name
     .split(/\s+/)
@@ -107,61 +100,45 @@ export default function AuthButton() {
   const teal = "hsl(185 70% 55%)";
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95 gap-1.5"
+    <button
+      onClick={() => {
+        trackClick("profile_open");
+        onOpenProfile?.();
+      }}
+      className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95 gap-1.5"
+      style={{
+        background: "rgba(255, 255, 255, 0.08)",
+        border: "1px solid rgba(255, 255, 255, 0.15)",
+      }}
+      aria-label="Open profile"
+    >
+      {avatar ? (
+        <img
+          src={avatar}
+          alt=""
+          className="w-5 h-5 rounded-full object-cover"
+          draggable={false}
+          referrerPolicy="no-referrer"
+        />
+      ) : initials ? (
+        <span
+          className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-body font-bold"
           style={{
-            background: "rgba(255, 255, 255, 0.08)",
-            border: "1px solid rgba(255, 255, 255, 0.15)",
+            backgroundColor: "hsl(185 70% 55% / 0.2)",
+            color: teal,
           }}
-          aria-label="Account menu"
         >
-          {avatar ? (
-            <img
-              src={avatar}
-              alt=""
-              className="w-5 h-5 rounded-full object-cover"
-              draggable={false}
-              referrerPolicy="no-referrer"
-            />
-          ) : initials ? (
-            <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-body font-bold"
-              style={{
-                background: `${teal} / 0.2`,
-                backgroundColor: "hsl(185 70% 55% / 0.2)",
-                color: teal,
-              }}
-            >
-              {initials}
-            </span>
-          ) : (
-            <UserIcon className="w-4 h-4" style={{ color: teal }} />
-          )}
-          <span
-            className="hidden sm:inline text-xs font-body font-bold uppercase tracking-wider max-w-[8rem] truncate"
-            style={{ color: teal }}
-          >
-            {name}
-          </span>
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex flex-col">
-          <span className="truncate">{name}</span>
-          {profile?.email && (
-            <span className="text-xs font-normal text-muted-foreground truncate">
-              {profile.email}
-            </span>
-          )}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          <LogOut className="w-4 h-4 mr-2" />
-          Sign out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          {initials}
+        </span>
+      ) : (
+        <UserIcon className="w-4 h-4" style={{ color: teal }} />
+      )}
+      <span
+        className="hidden sm:inline text-xs font-body font-bold uppercase tracking-wider max-w-[8rem] truncate"
+        style={{ color: teal }}
+      >
+        {name}
+      </span>
+    </button>
   );
 }
