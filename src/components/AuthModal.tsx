@@ -222,21 +222,37 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 draggable={false}
               />
             </button>
-            <button
-              type="button"
-              onClick={() => toast("Apple sign-in coming soon")}
+            {/* Official Sign in with Apple button — rendered by Apple's JS SDK.
+                Kept inert (click-catcher overlay) until VITE_APPLE_SERVICES_ID is set. */}
+            <div
+              ref={appleContainerRef}
+              onClickCapture={handleAppleClick}
+              role="button"
+              tabIndex={0}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-full transition-all active:scale-95"
-              style={{
-                background: "#000000",
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-              }}
+              aria-disabled={!APPLE_AUTH_READY}
+              className="relative w-full h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{ background: "#000000" }}
             >
-              <AppleIcon className="w-5 h-5 text-white" />
-              <span className="text-[15px] font-medium text-white" style={{ letterSpacing: "-0.01em" }}>
-                {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
-              </span>
-            </button>
+              <div
+                key={isSignup ? "apple-signup" : "apple-signin"}
+                id="appleid-signin"
+                data-mode="center-align"
+                data-type={isSignup ? "sign-up" : "sign-in"}
+                data-color="black"
+                data-border="false"
+                data-border-radius="50"
+                data-width="375"
+                data-height="48"
+                className="w-full h-full"
+              />
+              {!APPLE_AUTH_READY && (
+                // Transparent overlay so clicks never reach Apple's iframe while
+                // credentials are still being provisioned.
+                <span aria-hidden="true" className="absolute inset-0" />
+              )}
+            </div>
+
           </div>
 
           {/* OR divider */}
