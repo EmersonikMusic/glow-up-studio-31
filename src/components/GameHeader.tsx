@@ -5,7 +5,7 @@ import settingsIcon from "@/assets/icon-settings.svg";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
-/* import AuthButton from "./AuthButton"; */
+import AuthButton from "./AuthButton";
 
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
@@ -91,8 +91,8 @@ export default function GameHeader({
         {showNav && (
           <div className="flex items-center gap-1 sm:gap-2">
 
-            {/* Auth (Sign in / account) — hidden until login is ready to launch */}
-            {/* <AuthButton /> */}
+            {/* Auth (Sign in / account) */}
+            <AuthButton />
 
 
 
