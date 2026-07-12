@@ -151,7 +151,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     if (!user || deleteConfirmText !== "DELETE") return;
     setDeleting(true);
     trackClick("profile_delete_account");
-    const { error } = await supabase.rpc("delete_current_user");
+    const { error } = await supabase.functions.invoke("delete-account");
     if (error) {
       setDeleting(false);
       toast.error("Couldn't delete account. Please try again.");
