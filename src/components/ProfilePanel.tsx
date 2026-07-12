@@ -137,6 +137,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     "";
   const email = profile?.email ?? user?.email ?? "";
   const gamesCompleted = profile?.games_completed ?? 0;
+  const memberSince = formatMonthYear(profile?.created_at ?? user?.created_at ?? null);
 
   const firstUnlocked = gamesCompleted >= 1;
 
