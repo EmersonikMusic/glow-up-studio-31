@@ -103,15 +103,14 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     user?.email ??
     "";
   const email = profile?.email ?? user?.email ?? "";
-  const gamesCompleted = profile?.games_completed ?? 0;
+  const gamesCompleted = profile?.total_games_played ?? 0;
   const memberSince = formatMonthYear(profile?.created_at ?? user?.created_at ?? null);
 
-  // TODO: wire to real unlock data from Cloud. Newest-earned first.
-  const unlockedBadgeIds = [
-    "progression-and-consistency-n-a-the-regular",
-    "progression-and-consistency-n-a-decathlon",
-    "progression-and-consistency-n-a-the-icebreaker",
-  ];
+  // Map earned badge names (stored in DB) to badge IDs for the achievements grid.
+  const unlockedBadgeIds = useMemo(() => {
+    const names = new Set(profile?.unlocked_badges ?? []);
+    return BADGES.filter((b) => names.has(b.badgeName)).map((b) => b.id);
+  }, [profile?.unlocked_badges]);
 
   const startEdit = () => {
     setDraftUsername(username);
