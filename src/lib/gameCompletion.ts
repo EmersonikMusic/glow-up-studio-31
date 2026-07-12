@@ -33,28 +33,27 @@ export async function handleGameCompletion(
 
   const completedAtIso = session.completedAt.toISOString();
 
-  const category_counts = bump(
-    (data.category_counts as Record<string, number>) ?? {},
-    session.categories,
-  );
-  const era_counts = bump(
-    (data.era_counts as Record<string, number>) ?? {},
-    session.eras,
-  );
-  const difficulty_counts = bump(
-    (data.difficulty_counts as Record<string, number>) ?? {},
-    session.difficulties,
-  );
-
+  const total_games_played = (data.total_games_played ?? 0) + 1;
   const priorHistory = (data.play_history as string[] | null) ?? [];
   const play_history = [...priorHistory, completedAtIso].slice(-HISTORY_LIMIT);
 
-  const total_games_played = (data.total_games_played ?? 0) + 1;
-  const min_timer_games =
-    (data.min_timer_games ?? 0) + (session.isMinimumTimer ? 1 : 0);
-  const quickplay_games =
-    (data.quickplay_games ?? 0) + (session.isQuickplay ? 1 : 0);
-  const custom_games = (data.custom_games ?? 0) + (session.isCustom ? 1 : 0);
+  let category_counts = (data.category_counts as Record<string, number>) ?? {};
+  let era_counts = (data.era_counts as Record<string, number>) ?? {};
+  let difficulty_counts = (data.difficulty_counts as Record<string, number>) ?? {};
+  let min_timer_games = data.min_timer_games ?? 0;
+  let custom_games = data.custom_games ?? 0;
+  const quickplay_games = (data.quickplay_games ?? 0) + (session.isQuickplay ? 1 : 0);
+
+  // Quickplay only updates global stats and the quickplay counter.
+  // Custom games are the only path that increments category/era/difficulty
+  // JSONB counters so that all-encompassing badges require genuine variety.
+  if (!session.isQuickplay) {
+    category_counts = bump(category_counts, session.categories);
+    era_counts = bump(era_counts, session.eras);
+    difficulty_counts = bump(difficulty_counts, session.difficulties);
+    min_timer_games = min_timer_games + (session.isMinimumTimer ? 1 : 0);
+    custom_games = custom_games + (session.isCustom ? 1 : 0);
+  }
 
   const stats: BadgeStats = {
     total_games_played,
