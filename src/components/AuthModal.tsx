@@ -292,7 +292,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3">
             <input
               type="email"
               value={email}
@@ -305,28 +305,30 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 border: "1px solid rgba(255,255,255,0.12)",
               }}
             />
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                autoComplete={isSignup ? "new-password" : "current-password"}
-                className="w-full h-12 px-4 pr-12 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--game-gold))]/40"
-                style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
+            {!isForgot && (
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  autoComplete={isSignup ? "new-password" : "current-password"}
+                  className="w-full h-12 px-4 pr-12 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--game-gold))]/40"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            )}
             {isSignup && (
               <div className="relative">
                 <input
@@ -352,6 +354,21 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </div>
             )}
 
+            {mode === "signin" && (
+              <button
+                type="button"
+                onClick={() => {
+                  trackClick("click_forgot_password");
+                  setError(null);
+                  setPassword("");
+                  setMode("forgot");
+                }}
+                className="self-end text-xs text-white/60 underline underline-offset-2 hover:text-[hsl(var(--game-gold))]"
+              >
+                Forgot password?
+              </button>
+            )}
+
             {error && (
               <p className="text-xs text-red-400 text-center">{error}</p>
             )}
@@ -370,25 +387,40 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 fontFamily: "'Fredoka One', 'Rubik', sans-serif",
               }}
             >
-              {!isSignup && <LogIn className="w-5 h-5" />}
-              {isSignup ? "Sign Up" : "Sign In"}
+              {!isSignup && !isForgot && <LogIn className="w-5 h-5" />}
+              {isForgot ? "Send Reset Link" : isSignup ? "Sign Up" : "Sign In"}
             </button>
           </form>
 
           {/* Toggle mode */}
           <p className="text-center text-xs text-white/50 mt-5">
-            {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-            <button
-              type="button"
-              onClick={() => {
-                setError(null);
-                setConfirmPassword("");
-                setMode(isSignup ? "signin" : "signup");
-              }}
-              className="text-white/80 underline underline-offset-2 hover:text-[hsl(var(--game-gold))]"
-            >
-              {isSignup ? "Sign in" : "Sign up"}
-            </button>
+            {isForgot ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setError(null);
+                  setMode("signin");
+                }}
+                className="text-white/80 underline underline-offset-2 hover:text-[hsl(var(--game-gold))]"
+              >
+                Back to sign in
+              </button>
+            ) : (
+              <>
+                {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setConfirmPassword("");
+                    setMode(isSignup ? "signin" : "signup");
+                  }}
+                  className="text-white/80 underline underline-offset-2 hover:text-[hsl(var(--game-gold))]"
+                >
+                  {isSignup ? "Sign in" : "Sign up"}
+                </button>
+              </>
+            )}
           </p>
         </div>
       </DialogContent>
