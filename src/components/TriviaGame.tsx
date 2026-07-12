@@ -593,6 +593,7 @@ export default function TriviaGame() {
       <>
         <StartScreen
           onStart={handleStart}
+          onStartKids={handleStartKids}
           onAbout={handleOpenAbout}
           onHowToPlay={() => setShowHowToPlay(true)}
           onPrivacy={() => setShowPrivacy(true)}
