@@ -14,8 +14,7 @@ interface AuthModalProps {
 }
 
 // Filled in once the Apple Developer Services ID is provisioned.
-// While empty, the Apple button renders visually via Apple's SDK but clicks
-// are intercepted and only show a "coming soon" toast.
+// Until then, the Apple button is hidden and the Apple SDK is not loaded.
 const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
 const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
 
@@ -60,7 +59,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   // load, we (re-)inject a fresh script tag every time the modal opens so
   // the SDK re-scans and renders the button now.
   useEffect(() => {
-    if (!open) return;
+    if (!open || !APPLE_AUTH_READY) return;
     const SCRIPT_SRC =
       "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
 
@@ -279,26 +278,28 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 />
               </button>
               {/* Official Sign in with Apple button — rendered by Apple's JS
-                  SDK into #appleid-signin. Click is swallowed until
-                  VITE_APPLE_SERVICES_ID is set. */}
-              <div
-                onClick={handleAppleClick}
-                className="mx-auto cursor-pointer"
-                style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
-                role="button"
-                aria-label="Sign in with Apple"
-                aria-disabled={!APPLE_AUTH_READY}
-              >
+                  SDK into #appleid-signin. Only shown once the Apple
+                  Developer Services ID is configured. */}
+              {APPLE_AUTH_READY && (
                 <div
-                  id="appleid-signin"
-                  style={{ width: "100%", height: "100%" }}
-                  data-color="black"
-                  data-border="false"
-                  data-type="sign-in"
-                  data-mode="center-align"
-                  data-border-radius="50"
-                />
-              </div>
+                  onClick={handleAppleClick}
+                  className="mx-auto cursor-pointer"
+                  style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
+                  role="button"
+                  aria-label="Sign in with Apple"
+                  aria-disabled={!APPLE_AUTH_READY}
+                >
+                  <div
+                    id="appleid-signin"
+                    style={{ width: "100%", height: "100%" }}
+                    data-color="black"
+                    data-border="false"
+                    data-type="sign-in"
+                    data-mode="center-align"
+                    data-border-radius="50"
+                  />
+                </div>
+              )}
             </div>
 
             {/* OR divider */}
