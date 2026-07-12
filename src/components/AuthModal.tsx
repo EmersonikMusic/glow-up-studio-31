@@ -247,8 +247,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               tabIndex={0}
               aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
               aria-disabled={!APPLE_AUTH_READY}
-              className="relative w-full h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
-              style={{ background: "#000000" }}
+              className="relative mx-auto h-12 rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
+              style={{ width: 375, maxWidth: "100%", background: "#000000" }}
             >
               <div
                 key={isSignup ? "apple-signup" : "apple-signin"}
@@ -268,6 +268,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 <span aria-hidden="true" className="absolute inset-0" />
               )}
             </div>
+
 
           </div>
 
