@@ -25,7 +25,7 @@ export async function handleGameCompletion(
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "total_games_played, unlocked_badges, category_counts, era_counts, difficulty_counts, play_history, min_timer_games, quickplay_games, custom_games, first_game_completed_at",
+      "total_games_played, unlocked_badges, category_counts, era_counts, difficulty_counts, play_history, min_timer_games, quickplay_games, custom_games, first_game_completed_at, game_settings_history",
     )
     .eq("id", userId)
     .maybeSingle();
@@ -37,12 +37,26 @@ export async function handleGameCompletion(
   const priorHistory = (data.play_history as string[] | null) ?? [];
   const play_history = [...priorHistory, completedAtIso].slice(-HISTORY_LIMIT);
 
+  const priorSettings =
+    (data.game_settings_history as Array<Record<string, unknown>> | null) ?? [];
+  const game_settings_history = [
+    ...priorSettings,
+    {
+      played_at: completedAtIso,
+      mode: session.isQuickplay ? "quickplay" : "custom",
+      categories: session.categories,
+      difficulties: session.difficulties,
+      eras: session.eras,
+    },
+  ];
+
   let category_counts = (data.category_counts as Record<string, number>) ?? {};
   let era_counts = (data.era_counts as Record<string, number>) ?? {};
   let difficulty_counts = (data.difficulty_counts as Record<string, number>) ?? {};
   let min_timer_games = data.min_timer_games ?? 0;
   let custom_games = data.custom_games ?? 0;
   const quickplay_games = (data.quickplay_games ?? 0) + (session.isQuickplay ? 1 : 0);
+
 
   // Quickplay only updates global stats and the quickplay counter.
   // Custom games are the only path that increments category/era/difficulty
