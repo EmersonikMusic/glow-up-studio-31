@@ -18,6 +18,10 @@ import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import PrivacyScreen from "./PrivacyScreen";
 import SettingsPanel from "./SettingsPanel";
+import ProfilePanel from "./ProfilePanel";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
+import { recordGameCompletion } from "@/lib/profileProgress";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
 import PauseOverlay from "./PauseOverlay";
@@ -100,12 +104,37 @@ export default function TriviaGame() {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const pausedByAboutRef = useRef(false);
+  const recordedGameRef = useRef(false);
+
+  // Track auth state for profile panel + completion recording.
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setCurrentUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUser(data.session?.user ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // Record game completion once per finished game, if signed in.
+  useEffect(() => {
+    if (gameState === "finished" && currentUser && !recordedGameRef.current) {
+      recordedGameRef.current = true;
+      void recordGameCompletion(currentUser.id);
+    }
+    if (gameState !== "finished") {
+      recordedGameRef.current = false;
+    }
+  }, [gameState, currentUser]);
 
   const handleOpenAbout = useCallback(() => {
     const inGame =
@@ -611,7 +640,7 @@ export default function TriviaGame() {
       <GameHeader
         onSettingsToggle={() => setPanelOpen((v) => !v)}
         onAbout={handleOpenAbout}
-        
+        onOpenProfile={() => setProfileOpen(true)}
         onHome={handleRestart}
         settingsOpen={panelOpen}
       />
@@ -761,6 +790,13 @@ export default function TriviaGame() {
         onApply={handleApply}
         gameInProgress={gameState === "playing" || gameState === "answered"}
         currentSettings={settings}
+      />
+
+      {/* Profile panel */}
+      <ProfilePanel
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        user={currentUser}
       />
 
 

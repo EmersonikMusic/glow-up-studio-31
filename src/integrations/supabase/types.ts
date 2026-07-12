@@ -20,24 +20,36 @@ export type Database = {
           created_at: string
           display_name: string | null
           email: string | null
+          first_game_completed_at: string | null
+          games_completed: number
           id: string
+          last_played_at: string | null
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
+          first_game_completed_at?: string | null
+          games_completed?: number
           id: string
+          last_played_at?: string | null
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
+          first_game_completed_at?: string | null
+          games_completed?: number
           id?: string
+          last_played_at?: string | null
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
