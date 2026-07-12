@@ -42,23 +42,19 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const isSignup = mode === "signup";
   const appleContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Initialize Apple's Sign in with Apple JS SDK once the script loads, then
-  // (re-)render the official Apple button whenever the modal opens or the
-  // sign-in / sign-up mode toggles. The SDK auto-scans on load, but our div
-  // mounts inside a Radix modal after the initial scan, so we call
-  // renderButton() ourselves. renderButton() paints asynchronously, so we
-  // give the DOM a tick before deciding it worked.
+  // Initialize Apple's Sign in with Apple JS SDK once the script loads. We
+  // render a custom Sign in with Apple button (per Apple HIG's custom-button
+  // guidelines) so we control font size and layout, then dispatch to
+  // AppleID.auth.signIn() from that button once credentials are provisioned.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
     let interval: number | undefined;
-    let paintTimeout: number | undefined;
 
-    const tryRender = () => {
+    const tryInit = () => {
       if (cancelled) return true;
       const AppleID = window.AppleID;
-      const container = appleContainerRef.current?.querySelector<HTMLDivElement>("#appleid-signin");
-      if (!AppleID?.auth || !container) return false;
+      if (!AppleID?.auth) return false;
       try {
         AppleID.auth.init({
           clientId: APPLE_SERVICES_ID || "pending.services.id",
@@ -69,22 +65,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       } catch {
         // init can throw if called twice on some SDK builds — safe to ignore.
       }
-      // Kick renderButton after a paint tick so the placeholder div is fully
-      // laid out; without this the SDK sometimes no-ops silently.
-      paintTimeout = window.setTimeout(() => {
-        if (cancelled) return;
-        try {
-          AppleID.auth.renderButton?.();
-        } catch {
-          // no-op
-        }
-      }, 0);
       return true;
     };
 
-    if (!tryRender()) {
+    if (!tryInit()) {
       interval = window.setInterval(() => {
-        if (tryRender()) window.clearInterval(interval);
+        if (tryInit()) window.clearInterval(interval);
       }, 100);
       window.setTimeout(() => interval && window.clearInterval(interval), 5000);
     }
@@ -92,7 +78,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     return () => {
       cancelled = true;
       if (interval) window.clearInterval(interval);
-      if (paintTimeout) window.clearTimeout(paintTimeout);
     };
   }, [open, isSignup]);
 
