@@ -176,6 +176,24 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     onClose();
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user || deleteConfirmText !== "DELETE") return;
+    setDeleting(true);
+    trackClick("profile_delete_account");
+    const { error } = await supabase.rpc("delete_current_user");
+    if (error) {
+      setDeleting(false);
+      toast.error("Couldn't delete account. Please try again.");
+      return;
+    }
+    await supabase.auth.signOut();
+    setDeleting(false);
+    setDeleteOpen(false);
+    setDeleteConfirmText("");
+    toast.success("Your account has been deleted.");
+    onClose();
+  };
+
   // Mobile drag-to-dismiss
   const sheetRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number | null>(null);
