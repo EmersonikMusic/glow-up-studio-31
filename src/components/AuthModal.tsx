@@ -228,11 +228,15 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 lineHeight: 1.05,
               }}
             >
-              {isSignup ? "Create Account" : "Welcome Back"}
+              {isForgot ? "Reset Password" : isSignup ? "Create Account" : "Welcome Back"}
             </h2>
           </DialogTitle>
           <DialogDescription className="text-center text-sm text-white/60 mt-1 mb-6">
-            {isSignup ? "Sign up to save your progress" : "Sign in to continue"}
+            {isForgot
+              ? "Enter your email to receive a reset link"
+              : isSignup
+                ? "Sign up to save your progress"
+                : "Sign in to continue"}
           </DialogDescription>
 
           {/* Social buttons - stacked on mobile, side-by-side on tablet+ */}
