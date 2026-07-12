@@ -29,7 +29,8 @@ interface ProfileRow {
   display_name: string | null;
   email: string | null;
   avatar_url: string | null;
-  games_completed: number;
+  total_games_played: number;
+  unlocked_badges: string[] | null;
   last_played_at: string | null;
   first_game_completed_at: string | null;
   created_at: string | null;
