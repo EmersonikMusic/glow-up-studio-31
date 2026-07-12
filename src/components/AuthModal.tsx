@@ -30,6 +30,59 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const isSignup = mode === "signup";
+  const appleContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Initialize Apple's Sign in with Apple JS SDK once the script loads and
+  // (re-)render the official Apple button whenever the modal opens or the
+  // sign-in / sign-up mode toggles. The SDK auto-scans on load, but our div
+  // lives inside a modal that mounts after the initial scan.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    const initAndRender = () => {
+      if (cancelled) return;
+      const AppleID = window.AppleID;
+      if (!AppleID?.auth) return false;
+      try {
+        AppleID.auth.init({
+          clientId: APPLE_SERVICES_ID || "pending.services.id",
+          scope: "name email",
+          redirectURI: window.location.origin,
+          usePopup: true,
+        });
+        AppleID.auth.renderButton?.();
+      } catch {
+        // Init/render can throw if called before the placeholder div mounts —
+        // the retry loop below will pick it up on the next tick.
+      }
+      return true;
+    };
+
+    if (!initAndRender()) {
+      const interval = window.setInterval(() => {
+        if (initAndRender()) window.clearInterval(interval);
+      }, 100);
+      window.setTimeout(() => window.clearInterval(interval), 5000);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, isSignup]);
+
+  const handleAppleClick = (e: React.MouseEvent) => {
+    // Until the Apple Developer Services ID is configured, keep the button
+    // inert: swallow the click so Apple's SDK doesn't open an auth window
+    // against a placeholder client ID (which would show `invalid_client`).
+    if (!APPLE_AUTH_READY) {
+      e.preventDefault();
+      e.stopPropagation();
+      trackClick("click_sign_in_apple");
+      toast("Apple sign-in coming soon");
+    }
+  };
+
 
   const handleGoogle = async () => {
     trackClick("click_sign_in_google");
