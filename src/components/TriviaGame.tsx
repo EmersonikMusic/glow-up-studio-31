@@ -525,6 +525,7 @@ export default function TriviaGame() {
   const handleApply = useCallback(async (newSettings: GameSettings) => {
     setSettings(newSettings);
     setHasCustomized(true);
+    setKidsMode(false);
     const wasInGame =
       gameStateRef.current === "playing" || gameStateRef.current === "answered";
     if (!wasInGame) return;
@@ -533,14 +534,25 @@ export default function TriviaGame() {
     setPanelOpen(false);
     clearTimer();
     clearAnswerTimer();
-    await runFetchAndStart(newSettings);
+    await runFetchAndStart(newSettings, { kidsMode: false });
   }, [clearTimer, clearAnswerTimer, runFetchAndStart]);
 
   const handleStart = useCallback(async () => {
     if (loading) return;
+    setKidsMode(false);
     setPanelOpen(false);
     clearAnswerTimer();
-    await runFetchAndStart(settings);
+    await runFetchAndStart(settings, { kidsMode: false });
+  }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
+
+  const handleStartKids = useCallback(async () => {
+    if (loading) return;
+    setKidsMode(true);
+    setPanelOpen(false);
+    clearAnswerTimer();
+    // Kids Mode uses the user's current timer + question-count settings but
+    // pulls exclusively from the Kids difficulty pool.
+    await runFetchAndStart(settings, { kidsMode: true });
   }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
 
   const handleNext = useCallback(() => {
@@ -555,6 +567,7 @@ export default function TriviaGame() {
     setQuestionIndex(0);
     setScore(0);
     setActiveQuestions([]);
+    setKidsMode(false);
     setCountdown(settings.timePerQuestion);
     setGameState("start");
     setPanelOpen(!matchesMedia("(max-width: 767px)", false));
@@ -572,8 +585,8 @@ export default function TriviaGame() {
     setPaused(false);
     setAnimKey((k) => k + 1);
     setGameState("loading");
-    await runFetchAndStart(settings);
-  }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings]);
+    await runFetchAndStart(settings, { kidsMode });
+  }, [clearTimer, clearAnswerTimer, runFetchAndStart, settings, kidsMode]);
 
   if (gameState === "start") {
     return (
