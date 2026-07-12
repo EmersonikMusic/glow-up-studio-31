@@ -11,6 +11,7 @@ interface GameHeaderProps {
   onSettingsToggle?: () => void;
   onAbout?: () => void;
   onHome?: () => void;
+  onOpenProfile?: () => void;
   settingsOpen?: boolean;
   showNav?: boolean;
 }
@@ -19,6 +20,7 @@ export default function GameHeader({
   onSettingsToggle,
   onAbout,
   onHome,
+  onOpenProfile,
   settingsOpen = false,
   showNav = true,
 }: GameHeaderProps) {
@@ -92,7 +94,7 @@ export default function GameHeader({
           <div className="flex items-center gap-1 sm:gap-2">
 
             {/* Auth (Sign in / account) */}
-            <AuthButton />
+            <AuthButton onOpenProfile={onOpenProfile} />
 
 
 
