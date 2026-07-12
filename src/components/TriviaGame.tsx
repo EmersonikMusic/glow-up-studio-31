@@ -108,6 +108,7 @@ export default function TriviaGame() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
+  const [kidsMode, setKidsMode] = useState(false);
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
