@@ -17,37 +17,61 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          category_counts: Json
           created_at: string
+          custom_games: number
+          difficulty_counts: Json
           display_name: string | null
           email: string | null
+          era_counts: Json
           first_game_completed_at: string | null
-          games_completed: number
           id: string
           last_played_at: string | null
+          min_timer_games: number
+          play_history: string[]
+          quickplay_games: number
+          total_games_played: number
+          unlocked_badges: string[]
           updated_at: string
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          category_counts?: Json
           created_at?: string
+          custom_games?: number
+          difficulty_counts?: Json
           display_name?: string | null
           email?: string | null
+          era_counts?: Json
           first_game_completed_at?: string | null
-          games_completed?: number
           id: string
           last_played_at?: string | null
+          min_timer_games?: number
+          play_history?: string[]
+          quickplay_games?: number
+          total_games_played?: number
+          unlocked_badges?: string[]
           updated_at?: string
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          category_counts?: Json
           created_at?: string
+          custom_games?: number
+          difficulty_counts?: Json
           display_name?: string | null
           email?: string | null
+          era_counts?: Json
           first_game_completed_at?: string | null
-          games_completed?: number
           id?: string
           last_played_at?: string | null
+          min_timer_games?: number
+          play_history?: string[]
+          quickplay_games?: number
+          total_games_played?: number
+          unlocked_badges?: string[]
           updated_at?: string
           username?: string | null
         }
