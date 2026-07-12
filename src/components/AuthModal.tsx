@@ -249,7 +249,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 data-border="false"
                 data-type="sign-in"
                 data-mode="center-align"
-                data-border-radius="20"
+                data-border-radius="44"
               />
             </div>
           </div>
