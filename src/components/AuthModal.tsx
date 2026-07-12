@@ -196,18 +196,23 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <img src={toLogoSm} alt="Triviolivia" className="h-8 w-auto" draggable={false} />
           </div>
 
-          {/* Heading */}
+          {/* Heading - matches About page header styling */}
+          <p
+            className="text-center text-sm font-subheading font-bold tracking-[0.2em] uppercase mb-2"
+            style={{ color: "hsl(185 70% 55%)" }}
+          >
+            {isSignup ? "Join" : "Welcome to"}
+          </p>
           <DialogTitle asChild>
             <h2
-              className="text-center text-3xl sm:text-4xl font-heading tracking-wider uppercase"
+              className="text-center font-heading font-extrabold uppercase leading-none tracking-tight whitespace-nowrap text-[clamp(14px,6.2vw,24px)] sm:text-3xl md:text-4xl"
               style={{
-                fontFamily: "'Fredoka One', 'Rubik', sans-serif",
                 background:
-                  "linear-gradient(180deg, #fff33b 0%, #fdc70c 40%, #f3903f 75%, #e93e3a 100%)",
+                  "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                textShadow: "0 2px 3px rgba(87,33,91,0.4)",
+                lineHeight: 1.05,
               }}
             >
               {isSignup ? "Create Account" : "Welcome Back"}
