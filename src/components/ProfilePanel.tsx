@@ -104,13 +104,16 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const [editing, setEditing] = useState(false);
   const [draftUsername, setDraftUsername] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!open || !user) return;
     let cancelled = false;
     supabase
       .from("profiles")
-      .select("username, display_name, email, avatar_url, games_completed, last_played_at, first_game_completed_at")
+      .select("username, display_name, email, avatar_url, games_completed, last_played_at, first_game_completed_at, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
