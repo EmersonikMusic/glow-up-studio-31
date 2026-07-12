@@ -241,14 +241,13 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </button>
             {/* Custom Sign in with Apple button — Apple HIG allows custom
                 buttons with adjustable title font size, provided the official
-                Apple logo file and title text ("Sign in with Apple" /
-                "Sign up with Apple") are used. Clicks are swallowed until
-                VITE_APPLE_SERVICES_ID is set. */}
+                Apple logo file and "Sign in with Apple" title text are used.
+                Clicks are swallowed until VITE_APPLE_SERVICES_ID is set. */}
             <button
               ref={appleContainerRef as unknown as React.RefObject<HTMLButtonElement>}
               type="button"
               onClick={handleAppleClick}
-              aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
+              aria-label="Sign in with Apple"
               aria-disabled={!APPLE_AUTH_READY}
               className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 cursor-pointer"
               style={{
@@ -270,13 +269,13 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 style={{
                   fontFamily:
                     "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: 500,
                   letterSpacing: "-0.24px",
                   lineHeight: 1,
                 }}
               >
-                {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
+                Sign in with Apple
               </span>
             </button>
           </div>
