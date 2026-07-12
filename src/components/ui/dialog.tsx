@@ -33,6 +33,7 @@ interface DialogContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   overlayClassName?: string;
   overlayChildren?: React.ReactNode;
+  hideClose?: boolean;
 }
 
 const DialogContent = React.forwardRef<
