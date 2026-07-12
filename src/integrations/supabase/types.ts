@@ -85,7 +85,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      delete_current_user: { Args: never; Returns: undefined }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
