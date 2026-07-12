@@ -49,6 +49,18 @@ function formatDate(iso: string | null) {
   }
 }
 
+function formatMonthYear(iso: string | null) {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+    });
+  } catch {
+    return null;
+  }
+}
+
 function Badge({
   label,
   unlocked,
