@@ -130,25 +130,30 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     }
   };
 
-  const handleForgotSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const sendResetEmail = async (isResend: boolean) => {
     setError(null);
     if (!email) {
       setError("Please enter your email.");
       return;
     }
     setLoading(true);
-    trackClick("click_send_reset_link");
+    trackClick(isResend ? "click_resend_reset_link" : "click_send_reset_link");
     try {
       await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       // Always show the same confirmation to avoid account enumeration.
       toast.success("If that email exists, a reset link is on its way.");
-      setMode("signin");
+      setResetSent(true);
+      setResendCooldown(30);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendResetEmail(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
