@@ -91,8 +91,8 @@ export default function GameHeader({
         {showNav && (
           <div className="flex items-center gap-1 sm:gap-2">
 
-            {/* Auth (Sign in / account) — hidden until login is ready to launch */}
-            {/* <AuthButton /> */}
+            {/* Auth (Sign in / account) */}
+            <AuthButton />
 
 
 
