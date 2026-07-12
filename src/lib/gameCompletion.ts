@@ -102,7 +102,9 @@ export async function handleGameCompletion(
       quickplay_games,
       custom_games,
       unlocked_badges,
+      game_settings_history,
     })
+
     .eq("id", userId);
 
   return newlyUnlocked;
