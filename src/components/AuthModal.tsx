@@ -184,18 +184,45 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         setError("Passwords do not match.");
         return;
       }
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+        setError(usernameError);
+        return;
+      }
     }
     setLoading(true);
     trackClick(isSignup ? "click_sign_up_email" : "click_sign_in_email");
     try {
       if (isSignup) {
+        const trimmedUsername = username.trim();
+        // Pre-check availability (case-insensitive). Note: RLS restricts
+        // profile reads to the owner, so this may return null even for a
+        // taken username; the DB unique index is the ultimate guard.
+        const { data: taken } = await supabase
+          .from("profiles")
+          .select("id")
+          .ilike("username", trimmedUsername)
+          .maybeSingle();
+        if (taken) {
+          setError("That username is already taken.");
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { username: trimmedUsername },
+          },
         });
         if (error) {
-          setError(error.message);
+          // 23505 = unique violation on username index (thrown by trigger)
+          if (error.message?.toLowerCase().includes("username") || (error as { code?: string }).code === "23505") {
+            setError("That username is already taken.");
+          } else {
+            setError(error.message);
+          }
           return;
         }
         toast.success("Account created! Check your email to confirm.");
