@@ -383,6 +383,67 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
           <Badge label="25 Games" unlocked={false} />
         </div>
       </section>
+      </section>
+
+      {/* Danger zone */}
+      <section
+        className="mx-5 mb-6 rounded-2xl p-5"
+        style={{
+          background: "rgba(233, 62, 58, 0.06)",
+          border: "1px solid rgba(233, 62, 58, 0.25)",
+        }}
+      >
+        <div className="text-xs font-subheading font-bold tracking-widest uppercase mb-2" style={{ color: "rgb(255, 120, 116)" }}>
+          Danger Zone
+        </div>
+        <p className="text-xs font-body text-white/60 mb-3 leading-relaxed">
+          Permanently delete your account, profile, and progress. This can't be undone.
+        </p>
+        <button
+          onClick={() => {
+            setDeleteConfirmText("");
+            setDeleteOpen(true);
+          }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-body font-bold uppercase tracking-widest transition-all active:scale-95"
+          style={{
+            background: "rgba(233, 62, 58, 0.12)",
+            border: "1px solid rgba(233, 62, 58, 0.5)",
+            color: "rgb(255, 140, 136)",
+          }}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          Delete Account
+        </button>
+      </section>
+
+      <AlertDialog open={deleteOpen} onOpenChange={(o) => { if (!deleting) setDeleteOpen(o); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes your profile, progress, and achievements. This can't be undone.
+              Type <span className="font-bold text-foreground">DELETE</span> to confirm.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <input
+            value={deleteConfirmText}
+            onChange={(e) => setDeleteConfirmText(e.target.value)}
+            placeholder="Type DELETE to confirm"
+            autoFocus
+            className="w-full h-11 px-3 rounded-lg bg-background border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-destructive/50"
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={deleteConfirmText !== "DELETE" || deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting…" : "Delete account"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 
