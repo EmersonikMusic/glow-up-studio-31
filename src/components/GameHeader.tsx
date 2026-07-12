@@ -5,7 +5,7 @@ import settingsIcon from "@/assets/icon-settings.svg";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
-/* import AuthButton from "./AuthButton"; */
+import AuthButton from "./AuthButton";
 
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
