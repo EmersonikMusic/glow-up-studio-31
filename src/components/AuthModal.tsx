@@ -226,7 +226,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               <img
                 src={googleBtnAsset.url}
                 alt=""
-                className="h-full w-auto"
+                className="w-full h-full block"
                 draggable={false}
               />
             </button>
