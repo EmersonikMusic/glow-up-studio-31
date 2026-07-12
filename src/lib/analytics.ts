@@ -22,6 +22,8 @@ const ALLOWED_CLICK_EVENTS = new Set<string>([
   "click_skip_question",
   "click_back_question",
   "click_review_game",
+  "click_forgot_password",
+  "click_send_reset_link",
 ]);
 
 function getGtag(): ((...args: unknown[]) => void) | null {
