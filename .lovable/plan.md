@@ -1,35 +1,46 @@
-## Root cause of "nothing recorded"
+## Goal
+Persist end-of-game thumbs up / down feedback on individual questions so ratings survive the session. Only rated questions are logged, and repeated ratings on the same question increment counters instead of creating duplicate rows.
 
-The `anonymous_plays` table was created with RLS + an insert policy, but the migration never ran `GRANT INSERT ... TO anon, authenticated`. PostgREST checks table privileges before RLS, so every guest insert is being rejected with `permission denied for table anonymous_plays` and the fire-and-forget path swallows it. Verified via `information_schema.role_table_grants` — the table currently has zero grants.
+## Data model
+New table `public.question_ratings`:
+- `question_id` bigint, primary key (matches `Question.id` from the Triviolivia API)
+- `thumbs_up` int, default 0
+- `thumbs_down` int, default 0
+- `created_at`, `updated_at` timestamps
 
-## Fix
+One row per question. No user/device column — ratings are aggregate counts. This keeps the "no duplicate entries" behavior naturally (upsert by `question_id`).
 
-**Migration** — add the missing Data API grants (kept minimal to match the write-only-from-client policy):
+## Access control
+The table is aggregate-only and must be writable by both guests and signed-in users. Rather than exposing broad INSERT/UPDATE grants (which would let anyone overwrite counts), all writes go through a `SECURITY DEFINER` RPC:
 
-```sql
-GRANT INSERT ON public.anonymous_plays TO anon, authenticated;
-GRANT ALL ON public.anonymous_plays TO service_role;
+```
+public.increment_question_rating(qid bigint, direction text)
 ```
 
-No schema/policy changes; the existing `INSERT` policy (`WITH CHECK (true)`) already allows the row and there are still no SELECT/UPDATE/DELETE policies, so rows stay readable only by service_role.
+- `direction` is validated to `'up'` or `'down'`
+- Performs `INSERT ... ON CONFLICT (question_id) DO UPDATE SET thumbs_up = thumbs_up + 1` (or `thumbs_down`) and bumps `updated_at`
+- `GRANT EXECUTE` to `anon` and `authenticated`
 
-## `game_settings_history` for guests
+Table itself: RLS enabled, no public policies, `GRANT ALL` only to `service_role`. Clients never touch the table directly.
 
-For signed-in plays, `game_settings_history` is a JSONB array on `profiles` that accumulates one `encodeGameSettings(...)` string per completed game. In the guest schema, each game is its own row and the `settings_code` column on `anonymous_plays` already stores the exact same encoded string produced by the exact same `encodeGameSettings(...)` call (same fields: categories, difficulties, eras, numQuestions, timePerQuestion, timePerAnswer, completedAt, isKidsMode). Reading `settings_code` across a device's rows, ordered by `completed_at`, reconstructs the same information as `game_settings_history`.
+## Client behavior (`src/components/ResultScreen.tsx`)
+The existing `handleVote(i, choice)` already tracks local vote state and supports toggling. Extend it so each *setting* of a vote calls the RPC once:
 
-So functionally the data is already recorded identically — no new column needed. Once grants are fixed, guest rows will start flowing in with the encoded settings string per game.
+- Clicking thumbs up when not up → RPC `up` (+1 up)
+- Clicking thumbs down when not down → RPC `down` (+1 down)
+- Clicking the same button again to un-vote → no RPC call (nothing to record)
+- Switching from up to down (or vice versa) → RPC for the new direction (+1 on the new side). We do not decrement the previous side; the spec is "add an up or down to its count."
 
-**Question before I finalize:** do you want me to
-1. leave the column named `settings_code` (already stores the encoded history entry), or
-2. rename it to `game_settings_history` on `anonymous_plays` so the naming matches the signed-in field?
+Fire-and-forget: no await blocking the UI, log errors to console only. Use `question.id` from the passed `questions` array as the identifier.
 
-I'll wait for your call on the rename before writing the migration if that matters to you; otherwise I'll ship option 1 (just the grant fix).
+No other components change. No Profile panel changes. No changes to anonymous_plays or profile-side history.
 
-## Files touched
+## Technical details
+- Migration: create table, grants (service_role only), enable RLS, create RPC, grant execute on RPC to anon + authenticated.
+- After migration approval, types regenerate and I'll wire `supabase.rpc('increment_question_rating', { qid, direction })` into `ResultScreen.handleVote`.
+- No new files required; a small helper can live inline in `ResultScreen.tsx` or a tiny `src/lib/questionRatings.ts` — I'll use the latter for testability.
 
-- `supabase/migrations/<timestamp>_anonymous_plays_grants.sql` (new) — the two GRANT statements above.
-
-## Out of scope
-
-- Any client changes (the insert code is already correct; it was only failing because of missing table privileges).
-- Any Profile panel / UI changes.
+## Files
+- `supabase/migrations/<ts>_question_ratings.sql` (new)
+- `src/lib/questionRatings.ts` (new, ~15 lines)
+- `src/components/ResultScreen.tsx` (edit `handleVote` only)
