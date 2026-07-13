@@ -24,6 +24,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import type { Question } from "@/data/questions";
+import { recordQuestionRating } from "@/lib/questionRatings";
 
 export type QuestionStatus = "played" | "skipped";
 
@@ -53,7 +54,16 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
   const hasList = Array.isArray(questions) && questions.length > 0;
 
   const handleVote = (i: number, choice: Feedback) => {
-    setFeedback((prev) => ({ ...prev, [i]: prev[i] === choice ? undefined : choice }));
+    setFeedback((prev) => {
+      const current = prev[i];
+      const next = current === choice ? undefined : choice;
+      // Only record when a vote is being SET (not when un-toggled).
+      if (next !== undefined) {
+        const q = questions?.[i];
+        if (q) recordQuestionRating(q.id, next);
+      }
+      return { ...prev, [i]: next };
+    });
     const key = `${i}-${choice}`;
     setBump((prev) => ({ ...prev, [key]: true }));
     window.setTimeout(() => {
