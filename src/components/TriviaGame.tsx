@@ -21,7 +21,7 @@ import SettingsPanel from "./SettingsPanel";
 import ProfilePanel from "./ProfilePanel";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { handleGameCompletion } from "@/lib/gameCompletion";
+import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
 import type { GameSessionData } from "@/lib/badgeEvaluator";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
@@ -127,9 +127,10 @@ export default function TriviaGame() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Record game completion once per finished game, if signed in.
+  // Record game completion once per finished game.
+  // Signed-in users get badge evaluation; guests are logged to anonymous_plays.
   useEffect(() => {
-    if (gameState === "finished" && currentUser && !recordedGameRef.current) {
+    if (gameState === "finished" && !recordedGameRef.current) {
       recordedGameRef.current = true;
       const session: GameSessionData = {
         categories: settings.selectedCategories,
@@ -144,11 +145,15 @@ export default function TriviaGame() {
         timePerQuestion: settings.timePerQuestion,
         timePerAnswer: settings.timePerAnswer,
       };
-      void handleGameCompletion(currentUser.id, session).then((newBadges) => {
-        for (const b of newBadges) {
-          toast.success("Badge Unlocked!", { description: b.badgeName });
-        }
-      });
+      if (currentUser) {
+        void handleGameCompletion(currentUser.id, session).then((newBadges) => {
+          for (const b of newBadges) {
+            toast.success("Badge Unlocked!", { description: b.badgeName });
+          }
+        });
+      } else {
+        void handleAnonymousGameCompletion(session);
+      }
     }
     if (gameState !== "finished") {
       recordedGameRef.current = false;

@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      anonymous_plays: {
+        Row: {
+          completed_at: string
+          created_at: string
+          device_id: string
+          id: string
+          is_custom: boolean
+          is_kids_mode: boolean
+          is_minimum_timer: boolean
+          is_quickplay: boolean
+          settings_code: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          device_id: string
+          id?: string
+          is_custom?: boolean
+          is_kids_mode?: boolean
+          is_minimum_timer?: boolean
+          is_quickplay?: boolean
+          settings_code: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          device_id?: string
+          id?: string
+          is_custom?: boolean
+          is_kids_mode?: boolean
+          is_minimum_timer?: boolean
+          is_quickplay?: boolean
+          settings_code?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

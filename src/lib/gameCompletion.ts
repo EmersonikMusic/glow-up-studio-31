@@ -10,8 +10,42 @@ import {
   type GameSessionData,
 } from "@/lib/badgeEvaluator";
 import { encodeGameSettings } from "@/lib/gameSettingsCode";
+import { getDeviceId } from "@/lib/deviceId";
 
 const HISTORY_LIMIT = 50;
+
+// Records a completed game from a guest (not signed in). Fire-and-forget:
+// no badges, no return value; errors are logged but never surfaced.
+export async function handleAnonymousGameCompletion(
+  session: GameSessionData,
+): Promise<void> {
+  try {
+    const settings_code = encodeGameSettings({
+      categories: session.categories,
+      difficulties: session.difficulties,
+      eras: session.eras,
+      numQuestions: session.numQuestions,
+      timePerQuestion: session.timePerQuestion,
+      timePerAnswer: session.timePerAnswer,
+      completedAt: session.completedAt,
+      isKidsMode: session.isKidsMode,
+    });
+    const { error } = await supabase.from("anonymous_plays").insert({
+      device_id: getDeviceId(),
+      settings_code,
+      is_kids_mode: !!session.isKidsMode,
+      is_quickplay: !!session.isQuickplay,
+      is_custom: !!session.isCustom,
+      is_minimum_timer: !!session.isMinimumTimer,
+      completed_at: session.completedAt.toISOString(),
+    });
+    if (error) {
+      console.error("[gameCompletion] anonymous insert failed", error);
+    }
+  } catch (err) {
+    console.error("[gameCompletion] anonymous insert threw", err);
+  }
+}
 
 function bump(map: Record<string, number>, keys: string[]): Record<string, number> {
   const next = { ...map };
