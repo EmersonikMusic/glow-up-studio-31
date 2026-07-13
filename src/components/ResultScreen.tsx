@@ -24,6 +24,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import type { Question } from "@/data/questions";
+import { recordQuestionRating } from "@/lib/questionRatings";
 
 export type QuestionStatus = "played" | "skipped";
 
