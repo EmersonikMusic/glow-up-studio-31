@@ -353,6 +353,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                       const answerText =
                         q.answers.find((a) => a.id === q.correctId)?.text ?? q.answers[0]?.text ?? "";
                       const vote = feedback[i];
+                      const locked = ratedIds.has(q.id);
+                      const disabledRow = locked || submitted || submitting;
                       return (
                         <TableRow
                           key={i}
@@ -392,12 +394,29 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                                     type="button"
                                     aria-label={`Mark question ${i + 1} as ${dir === "up" ? "good" : "bad"}`}
                                     aria-pressed={active}
-                                    onClick={() => handleVote(i, dir)}
+                                    aria-disabled={disabledRow}
+                                    title={locked ? "You've already rated this question" : undefined}
+                                    onClick={() => {
+                                      if (disabledRow) {
+                                        if (locked) {
+                                          toast({
+                                            title: "Already rated",
+                                            description: "You've already rated this question.",
+                                          });
+                                        }
+                                        return;
+                                      }
+                                      handleVote(i, dir);
+                                    }}
                                     className="flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 rounded-full transition-transform duration-150 ease-out active:scale-95"
-                                    style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
+                                    style={{
+                                      transform: bumping ? "scale(1.25)" : "scale(1)",
+                                      opacity: locked ? 0.35 : 1,
+                                      cursor: disabledRow ? "not-allowed" : "pointer",
+                                    }}
                                   >
                                     <Icon
-                                      className={`w-5 h-5 transition-colors ${active ? "text-[hsl(var(--game-gold))]" : "text-white/65"} [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]`}
+                                      className={`w-5 h-5 transition-colors ${active ? "text-[hsl(var(--game-gold))]" : "text-white/65"} ${disabledRow ? "" : "[@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"}`}
                                       stroke="currentColor"
                                       fill="none"
                                     />
@@ -412,6 +431,30 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                     })}
                   </TableBody>
                 </Table>
+              </div>
+
+              {/* Submit ratings */}
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSubmitRatings}
+                  disabled={!isSignedIn || submitted || submitting || stagedCount === 0}
+                  className="px-5 py-2.5 rounded-full text-sm font-subheading font-bold uppercase tracking-[0.14em] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: submitted
+                      ? "rgba(255,255,255,0.08)"
+                      : "hsl(var(--game-gold) / 0.9)",
+                    color: submitted ? "hsl(var(--game-gold))" : "#111",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  {submitted ? "Ratings Submitted" : submitting ? "Submitting…" : "Submit Ratings"}
+                </button>
+                {!isSignedIn && (
+                  <p className="text-[11px] font-body text-white/60 text-center">
+                    Sign in to submit ratings.
+                  </p>
+                )}
               </div>
             </div>
           </DialogContent>
