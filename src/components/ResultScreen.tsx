@@ -1,12 +1,14 @@
 import { RotateCcw, ThumbsUp, ThumbsDown, ChevronsLeft } from "lucide-react";
 import SecondaryCTA from "./SecondaryCTA";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
 import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +26,11 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import type { Question } from "@/data/questions";
-import { recordQuestionRating } from "@/lib/questionRatings";
+import {
+  recordQuestionRating,
+  loadRatedQuestionIds,
+  saveRatedQuestionIds,
+} from "@/lib/questionRatings";
 
 export type QuestionStatus = "played" | "skipped";
 
@@ -43,25 +49,50 @@ type Feedback = "up" | "down";
 
 export default function ResultScreen({ onRestart, onChangeSettings, onBackToStart, onPrivacy, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
+  const { toast } = useToast();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [feedback, setFeedback] = useState<Record<number, Feedback | undefined>>({});
   const [bump, setBump] = useState<Record<string, boolean>>({});
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [ratedIds, setRatedIds] = useState<Set<number>>(() => loadRatedQuestionIds());
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     play("complete");
   }, [play]);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setIsSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setIsSignedIn(!!session);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   const hasList = Array.isArray(questions) && questions.length > 0;
 
+  const stagedCount = useMemo(
+    () => Object.values(feedback).filter((v) => v !== undefined).length,
+    [feedback]
+  );
+
   const handleVote = (i: number, choice: Feedback) => {
+    const q = questions?.[i];
+    // Locked: already rated in a prior session.
+    if (q && ratedIds.has(q.id)) return;
+    // Guests: show nudge, don't stage.
+    if (!isSignedIn) {
+      toast({
+        title: "Sign in to rate questions",
+        description: "Ratings are only saved for signed-in players.",
+      });
+      return;
+    }
+    if (submitted || submitting) return;
     setFeedback((prev) => {
       const current = prev[i];
       const next = current === choice ? undefined : choice;
-      // Only record when a vote is being SET (not when un-toggled).
-      if (next !== undefined) {
-        const q = questions?.[i];
-        if (q) recordQuestionRating(q.id, next);
-      }
       return { ...prev, [i]: next };
     });
     const key = `${i}-${choice}`;
@@ -69,6 +100,32 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
     window.setTimeout(() => {
       setBump((prev) => ({ ...prev, [key]: false }));
     }, 220);
+  };
+
+  const handleSubmitRatings = async () => {
+    if (!isSignedIn || submitting || submitted || stagedCount === 0 || !questions) return;
+    setSubmitting(true);
+    const entries: Array<{ id: number; dir: Feedback }> = [];
+    Object.entries(feedback).forEach(([idx, dir]) => {
+      if (!dir) return;
+      const q = questions[Number(idx)];
+      if (!q) return;
+      if (ratedIds.has(q.id)) return;
+      entries.push({ id: q.id, dir });
+    });
+    try {
+      await Promise.all(entries.map((e) => recordQuestionRating(e.id, e.dir)));
+    } catch (err) {
+      console.warn("[ResultScreen] submit ratings error", err);
+    }
+    const next = new Set(ratedIds);
+    entries.forEach((e) => next.add(e.id));
+    setRatedIds(next);
+    saveRatedQuestionIds(next);
+    setSubmitting(false);
+    setSubmitted(true);
+    trackClick("submit_question_ratings");
+    toast({ title: "Ratings submitted", description: "Thanks for your feedback!" });
   };
 
   return (
@@ -296,6 +353,8 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                       const answerText =
                         q.answers.find((a) => a.id === q.correctId)?.text ?? q.answers[0]?.text ?? "";
                       const vote = feedback[i];
+                      const locked = ratedIds.has(q.id);
+                      const disabledRow = locked || submitted || submitting;
                       return (
                         <TableRow
                           key={i}
@@ -335,12 +394,29 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                                     type="button"
                                     aria-label={`Mark question ${i + 1} as ${dir === "up" ? "good" : "bad"}`}
                                     aria-pressed={active}
-                                    onClick={() => handleVote(i, dir)}
+                                    aria-disabled={disabledRow}
+                                    title={locked ? "You've already rated this question" : undefined}
+                                    onClick={() => {
+                                      if (disabledRow) {
+                                        if (locked) {
+                                          toast({
+                                            title: "Already rated",
+                                            description: "You've already rated this question.",
+                                          });
+                                        }
+                                        return;
+                                      }
+                                      handleVote(i, dir);
+                                    }}
                                     className="flex items-center justify-center w-11 h-11 sm:w-9 sm:h-9 rounded-full transition-transform duration-150 ease-out active:scale-95"
-                                    style={{ transform: bumping ? "scale(1.25)" : "scale(1)" }}
+                                    style={{
+                                      transform: bumping ? "scale(1.25)" : "scale(1)",
+                                      opacity: locked ? 0.35 : 1,
+                                      cursor: disabledRow ? "not-allowed" : "pointer",
+                                    }}
                                   >
                                     <Icon
-                                      className={`w-5 h-5 transition-colors ${active ? "text-[hsl(var(--game-gold))]" : "text-white/65"} [@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]`}
+                                      className={`w-5 h-5 transition-colors ${active ? "text-[hsl(var(--game-gold))]" : "text-white/65"} ${disabledRow ? "" : "[@media(hover:hover)]:hover:text-[hsl(var(--game-gold))]"}`}
                                       stroke="currentColor"
                                       fill="none"
                                     />
@@ -355,6 +431,30 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
                     })}
                   </TableBody>
                 </Table>
+              </div>
+
+              {/* Submit ratings */}
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSubmitRatings}
+                  disabled={!isSignedIn || submitted || submitting || stagedCount === 0}
+                  className="px-5 py-2.5 rounded-full text-sm font-subheading font-bold uppercase tracking-[0.14em] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: submitted
+                      ? "rgba(255,255,255,0.08)"
+                      : "hsl(var(--game-gold) / 0.9)",
+                    color: submitted ? "hsl(var(--game-gold))" : "#111",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  {submitted ? "Ratings Submitted" : submitting ? "Submitting…" : "Submit Ratings"}
+                </button>
+                {!isSignedIn && (
+                  <p className="text-[11px] font-body text-white/60 text-center">
+                    Sign in to submit ratings.
+                  </p>
+                )}
               </div>
             </div>
           </DialogContent>

@@ -1,46 +1,39 @@
 ## Goal
-Persist end-of-game thumbs up / down feedback on individual questions so ratings survive the session. Only rated questions are logged, and repeated ratings on the same question increment counters instead of creating duplicate rows.
+Replace per-click rating writes with a single Submit Ratings action, lock already-rated questions, and — for guests — keep the rating UI visible but nudge them to sign in when they try to use it.
 
-## Data model
-New table `public.question_ratings`:
-- `question_id` bigint, primary key (matches `Question.id` from the Triviolivia API)
-- `thumbs_up` int, default 0
-- `thumbs_down` int, default 0
-- `created_at`, `updated_at` timestamps
+## Behavior changes (`src/components/ResultScreen.tsx`)
 
-One row per question. No user/device column — ratings are aggregate counts. This keeps the "no duplicate entries" behavior naturally (upsert by `question_id`).
+- **Local staging only.** `handleVote` no longer calls the RPC. It updates the local `feedback` map (toggle off supported, switch up↔down supported). Nothing hits the DB until submit.
+- **Submit Ratings button.** Rendered inside the Review Your Game dialog, below the table. Enabled only when:
+  - user is signed in, AND
+  - at least one row has a staged vote, AND
+  - not currently submitting, AND
+  - not already submitted this session.
+- **On submit:** call `recordQuestionRating(q.id, direction)` in parallel for each staged rating, then flip `submitted = true`. Button becomes a non-interactive "Ratings Submitted" state; all thumbs buttons in the table become disabled so nothing can be re-submitted.
+- **Per-question lock.** Persist rated question IDs in `localStorage` under `triviolivia:ratedQuestionIds` (JSON `number[]`). Load into a `Set` on mount. Rows whose `q.id` is in the set render thumbs in a muted, disabled state with a "You've already rated this question" title. On successful submit, add the newly-rated IDs to the set and persist.
 
-## Access control
-The table is aggregate-only and must be writable by both guests and signed-in users. Rather than exposing broad INSERT/UPDATE grants (which would let anyone overwrite counts), all writes go through a `SECURITY DEFINER` RPC:
+## Guest handling (keep UI visible)
 
-```
-public.increment_question_rating(qid bigint, direction text)
-```
+- Rating UI (thumbs buttons + Rate column) is rendered exactly the same for guests.
+- Auth state tracked via `supabase.auth.getSession()` + `onAuthStateChange` into `isSignedIn`.
+- When a guest clicks a thumbs button:
+  - do NOT stage a vote,
+  - show a toast via the existing `useToast` hook: title "Sign in to rate questions", description "Ratings are only saved for signed-in players.",
+  - keep the button visually un-pressed.
+- Submit Ratings button:
+  - guests: rendered but disabled, with subtext under it: "Sign in to submit ratings." Clicking the disabled button is a no-op (button is `disabled`); a small inline "Sign In" link next to the subtext opens the existing AuthModal via the same trigger StartScreen uses. (If wiring an AuthModal open-handler through props is too invasive, fall back to just the subtext — no link — since AuthButton lives in the header and remains reachable.) Plan: subtext only, no new modal wiring.
+  - signed-in: normal enabled/disabled logic as above.
 
-- `direction` is validated to `'up'` or `'down'`
-- Performs `INSERT ... ON CONFLICT (question_id) DO UPDATE SET thumbs_up = thumbs_up + 1` (or `thumbs_down`) and bumps `updated_at`
-- `GRANT EXECUTE` to `anon` and `authenticated`
+## Helper (`src/lib/questionRatings.ts`)
+Add:
+- `loadRatedQuestionIds(): Set<number>` — reads localStorage, tolerant of parse errors.
+- `saveRatedQuestionIds(ids: Set<number>): void` — writes localStorage.
+Keep `recordQuestionRating` unchanged (fire-and-forget RPC).
 
-Table itself: RLS enabled, no public policies, `GRANT ALL` only to `service_role`. Clients never touch the table directly.
-
-## Client behavior (`src/components/ResultScreen.tsx`)
-The existing `handleVote(i, choice)` already tracks local vote state and supports toggling. Extend it so each *setting* of a vote calls the RPC once:
-
-- Clicking thumbs up when not up → RPC `up` (+1 up)
-- Clicking thumbs down when not down → RPC `down` (+1 down)
-- Clicking the same button again to un-vote → no RPC call (nothing to record)
-- Switching from up to down (or vice versa) → RPC for the new direction (+1 on the new side). We do not decrement the previous side; the spec is "add an up or down to its count."
-
-Fire-and-forget: no await blocking the UI, log errors to console only. Use `question.id` from the passed `questions` array as the identifier.
-
-No other components change. No Profile panel changes. No changes to anonymous_plays or profile-side history.
-
-## Technical details
-- Migration: create table, grants (service_role only), enable RLS, create RPC, grant execute on RPC to anon + authenticated.
-- After migration approval, types regenerate and I'll wire `supabase.rpc('increment_question_rating', { qid, direction })` into `ResultScreen.handleVote`.
-- No new files required; a small helper can live inline in `ResultScreen.tsx` or a tiny `src/lib/questionRatings.ts` — I'll use the latter for testability.
+## Non-goals
+- No DB schema changes, no per-user rating rows, no RPC changes. "Cannot rate same question twice" stays client-side via localStorage — consistent with the aggregate-only data model.
+- No changes to auth flows, profile, or grants.
 
 ## Files
-- `supabase/migrations/<ts>_question_ratings.sql` (new)
-- `src/lib/questionRatings.ts` (new, ~15 lines)
-- `src/components/ResultScreen.tsx` (edit `handleVote` only)
+- `src/components/ResultScreen.tsx` — auth state, staged submission, Submit button, per-question lock, guest toast nudge.
+- `src/lib/questionRatings.ts` — localStorage helpers.
