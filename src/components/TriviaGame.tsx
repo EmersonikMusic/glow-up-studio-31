@@ -21,7 +21,7 @@ import SettingsPanel from "./SettingsPanel";
 import ProfilePanel from "./ProfilePanel";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { handleGameCompletion } from "@/lib/gameCompletion";
+import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
 import type { GameSessionData } from "@/lib/badgeEvaluator";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
