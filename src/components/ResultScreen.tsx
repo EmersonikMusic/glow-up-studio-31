@@ -1,12 +1,14 @@
 import { RotateCcw, ThumbsUp, ThumbsDown, ChevronsLeft } from "lucide-react";
 import SecondaryCTA from "./SecondaryCTA";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
 import ConfettiBurst from "./ConfettiBurst";
 import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
 import { trackClick } from "@/lib/analytics";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +26,11 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import type { Question } from "@/data/questions";
-import { recordQuestionRating } from "@/lib/questionRatings";
+import {
+  recordQuestionRating,
+  loadRatedQuestionIds,
+  saveRatedQuestionIds,
+} from "@/lib/questionRatings";
 
 export type QuestionStatus = "played" | "skipped";
 
@@ -43,25 +49,50 @@ type Feedback = "up" | "down";
 
 export default function ResultScreen({ onRestart, onChangeSettings, onBackToStart, onPrivacy, questions, statuses }: ResultScreenProps) {
   const { play } = useSound();
+  const { toast } = useToast();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [feedback, setFeedback] = useState<Record<number, Feedback | undefined>>({});
   const [bump, setBump] = useState<Record<string, boolean>>({});
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [ratedIds, setRatedIds] = useState<Set<number>>(() => loadRatedQuestionIds());
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     play("complete");
   }, [play]);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setIsSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setIsSignedIn(!!session);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   const hasList = Array.isArray(questions) && questions.length > 0;
 
+  const stagedCount = useMemo(
+    () => Object.values(feedback).filter((v) => v !== undefined).length,
+    [feedback]
+  );
+
   const handleVote = (i: number, choice: Feedback) => {
+    const q = questions?.[i];
+    // Locked: already rated in a prior session.
+    if (q && ratedIds.has(q.id)) return;
+    // Guests: show nudge, don't stage.
+    if (!isSignedIn) {
+      toast({
+        title: "Sign in to rate questions",
+        description: "Ratings are only saved for signed-in players.",
+      });
+      return;
+    }
+    if (submitted || submitting) return;
     setFeedback((prev) => {
       const current = prev[i];
       const next = current === choice ? undefined : choice;
-      // Only record when a vote is being SET (not when un-toggled).
-      if (next !== undefined) {
-        const q = questions?.[i];
-        if (q) recordQuestionRating(q.id, next);
-      }
       return { ...prev, [i]: next };
     });
     const key = `${i}-${choice}`;
@@ -69,6 +100,32 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
     window.setTimeout(() => {
       setBump((prev) => ({ ...prev, [key]: false }));
     }, 220);
+  };
+
+  const handleSubmitRatings = async () => {
+    if (!isSignedIn || submitting || submitted || stagedCount === 0 || !questions) return;
+    setSubmitting(true);
+    const entries: Array<{ id: number; dir: Feedback }> = [];
+    Object.entries(feedback).forEach(([idx, dir]) => {
+      if (!dir) return;
+      const q = questions[Number(idx)];
+      if (!q) return;
+      if (ratedIds.has(q.id)) return;
+      entries.push({ id: q.id, dir });
+    });
+    try {
+      await Promise.all(entries.map((e) => recordQuestionRating(e.id, e.dir)));
+    } catch (err) {
+      console.warn("[ResultScreen] submit ratings error", err);
+    }
+    const next = new Set(ratedIds);
+    entries.forEach((e) => next.add(e.id));
+    setRatedIds(next);
+    saveRatedQuestionIds(next);
+    setSubmitting(false);
+    setSubmitted(true);
+    trackClick("submit_question_ratings");
+    toast({ title: "Ratings submitted", description: "Thanks for your feedback!" });
   };
 
   return (
