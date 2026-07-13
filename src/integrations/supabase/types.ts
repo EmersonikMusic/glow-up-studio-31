@@ -116,12 +116,39 @@ export type Database = {
         }
         Relationships: []
       }
+      question_ratings: {
+        Row: {
+          created_at: string
+          question_id: number
+          thumbs_down: number
+          thumbs_up: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          question_id: number
+          thumbs_down?: number
+          thumbs_up?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          question_id?: number
+          thumbs_down?: number
+          thumbs_up?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_question_rating: {
+        Args: { direction: string; qid: number }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
