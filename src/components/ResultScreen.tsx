@@ -1,5 +1,6 @@
 import { RotateCcw, ThumbsUp, ThumbsDown, ChevronsLeft } from "lucide-react";
 import SecondaryCTA from "./SecondaryCTA";
+import PrimaryCTA from "./PrimaryCTA";
 import { useEffect, useState, useMemo } from "react";
 import mascotImg from "@/assets/Mascot.svg";
 import PrimaryCTA from "./PrimaryCTA";
