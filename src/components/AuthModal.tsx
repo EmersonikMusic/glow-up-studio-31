@@ -7,25 +7,18 @@ import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 
 import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
+import appleLogo from "@/assets/apple-logo-white.svg";
 
 interface AuthModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Filled in once the Apple Developer Services ID is provisioned.
-// Until then, the Apple button is hidden and the Apple SDK is not loaded.
-const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
-const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
-
-// Google's dark pill SVG is intrinsically 180x40. Rendering both social
-// buttons at that exact size (a) keeps Google's asset unscaled, and
-// (b) lets Apple's SDK auto-scale its text/logo to match as closely as
-// Apple's proportions allow. Both changes are compliant with each brand's
-// guidelines (Google allows uniform scaling only; Apple's SDK derives its
-// text and logo sizes from data-height).
+// Google's dark pill SVG is intrinsically 180x40. Rendering the Apple
+// button at the same size keeps the two social buttons visually aligned.
 const SOCIAL_BTN_WIDTH = 180;
 const SOCIAL_BTN_HEIGHT = 40;
+
 
 const USERNAME_RE = /^[a-zA-Z0-9](?:[a-zA-Z0-9._]{1,18})[a-zA-Z0-9]$/;
 
@@ -66,58 +59,28 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const isSignup = mode === "signup";
   const isForgot = mode === "forgot";
 
-  // Apple's SDK (appleid.auth.js) scans the DOM for #appleid-signin at
-  // script-load time and paints the official button in place. Because our
-  // modal — and the #appleid-signin div — mount after any initial script
-  // load, we (re-)inject a fresh script tag every time the modal opens so
-  // the SDK re-scans and renders the button now.
-  useEffect(() => {
-    if (!open || !APPLE_AUTH_READY) return;
-    const SCRIPT_SRC =
-      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-
-    // Remove any previously-injected instance so the browser re-executes the
-    // script and re-runs its DOM scan.
-    document
-      .querySelectorAll("script[data-appleid-injected]")
-      .forEach((el) => el.remove());
-
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.async = true;
-    script.setAttribute("data-appleid-injected", "true");
-    script.onload = () => {
-      try {
-        window.AppleID?.auth.init({
-          clientId: APPLE_SERVICES_ID || "pending.services.id",
-          scope: "name email",
-          redirectURI: window.location.origin,
-          usePopup: true,
-        });
-      } catch {
-        // init can throw if called twice on some SDK builds — safe to ignore.
+  const handleApple = async () => {
+    trackClick("click_sign_in_apple");
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        setError("Apple sign-in failed. Please try again.");
+        setLoading(false);
+        return;
       }
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
-  }, [open]);
-
-
-
-  const handleAppleClick = (e: React.MouseEvent) => {
-    // Until the Apple Developer Services ID is configured, keep the button
-    // inert: swallow the click so Apple's SDK doesn't open an auth window
-    // against a placeholder client ID (which would show `invalid_client`).
-    if (!APPLE_AUTH_READY) {
-      e.preventDefault();
-      e.stopPropagation();
-      trackClick("click_sign_in_apple");
-      toast("Apple sign-in coming soon");
+      if (result.redirected) return;
+      onOpenChange(false);
+    } catch {
+      setError("Apple sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
 
 
   const handleGoogle = async () => {
@@ -317,29 +280,37 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   draggable={false}
                 />
               </button>
-              {/* Official Sign in with Apple button — rendered by Apple's JS
-                  SDK into #appleid-signin. Only shown once the Apple
-                  Developer Services ID is configured. */}
-              {APPLE_AUTH_READY && (
-                <div
-                  onClick={handleAppleClick}
-                  className="mx-auto cursor-pointer"
-                  style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
-                  role="button"
-                  aria-label="Sign in with Apple"
-                  aria-disabled={!APPLE_AUTH_READY}
+              {/* Sign in with Apple — sized to match Google's pill. */}
+              <button
+                type="button"
+                onClick={handleApple}
+                disabled={loading}
+                aria-label="Sign in with Apple"
+                className="mx-auto flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                style={{
+                  width: SOCIAL_BTN_WIDTH,
+                  height: SOCIAL_BTN_HEIGHT,
+                  maxWidth: "100%",
+                  background: "#000",
+                  border: "1px solid #000",
+                }}
+              >
+                <img
+                  src={appleLogo}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-4 h-4 block"
+                  style={{ marginTop: -2 }}
+                  draggable={false}
+                />
+                <span
+                  className="text-white text-[14px] font-medium"
+                  style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif" }}
                 >
-                  <div
-                    id="appleid-signin"
-                    style={{ width: "100%", height: "100%" }}
-                    data-color="black"
-                    data-border="false"
-                    data-type="sign-in"
-                    data-mode="center-align"
-                    data-border-radius="50"
-                  />
-                </div>
-              )}
+                  Sign in with Apple
+                </span>
+              </button>
+
             </div>
 
             {/* OR divider */}
