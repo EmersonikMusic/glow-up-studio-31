@@ -1,51 +1,35 @@
-## Plan: lock down vote counts and polish the Submit button
+# Sign in with Apple
 
-### 1. Database: make votes impossible to inflate
+Since you're on Lovable Cloud, we should use the managed `lovable.auth.signInWithOAuth("apple", ...)` helper — not the raw `supabase.auth.signInWithOAuth` snippet Gemini gave you. The Lovable helper handles the popup / redirect handoff and session setup for you, mirrors how Google sign-in already works in this app, and works correctly inside the preview iframe. The redirect target should be `window.location.origin`, not `/auth/callback` (that route doesn't exist here — Lovable's OAuth broker handles the callback).
 
-Create a new migration that:
+We'll also drop the existing Apple JS SDK popup path (`appleid.auth.js`, `#appleid-signin`, `VITE_APPLE_SERVICES_ID` gate). That was a placeholder pre-integration; it's incompatible with Lovable-managed Apple auth and would collide with it.
 
-- Adds a `question_rating_votes` table with columns:
-  - `user_id uuid` (references `auth.users`)
-  - `question_id bigint`
-  - `direction text` (only `'up'` or `'down'`)
-  - `created_at timestamp with time zone`
-  - primary key on `(user_id, question_id)` so one user can vote exactly once per question
-- Grants `SELECT, INSERT` to `authenticated` and `ALL` to `service_role`.
-- Enables RLS and adds policies so users can only see/insert their own vote rows.
-- Rewrites the `increment_question_rating(qid bigint, direction text)` function to:
-  1. Reject null auth or invalid direction.
-  2. Insert a vote receipt into `question_rating_votes` with `ON CONFLICT DO NOTHING`.
-  3. If the insert actually created a new row, upsert the `question_ratings` aggregate count for that question.
-- Locks `search_path` to `public` and keeps the function `SECURITY DEFINER` / `authenticated`-only.
+## What changes
 
-Result: a signed-in user can call the RPC 10,000 times and the aggregate count moves at most once. The protection is enforced by the database, not by the browser.
+**Backend**
+- Enable the Apple provider on Lovable Cloud managed social login (via `configure_social_auth` with `providers: ["apple"]`). Google stays enabled; email stays enabled.
 
-### 2. Frontend: style the Submit Ratings button like the primary CTA
+**`src/components/AuthModal.tsx`**
+- Remove Apple JS SDK bits: `APPLE_SERVICES_ID` / `APPLE_AUTH_READY` constants, the `useEffect` that injects `appleid.auth.js`, the `AppleID.auth.init` call, and the `#appleid-signin` div.
+- Add `handleApple` that mirrors `handleGoogle`:
+  ```ts
+  const result = await lovable.auth.signInWithOAuth("apple", {
+    redirect_uri: window.location.origin,
+  });
+  if (result.error) { setError("Apple sign-in failed. Please try again."); return; }
+  if (result.redirected) return;
+  onOpenChange(false);
+  ```
+- Replace the SDK-rendered Apple div with a plain `<button>` styled to match Google's pill (`SOCIAL_BTN_WIDTH` × `SOCIAL_BTN_HEIGHT`, black background, white "Sign in with Apple" label + Apple glyph). Reuse the existing `apple-logo-white.svg` asset already in `src/assets/`. Always visible now (no feature flag).
+- Analytics: keep `trackClick("click_sign_in_apple")` at the top of `handleApple`.
 
-In `src/components/ResultScreen.tsx`, replace the current custom `<button>` for "Submit Ratings" with the existing `PrimaryCTA` component.
+## Why not Gemini's snippet
 
-- Same gradient, rounded-full, uppercase, tracking, and shadow as Start Game / Play Again.
-- Same hover feel (the component already applies the active/scale transition).
-- Same disabled state as the Settings panel's "Apply Settings" button (`disabled:opacity-60` from `PrimaryCTA` itself), shown when:
-  - user is not signed in,
-  - no votes have been staged,
-  - currently submitting,
-  - or already submitted.
-- Keep the subtext "Sign in to submit ratings." for guests.
-- Keep the "Ratings Submitted" label after a successful submit.
+1. It calls `supabase.auth.signInWithOAuth` directly. On Lovable Cloud managed auth, all social sign-in must go through `lovable.auth.signInWithOAuth` so the wrapper can set the session after the popup returns tokens via `web_message`. Calling Supabase directly bypasses that and breaks preview-iframe sign-in.
+2. `redirectTo: ${origin}/auth/callback` points at a route that doesn't exist in this project and isn't in the OAuth allow-list — the managed broker uses its own callback. `window.location.origin` is the correct value and works on custom domains too.
 
-No other UI changes. The thumb icons, dialog layout, and guest toast stay exactly as they are.
+## Verification
+- Type-check and build pass.
+- Open the login modal → Apple button appears next to Google → click opens Apple sign-in → returning to the app leaves you signed in (avatar/username visible in the header).
 
-### Files touched
-
-- `supabase/migrations/<new>.sql` — table, grants, RLS, rewritten function.
-- `src/components/ResultScreen.tsx` — swap the submit button for `PrimaryCTA`.
-
-### Non-goals
-
-- No rate-limiting beyond the one-vote-per-user constraint.
-- No guest voting.
-- No backfill of existing inflated counts unless you explicitly ask.
-- No changes to the thumbs-up/thumbs-down UI behavior beyond the button styling.
-
-Ready to implement once you approve.
+No design direction options needed — the button matches the existing Google pill's size and shape.
