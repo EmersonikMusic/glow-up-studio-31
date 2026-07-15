@@ -116,6 +116,27 @@ export type Database = {
         }
         Relationships: []
       }
+      question_rating_votes: {
+        Row: {
+          created_at: string
+          direction: string
+          question_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          question_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          question_id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       question_ratings: {
         Row: {
           created_at: string

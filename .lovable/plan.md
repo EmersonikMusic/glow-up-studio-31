@@ -1,39 +1,51 @@
-## Goal
-Replace per-click rating writes with a single Submit Ratings action, lock already-rated questions, and — for guests — keep the rating UI visible but nudge them to sign in when they try to use it.
+## Plan: lock down vote counts and polish the Submit button
 
-## Behavior changes (`src/components/ResultScreen.tsx`)
+### 1. Database: make votes impossible to inflate
 
-- **Local staging only.** `handleVote` no longer calls the RPC. It updates the local `feedback` map (toggle off supported, switch up↔down supported). Nothing hits the DB until submit.
-- **Submit Ratings button.** Rendered inside the Review Your Game dialog, below the table. Enabled only when:
-  - user is signed in, AND
-  - at least one row has a staged vote, AND
-  - not currently submitting, AND
-  - not already submitted this session.
-- **On submit:** call `recordQuestionRating(q.id, direction)` in parallel for each staged rating, then flip `submitted = true`. Button becomes a non-interactive "Ratings Submitted" state; all thumbs buttons in the table become disabled so nothing can be re-submitted.
-- **Per-question lock.** Persist rated question IDs in `localStorage` under `triviolivia:ratedQuestionIds` (JSON `number[]`). Load into a `Set` on mount. Rows whose `q.id` is in the set render thumbs in a muted, disabled state with a "You've already rated this question" title. On successful submit, add the newly-rated IDs to the set and persist.
+Create a new migration that:
 
-## Guest handling (keep UI visible)
+- Adds a `question_rating_votes` table with columns:
+  - `user_id uuid` (references `auth.users`)
+  - `question_id bigint`
+  - `direction text` (only `'up'` or `'down'`)
+  - `created_at timestamp with time zone`
+  - primary key on `(user_id, question_id)` so one user can vote exactly once per question
+- Grants `SELECT, INSERT` to `authenticated` and `ALL` to `service_role`.
+- Enables RLS and adds policies so users can only see/insert their own vote rows.
+- Rewrites the `increment_question_rating(qid bigint, direction text)` function to:
+  1. Reject null auth or invalid direction.
+  2. Insert a vote receipt into `question_rating_votes` with `ON CONFLICT DO NOTHING`.
+  3. If the insert actually created a new row, upsert the `question_ratings` aggregate count for that question.
+- Locks `search_path` to `public` and keeps the function `SECURITY DEFINER` / `authenticated`-only.
 
-- Rating UI (thumbs buttons + Rate column) is rendered exactly the same for guests.
-- Auth state tracked via `supabase.auth.getSession()` + `onAuthStateChange` into `isSignedIn`.
-- When a guest clicks a thumbs button:
-  - do NOT stage a vote,
-  - show a toast via the existing `useToast` hook: title "Sign in to rate questions", description "Ratings are only saved for signed-in players.",
-  - keep the button visually un-pressed.
-- Submit Ratings button:
-  - guests: rendered but disabled, with subtext under it: "Sign in to submit ratings." Clicking the disabled button is a no-op (button is `disabled`); a small inline "Sign In" link next to the subtext opens the existing AuthModal via the same trigger StartScreen uses. (If wiring an AuthModal open-handler through props is too invasive, fall back to just the subtext — no link — since AuthButton lives in the header and remains reachable.) Plan: subtext only, no new modal wiring.
-  - signed-in: normal enabled/disabled logic as above.
+Result: a signed-in user can call the RPC 10,000 times and the aggregate count moves at most once. The protection is enforced by the database, not by the browser.
 
-## Helper (`src/lib/questionRatings.ts`)
-Add:
-- `loadRatedQuestionIds(): Set<number>` — reads localStorage, tolerant of parse errors.
-- `saveRatedQuestionIds(ids: Set<number>): void` — writes localStorage.
-Keep `recordQuestionRating` unchanged (fire-and-forget RPC).
+### 2. Frontend: style the Submit Ratings button like the primary CTA
 
-## Non-goals
-- No DB schema changes, no per-user rating rows, no RPC changes. "Cannot rate same question twice" stays client-side via localStorage — consistent with the aggregate-only data model.
-- No changes to auth flows, profile, or grants.
+In `src/components/ResultScreen.tsx`, replace the current custom `<button>` for "Submit Ratings" with the existing `PrimaryCTA` component.
 
-## Files
-- `src/components/ResultScreen.tsx` — auth state, staged submission, Submit button, per-question lock, guest toast nudge.
-- `src/lib/questionRatings.ts` — localStorage helpers.
+- Same gradient, rounded-full, uppercase, tracking, and shadow as Start Game / Play Again.
+- Same hover feel (the component already applies the active/scale transition).
+- Same disabled state as the Settings panel's "Apply Settings" button (`disabled:opacity-60` from `PrimaryCTA` itself), shown when:
+  - user is not signed in,
+  - no votes have been staged,
+  - currently submitting,
+  - or already submitted.
+- Keep the subtext "Sign in to submit ratings." for guests.
+- Keep the "Ratings Submitted" label after a successful submit.
+
+No other UI changes. The thumb icons, dialog layout, and guest toast stay exactly as they are.
+
+### Files touched
+
+- `supabase/migrations/<new>.sql` — table, grants, RLS, rewritten function.
+- `src/components/ResultScreen.tsx` — swap the submit button for `PrimaryCTA`.
+
+### Non-goals
+
+- No rate-limiting beyond the one-vote-per-user constraint.
+- No guest voting.
+- No backfill of existing inflated counts unless you explicitly ask.
+- No changes to the thumbs-up/thumbs-down UI behavior beyond the button styling.
+
+Ready to implement once you approve.
