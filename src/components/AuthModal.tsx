@@ -7,25 +7,18 @@ import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 
 import googleBtnAsset from "@/assets/google-signin-dark-pill.svg.asset.json";
+import appleLogo from "@/assets/apple-logo-white.svg";
 
 interface AuthModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Filled in once the Apple Developer Services ID is provisioned.
-// Until then, the Apple button is hidden and the Apple SDK is not loaded.
-const APPLE_SERVICES_ID = (import.meta.env.VITE_APPLE_SERVICES_ID as string | undefined) ?? "";
-const APPLE_AUTH_READY = APPLE_SERVICES_ID.length > 0;
-
-// Google's dark pill SVG is intrinsically 180x40. Rendering both social
-// buttons at that exact size (a) keeps Google's asset unscaled, and
-// (b) lets Apple's SDK auto-scale its text/logo to match as closely as
-// Apple's proportions allow. Both changes are compliant with each brand's
-// guidelines (Google allows uniform scaling only; Apple's SDK derives its
-// text and logo sizes from data-height).
+// Google's dark pill SVG is intrinsically 180x40. Rendering the Apple
+// button at the same size keeps the two social buttons visually aligned.
 const SOCIAL_BTN_WIDTH = 180;
 const SOCIAL_BTN_HEIGHT = 40;
+
 
 const USERNAME_RE = /^[a-zA-Z0-9](?:[a-zA-Z0-9._]{1,18})[a-zA-Z0-9]$/;
 
