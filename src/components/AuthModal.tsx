@@ -280,29 +280,37 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   draggable={false}
                 />
               </button>
-              {/* Official Sign in with Apple button — rendered by Apple's JS
-                  SDK into #appleid-signin. Only shown once the Apple
-                  Developer Services ID is configured. */}
-              {APPLE_AUTH_READY && (
-                <div
-                  onClick={handleAppleClick}
-                  className="mx-auto cursor-pointer"
-                  style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
-                  role="button"
-                  aria-label="Sign in with Apple"
-                  aria-disabled={!APPLE_AUTH_READY}
+              {/* Sign in with Apple — sized to match Google's pill. */}
+              <button
+                type="button"
+                onClick={handleApple}
+                disabled={loading}
+                aria-label="Sign in with Apple"
+                className="mx-auto flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                style={{
+                  width: SOCIAL_BTN_WIDTH,
+                  height: SOCIAL_BTN_HEIGHT,
+                  maxWidth: "100%",
+                  background: "#000",
+                  border: "1px solid #000",
+                }}
+              >
+                <img
+                  src={appleLogo}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-4 h-4 block"
+                  style={{ marginTop: -2 }}
+                  draggable={false}
+                />
+                <span
+                  className="text-white text-[14px] font-medium"
+                  style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif" }}
                 >
-                  <div
-                    id="appleid-signin"
-                    style={{ width: "100%", height: "100%" }}
-                    data-color="black"
-                    data-border="false"
-                    data-type="sign-in"
-                    data-mode="center-align"
-                    data-border-radius="50"
-                  />
-                </div>
-              )}
+                  Sign in with Apple
+                </span>
+              </button>
+
             </div>
 
             {/* OR divider */}
