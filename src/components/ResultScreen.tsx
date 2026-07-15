@@ -435,21 +435,14 @@ export default function ResultScreen({ onRestart, onChangeSettings, onBackToStar
 
               {/* Submit ratings */}
               <div className="mt-4 flex flex-col items-center gap-2">
-                <button
-                  type="button"
+                <PrimaryCTA
+                  trackId="submit_question_ratings"
                   onClick={handleSubmitRatings}
                   disabled={!isSignedIn || submitted || submitting || stagedCount === 0}
-                  className="px-5 py-2.5 rounded-full text-sm font-subheading font-bold uppercase tracking-[0.14em] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{
-                    background: submitted
-                      ? "rgba(255,255,255,0.08)"
-                      : "hsl(var(--game-gold) / 0.9)",
-                    color: submitted ? "hsl(var(--game-gold))" : "#111",
-                    border: "1px solid rgba(255,255,255,0.15)",
-                  }}
+                  aria-label={submitted ? "Ratings Submitted" : "Submit Ratings"}
                 >
                   {submitted ? "Ratings Submitted" : submitting ? "Submitting…" : "Submit Ratings"}
-                </button>
+                </PrimaryCTA>
                 {!isSignedIn && (
                   <p className="text-[11px] font-body text-white/60 text-center">
                     Sign in to submit ratings.
