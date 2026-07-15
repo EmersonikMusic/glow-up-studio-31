@@ -59,58 +59,28 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const isSignup = mode === "signup";
   const isForgot = mode === "forgot";
 
-  // Apple's SDK (appleid.auth.js) scans the DOM for #appleid-signin at
-  // script-load time and paints the official button in place. Because our
-  // modal — and the #appleid-signin div — mount after any initial script
-  // load, we (re-)inject a fresh script tag every time the modal opens so
-  // the SDK re-scans and renders the button now.
-  useEffect(() => {
-    if (!open || !APPLE_AUTH_READY) return;
-    const SCRIPT_SRC =
-      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-
-    // Remove any previously-injected instance so the browser re-executes the
-    // script and re-runs its DOM scan.
-    document
-      .querySelectorAll("script[data-appleid-injected]")
-      .forEach((el) => el.remove());
-
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.async = true;
-    script.setAttribute("data-appleid-injected", "true");
-    script.onload = () => {
-      try {
-        window.AppleID?.auth.init({
-          clientId: APPLE_SERVICES_ID || "pending.services.id",
-          scope: "name email",
-          redirectURI: window.location.origin,
-          usePopup: true,
-        });
-      } catch {
-        // init can throw if called twice on some SDK builds — safe to ignore.
+  const handleApple = async () => {
+    trackClick("click_sign_in_apple");
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        setError("Apple sign-in failed. Please try again.");
+        setLoading(false);
+        return;
       }
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
-  }, [open]);
-
-
-
-  const handleAppleClick = (e: React.MouseEvent) => {
-    // Until the Apple Developer Services ID is configured, keep the button
-    // inert: swallow the click so Apple's SDK doesn't open an auth window
-    // against a placeholder client ID (which would show `invalid_client`).
-    if (!APPLE_AUTH_READY) {
-      e.preventDefault();
-      e.stopPropagation();
-      trackClick("click_sign_in_apple");
-      toast("Apple sign-in coming soon");
+      if (result.redirected) return;
+      onOpenChange(false);
+    } catch {
+      setError("Apple sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
 
 
   const handleGoogle = async () => {
