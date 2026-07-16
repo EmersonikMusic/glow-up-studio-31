@@ -622,30 +622,30 @@
 }
 
 /* ------------------------------------------------------------------
-   SettingsPanel closed-state transforms.
-   Applied via CSS so the very first paint has the correct transform
-   before any React effect runs — eliminates the load-time flash on
-   WebKit / Firefox where inline styles from state can lag one frame.
+/* ------------------------------------------------------------------
+   SettingsPanel / ProfilePanel closed-state visibility.
+   The panels always occupy their final open position in the layout,
+   but are fully transparent + visibility:hidden until data-open="true"
+   flips. This avoids ANY slide-in animation (which was causing a flash
+   on Chrome/Firefox where transform commit lagged the first paint) and
+   guarantees the panel is unhittable and invisible until interaction.
+   An 80ms open-delay on opacity keeps the panel invisible until the
+   user has clearly interacted with the trigger.
    NOTE: also inlined in index.html as <style data-critical="settings-panel">
    so the CSSOM has the rules before this stylesheet is fetched. Keep
    the two blocks in sync.
    ------------------------------------------------------------------ */
-.settings-sheet-mobile {
-  transform: translateY(100%);
-}
-.settings-sheet-mobile[data-open="true"] {
-  transform: translateY(0);
-}
-.settings-sheet-mobile[data-animated="true"] {
-  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
+.settings-sheet-mobile,
 .settings-sheet-desktop {
-  transform: translateX(calc(100% + 64px));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out, visibility 0s linear 0.18s;
 }
+.settings-sheet-mobile[data-open="true"],
 .settings-sheet-desktop[data-open="true"] {
-  transform: translateX(0);
-}
-.settings-sheet-desktop[data-animated="true"] {
-  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.22s ease-out 0.08s, visibility 0s linear 0s;
 }
