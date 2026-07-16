@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
 import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trash2 } from "lucide-react";
 import AchievementsSection from "./AchievementsSection";
@@ -74,6 +74,23 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+
+  // Two-frame mount/animate gate — see SettingsPanel for rationale. Prevents
+  // the panel painting in the open position (or animating in) on first paint.
+  const [mounted, setMounted] = useState(false);
+  const [animated, setAnimated] = useState(false);
+  useLayoutEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      setMounted(true);
+      raf2 = requestAnimationFrame(() => setAnimated(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (!open || !user) return;
