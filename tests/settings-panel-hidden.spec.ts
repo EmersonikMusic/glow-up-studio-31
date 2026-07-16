@@ -59,6 +59,63 @@ const SAMPLER = `
 })();
 `;
 
+/**
+ * First-paint sampler. Uses MutationObserver + PerformanceObserver to
+ * capture the sheet the *instant* it enters the DOM, along with the
+ * transform matrix, opacity, and whether first-contentful-paint has
+ * already fired. This is stricter than the frame sampler above: the
+ * test fails if the very first appearance of the panel is not in the
+ * closed position.
+ */
+const FIRST_PAINT_SAMPLER = `
+(() => {
+  if (window.__firstPaint) return;
+  const state = { insertion: null, fp: null, fcp: null };
+  window.__firstPaint = state;
+  try {
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) {
+        if (e.name === 'first-paint' && state.fp == null) state.fp = e.startTime;
+        if (e.name === 'first-contentful-paint' && state.fcp == null) state.fcp = e.startTime;
+      }
+    }).observe({ type: 'paint', buffered: true });
+  } catch (_) {}
+  const SEL = '[data-testid="settings-panel-sheet"], [data-testid="settings-panel-desktop"]';
+  function record(el) {
+    if (state.insertion) return;
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    state.insertion = {
+      t: performance.now(),
+      testid: el.getAttribute('data-testid'),
+      dataOpen: el.getAttribute('data-open'),
+      dataAnimated: el.getAttribute('data-animated'),
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height, bottom: r.bottom, right: r.right },
+      transform: cs.transform,
+      opacity: parseFloat(cs.opacity || '1'),
+      visibility: cs.visibility,
+      display: cs.display,
+      vw: window.innerWidth,
+      vh: window.innerHeight,
+      fpAtInsert: state.fp,
+      fcpAtInsert: state.fcp,
+    };
+  }
+  const existing = document.querySelector(SEL);
+  if (existing) record(existing);
+  const mo = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      for (const node of m.addedNodes) {
+        if (!(node instanceof Element)) continue;
+        if (node.matches && node.matches(SEL)) { record(node); return; }
+        const inner = node.querySelector && node.querySelector(SEL);
+        if (inner) { record(inner); return; }
+      }
+    }
+  });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+})();
+
 function violations(samples: Sample[]): Sample[] {
   return samples.filter(
     (s) =>
