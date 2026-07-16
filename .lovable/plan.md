@@ -1,41 +1,38 @@
-## Goal
+## Plan: three UI tweaks
 
-Stop the SettingsPanel / ProfilePanel from animating in from off-screen. Instead, render them in their final position but fully transparent, and only fade in once the user opens them. This eliminates the flash entirely because the sheet never travels across the viewport.
+### 1) Fix Settings sheet header cut off on mobile Chrome
 
-## Approach
+Root cause: the mobile bottom sheet uses `maxHeight: "92vh"`. On Chrome for iOS/Android, `vh` is measured against the *large* viewport (URL bar hidden), so the sheet can exceed the currently visible area and the top of the header renders above the fold. Safari/Firefox measure differently, which is why they look correct.
 
-1. **Replace slide with fade** for both `SettingsPanel` and `ProfilePanel`:
-   - Remove `translateY(100%)` (mobile) and `translateX(...)` (desktop) closed states.
-   - Panel sits in its final open position at all times.
-   - Closed state = `opacity: 0; visibility: hidden; pointer-events: none`.
-   - Open state = `opacity: 1; visibility: visible` with a short fade transition (e.g. 200ms ease-out).
-   - `visibility: hidden` guarantees it is unhittable and invisible until `open` flips true, avoiding any first-paint reveal.
+Change in `src/components/SettingsPanel.tsx` (mobile branch of `SettingsPanel`):
+- Replace `maxHeight: "92vh"` with a dynamic-viewport-aware value:
+  `maxHeight: "min(92dvh, 92vh)"` with `92svh` as a fallback via a stacked declaration, i.e. set `maxHeight: "92svh"` and add a second style property override using CSS (or inline via `style={{ maxHeight: "92dvh" }}` combined with the CSS class fallback).
+- Simpler approach we'll use: switch to `maxHeight: "92dvh"` and add a `@supports not (height: 100dvh)` fallback rule in `src/index.css` on `.settings-sheet-mobile` setting `max-height: 92svh` then `92vh` as the ultimate fallback.
 
-2. **Update critical CSS** in `index.html` (`<style data-critical="settings-panel">`) and `src/index.css` so the closed state is `opacity:0; visibility:hidden` from the very first byte parsed. This is what the "render in position, invisible until interacted with" requirement needs.
+Also apply the same fix to `ProfilePanel.tsx` mobile sheet since it shares the pattern.
 
-3. **Add a mobile guard hook usage**: keep using the existing `useIsMobile()` (already in `src/hooks/use-mobile.tsx`) — that is the single "is mobile" function. Both panels already call it; no new hook needed. The fade behavior is identical across mobile/desktop, so no branching is required, but we'll keep `useIsMobile()` as the gate for choosing bottom-sheet vs side-drawer *layout*.
+### 2) Restyle the Loading… splash
 
-4. **Fade-in delay**: add a small `transition-delay` (e.g. 60ms) on the opacity transition when opening, so the panel is guaranteed invisible until user interaction has clearly started. When closing, no delay — it disappears immediately.
+In `index.html` (the inline pre-React loading screen), update the `<h1 aria-label="Loading...">` styles to match the Settings header:
+- `font-family: 'Fredoka One', 'Rubik', ui-rounded, system-ui, sans-serif;`
+- Replace the flat gold `color` with the same gradient used by Settings' "CUSTOMIZE YOUR EXPERIENCE" title:
+  `background: linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;`
+- Apply the background to each `.bounce-char` span (background-clip on the parent doesn't paint per-glyph reliably when children have their own layers). Add a small CSS rule in the existing `<style>` block: `#lovable-loading .bounce-char { background: linear-gradient(...); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }`.
+- Keep the existing bounce animation intact.
 
-5. **Update Playwright regression test** (`tests/settings-panel-hidden.spec.ts`):
-   - Replace the "transform matrix is off-screen" assertion with "opacity is 0 AND visibility is hidden" at first paint.
-   - Keep the MutationObserver first-paint sampler; only the pass/fail condition changes.
-   - Positive-case test (clicking gear reveals the sheet) stays as-is.
+### 3) Tighten AuthModal internal spacing + turquoise link
 
-6. **Update docs** (`docs/testing/settings-panel-hidden.md`) to reflect the new visibility/opacity strategy instead of transform-off-screen.
+In `src/components/AuthModal.tsx`:
+- On the inner panel `<div className="relative rounded-3xl p-6 sm:p-8">`, increase horizontal padding: `px-8 sm:px-10`.
+- Constrain form/button widths so they sit inside that padding. Wrap the form (`<form>`), the social buttons row, and the "sent"-confirmation submit button in a `max-w-[320px] mx-auto w-full` container (or add `max-w-[320px] mx-auto w-full` directly to each). Inputs currently span full width — capping via max-width creates the desired inset from the modal edge.
+- Change the bottom "Sign in / Sign up / Back to sign in" toggle link color from `text-white/80` to `text-[hsl(185_70%_55%)]` (project turquoise). Keep the hover state as-is or match to a slightly brighter turquoise.
 
-## Files to change
+### Files to change
 
-- `src/components/SettingsPanel.tsx` — remove translate closed states, use opacity+visibility gate.
-- `src/components/ProfilePanel.tsx` — same treatment.
-- `src/index.css` — replace `.settings-sheet-mobile` / `.settings-sheet-desktop` closed rules with opacity/visibility.
-- `index.html` — same replacement in the inlined `<style data-critical="settings-panel">` block.
-- `tests/settings-panel-hidden.spec.ts` — assertion change.
-- `docs/testing/settings-panel-hidden.md` — doc update.
+- `src/components/SettingsPanel.tsx` — mobile sheet `maxHeight`.
+- `src/components/ProfilePanel.tsx` — mobile sheet `maxHeight` (same fix).
+- `src/index.css` — `@supports` fallback for `.settings-sheet-mobile` height.
+- `index.html` — Loading heading font + gradient + `.bounce-char` gradient rule.
+- `src/components/AuthModal.tsx` — inner padding, form/social max-width wrapper, turquoise toggle link.
 
-## Technical notes
-
-- `visibility: hidden` (rather than `display: none`) is important so the transition still runs; combined with `opacity: 0` it's non-interactive and non-rendering visually.
-- `transition: opacity 200ms ease-out 60ms` on open; `transition: opacity 150ms ease-out 0ms` on close (handled via `data-open` attribute selector).
-- The two-frame `mounted`/`animated` gate in the components can be removed — it's no longer needed because there's no travel animation to suppress. This simplifies both files.
-- No changes to `use-mobile.tsx` needed; it's already the canonical mobile check.
+No logic, routing, or backend changes.
