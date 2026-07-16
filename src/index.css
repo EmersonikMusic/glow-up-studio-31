@@ -620,3 +620,29 @@
     display: none !important;
   }
 }
+
+/* ------------------------------------------------------------------
+   SettingsPanel closed-state transforms.
+   Applied via CSS so the very first paint has the correct transform
+   before any React effect runs — eliminates the load-time flash on
+   WebKit / Firefox where inline styles from state can lag one frame.
+   ------------------------------------------------------------------ */
+.settings-sheet-mobile {
+  transform: translateY(100%);
+}
+.settings-sheet-mobile[data-open="true"] {
+  transform: translateY(0);
+}
+.settings-sheet-mobile[data-animated="true"] {
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.settings-sheet-desktop {
+  transform: translateX(calc(100% + 64px));
+}
+.settings-sheet-desktop[data-open="true"] {
+  transform: translateX(0);
+}
+.settings-sheet-desktop[data-animated="true"] {
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}

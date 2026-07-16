@@ -336,8 +336,12 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [mounted, setMounted] = useState(false);
   const [animated, setAnimated] = useState(false);
   useLayoutEffect(() => {
-    setMounted(false);
-    setAnimated(false);
+    // Mount-only gate. We keep the panel out of the DOM for exactly one
+    // frame so the stylesheet's closed-state transform is committed on
+    // the first paint, then flip `animated` on the following frame so
+    // future open/close still transitions smoothly. Not keyed on
+    // `isMobile` — branch changes just swap class names, they must not
+    // remount and reset the gate.
     let raf2 = 0;
     const raf1 = requestAnimationFrame(() => {
       setMounted(true);
@@ -347,7 +351,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       cancelAnimationFrame(raf1);
       if (raf2) cancelAnimationFrame(raf2);
     };
-  }, [isMobile]);
+  }, []);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -645,7 +649,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         <div
           ref={sheetRef}
           data-testid="settings-panel-sheet"
-          className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          data-open={open ? "true" : "false"}
+          data-animated={animated ? "true" : "false"}
           style={{
             maxHeight: "92vh",
             background: "rgba(0, 0, 0, 0.25)",
@@ -653,8 +659,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
-            transform: open ? "translateY(0)" : "translateY(100%)",
-            transition: animated ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
             pointerEvents: open ? "auto" : "none",
           }}
         >
@@ -701,10 +705,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Sliding panel */}
       <div
         data-testid="settings-panel-desktop"
-        className="fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        className="settings-sheet-desktop fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        data-open={open ? "true" : "false"}
+        data-animated={animated ? "true" : "false"}
         style={{
-          transform: open ? "translateX(0)" : "translateX(calc(100% + 64px))",
-          transition: animated ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
           pointerEvents: open ? "auto" : "none",
         }}
       >
