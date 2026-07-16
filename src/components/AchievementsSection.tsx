@@ -8,7 +8,7 @@ interface AchievementsSectionProps {
   unlockedIds: string[];
 }
 
-const COLLAPSED_LIMIT = 6;
+const COLLAPSED_LIMIT = 3;
 
 export default function AchievementsSection({ unlockedIds }: AchievementsSectionProps) {
   const [expanded, setExpanded] = useState(false);
