@@ -617,7 +617,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         {/* Backdrop */}
         <div
           className="fixed inset-0 z-30 transition-opacity duration-300"
-          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
+          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: ready ? (open ? 1 : 0) : 0, pointerEvents: ready ? (open ? "auto" : "none") : "none" }}
           onClick={onClose}
         />
 
