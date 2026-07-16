@@ -11,7 +11,6 @@ export function useIsMobile() {
 
   React.useEffect(() => {
     const onChange = () => setIsMobile(computeIsMobile());
-    onChange();
     window.addEventListener("resize", onChange);
     return () => {
       window.removeEventListener("resize", onChange);
