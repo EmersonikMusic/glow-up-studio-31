@@ -336,8 +336,12 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const [mounted, setMounted] = useState(false);
   const [animated, setAnimated] = useState(false);
   useLayoutEffect(() => {
-    setMounted(false);
-    setAnimated(false);
+    // Mount-only gate. We keep the panel out of the DOM for exactly one
+    // frame so the stylesheet's closed-state transform is committed on
+    // the first paint, then flip `animated` on the following frame so
+    // future open/close still transitions smoothly. Not keyed on
+    // `isMobile` — branch changes just swap class names, they must not
+    // remount and reset the gate.
     let raf2 = 0;
     const raf1 = requestAnimationFrame(() => {
       setMounted(true);
@@ -347,7 +351,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       cancelAnimationFrame(raf1);
       if (raf2) cancelAnimationFrame(raf2);
     };
-  }, [isMobile]);
+  }, []);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
   const sheetRef = useRef<HTMLDivElement>(null);
