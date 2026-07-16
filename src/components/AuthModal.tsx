@@ -268,19 +268,22 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 onClick={handleGoogle}
                 disabled={loading}
                 aria-label="Sign in with Google"
-                className="relative w-full flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                className="w-full flex items-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
-                  background: "#000",
-                  border: "1px solid #000",
+                  background: "#131314",
+                  border: "1px solid #8E918F",
+                  boxSizing: "border-box",
                   paddingLeft: 12,
                   paddingRight: 12,
+                  gap: 10,
+                  justifyContent: "flex-start",
                 }}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className="block absolute"
-                  style={{ left: 12, top: "50%", transform: "translateY(-50%)", width: 20, height: 20 }}
+                  className="block shrink-0"
+                  style={{ width: 20, height: 20 }}
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
                 >
@@ -302,8 +305,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   />
                 </svg>
                 <span
-                  className="text-white text-[14px]"
-                  style={{ fontFamily: "'Roboto', Arial, Helvetica, sans-serif", fontWeight: 500 }}
+                  className="text-[14px] leading-5"
+                  style={{
+                    fontFamily: "'Google Sans', Roboto, Arial, sans-serif",
+                    fontWeight: 500,
+                    color: "#E3E3E3",
+                  }}
                 >
                   Sign in with Google
                 </span>
