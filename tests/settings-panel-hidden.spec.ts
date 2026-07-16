@@ -100,6 +100,7 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
 
     test.beforeEach(async ({ page }) => {
       await page.addInitScript(SAMPLER);
+      await page.addInitScript(FIRST_PAINT_SAMPLER);
     });
 
     test("cold load — sheet never intersects viewport", async ({ page }) => {
