@@ -239,37 +239,20 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
 
       const ins = state.insertion;
       if (!ins) return; // panel never mounted → nothing painted, nothing to check
-      const isMobile = ins.testid === "settings-panel-sheet";
-      // Decode the 2D transform matrix. matrix(a,b,c,d,e,f) → tx=e, ty=f.
-      // matrix3d(...) → tx=13th, ty=14th (1-indexed positions 13/14).
-      const parseTranslate = (t: string): { tx: number; ty: number } => {
-        if (!t || t === "none") return { tx: 0, ty: 0 };
-        const m = t.match(/matrix(3d)?\(([^)]+)\)/);
-        if (!m) return { tx: 0, ty: 0 };
-        const nums = m[2].split(",").map((v) => parseFloat(v.trim()));
-        if (m[1]) return { tx: nums[12] ?? 0, ty: nums[13] ?? 0 };
-        return { tx: nums[4] ?? 0, ty: nums[5] ?? 0 };
-      };
-      const { tx, ty } = parseTranslate(ins.transform);
 
+      // The panel now stays in its final position at all times, but is kept
+      // invisible via opacity:0 + visibility:hidden until data-open flips.
+      // A "visible on first paint" violation is any insertion where the
+      // element is on-screen with non-zero opacity and not visibility:hidden.
       const problems: string[] = [];
-      if (ins.opacity > 0.01 && ins.visibility !== "hidden" && ins.display !== "none") {
-        if (isMobile) {
-          // Must be translated down by at least its own height.
-          if (ty < ins.rect.height - 1) {
-            problems.push(`mobile ty=${ty} < height=${ins.rect.height}`);
-          }
-          if (ins.rect.top < ins.vh - 1) {
-            problems.push(`mobile rect.top=${ins.rect.top} < vh-1=${ins.vh - 1}`);
-          }
-        } else {
-          if (tx < ins.rect.width - 1) {
-            problems.push(`desktop tx=${tx} < width=${ins.rect.width}`);
-          }
-          if (ins.rect.left < ins.vw - 1) {
-            problems.push(`desktop rect.left=${ins.rect.left} < vw-1=${ins.vw - 1}`);
-          }
-        }
+      if (ins.opacity > 0.01) {
+        problems.push(`opacity=${ins.opacity} > 0 at first paint`);
+      }
+      if (ins.visibility !== "hidden") {
+        problems.push(`visibility=${ins.visibility} (expected 'hidden') at first paint`);
+      }
+      if (ins.dataOpen !== "false") {
+        problems.push(`data-open=${ins.dataOpen} (expected 'false') at first paint`);
       }
       expect(
         problems,

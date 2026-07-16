@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
 import { ChevronsLeft, Pencil, Check, X, LogOut, UserCircle2, Trash2 } from "lucide-react";
 import AchievementsSection from "./AchievementsSection";
@@ -75,21 +75,8 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
 
-  // Two-frame mount/animate gate — see SettingsPanel for rationale. Prevents
-  // the panel painting in the open position (or animating in) on first paint.
-  const [mounted, setMounted] = useState(false);
-  const [animated, setAnimated] = useState(false);
-  useLayoutEffect(() => {
-    let raf2 = 0;
-    const raf1 = requestAnimationFrame(() => {
-      setMounted(true);
-      raf2 = requestAnimationFrame(() => setAnimated(true));
-    });
-    return () => {
-      cancelAnimationFrame(raf1);
-      if (raf2) cancelAnimationFrame(raf2);
-    };
-  }, []);
+  // Panel always mounts; CSS keeps it hidden (opacity:0 + visibility:hidden)
+  // until data-open="true". No mount/animate gate needed.
 
 
   useEffect(() => {
@@ -430,8 +417,6 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     </>
   );
 
-  if (!mounted) return null;
-
   if (isMobile) {
     return (
       <>
@@ -446,7 +431,6 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
           data-testid="profile-panel-sheet"
           className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           data-open={open ? "true" : "false"}
-          data-animated={animated ? "true" : "false"}
           style={{
             maxHeight: "92vh",
             background: "rgba(0, 0, 0, 0.25)",
@@ -454,8 +438,6 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
-            pointerEvents: open ? "auto" : "none",
-            ...(!open && !animated ? { transform: "translateY(100%)" } : {}),
           }}
         >
           <div
@@ -495,11 +477,6 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
         data-testid="profile-panel-desktop"
         className="settings-sheet-desktop fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
         data-open={open ? "true" : "false"}
-        data-animated={animated ? "true" : "false"}
-        style={{
-          pointerEvents: open ? "auto" : "none",
-          ...(!open && !animated ? { transform: "translateX(calc(100% + 64px))" } : {}),
-        }}
       >
         <div
           className="flex-1 flex flex-col min-h-0"
