@@ -495,7 +495,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                     setConfirmPassword("");
                     setMode(isSignup ? "signin" : "signup");
                   }}
-                  className="text-white/80 underline underline-offset-2 hover:text-[hsl(185_70%_55%)]"
+                  className="text-[hsl(185_70%_55%)] underline underline-offset-2 hover:text-[hsl(185_80%_65%)]"
                 >
                   {isSignup ? "Sign in" : "Sign up"}
                 </button>
