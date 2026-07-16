@@ -645,7 +645,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         <div
           ref={sheetRef}
           data-testid="settings-panel-sheet"
-          className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          data-open={open ? "true" : "false"}
+          data-animated={animated ? "true" : "false"}
           style={{
             maxHeight: "92vh",
             background: "rgba(0, 0, 0, 0.25)",
@@ -653,8 +655,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
-            transform: open ? "translateY(0)" : "translateY(100%)",
-            transition: animated ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
             pointerEvents: open ? "auto" : "none",
           }}
         >
