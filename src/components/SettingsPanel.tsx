@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronsLeft } from "lucide-react";
-import { useState, useRef, useCallback, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PrimaryCTA from "./PrimaryCTA";
@@ -327,31 +327,6 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   };
 
   const isMobile = useIsMobile();
-  // Two-step gate: `mounted` controls whether we render any DOM at all,
-  // `animated` controls whether the transform transition is enabled.
-  // On first mount (and every breakpoint flip) we skip rendering for one
-  // frame so the closed-state transform is committed on the very first paint,
-  // then enable the transition on the following frame so future open/close
-  // still animate. This eliminates the "slide down + fade" flash on load.
-  const [mounted, setMounted] = useState(false);
-  const [animated, setAnimated] = useState(false);
-  useLayoutEffect(() => {
-    // Mount-only gate. We keep the panel out of the DOM for exactly one
-    // frame so the stylesheet's closed-state transform is committed on
-    // the first paint, then flip `animated` on the following frame so
-    // future open/close still transitions smoothly. Not keyed on
-    // `isMobile` — branch changes just swap class names, they must not
-    // remount and reset the gate.
-    let raf2 = 0;
-    const raf1 = requestAnimationFrame(() => {
-      setMounted(true);
-      raf2 = requestAnimationFrame(() => setAnimated(true));
-    });
-    return () => {
-      cancelAnimationFrame(raf1);
-      if (raf2) cancelAnimationFrame(raf2);
-    };
-  }, []);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
   const sheetRef = useRef<HTMLDivElement>(null);
