@@ -264,19 +264,19 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           {/* Social row — kept mounted so Apple's SDK-painted button
               survives forgot ↔ signin toggles. Hidden in forgot mode. */}
           <div className={isForgot ? "hidden" : "max-w-[320px] mx-auto w-full"} aria-hidden={isForgot}>
-            <div className="flex flex-col sm:flex-row sm:justify-center gap-3">
+            <div className="flex flex-col gap-3">
               <button
                 type="button"
                 onClick={handleGoogle}
                 disabled={loading}
                 aria-label="Sign in with Google"
-                className="mx-auto flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
-                style={{ width: SOCIAL_BTN_WIDTH, height: SOCIAL_BTN_HEIGHT, maxWidth: "100%" }}
+                className="w-full flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                style={{ height: SOCIAL_BTN_HEIGHT }}
               >
                 <img
                   src={googleBtnAsset.url}
                   alt=""
-                  className="w-full h-full block"
+                  className="w-full h-full object-contain"
                   draggable={false}
                 />
               </button>
@@ -286,11 +286,9 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 onClick={handleApple}
                 disabled={loading}
                 aria-label="Sign in with Apple"
-                className="mx-auto flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
-                  width: SOCIAL_BTN_WIDTH,
                   height: SOCIAL_BTN_HEIGHT,
-                  maxWidth: "100%",
                   background: "#000",
                   border: "1px solid #000",
                 }}
