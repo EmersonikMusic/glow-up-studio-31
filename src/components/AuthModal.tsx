@@ -263,7 +263,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
           {/* Social row — kept mounted so Apple's SDK-painted button
               survives forgot ↔ signin toggles. Hidden in forgot mode. */}
-          <div className={isForgot ? "hidden" : ""} aria-hidden={isForgot}>
+          <div className={isForgot ? "hidden" : "max-w-[320px] mx-auto w-full"} aria-hidden={isForgot}>
             <div className="flex flex-col sm:flex-row sm:justify-center gap-3">
               <button
                 type="button"
