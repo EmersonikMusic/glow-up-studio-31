@@ -649,3 +649,9 @@
   pointer-events: auto;
   transition: opacity 0.22s ease-out 0.08s, visibility 0s linear 0s;
 }
+/* Mobile sheet height fallbacks. Chrome mobile measures `vh` against the
+   large viewport (URL bar hidden), so 92vh can overflow the visible area
+   and clip the header. Use svh/dvh where supported. */
+.settings-sheet-mobile { max-height: 92vh; }
+@supports (height: 100svh) { .settings-sheet-mobile { max-height: 92svh; } }
+@supports (height: 100dvh) { .settings-sheet-mobile { max-height: 92dvh; } }
