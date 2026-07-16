@@ -430,17 +430,23 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     </>
   );
 
+  if (!mounted) return null;
+
   if (isMobile) {
     return (
       <>
         <div
+          data-testid="profile-panel-backdrop"
           className="fixed inset-0 z-30 transition-opacity duration-300"
           style={{ background: "hsl(240 45% 10% / 0.6)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
           onClick={onClose}
         />
         <div
           ref={sheetRef}
-          className="fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          data-testid="profile-panel-sheet"
+          className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
+          data-open={open ? "true" : "false"}
+          data-animated={animated ? "true" : "false"}
           style={{
             maxHeight: "92vh",
             background: "rgba(0, 0, 0, 0.25)",
@@ -448,8 +454,8 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
-            transform: open ? "translateY(0)" : "translateY(100%)",
-            transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+            pointerEvents: open ? "auto" : "none",
+            ...(!open && !animated ? { transform: "translateY(100%)" } : {}),
           }}
         >
           <div
@@ -480,15 +486,19 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
   return (
     <>
       <div
+        data-testid="profile-panel-backdrop"
         className="fixed inset-0 z-30 transition-opacity duration-300"
         style={{ background: "hsl(240 45% 10% / 0.4)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
         onClick={onClose}
       />
       <div
-        className="fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        data-testid="profile-panel-desktop"
+        className="settings-sheet-desktop fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        data-open={open ? "true" : "false"}
+        data-animated={animated ? "true" : "false"}
         style={{
-          transform: open ? "translateX(0)" : "translateX(calc(100% + 64px))",
-          transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+          pointerEvents: open ? "auto" : "none",
+          ...(!open && !animated ? { transform: "translateX(calc(100% + 64px))" } : {}),
         }}
       >
         <div
