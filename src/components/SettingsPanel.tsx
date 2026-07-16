@@ -701,10 +701,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Sliding panel */}
       <div
         data-testid="settings-panel-desktop"
-        className="fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        className="settings-sheet-desktop fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
+        data-open={open ? "true" : "false"}
+        data-animated={animated ? "true" : "false"}
         style={{
-          transform: open ? "translateX(0)" : "translateX(calc(100% + 64px))",
-          transition: animated ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
           pointerEvents: open ? "auto" : "none",
         }}
       >
