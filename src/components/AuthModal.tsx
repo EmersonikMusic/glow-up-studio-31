@@ -212,7 +212,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         hideClose
       >
         <div
-          className="relative rounded-3xl p-6 sm:p-8"
+          className="relative rounded-3xl py-6 px-8 sm:py-8 sm:px-10"
           style={{
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
@@ -263,7 +263,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
           {/* Social row — kept mounted so Apple's SDK-painted button
               survives forgot ↔ signin toggles. Hidden in forgot mode. */}
-          <div className={isForgot ? "hidden" : ""} aria-hidden={isForgot}>
+          <div className={isForgot ? "hidden" : "max-w-[320px] mx-auto w-full"} aria-hidden={isForgot}>
             <div className="flex flex-col sm:flex-row sm:justify-center gap-3">
               <button
                 type="button"
@@ -323,7 +323,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
           {/* Forgot: "sent" confirmation panel with throttled Resend */}
           {isForgot && resetSent ? (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 max-w-[320px] mx-auto w-full">
               <div
                 className="rounded-xl px-4 py-3 text-sm text-white/80"
                 style={{
@@ -354,7 +354,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </div>
           ) : (
             /* Form */
-            <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3">
+            <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3 max-w-[320px] mx-auto w-full">
               {isSignup && (
                 <input
                   type="text"
@@ -481,7 +481,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   setResendCooldown(0);
                   setMode("signin");
                 }}
-                className="text-white/80 underline underline-offset-2 hover:text-[hsl(185_70%_55%)]"
+                className="text-[hsl(185_70%_55%)] underline underline-offset-2 hover:text-[hsl(185_80%_65%)]"
               >
                 Back to sign in
               </button>
@@ -495,7 +495,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                     setConfirmPassword("");
                     setMode(isSignup ? "signin" : "signup");
                   }}
-                  className="text-white/80 underline underline-offset-2 hover:text-[hsl(185_70%_55%)]"
+                  className="text-[hsl(185_70%_55%)] underline underline-offset-2 hover:text-[hsl(185_80%_65%)]"
                 >
                   {isSignup ? "Sign in" : "Sign up"}
                 </button>
