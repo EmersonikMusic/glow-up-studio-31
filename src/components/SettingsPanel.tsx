@@ -715,6 +715,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         data-animated={animated ? "true" : "false"}
         style={{
           pointerEvents: open ? "auto" : "none",
+          // Belt-and-braces closed transform for the pre-animation gate.
+          ...(!open && !animated ? { transform: "translateX(calc(100% + 64px))" } : {}),
         }}
       >
         <div
