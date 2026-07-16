@@ -114,6 +114,12 @@ const FIRST_PAINT_SAMPLER = `
     }
   });
   mo.observe(document.documentElement, { childList: true, subtree: true });
+  // Polling fallback — some engines/timing combinations miss the MO tick.
+  const iv = setInterval(() => {
+    if (state.insertion) { clearInterval(iv); return; }
+    const el = document.querySelector(SEL);
+    if (el) { record(el); clearInterval(iv); }
+  }, 16);
 })();
 
 function violations(samples: Sample[]): Sample[] {
