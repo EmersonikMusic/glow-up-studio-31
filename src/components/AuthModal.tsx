@@ -268,16 +268,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 onClick={handleGoogle}
                 disabled={loading}
                 aria-label="Sign in with Google"
-                className="w-full flex items-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
                   background: "#131314",
                   border: "1px solid #8E918F",
                   boxSizing: "border-box",
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  gap: 10,
-                  justifyContent: "flex-start",
                 }}
               >
                 <svg
