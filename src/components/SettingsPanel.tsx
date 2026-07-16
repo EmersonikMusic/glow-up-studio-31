@@ -327,6 +327,12 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   };
 
   const isMobile = useIsMobile();
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    // Defer visibility until the breakpoint and initial layout are known
+    // so the panel doesn't flash in the wrong orientation on first paint.
+    setReady(true);
+  }, []);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
   const sheetRef = useRef<HTMLDivElement>(null);
