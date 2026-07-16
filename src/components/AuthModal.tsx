@@ -268,16 +268,19 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 onClick={handleGoogle}
                 disabled={loading}
                 aria-label="Sign in with Google"
-                className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
+                className="relative w-full flex items-center justify-center rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
                   background: "#000",
                   border: "1px solid #000",
+                  paddingLeft: 12,
+                  paddingRight: 12,
                 }}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className="w-5 h-5 block"
+                  className="block absolute"
+                  style={{ left: 12, top: "50%", transform: "translateY(-50%)", width: 20, height: 20 }}
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
                 >
@@ -299,8 +302,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   />
                 </svg>
                 <span
-                  className="text-white text-[14px] font-medium"
-                  style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif" }}
+                  className="text-white text-[14px]"
+                  style={{ fontFamily: "'Roboto', Arial, Helvetica, sans-serif", fontWeight: 500 }}
                 >
                   Sign in with Google
                 </span>
