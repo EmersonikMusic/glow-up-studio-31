@@ -270,6 +270,22 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
         `First paint of panel was visible. state=${JSON.stringify(ins)}`,
       ).toEqual([]);
     });
+
+    test("opens correctly when gear is tapped", async ({ page }) => {
+      await page.goto("/");
+      await page.waitForTimeout(500);
+      const gear = page.getByRole("button", { name: /settings/i }).first();
+      await gear.click();
+      await page.waitForTimeout(500);
+      await shoot(page, browserName, "opened");
+      const rect = await page
+        .locator('[data-testid="settings-panel-sheet"], [data-testid="settings-panel-desktop"]')
+        .first()
+        .boundingBox();
+      expect(rect, "sheet should be in DOM after open").not.toBeNull();
+      const vh = await page.evaluate(() => window.innerHeight);
+      expect(rect!.top).toBeLessThan(vh - 100);
+    });
   });
 }
 
@@ -288,19 +304,3 @@ type FirstPaintInsertion = {
   fpAtInsert: number | null;
   fcpAtInsert: number | null;
 };
-      await page.goto("/");
-      await page.waitForTimeout(500);
-      const gear = page.getByRole("button", { name: /settings/i }).first();
-      await gear.click();
-      await page.waitForTimeout(500);
-      await shoot(page, browserName, "opened");
-      const rect = await page
-        .locator('[data-testid="settings-panel-sheet"], [data-testid="settings-panel-desktop"]')
-        .first()
-        .boundingBox();
-      expect(rect, "sheet should be in DOM after open").not.toBeNull();
-      const vh = await page.evaluate(() => window.innerHeight);
-      expect(rect!.top).toBeLessThan(vh - 100);
-    });
-  });
-}
