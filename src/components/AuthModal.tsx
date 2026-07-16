@@ -354,7 +354,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </div>
           ) : (
             /* Form */
-            <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3">
+            <form onSubmit={isForgot ? handleForgotSubmit : handleSubmit} className="flex flex-col gap-3 max-w-[320px] mx-auto w-full">
               {isSignup && (
                 <input
                   type="text"
