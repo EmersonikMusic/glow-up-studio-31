@@ -7,7 +7,7 @@ function computeIsMobile(): boolean {
 }
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
+  const [isMobile, setIsMobile] = React.useState<boolean>(() => computeIsMobile());
 
   React.useEffect(() => {
     const onChange = () => setIsMobile(computeIsMobile());
@@ -18,5 +18,5 @@ export function useIsMobile() {
     };
   }, []);
 
-  return !!isMobile;
+  return isMobile;
 }
