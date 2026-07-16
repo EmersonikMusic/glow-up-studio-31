@@ -660,6 +660,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
             pointerEvents: open ? "auto" : "none",
+            // Belt-and-braces: during the two-frame pre-animation gate,
+            // force the closed transform inline so the panel cannot paint
+            // in the open position even if the stylesheet hasn't matched
+            // yet. Cleared once the transition is enabled or on open.
+            ...(!open && !animated ? { transform: "translateY(100%)" } : {}),
           }}
         >
           {/* Drag handle */}
