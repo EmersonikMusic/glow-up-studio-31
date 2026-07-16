@@ -25,7 +25,7 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
     return (
       <div className="flex flex-col items-center gap-2 text-center">
         <div
-          className="w-20 h-20 rounded-full flex items-center justify-center"
+          className="w-[84px] h-[84px] rounded-full flex items-center justify-center"
           style={{
             background: "rgba(255,255,255,0.06)",
             border: "2px solid rgba(255,255,255,0.1)",
@@ -33,7 +33,7 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
             filter: "grayscale(1)",
           }}
         >
-          <Lock className="w-7 h-7 text-white/60" />
+          <Lock className="w-[30px] h-[30px] text-white/60" />
         </div>
         {label}
       </div>
@@ -52,7 +52,7 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
         onMouseLeave={() => setFlip(false)}
         aria-pressed={flipped}
         aria-label={`${badge.badgeName}: ${badge.requirement}`}
-        className="relative w-20 h-20 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+        className="relative w-[84px] h-[84px] rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         style={{ perspective: "600px" }}
       >
         <div
@@ -74,7 +74,7 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
               boxShadow: "0 4px 20px rgba(253,199,12,0.35)",
             }}
           >
-            <Trophy className="w-8 h-8" style={{ color: "hsl(240 45% 10%)" }} strokeWidth={2.5} />
+            <Trophy className="w-[34px] h-[34px]" style={{ color: "hsl(240 45% 10%)" }} strokeWidth={2.5} />
           </div>
           {/* Back */}
           <div
@@ -89,7 +89,7 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
             }}
           >
             <span
-              className="text-[9px] font-body font-semibold leading-tight text-center text-white"
+              className="text-[9px] font-body font-bold leading-tight text-center text-white"
               style={{
                 display: "-webkit-box",
                 WebkitLineClamp: 5,

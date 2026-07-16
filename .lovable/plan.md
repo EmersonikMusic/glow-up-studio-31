@@ -1,38 +1,35 @@
-## Plan: three UI tweaks
+## Achievement badge tweaks
 
-### 1) Fix Settings sheet header cut off on mobile Chrome
+**1. Bolder description text** — In `src/components/BadgeItem.tsx`, on the flipped-back requirement `<span>`, change `font-semibold` → `font-bold` for better legibility.
 
-Root cause: the mobile bottom sheet uses `maxHeight: "92vh"`. On Chrome for iOS/Android, `vh` is measured against the *large* viewport (URL bar hidden), so the sheet can exceed the currently visible area and the top of the header renders above the fold. Safari/Firefox measure differently, which is why they look correct.
+**2. Badge size +5%** — In `BadgeItem.tsx`, bump the front/back circle from `w-20 h-20` (80px) to `w-[84px] h-[84px]` (~5% larger). Adjust the inner `Trophy` icon and `Lock` icon proportionally (`w-8 h-8` → `w-[34px] h-[34px]`, `w-7 h-7` → `w-[30px] h-[30px]`) so they stay visually centered.
 
-Change in `src/components/SettingsPanel.tsx` (mobile branch of `SettingsPanel`):
-- Replace `maxHeight: "92vh"` with a dynamic-viewport-aware value:
-  `maxHeight: "min(92dvh, 92vh)"` with `92svh` as a fallback via a stacked declaration, i.e. set `maxHeight: "92svh"` and add a second style property override using CSS (or inline via `style={{ maxHeight: "92dvh" }}` combined with the CSS class fallback).
-- Simpler approach we'll use: switch to `maxHeight: "92dvh"` and add a `@supports not (height: 100dvh)` fallback rule in `src/index.css` on `.settings-sheet-mobile` setting `max-height: 92svh` then `92vh` as the ultimate fallback.
+**3. Single-row preview in ProfilePanel** — In `src/components/AchievementsSection.tsx`, drop `COLLAPSED_LIMIT` from `6` to `3` so the collapsed grid renders exactly one row of three badges. "View all N" / "Show less" toggle behavior is unchanged.
 
-Also apply the same fix to `ProfilePanel.tsx` mobile sheet since it shares the pattern.
+## Wipe collected trophies (poptartpopart)
 
-### 2) Restyle the Loading… splash
+Reset badge-related columns for `morgan.begg@gmail.com` (id `a557d878-a096-4f71-9bea-41730ff562b2`) so re-earning under the new criteria starts clean:
 
-In `index.html` (the inline pre-React loading screen), update the `<h1 aria-label="Loading...">` styles to match the Settings header:
-- `font-family: 'Fredoka One', 'Rubik', ui-rounded, system-ui, sans-serif;`
-- Replace the flat gold `color` with the same gradient used by Settings' "CUSTOMIZE YOUR EXPERIENCE" title:
-  `background: linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;`
-- Apply the background to each `.bounce-char` span (background-clip on the parent doesn't paint per-glyph reliably when children have their own layers). Add a small CSS rule in the existing `<style>` block: `#lovable-loading .bounce-char { background: linear-gradient(...); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }`.
-- Keep the existing bounce animation intact.
+```sql
+UPDATE public.profiles
+SET unlocked_badges = '{}',
+    category_counts = '{}'::jsonb,
+    era_counts = '{}'::jsonb,
+    difficulty_counts = '{}'::jsonb,
+    play_history = '{}',
+    game_settings_history = '[]'::jsonb,
+    total_games_played = 0,
+    min_timer_games = 0,
+    quickplay_games = 0,
+    custom_games = 0,
+    first_game_completed_at = NULL,
+    last_played_at = NULL
+WHERE id = 'a557d878-a096-4f71-9bea-41730ff562b2';
+```
 
-### 3) Tighten AuthModal internal spacing + turquoise link
+Note: this also zeros the counters/history that feed badge evaluation — required so previously earned tier badges don't immediately re-trigger on the next game. If you'd rather keep the play counters and only clear the trophy list itself, say the word and I'll narrow the update to just `unlocked_badges`.
 
-In `src/components/AuthModal.tsx`:
-- On the inner panel `<div className="relative rounded-3xl p-6 sm:p-8">`, increase horizontal padding: `px-8 sm:px-10`.
-- Constrain form/button widths so they sit inside that padding. Wrap the form (`<form>`), the social buttons row, and the "sent"-confirmation submit button in a `max-w-[320px] mx-auto w-full` container (or add `max-w-[320px] mx-auto w-full` directly to each). Inputs currently span full width — capping via max-width creates the desired inset from the modal edge.
-- Change the bottom "Sign in / Sign up / Back to sign in" toggle link color from `text-white/80` to `text-[hsl(185_70%_55%)]` (project turquoise). Keep the hover state as-is or match to a slightly brighter turquoise.
-
-### Files to change
-
-- `src/components/SettingsPanel.tsx` — mobile sheet `maxHeight`.
-- `src/components/ProfilePanel.tsx` — mobile sheet `maxHeight` (same fix).
-- `src/index.css` — `@supports` fallback for `.settings-sheet-mobile` height.
-- `index.html` — Loading heading font + gradient + `.bounce-char` gradient rule.
-- `src/components/AuthModal.tsx` — inner padding, form/social max-width wrapper, turquoise toggle link.
-
-No logic, routing, or backend changes.
+## Files changed
+- `src/components/BadgeItem.tsx` — bolder text, +5% size
+- `src/components/AchievementsSection.tsx` — `COLLAPSED_LIMIT = 3`
+- One data update on `public.profiles` (single row)
