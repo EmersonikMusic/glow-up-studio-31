@@ -1,5 +1,9 @@
 # Settings panel hidden-on-load regression
 
+Runs on every PR via `.github/workflows/settings-panel-hidden.yml` against
+Chromium and WebKit. Firefox is exercised locally but not gated in CI
+(the user only requires Chromium + WebKit on PRs).
+
 `tests/settings-panel-hidden.spec.ts` verifies the `SettingsPanel` bottom sheet
 (and desktop side drawer) never appear on-screen between initial paint and the
 moment the user taps the settings gear. It runs on all three browser engines so
