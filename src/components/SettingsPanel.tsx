@@ -327,6 +327,12 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   };
 
   const isMobile = useIsMobile();
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    // Defer visibility until the breakpoint and initial layout are known
+    // so the panel doesn't flash in the wrong orientation on first paint.
+    setReady(true);
+  }, []);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -611,7 +617,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         {/* Backdrop */}
         <div
           className="fixed inset-0 z-30 transition-opacity duration-300"
-          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
+          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: ready ? (open ? 1 : 0) : 0, pointerEvents: ready ? (open ? "auto" : "none") : "none" }}
           onClick={onClose}
         />
 
@@ -627,7 +633,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
             transform: open ? "translateY(0)" : "translateY(100%)",
-            transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+            transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease",
+            opacity: ready ? 1 : 0,
+            pointerEvents: ready ? "auto" : "none",
           }}
         >
           {/* Drag handle */}
@@ -665,7 +673,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-30 transition-opacity duration-300"
-        style={{ background: "hsl(240 45% 10% / 0.4)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
+        style={{ background: "hsl(240 45% 10% / 0.4)", opacity: ready ? (open ? 1 : 0) : 0, pointerEvents: ready ? (open ? "auto" : "none") : "none" }}
         onClick={onClose}
       />
 
@@ -674,7 +682,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         className="fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
         style={{
           transform: open ? "translateX(0)" : "translateX(calc(100% + 64px))",
-          transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+          transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease",
+          opacity: ready ? 1 : 0,
+          pointerEvents: ready ? "auto" : "none",
         }}
       >
         <div

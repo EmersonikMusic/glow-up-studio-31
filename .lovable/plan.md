@@ -1,35 +1,14 @@
-# Sign in with Apple
+Problem
+When Triviolivia loads on a mobile viewport, the SettingsPanel renders once as a desktop right-side drawer (because `useIsMobile()` initially returns `false`) and then switches to a mobile bottom sheet. That mismatch causes the panel to visibly move from one position to another before the layout settles.
 
-Since you're on Lovable Cloud, we should use the managed `lovable.auth.signInWithOAuth("apple", ...)` helper — not the raw `supabase.auth.signInWithOAuth` snippet Gemini gave you. The Lovable helper handles the popup / redirect handoff and session setup for you, mirrors how Google sign-in already works in this app, and works correctly inside the preview iframe. The redirect target should be `window.location.origin`, not `/auth/callback` (that route doesn't exist here — Lovable's OAuth broker handles the callback).
+Fix
+1. Compute the breakpoint immediately in `useIsMobile` so the first paint is already correct.
+   - In `src/hooks/use-mobile.tsx`, replace `useState<boolean | undefined>(undefined)` with a lazy `useState(() => computeIsMobile())` so the initial value is read synchronously from `window.innerWidth` on the client.
+2. Hide the SettingsPanel until its final position is known.
+   - In `src/components/SettingsPanel.tsx`, add a `ready` flag that becomes `true` after the first render/effect cycle. While `!ready`, render the panel with `opacity: 0` and `pointer-events: none` so it is invisible but still present in the DOM (avoiding a mount/unmount flash). Once `ready` flips, fade in.
+3. Verify the result.
+   - Run `bun run build` / `vite build` to ensure no type errors.
+   - Use a Playwright mobile viewport screenshot to confirm the settings panel is not visible in its initial closed state on first paint.
 
-We'll also drop the existing Apple JS SDK popup path (`appleid.auth.js`, `#appleid-signin`, `VITE_APPLE_SERVICES_ID` gate). That was a placeholder pre-integration; it's incompatible with Lovable-managed Apple auth and would collide with it.
-
-## What changes
-
-**Backend**
-- Enable the Apple provider on Lovable Cloud managed social login (via `configure_social_auth` with `providers: ["apple"]`). Google stays enabled; email stays enabled.
-
-**`src/components/AuthModal.tsx`**
-- Remove Apple JS SDK bits: `APPLE_SERVICES_ID` / `APPLE_AUTH_READY` constants, the `useEffect` that injects `appleid.auth.js`, the `AppleID.auth.init` call, and the `#appleid-signin` div.
-- Add `handleApple` that mirrors `handleGoogle`:
-  ```ts
-  const result = await lovable.auth.signInWithOAuth("apple", {
-    redirect_uri: window.location.origin,
-  });
-  if (result.error) { setError("Apple sign-in failed. Please try again."); return; }
-  if (result.redirected) return;
-  onOpenChange(false);
-  ```
-- Replace the SDK-rendered Apple div with a plain `<button>` styled to match Google's pill (`SOCIAL_BTN_WIDTH` × `SOCIAL_BTN_HEIGHT`, black background, white "Sign in with Apple" label + Apple glyph). Reuse the existing `apple-logo-white.svg` asset already in `src/assets/`. Always visible now (no feature flag).
-- Analytics: keep `trackClick("click_sign_in_apple")` at the top of `handleApple`.
-
-## Why not Gemini's snippet
-
-1. It calls `supabase.auth.signInWithOAuth` directly. On Lovable Cloud managed auth, all social sign-in must go through `lovable.auth.signInWithOAuth` so the wrapper can set the session after the popup returns tokens via `web_message`. Calling Supabase directly bypasses that and breaks preview-iframe sign-in.
-2. `redirectTo: ${origin}/auth/callback` points at a route that doesn't exist in this project and isn't in the OAuth allow-list — the managed broker uses its own callback. `window.location.origin` is the correct value and works on custom domains too.
-
-## Verification
-- Type-check and build pass.
-- Open the login modal → Apple button appears next to Google → click opens Apple sign-in → returning to the app leaves you signed in (avatar/username visible in the header).
-
-No design direction options needed — the button matches the existing Google pill's size and shape.
+Scope
+Limited to the settings panel only. The same pattern applies to ProfilePanel, but I will only touch SettingsPanel unless you want the fix applied to both.
