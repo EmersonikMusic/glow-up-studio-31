@@ -43,6 +43,18 @@
   <meta property="og:description" content="Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup.">
   <meta name="twitter:description" content="Play Triviolivia free in your browser — thousands of say-aloud trivia questions across 25 categories, 5 difficulties, and 12 eras. No signup.">
   <style>html,body{margin:0;padding:0;min-height:100%;background:#1a1740;}@keyframes triviaBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-14%)}}.bounce-char{display:inline-block;animation:triviaBounce 1s cubic-bezier(.5,.05,.3,1) infinite;will-change:transform;color:#FFC93D;background:linear-gradient(160deg,#FFC93D 0%,#E89412 45%,#C97114 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}@media (prefers-reduced-motion:reduce){.bounce-char{animation:none}}</style>
+  <!-- Critical: SettingsPanel closed-state transforms. Duplicated in src/index.css.
+       Inlined here so the CSSOM has the rules before React renders the panel,
+       preventing a first-paint flash on WebKit / Firefox. If you edit these,
+       update src/index.css to match. -->
+  <style data-critical="settings-panel">
+    .settings-sheet-mobile{transform:translateY(100%)}
+    .settings-sheet-mobile[data-open="true"]{transform:translateY(0)}
+    .settings-sheet-mobile[data-animated="true"]{transition:transform .38s cubic-bezier(.16,1,.3,1)}
+    .settings-sheet-desktop{transform:translateX(calc(100% + 64px))}
+    .settings-sheet-desktop[data-open="true"]{transform:translateX(0)}
+    .settings-sheet-desktop[data-animated="true"]{transition:transform .38s cubic-bezier(.16,1,.3,1)}
+  </style>
 </head>
 
   <body>

@@ -626,6 +626,9 @@
    Applied via CSS so the very first paint has the correct transform
    before any React effect runs — eliminates the load-time flash on
    WebKit / Firefox where inline styles from state can lag one frame.
+   NOTE: also inlined in index.html as <style data-critical="settings-panel">
+   so the CSSOM has the rules before this stylesheet is fetched. Keep
+   the two blocks in sync.
    ------------------------------------------------------------------ */
 .settings-sheet-mobile {
   transform: translateY(100%);

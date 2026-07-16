@@ -1,5 +1,8 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
+// IMPORTANT: keep this import BEFORE createRoot(...).render(...) so the global
+// stylesheet (including SettingsPanel closed-state transforms) is applied
+// before the first React commit. Do not reorder.
 import "./index.css";
 
 // Measure the visual viewport into a CSS variable used by full-height screens.

@@ -59,6 +59,69 @@ const SAMPLER = `
 })();
 `;
 
+/**
+ * First-paint sampler. Uses MutationObserver + PerformanceObserver to
+ * capture the sheet the *instant* it enters the DOM, along with the
+ * transform matrix, opacity, and whether first-contentful-paint has
+ * already fired. This is stricter than the frame sampler above: the
+ * test fails if the very first appearance of the panel is not in the
+ * closed position.
+ */
+const FIRST_PAINT_SAMPLER = `
+(() => {
+  if (window.__firstPaint) return;
+  const state = { insertion: null, fp: null, fcp: null };
+  window.__firstPaint = state;
+  try {
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) {
+        if (e.name === 'first-paint' && state.fp == null) state.fp = e.startTime;
+        if (e.name === 'first-contentful-paint' && state.fcp == null) state.fcp = e.startTime;
+      }
+    }).observe({ type: 'paint', buffered: true });
+  } catch (_) {}
+  const SEL = '[data-testid="settings-panel-sheet"], [data-testid="settings-panel-desktop"]';
+  function record(el) {
+    if (state.insertion) return;
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    state.insertion = {
+      t: performance.now(),
+      testid: el.getAttribute('data-testid'),
+      dataOpen: el.getAttribute('data-open'),
+      dataAnimated: el.getAttribute('data-animated'),
+      rect: { top: r.top, left: r.left, width: r.width, height: r.height, bottom: r.bottom, right: r.right },
+      transform: cs.transform,
+      opacity: parseFloat(cs.opacity || '1'),
+      visibility: cs.visibility,
+      display: cs.display,
+      vw: window.innerWidth,
+      vh: window.innerHeight,
+      fpAtInsert: state.fp,
+      fcpAtInsert: state.fcp,
+    };
+  }
+  const existing = document.querySelector(SEL);
+  if (existing) record(existing);
+  const mo = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      for (const node of m.addedNodes) {
+        if (!(node instanceof Element)) continue;
+        if (node.matches && node.matches(SEL)) { record(node); return; }
+        const inner = node.querySelector && node.querySelector(SEL);
+        if (inner) { record(inner); return; }
+      }
+    }
+  });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+  // Polling fallback — some engines/timing combinations miss the MO tick.
+  const iv = setInterval(() => {
+    if (state.insertion) { clearInterval(iv); return; }
+    const el = document.querySelector(SEL);
+    if (el) { record(el); clearInterval(iv); }
+  }, 16);
+})();
+
 function violations(samples: Sample[]): Sample[] {
   return samples.filter(
     (s) =>
@@ -100,6 +163,7 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
 
     test.beforeEach(async ({ page }) => {
       await page.addInitScript(SAMPLER);
+      await page.addInitScript(FIRST_PAINT_SAMPLER);
     });
 
     test("cold load — sheet never intersects viewport", async ({ page }) => {
@@ -150,6 +214,69 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
       expect(violations(samples)).toEqual([]);
     });
 
+    test("panel is not visible on first paint", async ({ page }, testInfo) => {
+      await page.goto("/");
+      // Wait for the panel to be inserted into the DOM (mounted gate flips
+      // after one rAF). If it never mounts, the test still finishes and
+      // reports "no insertion recorded" as a pass since nothing painted.
+      await page.waitForFunction(
+        () => {
+          const s = (window as unknown as { __firstPaint?: { insertion: unknown; fcp: number | null } }).__firstPaint;
+          return !!s && s.insertion !== null;
+        },
+        undefined,
+        { timeout: 10000 },
+      );
+      await page.waitForTimeout(200);
+      const state = await page.evaluate(
+        () => (window as unknown as { __firstPaint: { insertion: FirstPaintInsertion | null; fp: number | null; fcp: number | null } }).__firstPaint,
+      );
+      await shoot(page, browserName, "first-paint");
+      await testInfo.attach("first-paint-state.json", {
+        body: JSON.stringify(state, null, 2),
+        contentType: "application/json",
+      });
+
+      const ins = state.insertion;
+      if (!ins) return; // panel never mounted → nothing painted, nothing to check
+      const isMobile = ins.testid === "settings-panel-sheet";
+      // Decode the 2D transform matrix. matrix(a,b,c,d,e,f) → tx=e, ty=f.
+      // matrix3d(...) → tx=13th, ty=14th (1-indexed positions 13/14).
+      const parseTranslate = (t: string): { tx: number; ty: number } => {
+        if (!t || t === "none") return { tx: 0, ty: 0 };
+        const m = t.match(/matrix(3d)?\(([^)]+)\)/);
+        if (!m) return { tx: 0, ty: 0 };
+        const nums = m[2].split(",").map((v) => parseFloat(v.trim()));
+        if (m[1]) return { tx: nums[12] ?? 0, ty: nums[13] ?? 0 };
+        return { tx: nums[4] ?? 0, ty: nums[5] ?? 0 };
+      };
+      const { tx, ty } = parseTranslate(ins.transform);
+
+      const problems: string[] = [];
+      if (ins.opacity > 0.01 && ins.visibility !== "hidden" && ins.display !== "none") {
+        if (isMobile) {
+          // Must be translated down by at least its own height.
+          if (ty < ins.rect.height - 1) {
+            problems.push(`mobile ty=${ty} < height=${ins.rect.height}`);
+          }
+          if (ins.rect.top < ins.vh - 1) {
+            problems.push(`mobile rect.top=${ins.rect.top} < vh-1=${ins.vh - 1}`);
+          }
+        } else {
+          if (tx < ins.rect.width - 1) {
+            problems.push(`desktop tx=${tx} < width=${ins.rect.width}`);
+          }
+          if (ins.rect.left < ins.vw - 1) {
+            problems.push(`desktop rect.left=${ins.rect.left} < vw-1=${ins.vw - 1}`);
+          }
+        }
+      }
+      expect(
+        problems,
+        `First paint of panel was visible. state=${JSON.stringify(ins)}`,
+      ).toEqual([]);
+    });
+
     test("opens correctly when gear is tapped", async ({ page }) => {
       await page.goto("/");
       await page.waitForTimeout(500);
@@ -167,3 +294,19 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
     });
   });
 }
+
+type FirstPaintInsertion = {
+  t: number;
+  testid: string;
+  dataOpen: string | null;
+  dataAnimated: string | null;
+  rect: { top: number; left: number; width: number; height: number; bottom: number; right: number };
+  transform: string;
+  opacity: number;
+  visibility: string;
+  display: string;
+  vw: number;
+  vh: number;
+  fpAtInsert: number | null;
+  fcpAtInsert: number | null;
+};
