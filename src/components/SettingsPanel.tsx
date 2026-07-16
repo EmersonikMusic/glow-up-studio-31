@@ -633,7 +633,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
             transform: open ? "translateY(0)" : "translateY(100%)",
-            transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
+            transition: "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease",
+            opacity: ready ? 1 : 0,
+            pointerEvents: ready ? "auto" : "none",
           }}
         >
           {/* Drag handle */}
