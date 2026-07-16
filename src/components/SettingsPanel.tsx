@@ -327,15 +327,26 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   };
 
   const isMobile = useIsMobile();
-  const [ready, setReady] = useState(false);
-  // Hide synchronously before paint whenever the breakpoint flips (e.g. device
-  // rotation crossing 768px), then re-reveal on the next frame once the correct
-  // branch's inline transform/positioning is committed. useLayoutEffect ensures
-  // ready=false is applied before the browser paints the remounted branch.
+  // Two-step gate: `mounted` controls whether we render any DOM at all,
+  // `animated` controls whether the transform transition is enabled.
+  // On first mount (and every breakpoint flip) we skip rendering for one
+  // frame so the closed-state transform is committed on the very first paint,
+  // then enable the transition on the following frame so future open/close
+  // still animate. This eliminates the "slide down + fade" flash on load.
+  const [mounted, setMounted] = useState(false);
+  const [animated, setAnimated] = useState(false);
   useLayoutEffect(() => {
-    setReady(false);
-    const raf = requestAnimationFrame(() => setReady(true));
-    return () => cancelAnimationFrame(raf);
+    setMounted(false);
+    setAnimated(false);
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      setMounted(true);
+      raf2 = requestAnimationFrame(() => setAnimated(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+    };
   }, [isMobile]);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
