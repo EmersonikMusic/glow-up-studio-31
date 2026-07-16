@@ -14,9 +14,8 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Google's dark pill SVG is intrinsically 180x40. Rendering the Apple
-// button at the same size keeps the two social buttons visually aligned.
-const SOCIAL_BTN_WIDTH = 180;
+// Google's dark pill SVG is intrinsically 40px tall. Keep Apple at the
+// same height so the two social buttons stay visually aligned.
 const SOCIAL_BTN_HEIGHT = 40;
 
 
