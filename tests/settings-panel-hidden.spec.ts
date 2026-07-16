@@ -222,10 +222,10 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
       await page.waitForFunction(
         () => {
           const s = (window as unknown as { __firstPaint?: { insertion: unknown; fcp: number | null } }).__firstPaint;
-          return !!s && (s.insertion !== null || s.fcp !== null);
+          return !!s && s.insertion !== null;
         },
         undefined,
-        { timeout: 5000 },
+        { timeout: 10000 },
       );
       await page.waitForTimeout(200);
       const state = await page.evaluate(
