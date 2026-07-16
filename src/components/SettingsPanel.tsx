@@ -327,15 +327,26 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   };
 
   const isMobile = useIsMobile();
-  const [ready, setReady] = useState(false);
-  // Hide synchronously before paint whenever the breakpoint flips (e.g. device
-  // rotation crossing 768px), then re-reveal on the next frame once the correct
-  // branch's inline transform/positioning is committed. useLayoutEffect ensures
-  // ready=false is applied before the browser paints the remounted branch.
+  // Two-step gate: `mounted` controls whether we render any DOM at all,
+  // `animated` controls whether the transform transition is enabled.
+  // On first mount (and every breakpoint flip) we skip rendering for one
+  // frame so the closed-state transform is committed on the very first paint,
+  // then enable the transition on the following frame so future open/close
+  // still animate. This eliminates the "slide down + fade" flash on load.
+  const [mounted, setMounted] = useState(false);
+  const [animated, setAnimated] = useState(false);
   useLayoutEffect(() => {
-    setReady(false);
-    const raf = requestAnimationFrame(() => setReady(true));
-    return () => cancelAnimationFrame(raf);
+    setMounted(false);
+    setAnimated(false);
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      setMounted(true);
+      raf2 = requestAnimationFrame(() => setAnimated(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+    };
   }, [isMobile]);
 
   // --- Drag-to-dismiss for mobile bottom sheet ---
@@ -614,6 +625,10 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       </div>
   );
 
+  // Don't render any panel DOM until we've had one frame to commit the
+  // closed-state transform. This guarantees no flash at initial paint.
+  if (!mounted) return null;
+
   // ── MOBILE: Bottom sheet ──
   if (isMobile) {
     return (
@@ -622,7 +637,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         <div
           data-testid="settings-panel-backdrop"
           className="fixed inset-0 z-30 transition-opacity duration-300"
-          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: ready ? (open ? 1 : 0) : 0, pointerEvents: ready ? (open ? "auto" : "none") : "none" }}
+          style={{ background: "hsl(240 45% 10% / 0.6)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
           onClick={onClose}
         />
 
@@ -639,9 +654,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             borderBottom: "none",
             boxShadow: "0 -8px 48px rgba(0, 0, 0, 0.5)",
             transform: open ? "translateY(0)" : "translateY(100%)",
-            transition: ready ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease" : "none",
-            opacity: ready ? 1 : 0,
-            pointerEvents: ready ? "auto" : "none",
+            transition: animated ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+            pointerEvents: open ? "auto" : "none",
           }}
         >
           {/* Drag handle */}
@@ -680,7 +694,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       <div
         data-testid="settings-panel-backdrop"
         className="fixed inset-0 z-30 transition-opacity duration-300"
-        style={{ background: "hsl(240 45% 10% / 0.4)", opacity: ready ? (open ? 1 : 0) : 0, pointerEvents: ready ? (open ? "auto" : "none") : "none" }}
+        style={{ background: "hsl(240 45% 10% / 0.4)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
         onClick={onClose}
       />
 
@@ -690,9 +704,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         className="fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
         style={{
           transform: open ? "translateX(0)" : "translateX(calc(100% + 64px))",
-          transition: ready ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease" : "none",
-          opacity: ready ? 1 : 0,
-          pointerEvents: ready ? "auto" : "none",
+          transition: animated ? "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)" : "none",
+          pointerEvents: open ? "auto" : "none",
         }}
       >
         <div
