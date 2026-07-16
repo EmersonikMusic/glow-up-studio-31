@@ -1,59 +1,66 @@
 ## Goal
 
-Prove — with browser-engine-accurate screenshots — that the SettingsPanel bottom sheet never appears on-screen until the user opens it, on iOS Safari (WebKit), Chromium, and Firefox. Then fix the root cause so the regression actually passes on all three engines.
+Two changes that together guarantee — and prove — that the SettingsPanel never renders visibly on first paint:
 
-The current `/tmp/browser/settings-hidden/test.py` runs Chromium only and polls via `evaluate`, which can miss a paint-gap flash that only WebKit's compositor exhibits. The user still sees the sheet slide down and fade on all three browsers, so both the harness and the component need work.
+1. Make the closed-state transform apply on the very first paint even in adverse conditions (slow stylesheet parse, Safari FOUC window, Vite HMR reload).
+2. Add a Playwright test whose failure mode is "the panel's first paint happened visible" — not a sampled approximation.
 
-## 1. Add a proper Playwright spec at `tests/settings-panel-hidden.spec.ts`
+## 1. CSS load / apply ordering
 
-- Run under the existing `tests/` Playwright project so it's part of `npx playwright test`, not an ad-hoc `/tmp` script.
-- Configure three projects in `playwright.config.ts` overrides: `webkit` (iOS Safari surrogate), `chromium`, `firefox`. Use `devices['iPhone 13']` for WebKit and matching 390×844 viewports for Chromium/Firefox so all three run the mobile branch of `useIsMobile`.
-- Per browser, cover four scenarios:
-  1. Cold load of `/` — sheet must never intersect the viewport before the user clicks the gear.
-  2. Reload after settings were previously opened (localStorage state carried over).
-  3. Orientation flip via `page.setViewportSize` from 390×844 → 844×390 → back.
-  4. Crossing the 768px breakpoint (desktop → mobile) to force the `useLayoutEffect` reset path.
-- Detection strategy — belt and braces, because the flash is a paint issue:
-  - Install a `MutationObserver` + `requestAnimationFrame` sampler via `addInitScript` that records, on every frame from `navigationStart` until 1500ms, the `getBoundingClientRect` of `[data-testid="settings-sheet"]` and `[data-testid="settings-drawer"]`. The array is read out with `page.evaluate` after settling.
-  - A frame counts as a violation when the element is in the DOM AND its `bottom > 0` AND its `top < innerHeight - 1` AND computed `visibility !== hidden` AND `opacity > 0.01`.
-  - In addition, capture `page.screenshot` at 0, 16, 32, 64, 120, 250ms via `setTimeout`-scheduled shots into `tests/__screenshots__/settings-hidden/<browser>/frame-Nms.png` so a human can eyeball the flash.
-  - Assert the violations array is empty; on failure, attach the frame log + screenshots to the Playwright report.
-- Add a fifth "opens correctly" scenario per browser: click the gear, assert the sheet reaches `translateY(0)` and is fully inside the viewport within 500ms — so we don't regress the fix by hiding the panel forever.
+The closed-state rules currently live at the bottom of `src/index.css` (imported from `main.tsx`). That's usually applied before mount, but three edge cases can leak:
 
-## 2. Fix the actual flash
+- WebKit briefly composites a frame before the `.settings-sheet-mobile` rule is matched to the newly-inserted element.
+- Vite dev inlines CSS via `<style>` injection after the module graph loads — a slow module can push CSS past first paint.
+- Any future refactor that moves the panel above `if (!mounted) return null` would silently regress.
 
-The two-step `mounted` → `animated` gate helps but does not eliminate the flash on WebKit/Firefox because:
+Changes:
 
-- `useLayoutEffect` runs after React commits the initial VDOM. On the very first mount the initial state is `mounted=false`, so nothing renders — good.
-- But when `isMobile` flips (which happens on real devices right after mount because `useIsMobile`'s own `useEffect` re-runs `computeIsMobile()` and can toggle the value once), the effect sets `mounted=false` again and schedules `requestAnimationFrame`. Between the state flip and the next frame, WebKit has already composited the previously-mounted panel at its open-state layout because the transform-off style is only applied on the *next* render. That is the "slide down while fading" the user reports.
+- **Inline the closed-state rules into `index.html` `<head>` inside a small `<style data-critical="settings-panel">` block.** These are eight lines of CSS with no design tokens — safe to duplicate. Because they're parsed with the document itself, they are guaranteed to be in the CSSOM before React ever runs.
+- **Keep the same rules in `src/index.css`** so component styles stay collocated and the design system remains the source of truth.
+- **Belt-and-braces inline style in `SettingsPanel.tsx`:** re-apply the closed transform as an inline style *only when `open` is false and `animated` is false*. This means during the two-frame gate the transform is set three ways — critical CSS, main stylesheet, inline style — and the "open" state removes the inline style so the class transition can run. Prevents regression if a future edit removes the class.
+- **Verify `main.tsx` imports `./index.css` before `createRoot(...).render(...)`** (it does today) and add an ESLint-style comment marker so it isn't accidentally reordered.
 
-Changes to `src/components/SettingsPanel.tsx`:
+## 2. First-paint Playwright test
 
-1. Make the closed-state transform the default via CSS (a class in `index.css`), not an inline style computed at render time, so the very first layout after mount already has `translateY(100%)` — no dependency on React state reaching the DOM.
-   ```css
-   .settings-sheet { transform: translateY(100%); }
-   .settings-sheet[data-open="true"] { transform: translateY(0); }
-   .settings-sheet[data-animated="true"] { transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1); }
-   ```
-   Same treatment for the desktop drawer with `translateX(calc(100% + 64px))`.
-2. Drop the inline `transform` / `transition` style props on the sheet and drawer. Drive state through `data-open` and `data-animated` attributes so the initial paint uses the stylesheet's closed transform even before React's effects run.
-3. Keep the `mounted` gate (`if (!mounted) return null`) but stop keying it on `isMobile`. Instead, key it on a single mount-only effect; branch changes just re-render with the new class, they don't need to unmount.
-4. In `src/hooks/use-mobile.tsx`, remove the redundant `onChange()` call inside `useEffect` — it fires an unnecessary state update on the first commit that is one of the triggers of the flash.
-5. Add `data-testid="settings-sheet"` and `data-testid="settings-drawer"` (already partly present per prior turn; verify and keep stable for the spec).
+New test in `tests/settings-panel-hidden.spec.ts` (append to the existing suite) called **"panel is not visible on first paint"** that runs under `chromium`, `firefox`, and `webkit`.
 
-## 3. Wire the spec into CI-visible output
+Detection uses three independent signals, all recorded before React scripts execute via `addInitScript`:
 
-- Extend the existing `tests/__screenshots__/REPORT.md` generator (see `tests/visual-regression.spec.ts`) so it also lists the settings-hidden results per browser, with a Pass/Fail column and the first offending frame inlined.
-- Add a short `docs/testing/settings-panel-hidden.md` explaining how to run just this spec: `npx playwright test tests/settings-panel-hidden.spec.ts --project=webkit`.
+- **MutationObserver on `document.documentElement`, `subtree: true`.** The very first time a node matching `[data-testid="settings-panel-sheet"]` or `[data-testid="settings-panel-desktop"]` is added, capture:
+  - `element.getBoundingClientRect()`
+  - `getComputedStyle(element).transform`
+  - `getComputedStyle(element).opacity`
+  - `performance.now()` relative to `navigationStart`
+  - Whether any `paint` entry has fired yet (via a pre-registered `PerformanceObserver({ type: 'paint' })`).
+- **`PerformanceObserver` for `first-paint` and `first-contentful-paint`.** Record their timestamps.
+- **rAF at `t=0`** — capture the same rect on the frame immediately following insertion.
+
+The test asserts, for the very first insertion event:
+
+- `transform` matrix decodes to a Y translation ≥ element `height` (mobile) or X translation ≥ element `width` (desktop). This is the strict "closed" check.
+- `rect.top >= innerHeight - 1` (mobile) or `rect.left >= innerWidth - 1` (desktop).
+- The insertion timestamp is **before** `first-contentful-paint` OR the transform check passes at FCP time.
+
+On failure the test attaches:
+
+- The captured rect + computed style JSON.
+- A `page.screenshot()` taken as soon as `first-contentful-paint` fires (via a `page.exposeFunction` callback the sampler triggers).
+
+This is stronger than the existing rAF-only sampler because it catches the exact frame where the DOM node first exists, regardless of frame rate, and it fails loudly if the transform ever reads as `matrix(1, 0, 0, 1, 0, 0)` (identity) at insertion.
+
+## 3. Housekeeping
+
+- Add a comment in `src/index.css` pointing to the inlined critical block in `index.html` so a future edit updates both.
+- Update `docs/testing/settings-panel-hidden.md` with the new "first paint" test and the failure-artifact locations.
 
 ## Out of scope
 
-- No behavior changes when the panel is open.
-- No backdrop/scrim changes.
-- No changes to desktop drawer semantics beyond the transform-via-class refactor.
+- No changes to open-state visuals or animation timing.
+- No changes to `useIsMobile` beyond what already shipped.
+- No new dependencies.
 
 ## Acceptance
 
-- `npx playwright test tests/settings-panel-hidden.spec.ts` passes on `chromium`, `firefox`, and `webkit` for all four "should stay hidden" scenarios and the one "opens correctly" scenario.
-- Per-browser screenshot folders under `tests/__screenshots__/settings-hidden/` show no visible sheet in frames 0–250ms after load.
-- Manual check on a real iPhone (Safari) after deploy: no visible sheet during load or rotation.
+- `npx playwright test tests/settings-panel-hidden.spec.ts` passes on chromium, firefox, webkit — including the new "not visible on first paint" case.
+- Manually deleting the critical `<style>` block from `index.html` causes the new test to fail on WebKit (proves it actually guards the ordering issue).
+- No visible sheet on real iOS Safari on cold load and hard reload.
