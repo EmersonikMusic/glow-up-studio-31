@@ -1,0 +1,46 @@
+name: SettingsPanel hidden first-paint
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  first-paint:
+    name: first-paint (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser (${{ matrix.project }})
+        run: npx playwright install --with-deps ${{ matrix.project }}
+
+      - name: Run SettingsPanel hidden first-paint test
+        run: npx playwright test tests/settings-panel-hidden.spec.ts --project=${{ matrix.project }}
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: |
+            playwright-report/
+            test-results/
+            tests/__screenshots__/settings-hidden/
+          if-no-files-found: ignore
+          retention-days: 14
