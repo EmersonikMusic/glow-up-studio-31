@@ -323,7 +323,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
           {/* Forgot: "sent" confirmation panel with throttled Resend */}
           {isForgot && resetSent ? (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 max-w-[320px] mx-auto w-full">
               <div
                 className="rounded-xl px-4 py-3 text-sm text-white/80"
                 style={{
