@@ -27,6 +27,12 @@ import {
   type GameSettings,
 } from "@/data/gameOptions";
 import { trackClick } from "@/lib/analytics";
+import InfoTooltip from "./InfoTooltip";
+import {
+  CATEGORY_DESCRIPTIONS,
+  DIFFICULTY_DESCRIPTIONS,
+  ERA_DESCRIPTIONS,
+} from "@/data/optionDescriptions";
 
 // Re-exported for backward compatibility with any existing imports.
 export type { GameSettings };
