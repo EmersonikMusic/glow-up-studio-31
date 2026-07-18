@@ -19,7 +19,9 @@ const LONG_PRESS_MS = 500;
 const TOUCH_MOVE_TOLERANCE = 8;
 const TOUCH_AUTO_HIDE_MS = 4000;
 const TOOLTIP_MAX_WIDTH = 280;
+const TOOLTIP_MAX_WIDTH_MOBILE = 220;
 const GAP = 10;
+const MOBILE_PLACEMENT_VW = 480;
 
 export default function InfoTooltip({ content, children, suppressClickRef }: InfoTooltipProps) {
   const id = useId();
