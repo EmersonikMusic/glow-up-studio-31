@@ -231,6 +231,7 @@ function FilterSection({
               active={selected.includes(opt)}
               onClick={() => toggleOne(opt)}
               preserveCase={preserveCase?.(opt)}
+              tooltip={descriptions?.[opt]}
             />
           ))}
         </div>
