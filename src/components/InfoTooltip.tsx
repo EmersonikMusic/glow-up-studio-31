@@ -50,16 +50,30 @@ export default function InfoTooltip({ content, children, suppressClickRef }: Inf
     const tip = tooltipRef.current;
     if (!trigger || !tip) return;
     const rect = trigger.getBoundingClientRect();
-    const tipW = tip.offsetWidth || TOOLTIP_MAX_WIDTH;
-    const tipH = tip.offsetHeight || 60;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+    const isNarrow = vw < MOBILE_PLACEMENT_VW;
+    const effectiveMaxW = isNarrow ? TOOLTIP_MAX_WIDTH_MOBILE : TOOLTIP_MAX_WIDTH;
+    setMaxWidth(effectiveMaxW);
 
-    let chosen: Placement = "right";
-    if (rect.right + GAP + tipW <= vw - 8) chosen = "right";
-    else if (rect.left - GAP - tipW >= 8) chosen = "left";
-    else if (rect.top - GAP - tipH >= 8) chosen = "top";
-    else chosen = "bottom";
+    const tipW = tip.offsetWidth || effectiveMaxW;
+    const tipH = tip.offsetHeight || 60;
+
+    // On narrow screens, place the tooltip above the trigger so it doesn't overlap the row label.
+    let chosen: Placement = isNarrow ? "top" : "right";
+    if (chosen === "top" && rect.top - GAP - tipH >= 8) {
+      chosen = "top";
+    } else if (chosen === "top" && rect.bottom + GAP + tipH <= vh - 8) {
+      chosen = "bottom";
+    } else if (rect.right + GAP + tipW <= vw - 8) {
+      chosen = "right";
+    } else if (rect.left - GAP - tipW >= 8) {
+      chosen = "left";
+    } else if (rect.top - GAP - tipH >= 8) {
+      chosen = "top";
+    } else {
+      chosen = "bottom";
+    }
 
     let top = 0, left = 0;
     if (chosen === "right") {
