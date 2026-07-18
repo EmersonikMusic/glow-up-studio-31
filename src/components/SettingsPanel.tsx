@@ -123,19 +123,29 @@ function ToggleRow({
   active,
   onClick,
   preserveCase = false,
+  tooltip,
 }: {
   label: string;
   active: boolean;
   onClick: () => void;
   preserveCase?: boolean;
+  tooltip?: string;
 }) {
-  return (
+  const suppressClickRef = useRef(false);
+  const handleClick = () => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    onClick();
+  };
+  const row = (
     <div
       className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)] border-b border-[hsl(var(--game-card-border))]"
       style={{ padding: "12px 20px", minHeight: "44px" }}
-      onClick={onClick}
+      onClick={handleClick}
     >
-      <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+      <Switch checked={active} onCheckedChange={handleClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
       <span
         className={`text-xs font-body font-bold tracking-widest transition-colors ${preserveCase ? "normal-case" : "uppercase"}`}
         style={{ color: active ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))" }}
@@ -143,6 +153,12 @@ function ToggleRow({
         {label}
       </span>
     </div>
+  );
+  if (!tooltip) return row;
+  return (
+    <InfoTooltip content={tooltip} suppressClickRef={suppressClickRef}>
+      {row}
+    </InfoTooltip>
   );
 }
 
