@@ -448,6 +448,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         selected={selectedCategories}
         onChange={setSelectedCategories}
         trackGroup="category"
+        descriptions={CATEGORY_DESCRIPTIONS}
       />
 
       <FilterSection
@@ -460,6 +461,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         selected={selectedDifficulties}
         onChange={setSelectedDifficulties}
         trackGroup="difficulty"
+        descriptions={DIFFICULTY_DESCRIPTIONS}
       />
 
       <FilterSection
