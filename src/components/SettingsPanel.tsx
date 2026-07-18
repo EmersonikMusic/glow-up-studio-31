@@ -27,6 +27,12 @@ import {
   type GameSettings,
 } from "@/data/gameOptions";
 import { trackClick } from "@/lib/analytics";
+import InfoTooltip from "./InfoTooltip";
+import {
+  CATEGORY_DESCRIPTIONS,
+  DIFFICULTY_DESCRIPTIONS,
+  ERA_DESCRIPTIONS,
+} from "@/data/optionDescriptions";
 
 // Re-exported for backward compatibility with any existing imports.
 export type { GameSettings };
@@ -117,19 +123,29 @@ function ToggleRow({
   active,
   onClick,
   preserveCase = false,
+  tooltip,
 }: {
   label: string;
   active: boolean;
   onClick: () => void;
   preserveCase?: boolean;
+  tooltip?: string;
 }) {
-  return (
+  const suppressClickRef = useRef(false);
+  const handleClick = () => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    onClick();
+  };
+  const row = (
     <div
       className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)] border-b border-[hsl(var(--game-card-border))]"
       style={{ padding: "12px 20px", minHeight: "44px" }}
-      onClick={onClick}
+      onClick={handleClick}
     >
-      <Switch checked={active} onCheckedChange={onClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
+      <Switch checked={active} onCheckedChange={handleClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
       <span
         className={`text-xs font-body font-bold tracking-widest transition-colors ${preserveCase ? "normal-case" : "uppercase"}`}
         style={{ color: active ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))" }}
@@ -137,6 +153,12 @@ function ToggleRow({
         {label}
       </span>
     </div>
+  );
+  if (!tooltip) return row;
+  return (
+    <InfoTooltip content={tooltip} suppressClickRef={suppressClickRef}>
+      {row}
+    </InfoTooltip>
   );
 }
 
@@ -156,6 +178,7 @@ function FilterSection({
   onChange,
   preserveCase,
   trackGroup,
+  descriptions,
 }: {
   label: string;
   iconActive: string;
@@ -167,6 +190,7 @@ function FilterSection({
   onChange: (next: string[]) => void;
   preserveCase?: (option: string) => boolean;
   trackGroup: string;
+  descriptions?: Record<string, string>;
 }) {
   const allSelected = options.every((o) => selected.includes(o));
   const toggleAll = () => {
@@ -207,6 +231,7 @@ function FilterSection({
               active={selected.includes(opt)}
               onClick={() => toggleOne(opt)}
               preserveCase={preserveCase?.(opt)}
+              tooltip={descriptions?.[opt]}
             />
           ))}
         </div>
@@ -423,6 +448,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         selected={selectedCategories}
         onChange={setSelectedCategories}
         trackGroup="category"
+        descriptions={CATEGORY_DESCRIPTIONS}
       />
 
       <FilterSection
@@ -435,6 +461,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         selected={selectedDifficulties}
         onChange={setSelectedDifficulties}
         trackGroup="difficulty"
+        descriptions={DIFFICULTY_DESCRIPTIONS}
       />
 
       <FilterSection
@@ -448,6 +475,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onChange={setSelectedEras}
         preserveCase={(opt) => /^\d{4}s$/.test(opt)}
         trackGroup="era"
+        descriptions={ERA_DESCRIPTIONS}
       />
 
       <section
