@@ -18,6 +18,14 @@ const CATEGORY_ALIAS_IDS: Record<string, number[]> = {
   "Performing Arts": [36], // "Theater"
 };
 
+// Backend alias category names that arrive on question payloads but aren't
+// canonical Category values. Normalize them so mascot/label lookups match.
+const CATEGORY_ALIAS_NAMES: Record<string, Category> = {
+  Food: "Food & Drink",
+  Economics: "Economy",
+  Theater: "Performing Arts",
+};
+
 export const DIFFICULTY_IDS: Record<string, number> = {
   Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5, Kids: 72,
 };
@@ -57,7 +65,8 @@ interface RawApiQuestion {
 // ── Adapter: API question → app Question ────────────────────────────────────
 let synthId = 1;
 function adaptQuestion(raw: RawApiQuestion): Question {
-  const category = (raw.category_name ?? "Miscellaneous") as Category;
+  const rawName = raw.category_name ?? "Miscellaneous";
+  const category = (CATEGORY_ALIAS_NAMES[rawName] ?? rawName) as Category;
   const difficulty = (raw.difficulty_name ?? "Average") as Difficulty;
   const eraFromIds =
     raw.eras && raw.eras.length > 0 ? ID_TO_ERA[raw.eras[0]] : undefined;

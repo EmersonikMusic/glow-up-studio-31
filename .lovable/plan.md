@@ -1,28 +1,33 @@
-## Update Kids difficulty ID: 6 → 72
+## Problem
 
-The admin URL `/admin/configure/difficulty/72/change/` confirms the Kids row's real primary-key ID is **72**, not 6. That's why excluding `6` still leaked Kids questions — `6` isn't the Kids ID at all; it's just the "Score" (point value) field. The backend was excluding a nonexistent difficulty, so Kids questions passed through unfiltered.
+In Kids Mode, the backend returns category names like `"Food"`, `"Economics"`, and `"Theater"` on question payloads. These aren't canonical `Category` values, so `getMascotForCategory()` computes filenames like `food.svg` / `economics.svg` / `theater.svg`, none of which exist under `src/assets/mascots/`, and falls back to the default mascot.
 
-### Change in `src/lib/triviaApi.ts`
+The excluded-category ID mapping (`CATEGORY_ALIAS_IDS`) already exists, but there's no equivalent mapping for the incoming `category_name` string on each question.
 
-1. **Line 22** — Update the DIFFICULTY_IDS map so Kids maps to its real PK:
+## Fix
+
+Single-file change: `src/lib/triviaApi.ts`.
+
+1. Add a name-level alias map next to `CATEGORY_ALIAS_IDS`:
+
    ```ts
-   Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5, Kids: 72,
+   const CATEGORY_ALIAS_NAMES: Record<string, Category> = {
+     Food: "Food & Drink",
+     Economics: "Economy",
+     Theater: "Performing Arts",
+   };
    ```
 
-2. **Line 27** — Update the constant:
+2. In `adaptQuestion`, normalize the raw name before it becomes the `Category`:
+
    ```ts
-   const KIDS_DIFFICULTY_ID = 72;
+   const rawName = raw.category_name ?? "Miscellaneous";
+   const category = (CATEGORY_ALIAS_NAMES[rawName] ?? rawName) as Category;
    ```
 
-3. **Lines 175–180** — Remove the client-side Kids safety filter now that the exclusion will actually work server-side:
-   ```ts
-   return shuffle(raw).map(adaptQuestion);
-   ```
+That's the whole change. Downstream mascot lookup and footer label rendering will now receive canonical names and pick the right SVG in Kids Mode and anywhere else these aliases appear.
 
-### Verification (before removing the safety filter)
+## Verification
 
-Before I strip the client filter, I'll probe the live API with `difficulty=72` and count how many Kids questions come back in three 50-question batches. Only if all three return zero Kids will I remove the filter in the same change. If any leak through, I'll leave the filter in place and report back — that would mean Kids questions themselves are tagged with a different FK than the row's own PK, which is a backend data issue.
-
-### One thing worth confirming on the backend list page
-
-On the `Difficulties` list page (the one before you clicked into Kids), please confirm there is **only one** row named "Kids". If there's a duplicate (e.g. leftover from the earlier `0 → 6` attempt), its questions won't be excluded by `72` alone. If there is a duplicate, delete it or tell me its ID and I'll add it to the exclusion list.
+- Playwright probe against Kids Mode: fetch a batch, log the mapped `category` for each question, confirm no non-canonical names remain and that `getMascotForCategory` resolves to a real filename for every one.
+- Spot-check in preview: start Kids Mode, cycle through several questions, confirm Food / Economy / Performing Arts questions show their proper mascots.
