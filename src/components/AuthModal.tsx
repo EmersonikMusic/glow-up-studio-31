@@ -320,7 +320,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
-                  background: "#000",
+                  background: "#131314",
                   border: "1px solid #8E918F",
                 }}
               >
