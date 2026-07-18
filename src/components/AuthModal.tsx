@@ -321,7 +321,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
                   background: "#000",
-                  border: "1px solid #000",
+                  border: "1px solid #8E918F",
                 }}
               >
                 <img
