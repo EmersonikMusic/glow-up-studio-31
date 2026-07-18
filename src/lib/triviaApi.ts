@@ -175,7 +175,10 @@ export async function fetchAndStartGame(
     }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
-    return shuffle(raw).map(adaptQuestion);
+    const filtered = options.kidsMode === true
+      ? raw
+      : raw.filter((q) => q.difficulty_name !== "Kids");
+    return shuffle(filtered).map(adaptQuestion);
   } catch (err) {
     if ((err as Error).name === "AbortError") {
       throw new Error("Request timed out after 20 seconds");
