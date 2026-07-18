@@ -204,7 +204,7 @@ export default function InfoTooltip({ content, children, suppressClickRef }: Inf
             position: "fixed",
             top: coords.top,
             left: coords.left,
-            maxWidth: TOOLTIP_MAX_WIDTH,
+            maxWidth: maxWidth,
             padding: "10px 14px",
             borderRadius: 12,
             background: "rgba(10, 12, 20, 0.92)",
