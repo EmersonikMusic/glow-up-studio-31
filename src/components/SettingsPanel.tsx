@@ -475,6 +475,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onChange={setSelectedEras}
         preserveCase={(opt) => /^\d{4}s$/.test(opt)}
         trackGroup="era"
+        descriptions={ERA_DESCRIPTIONS}
       />
 
       <section
