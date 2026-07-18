@@ -175,9 +175,6 @@ export async function fetchAndStartGame(
     }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
-    // Belt-and-braces: the backend silently ignores `difficulty=0` when it's
-    // the only token in the exclude list, so Kids questions can leak into
-    // non-Kids games. Filter them out on the client.
     const filtered = options.kidsMode === true
       ? raw
       : raw.filter((q) => q.difficulty_name !== "Kids");
