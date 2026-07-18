@@ -178,6 +178,7 @@ function FilterSection({
   onChange,
   preserveCase,
   trackGroup,
+  descriptions,
 }: {
   label: string;
   iconActive: string;
@@ -189,6 +190,7 @@ function FilterSection({
   onChange: (next: string[]) => void;
   preserveCase?: (option: string) => boolean;
   trackGroup: string;
+  descriptions?: Record<string, string>;
 }) {
   const allSelected = options.every((o) => selected.includes(o));
   const toggleAll = () => {
