@@ -1,46 +1,111 @@
-# Fix: Kids questions leaking into regular games
+## Backend patch for `triviolivia.herokuapp.com/api/questions/`
 
-## Root cause (verified against the live API)
+Goal: make `difficulty=<csv>` honor **every** ID in the list — including a single `0` — so the client can rely on the URL alone and drop the post-fetch filter in `src/lib/triviaApi.ts`.
 
-`src/lib/triviaApi.ts` already tries to exclude Kids by always adding difficulty ID `0` to the excluded list. The problem is the backend, not the client:
+I don't have the Heroku repo in this project, so I can't read the exact view code. Based on the URL shape (`/api/questions/` with a trailing slash and CSV query params) the API is almost certainly **Django + Django REST Framework**. The patch below is written for that stack. If it's Flask or Express, the same three fixes apply — the shape of the code just changes.
 
-Probes against `https://triviolivia.herokuapp.com/api/questions/`:
+The bug: when the parsed exclude list contains only the value `0`, the filter is being skipped. Cause is almost always a truthy check on `0` or a `filter(Boolean)`-style step that treats `0` as "no value".
 
-- `difficulty=0` alone → returns **all** difficulties including Kids (exclusion ignored).
-- `difficulty=3,4,5,0` → correctly returns only Casual + Easy (exclusion honored).
-- `difficulty=1,2,3,4,5` → correctly returns only Kids.
+## Recommended patch (Option 1 — fix the real bug)
 
-So the API silently drops `0` when it's the only token in the exclude list. That's exactly the case that triggers in normal play: when the user has all five regular difficulties selected, our excluded set is just `[0]`, we send `difficulty=0`, the backend ignores it, and Kids questions slip through.
+In the questions list view (likely `questions/views.py`, class `QuestionListView` / `QuestionViewSet`, or a `get_queryset` method), find where `request.query_params.get("difficulty")` is parsed.
 
-## Fix
+You'll see something like one of these buggy shapes:
 
-Do not rely on the backend to honor the Kids exclusion. Enforce it on the client too.
+```python
+# Shape A — truthy check drops the whole filter when the list is [0]
+raw = request.query_params.get("difficulty")
+excluded = [int(x) for x in raw.split(",")] if raw else []
+if excluded and any(excluded):          # ← BUG: any([0]) is False
+    qs = qs.exclude(difficulty_id__in=excluded)
 
-In `src/lib/triviaApi.ts`, inside `fetchAndStartGame`, after parsing the JSON response and before shuffling/adapting:
+# Shape B — filter(None, ...) or filter(Boolean-ish) drops the 0
+excluded = list(filter(None, [int(x) for x in raw.split(",")]))  # ← BUG: drops 0
+if excluded:
+    qs = qs.exclude(difficulty_id__in=excluded)
 
-- When `options.kidsMode !== true`, drop every raw question whose `difficulty_name === "Kids"`.
-- Keep the existing URL-level exclusion as-is (it still helps in the mixed-selection case and keeps payloads smaller).
+# Shape C — int(x) inside a truthy comprehension
+excluded = [int(x) for x in raw.split(",") if x and int(x)]      # ← BUG: `int(x)` is 0 → False
+```
 
-That's a one-spot, presentation-layer guard. No settings, no schema, no UI changes.
+Replace with:
 
-## Technical details
+```python
+raw = request.query_params.get("difficulty", "")
+excluded_difficulties = [
+    int(tok) for tok in raw.split(",")
+    if tok.strip().lstrip("-").isdigit()
+]
+if excluded_difficulties:
+    qs = qs.exclude(difficulty_id__in=excluded_difficulties)
+```
 
-File to change:
+Key points:
 
-- `src/lib/triviaApi.ts` — add a post-fetch filter in `fetchAndStartGame`:
+- Parse first, filter by "is this a valid integer token" — never by truthiness of the parsed int.
+- Apply `exclude(...)` whenever the list is **non-empty**, regardless of the values inside it.
+- Do the same audit on the `category=` and `era=` parsers in the same view — they were probably written from the same template, but only `difficulty` has an ID of `0`, so only `difficulty` shows the bug in production.
 
-  ```ts
-  const raw = (await response.json()) as RawApiQuestion[];
-  if (!Array.isArray(raw)) throw new Error("Unexpected API response");
-  const filtered = options.kidsMode === true
-    ? raw
-    : raw.filter((q) => q.difficulty_name !== "Kids");
-  return shuffle(filtered).map(adaptQuestion);
-  ```
+## Option 2 (workaround — add a dedicated param)
 
-Note: this may return fewer than `numQuestions` on the (now-impossible-in-practice) chance the backend served an all-Kids batch to a non-Kids request. The engine already tolerates short batches, and once the backend stops leaking in the common case the shortfall won't occur.
+If touching the shared parser is risky, add a new query param that can't be misinterpreted:
 
-## Verification
+```python
+# In the same view, after existing difficulty parsing:
+raw_excl = request.query_params.get("difficulty_exclude", "")
+extra_excluded = [
+    int(tok) for tok in raw_excl.split(",")
+    if tok.strip().lstrip("-").isdigit()
+]
+if extra_excluded:
+    qs = qs.exclude(difficulty_id__in=extra_excluded)
+```
 
-- Re-run the probe: `curl ".../api/questions/?questions=20&difficulty=0"` still returns Kids from the server, but after the client filter no adapted `Question` will have `difficulty === "Kids"`.
-- Manual: start a regular game with all difficulties selected and confirm no Kids-flavored questions appear.
+Client would then send `difficulty_exclude=0` on every non-Kids call, in addition to (or instead of) the existing `difficulty=` CSV.
+
+## Option 3 (workaround — boolean flag)
+
+```python
+if request.query_params.get("kids", "").lower() in ("0", "false", "no"):
+    qs = qs.exclude(difficulty_id=0)
+```
+
+Client sends `kids=false` for every non-Kids game. Simplest to consume, but hides the semantics inside a magic flag.
+
+## Verification (after deploying whichever option)
+
+Re-run these exact probes against the Heroku host. All must pass:
+
+```text
+GET /api/questions/?questions=50&difficulty=0
+  → 50 rows, zero with difficulty_name == "Kids"
+
+GET /api/questions/?questions=50&difficulty=0,0
+  → 50 rows, zero Kids  (idempotent duplicate handling)
+
+GET /api/questions/?questions=50&difficulty=3,4,5,0
+  → 50 rows, only Casual + Easy  (regression check — must still work)
+
+GET /api/questions/?questions=50&difficulty=1,2,3,4,5
+  → 50 rows, all Kids  (regression check — must still work)
+```
+
+Run each probe 3–5 times; the current bug is deterministic, so if any run leaks Kids the fix is incomplete.
+
+## Client cleanup once the backend is fixed
+
+Once the probes above pass in production, one small follow-up in this repo:
+
+- `src/lib/triviaApi.ts` — remove the `filtered = ... .filter((q) => q.difficulty_name !== "Kids")` line inside `fetchAndStartGame`. Leave the URL-level guard (`if (!excludedDiffs.includes(KIDS_DIFFICULTY_ID))`) exactly as-is; it becomes the sole enforcement point, which is what you wanted.
+- `.lovable/plan.md` — delete or update; its "root cause" section will no longer describe reality.
+
+No other client changes. Question count will match `numQuestions` exactly, in a single HTTP call, with zero client-side filtering.
+
+## What I need from you to actually write the patch as code
+
+The three options above are as exact as I can be without seeing the Heroku source. To hand you a literal diff instead of a shape, I need one of:
+
+- The Heroku repo URL (or a paste of the questions list view file), **or**
+- Confirmation of the stack (Django/DRF vs Flask vs Node/Express) and the file path that handles `/api/questions/`.
+
+Give me either and I'll produce a precise, ready-to-commit patch for that repo in a follow-up plan.
