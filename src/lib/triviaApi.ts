@@ -122,14 +122,10 @@ function buildUrl(settings: GameSettings, kidsMode: boolean): string {
     );
   } else {
     excludedDiffs = buildExcluded(settings.selectedDifficulties, DIFFICULTY_IDS);
-    // Guardrail: Kids questions must never leak into non-Kids modes.
+    // Guardrail: Kids questions must never leak into non-Kids modes, even if
+    // the user has selected all difficulties (which would otherwise omit 0
+    // from the excluded set once Kids became part of DIFFICULTY_IDS).
     if (!excludedDiffs.includes(KIDS_DIFFICULTY_ID)) {
-      excludedDiffs.push(KIDS_DIFFICULTY_ID);
-    }
-    // Backend quirk: `difficulty=0` alone is silently ignored, so Kids leaks
-    // through. Duplicating the Kids ID makes the exclude list multi-token,
-    // which the backend honors. Excludes exactly the same set (just Kids).
-    if (excludedDiffs.length === 1 && excludedDiffs[0] === KIDS_DIFFICULTY_ID) {
       excludedDiffs.push(KIDS_DIFFICULTY_ID);
     }
   }
