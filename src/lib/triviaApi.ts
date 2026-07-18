@@ -19,12 +19,14 @@ const CATEGORY_ALIAS_IDS: Record<string, number[]> = {
 };
 
 export const DIFFICULTY_IDS: Record<string, number> = {
-  Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5, Kids: 0,
+  Casual: 1, Easy: 2, Average: 3, Hard: 4, Genius: 5, Kids: 6,
 };
 
 // Backend ID for the Kids-only difficulty. Kids Mode pulls exclusively from
-// this pool; every other mode must exclude it.
-const KIDS_DIFFICULTY_ID = 0;
+// this pool; every other mode must exclude it. (Was previously 0; changed to 6
+// because the backend's exclusion parser dropped the falsy `0` token, letting
+// Kids questions leak into non-Kids modes.)
+const KIDS_DIFFICULTY_ID = 6;
 
 export const ERA_IDS: Record<string, number> = {
   "Pre-1500": 1, "1500-1800": 2, "1800-1900": 3, "1900-1950": 4,
@@ -175,6 +177,9 @@ export async function fetchAndStartGame(
     }
     const raw = (await response.json()) as RawApiQuestion[];
     if (!Array.isArray(raw)) throw new Error("Unexpected API response");
+    // Safety net: backend still occasionally leaks Kids questions even when
+    // excluded via `difficulty=6`. Filter client-side so Kids never appears
+    // in non-Kids modes. Remove once backend exclusion is 100% reliable.
     const filtered = options.kidsMode === true
       ? raw
       : raw.filter((q) => q.difficulty_name !== "Kids");
