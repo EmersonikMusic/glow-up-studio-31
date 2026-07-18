@@ -36,6 +36,7 @@ export default function InfoTooltip({ content, children, suppressClickRef }: Inf
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<Placement>("right");
   const [coords, setCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [maxWidth, setMaxWidth] = useState<number>(TOOLTIP_MAX_WIDTH);
 
   const clearTimers = useCallback(() => {
     if (openTimer.current) { window.clearTimeout(openTimer.current); openTimer.current = null; }
