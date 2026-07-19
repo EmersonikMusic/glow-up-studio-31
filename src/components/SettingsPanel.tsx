@@ -55,15 +55,15 @@ const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchec
 
 type SectionKey = "categories" | "difficulty" | "eras" | "game" | null;
 
-function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
+function FadeIcon({ active, inactive, open, size = 24 }: { active: string; inactive: string; open: boolean; size?: number }) {
   return (
-    <div style={{ position: "relative", width: 24, height: 24, flexShrink: 0 }}>
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
       <img
         src={inactive}
         alt=""
         style={{
-          width: 24,
-          height: 24,
+          width: size,
+          height: size,
           position: "absolute",
           inset: 0,
           opacity: open ? 0 : 1,
@@ -74,8 +74,8 @@ function FadeIcon({ active, inactive, open }: { active: string; inactive: string
         src={active}
         alt=""
         style={{
-          width: 24,
-          height: 24,
+          width: size,
+          height: size,
           position: "absolute",
           inset: 0,
           opacity: open ? 1 : 0,
@@ -91,17 +91,19 @@ function SectionHeader({
   label,
   open,
   onToggle,
+  compact = false,
 }: {
   icon: React.ReactNode;
   label: string;
   open: boolean;
   onToggle: () => void;
+  compact?: boolean;
 }) {
   return (
     <button
       onClick={onToggle}
       className="flex items-center gap-3 w-full shrink-0 transition-colors hover:bg-[rgba(0,0,0,0.2)] rounded-2xl"
-      style={{ padding: "14px 20px" }}
+      style={{ padding: compact ? "10px 16px" : "14px 20px" }}
     >
       {icon}
       <span
