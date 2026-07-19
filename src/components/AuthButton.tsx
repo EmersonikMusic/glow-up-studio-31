@@ -102,18 +102,29 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
     .join("");
   const teal = "hsl(185 70% 55%)";
 
+  const unlockedIds = badgeNamesToIds(profile?.unlocked_badges);
+  const [seenBump, setSeenBump] = useState(0);
+  useEffect(() => {
+    const onSeen = () => setSeenBump((n) => n + 1);
+    window.addEventListener(SEEN_EVENT, onSeen);
+    return () => window.removeEventListener(SEEN_EVENT, onSeen);
+  }, []);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _bump = seenBump;
+  const hasUnseen = getUnseen(unlockedIds).length > 0;
+
   return (
     <button
       onClick={() => {
         trackClick("profile_open");
         onOpenProfile?.();
       }}
-      className="nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95 gap-1.5"
+      className="relative nav-btn flex items-center justify-center w-10 h-10 sm:w-auto sm:h-9 sm:px-4 rounded-full transition-all duration-200 active:scale-95 gap-1.5"
       style={{
         background: "rgba(255, 255, 255, 0.08)",
         border: "1px solid rgba(255, 255, 255, 0.15)",
       }}
-      aria-label="Open profile"
+      aria-label={hasUnseen ? "Open profile — new badge unlocked" : "Open profile"}
     >
       {avatar ? (
         <img
@@ -142,6 +153,17 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
       >
         {name}
       </span>
+      {hasUnseen && (
+        <span
+          aria-hidden="true"
+          className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full"
+          style={{
+            background: teal,
+            border: "2px solid hsl(240 45% 10%)",
+            boxShadow: "0 0 6px hsl(185 70% 55% / 0.9)",
+          }}
+        />
+      )}
     </button>
   );
 }
