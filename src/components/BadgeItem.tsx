@@ -105,6 +105,17 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
             </span>
           </div>
         </div>
+        {isNew && (
+          <span
+            className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full"
+            style={{
+              background: "hsl(185 70% 55%)",
+              border: "2px solid hsl(240 45% 10%)",
+              boxShadow: "0 0 8px hsl(185 70% 55% / 0.8)",
+            }}
+            aria-label="New"
+          />
+        )}
       </button>
       {label}
     </div>

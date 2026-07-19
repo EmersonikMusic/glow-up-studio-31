@@ -6,11 +6,12 @@ import BadgeItem from "./BadgeItem";
 interface AchievementsSectionProps {
   // Newest-earned first. (Until per-badge timestamps exist, caller controls order.)
   unlockedIds: string[];
+  newIds?: string[];
 }
 
 const COLLAPSED_LIMIT = 3;
 
-export default function AchievementsSection({ unlockedIds }: AchievementsSectionProps) {
+export default function AchievementsSection({ unlockedIds, newIds = [] }: AchievementsSectionProps) {
   const [expanded, setExpanded] = useState(false);
   const [flippedId, setFlippedId] = useState<string | null>(null);
 
@@ -53,6 +54,7 @@ export default function AchievementsSection({ unlockedIds }: AchievementsSection
             key={badge.id}
             badge={badge}
             unlocked
+            isNew={newIds.includes(badge.id)}
             flipped={flippedId === badge.id}
             onFlipChange={(v) => setFlippedId((cur) => (v ? badge.id : cur === badge.id ? null : cur))}
           />
