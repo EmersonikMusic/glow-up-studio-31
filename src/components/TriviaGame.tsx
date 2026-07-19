@@ -19,6 +19,7 @@ import HowToPlayScreen from "./HowToPlayScreen";
 import PrivacyScreen from "./PrivacyScreen";
 import SettingsPanel from "./SettingsPanel";
 import ProfilePanel from "./ProfilePanel";
+import BadgeToast from "./BadgeToast";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
