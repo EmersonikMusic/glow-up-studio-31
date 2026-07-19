@@ -1,30 +1,6 @@
-## Problem
+Plan: Adjust SettingsPanel header size for mobile
 
-The app crashes on load with React minified error #310 ("Rendered more hooks than the previous render"), which is why the AppErrorBoundary "Triviolivia couldn't finish loading" screen appears.
-
-Root cause is in `src/components/AuthButton.tsx`. After the recent "new badge indicator" changes, two hooks were added **after** an early `return` for the logged-out state:
-
-```tsx
-if (!user) {
-  return (<>…login button…</>);   // early return
-}
-…
-const [seenBump, setSeenBump] = useState(0);   // ← hook called only when user is signed in
-useEffect(() => { …SEEN_EVENT listener… }, []);// ← same
-```
-
-On first render `user` is `null`, so React sees N hooks. As soon as `supabase.auth.getSession()` resolves and `setUser` fires, the component re-renders with a signed-in user and calls **two extra hooks**, which triggers error #310 and unmounts the whole app into the error boundary.
-
-## Fix
-
-Move `useState(seenBump)` and its `useEffect` listener above the `if (!user)` early return so hook count is stable across renders. The `unlockedIds` / `hasUnseen` derivations stay in the signed-in branch — they are plain expressions, not hooks.
-
-## Verification
-
-- Reload preview; the start screen should render normally (no error boundary).
-- Console: no React #310, no "App render failed".
-- Sign in → user pill appears; the teal "new badge" dot behaves as before; opening the profile clears it (SEEN_EVENT still forces the re-render because the hook now runs in both branches).
-
-## Notes
-
-Other recent changes (BadgeToast, SettingsPanel density, ResponsiveSonner) were reviewed and are not implicated — they don't call hooks conditionally. Only `AuthButton.tsx` needs to change.
+1. Locate the mobile Settings sheet header h2 in `src/components/SettingsPanel.tsx` (currently rendered in `panelContent` around line 435).
+2. Change its font size from the fixed `text-4xl` to a responsive scale so it fits on a single line on the smallest mobile viewports (e.g. `text-2xl sm:text-3xl md:text-4xl`) or a custom `clamp()` value.
+3. Keep the existing rainbow gradient background-clip text styling and inline `lineHeight`/`textAlign` untouched so the gradient coloring remains consistent.
+4. Verify in the mobile preview that "CUSTOMIZE YOUR EXPERIENCE" stays on one line and the gradient no longer breaks across lines.
