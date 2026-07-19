@@ -461,6 +461,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onChange={setSelectedCategories}
         trackGroup="category"
         descriptions={CATEGORY_DESCRIPTIONS}
+        compact={isMobile}
       />
 
       <FilterSection
@@ -474,6 +475,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onChange={setSelectedDifficulties}
         trackGroup="difficulty"
         descriptions={DIFFICULTY_DESCRIPTIONS}
+        compact={isMobile}
       />
 
       <FilterSection
@@ -488,16 +490,18 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         preserveCase={(opt) => /^\d{4}s$/.test(opt)}
         trackGroup="era"
         descriptions={ERA_DESCRIPTIONS}
+        compact={isMobile}
       />
 
       <section
-        className="mx-5 mb-3 rounded-2xl flex flex-col"
+        className={`${isMobile ? "mx-4 mb-2" : "mx-5 mb-3"} rounded-2xl flex flex-col`}
         style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
       >
         <SectionHeader
-          icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />}
+          icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} size={isMobile ? 20 : 24} />}
           label="Game Settings"
           open={gameOpen}
+          compact={isMobile}
           onToggle={() => toggleSection("game")}
         />
         <div
