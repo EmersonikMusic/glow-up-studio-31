@@ -22,6 +22,13 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [seenBump, setSeenBump] = useState(0);
+
+  useEffect(() => {
+    const onSeen = () => setSeenBump((n) => n + 1);
+    window.addEventListener(SEEN_EVENT, onSeen);
+    return () => window.removeEventListener(SEEN_EVENT, onSeen);
+  }, []);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -103,14 +110,7 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
   const teal = "hsl(185 70% 55%)";
 
   const unlockedIds = badgeNamesToIds(profile?.unlocked_badges);
-  const [seenBump, setSeenBump] = useState(0);
-  useEffect(() => {
-    const onSeen = () => setSeenBump((n) => n + 1);
-    window.addEventListener(SEEN_EVENT, onSeen);
-    return () => window.removeEventListener(SEEN_EVENT, onSeen);
-  }, []);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _bump = seenBump;
+  void seenBump;
   const hasUnseen = getUnseen(unlockedIds).length > 0;
 
   return (
