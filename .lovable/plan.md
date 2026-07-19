@@ -1,22 +1,14 @@
-## Goal
-Generate a single 5x5 grid image showing all 25 category mascots, each on its category's gradient background.
+Keep both versions of the 5x5 mascot grid available as downloadable images.
 
-## Approach
-This is a one-off visual artifact (not an app feature), so I'll render it as a PNG saved to `/mnt/documents/mascots-grid.png` and show it inline in chat.
+## What to do
 
-### Steps
-1. Read `src/data/categoryColors.ts` (already in context) for the 25 gradients and match them to the 25 mascot SVGs in `src/assets/mascots/`.
-2. Write a small Node script that:
-   - Builds a 5x5 HTML page with each cell containing the mascot inline SVG on top of its `linear-gradient(...)` background.
-   - Rounds cell corners slightly, adds the category label in the app's style (Fredoka One, white).
-   - Uses Playwright (already available) to screenshot the page at a high resolution (e.g. 2000x2000).
-3. Save the result to `/mnt/documents/mascots-grid.png` and display it inline.
+1. Restore the original hard-edged version as `mascots-grid-cells.png` in `/mnt/documents/` — rounded cells with clear boundaries, 20px gaps, each mascot on its own gradient tile (the first version you approved).
+2. Keep the current blended version but rename it to `mascots-grid-blended.png` so both files coexist and neither overwrites the other.
+3. Update `/tmp/mascots-grid/build.py` to render both variants in one run (two renders, two output files) so future tweaks stay in sync.
 
-### Layout details
-- 5 columns x 5 rows, square cells.
-- Each cell: category gradient background, mascot SVG centered (~70% of cell), small category label at the bottom.
-- Order: alphabetical by category name for predictable layout.
+## Deliverables
 
-### Notes
-- Purely visual artifact — no app code changes.
-- If you'd prefer a different order (e.g. grouped by color family), or no labels, let me know before I build.
+- `/mnt/documents/mascots-grid-cells.png` — hard boundaries, one gradient per cell
+- `/mnt/documents/mascots-grid-blended.png` — soft blur, colors bleeding into each other
+
+No app code is touched; this only affects the generator script and the two exported images.
