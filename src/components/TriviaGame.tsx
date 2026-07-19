@@ -19,6 +19,7 @@ import HowToPlayScreen from "./HowToPlayScreen";
 import PrivacyScreen from "./PrivacyScreen";
 import SettingsPanel from "./SettingsPanel";
 import ProfilePanel from "./ProfilePanel";
+import BadgeToast from "./BadgeToast";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
@@ -147,9 +148,16 @@ export default function TriviaGame() {
       };
       if (currentUser) {
         void handleGameCompletion(currentUser.id, session).then((newBadges) => {
-          for (const b of newBadges) {
-            toast.success("Badge Unlocked!", { description: b.badgeName });
+          if (newBadges.length > 0) {
+            play("badge");
           }
+          newBadges.forEach((b, i) => {
+            setTimeout(() => {
+              toast.custom((id) => <BadgeToast id={id} badge={b} />, {
+                duration: 6000,
+              });
+            }, i * 180);
+          });
         });
       } else {
         void handleAnonymousGameCompletion(session);

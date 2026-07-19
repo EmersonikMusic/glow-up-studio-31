@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { trackClick } from "@/lib/analytics";
+import { getUnseen, markAllSeen } from "@/lib/badgeSeen";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -115,6 +116,17 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     const names = new Set(profile?.unlocked_badges ?? []);
     return BADGES.filter((b) => names.has(b.badgeName)).map((b) => b.id);
   }, [profile?.unlocked_badges]);
+
+  // Snapshot which badges are "new" (unseen) at the moment the panel opens,
+  // so the highlight persists while the user browses but clears next session.
+  const [newIds, setNewIds] = useState<string[]>([]);
+  useEffect(() => {
+    if (open && unlockedBadgeIds.length > 0) {
+      setNewIds(getUnseen(unlockedBadgeIds));
+      markAllSeen(unlockedBadgeIds);
+    }
+    if (!open) setNewIds([]);
+  }, [open, unlockedBadgeIds]);
 
   const startEdit = () => {
     setDraftUsername(username);
@@ -352,7 +364,7 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
         <div className="text-xs font-subheading font-bold tracking-widest uppercase mb-4" style={{ color: "hsl(185 70% 55%)" }}>
           Achievements & Awards
         </div>
-        <AchievementsSection unlockedIds={unlockedBadgeIds} />
+        <AchievementsSection unlockedIds={unlockedBadgeIds} newIds={newIds} />
       </section>
 
       {/* Danger zone */}

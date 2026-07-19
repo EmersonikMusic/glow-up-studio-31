@@ -55,15 +55,15 @@ const SWITCH_ON = "data-[state=checked]:bg-[hsl(185_70%_50%)] data-[state=unchec
 
 type SectionKey = "categories" | "difficulty" | "eras" | "game" | null;
 
-function FadeIcon({ active, inactive, open }: { active: string; inactive: string; open: boolean }) {
+function FadeIcon({ active, inactive, open, size = 24 }: { active: string; inactive: string; open: boolean; size?: number }) {
   return (
-    <div style={{ position: "relative", width: 24, height: 24, flexShrink: 0 }}>
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
       <img
         src={inactive}
         alt=""
         style={{
-          width: 24,
-          height: 24,
+          width: size,
+          height: size,
           position: "absolute",
           inset: 0,
           opacity: open ? 0 : 1,
@@ -74,8 +74,8 @@ function FadeIcon({ active, inactive, open }: { active: string; inactive: string
         src={active}
         alt=""
         style={{
-          width: 24,
-          height: 24,
+          width: size,
+          height: size,
           position: "absolute",
           inset: 0,
           opacity: open ? 1 : 0,
@@ -91,17 +91,19 @@ function SectionHeader({
   label,
   open,
   onToggle,
+  compact = false,
 }: {
   icon: React.ReactNode;
   label: string;
   open: boolean;
   onToggle: () => void;
+  compact?: boolean;
 }) {
   return (
     <button
       onClick={onToggle}
       className="flex items-center gap-3 w-full shrink-0 transition-colors hover:bg-[rgba(0,0,0,0.2)] rounded-2xl"
-      style={{ padding: "14px 20px" }}
+      style={{ padding: compact ? "10px 16px" : "14px 20px" }}
     >
       {icon}
       <span
@@ -124,12 +126,14 @@ function ToggleRow({
   onClick,
   preserveCase = false,
   tooltip,
+  compact = false,
 }: {
   label: string;
   active: boolean;
   onClick: () => void;
   preserveCase?: boolean;
   tooltip?: string;
+  compact?: boolean;
 }) {
   const suppressClickRef = useRef(false);
   const handleClick = () => {
@@ -142,7 +146,10 @@ function ToggleRow({
   const row = (
     <div
       className="flex items-center gap-3 cursor-pointer transition-colors hover:bg-[rgba(0,0,0,0.2)] border-b border-[hsl(var(--game-card-border))]"
-      style={{ padding: "12px 20px", minHeight: "44px" }}
+      style={{
+        padding: compact ? "9px 16px" : "12px 20px",
+        minHeight: compact ? "40px" : "44px",
+      }}
       onClick={handleClick}
     >
       <Switch checked={active} onCheckedChange={handleClick} className={SWITCH_ON} onClick={(e) => e.stopPropagation()} />
@@ -179,6 +186,7 @@ function FilterSection({
   preserveCase,
   trackGroup,
   descriptions,
+  compact = false,
 }: {
   label: string;
   iconActive: string;
@@ -191,6 +199,7 @@ function FilterSection({
   preserveCase?: (option: string) => boolean;
   trackGroup: string;
   descriptions?: Record<string, string>;
+  compact?: boolean;
 }) {
   const allSelected = options.every((o) => selected.includes(o));
   const toggleAll = () => {
@@ -202,14 +211,15 @@ function FilterSection({
 
   return (
     <section
-      className="mx-5 mb-3 rounded-2xl flex flex-col"
+      className={`${compact ? "mx-4 mb-2" : "mx-5 mb-3"} rounded-2xl flex flex-col`}
       style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
     >
       <SectionHeader
-        icon={<FadeIcon active={iconActive} inactive={iconInactive} open={open} />}
+        icon={<FadeIcon active={iconActive} inactive={iconInactive} open={open} size={compact ? 20 : 24} />}
         label={label}
         open={open}
         onToggle={onToggle}
+        compact={compact}
       />
       <div
         className="grid"
@@ -223,6 +233,7 @@ function FilterSection({
             label={allSelected ? "Deselect All" : "Select All"}
             active={allSelected}
             onClick={toggleAll}
+            compact={compact}
           />
           {options.map((opt) => (
             <ToggleRow
@@ -232,6 +243,7 @@ function FilterSection({
               onClick={() => toggleOne(opt)}
               preserveCase={preserveCase?.(opt)}
               tooltip={descriptions?.[opt]}
+              compact={compact}
             />
           ))}
         </div>
@@ -449,6 +461,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onChange={setSelectedCategories}
         trackGroup="category"
         descriptions={CATEGORY_DESCRIPTIONS}
+        compact={isMobile}
       />
 
       <FilterSection
@@ -462,6 +475,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         onChange={setSelectedDifficulties}
         trackGroup="difficulty"
         descriptions={DIFFICULTY_DESCRIPTIONS}
+        compact={isMobile}
       />
 
       <FilterSection
@@ -476,16 +490,18 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
         preserveCase={(opt) => /^\d{4}s$/.test(opt)}
         trackGroup="era"
         descriptions={ERA_DESCRIPTIONS}
+        compact={isMobile}
       />
 
       <section
-        className="mx-5 mb-3 rounded-2xl flex flex-col"
+        className={`${isMobile ? "mx-4 mb-2" : "mx-5 mb-3"} rounded-2xl flex flex-col`}
         style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
       >
         <SectionHeader
-          icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} />}
+          icon={<FadeIcon active={iconSettingsActive} inactive={iconSettingsInactive} open={gameOpen} size={isMobile ? 20 : 24} />}
           label="Game Settings"
           open={gameOpen}
+          compact={isMobile}
           onToggle={() => toggleSection("game")}
         />
         <div
