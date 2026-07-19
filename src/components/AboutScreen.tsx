@@ -8,7 +8,7 @@ interface AboutScreenProps {
   onClose: () => void;
 }
 
-type SectionKey = "who" | "apart" | "faq" | "philosophy";
+type SectionKey = "who" | "apart" | "faq" | "philosophy" | "follow";
 
 function Tag({ variant, children }: { variant: "bad" | "good"; children: React.ReactNode }) {
   return (
@@ -65,6 +65,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
   const apartRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
+  const followRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const chipRefs = useRef<Record<SectionKey, HTMLButtonElement | null>>({
@@ -72,6 +73,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
     apart: null,
     faq: null,
     philosophy: null,
+    follow: null,
   });
 
   const sections: { key: SectionKey; label: string; ref: React.RefObject<HTMLDivElement>; event: string }[] = [
@@ -79,6 +81,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
     { key: "apart", label: "What sets us apart?", ref: apartRef, event: "about_jump_apart" },
     { key: "faq", label: "FAQ", ref: faqRef, event: "about_jump_faq" },
     { key: "philosophy", label: "Question Crafting", ref: philosophyRef, event: "about_jump_philosophy" },
+    { key: "follow", label: "Follow Us", ref: followRef, event: "about_jump_follow" },
   ];
 
   // Keep active chip visible in the mobile scroll strip (scroll strip only, not ancestors)
@@ -113,6 +116,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
       { key: "apart", ref: apartRef },
       { key: "faq", ref: faqRef },
       { key: "philosophy", ref: philosophyRef },
+      { key: "follow", ref: followRef },
     ];
     const onScroll = () => {
       const triggerY = navHeight + 16;
@@ -482,7 +486,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
             <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }} aria-hidden="true" />
 
             {/* Follow Us */}
-            <div>
+            <div ref={followRef}>
               <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
                 Follow Us
               </h2>

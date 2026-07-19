@@ -1,43 +1,12 @@
-# Add "Follow Us" section to About screen
+Add the Follow Us section to the About screen's scroll-spy anchor navigation so it behaves like the other section headers.
 
-Add a new section at the bottom of the About screen (just above the sign-off) with each social platform's actual logo as a clickable link.
+## What will change
 
-## Placement
+In `src/components/AboutScreen.tsx`:
 
-In `src/components/AboutScreen.tsx`, insert a new `<div>` between the "Question Crafting" section and the divider that precedes the "Go play. Good luck…" sign-off. Section heading styled to match the others (teal, uppercase, tracked):
+1. Extend the `SectionKey` union to include `"follow"`.
+2. Add a `followRef` ref and wire it into the `sections` array used for scroll-spy and the anchor nav chips.
+3. Wrap the existing Follow Us heading block in `followRef` and update its label to match the anchor chip text.
+4. Keep the existing teal uppercase header styling (`text-sm font-subheading font-bold tracking-[0.18em] uppercase`, `hsl(185 70% 55%)`) so it visually matches the other sections.
 
-> FOLLOW US
-
-## Logos
-
-Eight platforms, in this order — each rendered as an `<a target="_blank" rel="noopener noreferrer">` wrapping the platform's actual brand mark:
-
-1. Instagram — https://www.instagram.com/triviolivia/ (lucide `Instagram`)
-2. YouTube — https://www.youtube.com/@triviolivia (lucide `Youtube`)
-3. TikTok — https://www.tiktok.com/@triviolivia (inline brand SVG)
-4. Facebook — https://www.facebook.com/triviolivia (lucide `Facebook`)
-5. Threads — https://www.threads.com/@triviolivia (inline brand SVG)
-6. Bluesky — https://bsky.app/profile/triviolivia.bsky.social (inline brand SVG)
-7. LinkedIn — https://www.linkedin.com/company/triviolivia/ (lucide `Linkedin`)
-8. Reddit — https://www.reddit.com/r/triviolivia/ (inline brand SVG)
-
-Lucide provides the correct outlined marks for Instagram, YouTube, Facebook, and LinkedIn. TikTok, Threads, Bluesky, and Reddit aren't in lucide, so I'll inline their official monochrome brand-mark SVGs (single-path, sized to match the lucide 24px icons).
-
-## Styling
-
-- Row of icon pill buttons, wraps on mobile, flex-wrapped gap-2.
-- Each pill: 40×40 square, `rounded-full`, glassmorphism to match existing chips — `background: rgba(255,255,255,0.06)`, `border: 1px solid rgba(255,255,255,0.15)`.
-- Icon color: `hsl(var(--game-gold))` at rest.
-- Hover (pointer only): border becomes teal `hsl(185 70% 55%)`, icon color teal, subtle scale `1.05`. Active `scale-95`. Reuse the same transition timing as the anchor-nav chips.
-- Each `<a>` has `aria-label="Follow Triviolivia on {Platform}"` and a `title` for tooltip on desktop.
-- Track clicks via existing `trackClick` helper with event name like `about_social_instagram`, etc.
-
-## Technical notes
-
-- No new packages; lucide-react is already used across the app.
-- Inline SVGs live directly in the component (small, under ~10 lines each). No new asset files.
-- No changes to routing, data, or backend.
-
-## Files changed
-
-- `src/components/AboutScreen.tsx` — add the new section, imports for lucide icons, and inline SVG components for TikTok / Threads / Bluesky / Reddit.
+The result: the Follow Us heading gets an active-state anchor chip in the nav strip, and clicking that chip smoothly scrolls to the Follow Us section just like the other sections.
