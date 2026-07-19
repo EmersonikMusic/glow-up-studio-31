@@ -9,7 +9,7 @@
 
 import { safeStorageGet, safeStorageSet } from "@/lib/browserCompat";
 
-export type SoundName = "tick" | "reveal" | "transition" | "start" | "complete";
+export type SoundName = "tick" | "reveal" | "transition" | "start" | "complete" | "badge";
 
 const STORAGE_KEY = "to.sound.muted";
 const VOLUME = 0.35;
@@ -114,6 +114,13 @@ export function play(name: SoundName) {
       envTone(c, 659.25, t + 0.12, 0.18, "triangle", 0.6);
       envTone(c, 783.99, t + 0.24, 0.18, "triangle", 0.6);
       envTone(c, 1046.5, t + 0.36, 0.6, "triangle", 0.7);
+      break;
+    case "badge":
+      // Subtle sparkle: C5 → E5 → G5 → C6, softer than "complete".
+      envTone(c, 523.25, t, 0.14, "sine", 0.42);
+      envTone(c, 659.25, t + 0.08, 0.14, "sine", 0.42);
+      envTone(c, 783.99, t + 0.16, 0.14, "sine", 0.42);
+      envTone(c, 1046.5, t + 0.24, 0.35, "sine", 0.5);
       break;
   }
 }
