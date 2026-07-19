@@ -655,3 +655,12 @@
 .settings-sheet-mobile { max-height: 92vh; }
 @supports (height: 100svh) { .settings-sheet-mobile { max-height: 92svh; } }
 @supports (height: 100dvh) { .settings-sheet-mobile { max-height: 92dvh; } }
+
+/* Follow Us social links – hover only on pointer devices */
+@media (hover: hover) {
+  .social-link:hover {
+    border-color: hsl(185 70% 55%) !important;
+    color: hsl(185 70% 55%) !important;
+    transform: scale(1.05);
+  }
+}
