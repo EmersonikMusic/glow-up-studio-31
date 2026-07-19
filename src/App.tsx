@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AppErrorBoundary from "@/components/AppErrorBoundary";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index.tsx";
 import Terms from "./pages/Terms.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -12,13 +13,27 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 
 const queryClient = new QueryClient();
 
+function ResponsiveSonner() {
+  const isMobile = useIsMobile();
+  return (
+    <Sonner
+      position={isMobile ? "bottom-center" : "bottom-right"}
+      expand
+      visibleToasts={5}
+      duration={6000}
+      closeButton={false}
+      offset={isMobile ? 16 : 24}
+    />
+  );
+}
+
 const App = () => (
   <AppErrorBoundary>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <ResponsiveSonner />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Routes>
               <Route path="/" element={<Index />} />
