@@ -41,7 +41,7 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
     let cancelled = false;
     supabase
       .from("profiles")
-      .select("display_name, avatar_url, email, username")
+      .select("display_name, avatar_url, email, username, unlocked_badges")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -56,6 +56,7 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
             avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
             email: user.email ?? null,
             username: null,
+            unlocked_badges: null,
           },
         );
       });
