@@ -9,9 +9,10 @@ interface BadgeItemProps {
   unlocked: boolean;
   flipped?: boolean;
   onFlipChange?: (flipped: boolean) => void;
+  isNew?: boolean;
 }
 
-export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChange }: BadgeItemProps) {
+export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChange, isNew = false }: BadgeItemProps) {
   const label = (
     <span
       className="text-[10px] font-body font-bold uppercase tracking-widest leading-tight text-center"
@@ -53,8 +54,11 @@ export default function BadgeItem({ badge, unlocked, flipped = false, onFlipChan
         aria-pressed={flipped}
         aria-label={`${badge.badgeName}: ${badge.requirement}`}
         className="relative w-[84px] h-[84px] rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-        style={{ perspective: "600px" }}
-      >
+        style={{
+          perspective: "600px",
+          boxShadow: isNew ? "0 0 0 2px hsl(185 70% 55%), 0 0 18px hsl(185 70% 55% / 0.55)" : undefined,
+          borderRadius: "9999px",
+        }}>
         <div
           className="relative w-full h-full"
           style={{
