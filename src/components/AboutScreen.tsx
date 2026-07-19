@@ -1,4 +1,4 @@
-import { ChevronsLeft, ChevronDown } from "lucide-react";
+import { ChevronsLeft, ChevronDown, Instagram, Youtube, Facebook, Linkedin } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback, useRef, useEffect } from "react";
 import PrimaryCTA from "./PrimaryCTA";
