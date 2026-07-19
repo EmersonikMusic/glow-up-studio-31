@@ -1,40 +1,22 @@
 ## Goal
-Show a custom-styled tooltip listing the sub-topics for each Category, Difficulty, and Era row. Trigger:
-- **Desktop:** on hover (with a short delay).
-- **Mobile:** on long-press (~500ms press-and-hold) on the row label; suppress the toggle when a long-press fires so the switch doesn't flip.
+Generate a single 5x5 grid image showing all 25 category mascots, each on its category's gradient background.
 
-## Files
+## Approach
+This is a one-off visual artifact (not an app feature), so I'll render it as a PNG saved to `/mnt/documents/mascots-grid.png` and show it inline in chat.
 
-### 1. `src/data/optionDescriptions.ts` (new)
-Three maps of sub-topic strings, verbatim from the previous message:
-- `CATEGORY_DESCRIPTIONS` — 25 entries. Splits the "Magicians Philosophy" run-on into separate **Performing Arts** and **Philosophy** entries.
-- `DIFFICULTY_DESCRIPTIONS` — 5 entries.
-- `ERA_DESCRIPTIONS` — 12 entries.
+### Steps
+1. Read `src/data/categoryColors.ts` (already in context) for the 25 gradients and match them to the 25 mascot SVGs in `src/assets/mascots/`.
+2. Write a small Node script that:
+   - Builds a 5x5 HTML page with each cell containing the mascot inline SVG on top of its `linear-gradient(...)` background.
+   - Rounds cell corners slightly, adds the category label in the app's style (Fredoka One, white).
+   - Uses Playwright (already available) to screenshot the page at a high resolution (e.g. 2000x2000).
+3. Save the result to `/mnt/documents/mascots-grid.png` and display it inline.
 
-### 2. `src/components/InfoTooltip.tsx` (new)
-Small reusable tooltip component matching the site's glassmorphism aesthetic.
+### Layout details
+- 5 columns x 5 rows, square cells.
+- Each cell: category gradient background, mascot SVG centered (~70% of cell), small category label at the bottom.
+- Order: alphabetical by category name for predictable layout.
 
-- Wraps arbitrary children (the row) and renders a portalled floating panel when active.
-- Positioning: fixed, anchored to the trigger's bounding rect. Prefers `right` side on desktop panel width, flips to `top`/`bottom` if it would clip the viewport (simple rect math, no library).
-- Styling (matches SettingsPanel look):
-  - `background: rgba(10, 12, 20, 0.92)` with `backdrop-filter: blur(16px)`
-  - `border: 1px solid hsl(185 70% 55% / 0.35)` (teal accent)
-  - `border-radius: 12px`, padding `10px 14px`, `max-width: 280px`
-  - Text: `font-body` `text-xs` `leading-snug` in `hsl(0 0% 90%)`
-  - Subtle shadow: `0 10px 30px rgba(0,0,0,0.45)`
-  - Small teal caret pointing at the trigger
-  - Fade + 4px slide-in transition (120ms)
-- Triggers:
-  - **Pointer (mouse):** `pointerenter`/`pointerleave` with 250ms open delay, 100ms close delay.
-  - **Touch:** `touchstart` starts a 500ms timer; if it fires, tooltip opens and we set a suppress flag; `touchend`/`touchmove(>8px)`/`touchcancel` clears the timer. Dismiss on next tap anywhere or after 4s auto-hide.
-  - Escape key closes it.
-- Accessibility: trigger gets `aria-describedby` pointing to the tooltip's id; tooltip has `role="tooltip"`.
-
-### 3. `src/components/SettingsPanel.tsx`
-- Extend `ToggleRow` with optional `tooltip?: string`.
-- When `tooltip` is present, wrap the row in `<InfoTooltip content={tooltip} suppressClickRef={...}>`. The wrapper exposes a ref flag (`didLongPress`) that `ToggleRow`'s `onClick` checks — if a long-press just fired, we skip the toggle so the switch doesn't flip on mobile.
-- Extend `FilterSection` with optional `descriptions?: Record<string, string>` and pass `tooltip={descriptions?.[opt]}`.
-- Wire the three FilterSections (Categories, Difficulties, Eras) to their respective description maps. Select/Deselect All row gets no tooltip.
-
-## Out of scope
-No visual redesign of the settings rows themselves. No changes to gameplay, filters, or non-settings screens. No new libraries.
+### Notes
+- Purely visual artifact — no app code changes.
+- If you'd prefer a different order (e.g. grouped by color family), or no labels, let me know before I build.
