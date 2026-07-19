@@ -1,4 +1,4 @@
-import { ChevronsLeft, ChevronDown } from "lucide-react";
+import { ChevronsLeft, ChevronDown, Instagram, Youtube, Facebook, Linkedin } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useCallback, useRef, useEffect } from "react";
 import PrimaryCTA from "./PrimaryCTA";
@@ -20,6 +20,41 @@ function Tag({ variant, children }: { variant: "bad" | "good"; children: React.R
     </span>
   );
 }
+
+const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.87a8.16 8.16 0 0 0 4.77 1.52V6.94a4.85 4.85 0 0 1-1.84-.25z" />
+  </svg>
+);
+
+const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M12.19 22h-.01c-3.16-.02-5.59-1.06-7.22-3.09C3.51 17.14 2.75 14.66 2.72 12v-.02c.03-2.66.79-5.14 2.24-6.91C6.59 3.05 9.02 2.02 12.18 2h.01c2.42.02 4.44.62 5.98 1.79 1.45 1.11 2.47 2.68 3.02 4.68l-2.03.56c-.94-3.4-3.35-5.14-7-5.17-2.4.02-4.22.77-5.4 2.24C5.68 7.4 5.1 9.35 5.08 11.99c.02 2.64.6 4.6 1.68 5.9 1.18 1.47 3 2.22 5.4 2.24 2.16-.01 3.59-.51 4.78-1.66 1.35-1.29 1.33-2.87 1.14-3.86-.11-.6-.34-1.13-.65-1.56-.6.72-1.51 1.28-2.72 1.66-1.55.48-3.34.55-4.86.19-1.61-.38-2.79-1.28-3.31-2.55-.5-1.21-.35-2.63.4-3.79.79-1.21 2.11-2.02 3.7-2.28 1.55-.24 3.24-.13 4.71.31.03-.5-.11-1-.42-1.42-.51-.7-1.4-1.08-2.66-1.11-1.02.01-2.42.29-3.32 1.62l-1.71-1.15c1.2-1.77 3.16-2.62 5.05-2.6 1.94.03 3.5.7 4.5 1.96.94 1.18 1.35 2.72 1.19 4.42.05.03.11.06.16.09 1.13.65 1.96 1.63 2.4 2.83.61 1.67.53 4.4-1.68 6.53-1.61 1.55-3.55 2.24-6.28 2.26zm.03-13.11c-.32 0-.65.02-.97.07-1.9.32-2.87 1.28-2.83 2.4.05 1.36 1.5 2 2.86 2.32 1.5.35 3.42.09 4.42-1.28.42-.57.68-1.35.68-2.28-.99-.5-2.51-1.23-4.16-1.23z" />
+  </svg>
+);
+
+const BlueskyIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 600 530" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M135.72 44.03C202.216 93.951 273.74 195.17 300 249.49c26.262-54.316 97.782-155.54 164.28-205.46C512.26 8.009 590 -19.766 590 68.906c0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.38-3.69-10.832-3.708-7.896-.017-2.936-1.193.516-3.707 7.896-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.106 11.421-142.55-7.45-163.25-81.433C20.156 217.7 10 86.618 10 68.906 10-19.766 87.744 8.009 135.72 44.03z" />
+  </svg>
+);
+
+const RedditIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" />
+  </svg>
+);
+
+const SOCIAL_LINKS: { key: string; label: string; href: string; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; event: string }[] = [
+  { key: "instagram", label: "Instagram", href: "https://www.instagram.com/triviolivia/", Icon: Instagram, event: "about_social_instagram" },
+  { key: "youtube", label: "YouTube", href: "https://www.youtube.com/@triviolivia", Icon: Youtube, event: "about_social_youtube" },
+  { key: "tiktok", label: "TikTok", href: "https://www.tiktok.com/@triviolivia", Icon: TikTokIcon, event: "about_social_tiktok" },
+  { key: "facebook", label: "Facebook", href: "https://www.facebook.com/triviolivia", Icon: Facebook, event: "about_social_facebook" },
+  { key: "threads", label: "Threads", href: "https://www.threads.com/@triviolivia", Icon: ThreadsIcon, event: "about_social_threads" },
+  { key: "bluesky", label: "Bluesky", href: "https://bsky.app/profile/triviolivia.bsky.social", Icon: BlueskyIcon, event: "about_social_bluesky" },
+  { key: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/company/triviolivia/", Icon: Linkedin, event: "about_social_linkedin" },
+  { key: "reddit", label: "Reddit", href: "https://www.reddit.com/r/triviolivia/", Icon: RedditIcon, event: "about_social_reddit" },
+];
 
 export default function AboutScreen({ onClose }: AboutScreenProps) {
   const isMobile = useIsMobile();
@@ -442,6 +477,36 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   </ol>
                 </li>
               </ol>
+            </div>
+
+            <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }} aria-hidden="true" />
+
+            {/* Follow Us */}
+            <div>
+              <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                Follow Us
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {SOCIAL_LINKS.map(({ key, label, href, Icon, event }) => (
+                  <a
+                    key={key}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Follow Triviolivia on ${label}`}
+                    title={label}
+                    onClick={() => trackClick(event)}
+                    className="social-link inline-flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 active:scale-95"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.06)",
+                      border: "1px solid rgba(255, 255, 255, 0.15)",
+                      color: "hsl(var(--game-gold))",
+                    }}
+                  >
+                    <Icon width={20} height={20} />
+                  </a>
+                ))}
+              </div>
             </div>
 
             <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }} aria-hidden="true" />
