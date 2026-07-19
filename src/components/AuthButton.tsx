@@ -3,6 +3,7 @@ import { LogIn, User as UserIcon } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { trackClick } from "@/lib/analytics";
+import { getUnseen, badgeNamesToIds, SEEN_EVENT } from "@/lib/badgeSeen";
 import AuthModal from "./AuthModal";
 
 interface Profile {
@@ -10,6 +11,7 @@ interface Profile {
   avatar_url: string | null;
   email: string | null;
   username: string | null;
+  unlocked_badges: string[] | null;
 }
 
 interface AuthButtonProps {
