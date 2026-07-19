@@ -481,6 +481,36 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
 
             <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }} aria-hidden="true" />
 
+            {/* Follow Us */}
+            <div>
+              <h2 className="text-sm font-subheading font-bold tracking-[0.18em] uppercase mb-3" style={{ color: "hsl(185 70% 55%)" }}>
+                Follow Us
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {SOCIAL_LINKS.map(({ key, label, href, Icon, event }) => (
+                  <a
+                    key={key}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Follow Triviolivia on ${label}`}
+                    title={label}
+                    onClick={() => trackClick(event)}
+                    className="social-link inline-flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 active:scale-95"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.06)",
+                      border: "1px solid rgba(255, 255, 255, 0.15)",
+                      color: "hsl(var(--game-gold))",
+                    }}
+                  >
+                    <Icon width={20} height={20} />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }} aria-hidden="true" />
+
             {/* Sign-off */}
             <div className="pt-1 pb-2">
               <p className="text-sm leading-relaxed font-body font-semibold font-black mb-3">
