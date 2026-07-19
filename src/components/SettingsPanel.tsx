@@ -186,6 +186,7 @@ function FilterSection({
   preserveCase,
   trackGroup,
   descriptions,
+  compact = false,
 }: {
   label: string;
   iconActive: string;
@@ -198,6 +199,7 @@ function FilterSection({
   preserveCase?: (option: string) => boolean;
   trackGroup: string;
   descriptions?: Record<string, string>;
+  compact?: boolean;
 }) {
   const allSelected = options.every((o) => selected.includes(o));
   const toggleAll = () => {
@@ -209,14 +211,15 @@ function FilterSection({
 
   return (
     <section
-      className="mx-5 mb-3 rounded-2xl flex flex-col"
+      className={`${compact ? "mx-4 mb-2" : "mx-5 mb-3"} rounded-2xl flex flex-col`}
       style={{ background: "rgba(0, 0, 0, 0.15)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
     >
       <SectionHeader
-        icon={<FadeIcon active={iconActive} inactive={iconInactive} open={open} />}
+        icon={<FadeIcon active={iconActive} inactive={iconInactive} open={open} size={compact ? 20 : 24} />}
         label={label}
         open={open}
         onToggle={onToggle}
+        compact={compact}
       />
       <div
         className="grid"
@@ -230,6 +233,7 @@ function FilterSection({
             label={allSelected ? "Deselect All" : "Select All"}
             active={allSelected}
             onClick={toggleAll}
+            compact={compact}
           />
           {options.map((opt) => (
             <ToggleRow
@@ -239,6 +243,7 @@ function FilterSection({
               onClick={() => toggleOne(opt)}
               preserveCase={preserveCase?.(opt)}
               tooltip={descriptions?.[opt]}
+              compact={compact}
             />
           ))}
         </div>
