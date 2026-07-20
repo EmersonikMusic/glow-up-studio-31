@@ -1,6 +1,5 @@
 import { Loader2 } from "lucide-react";
-import logoAsset from "@/assets/TO_LOGO_FINAL.svg.asset.json";
-const logo = logoAsset.url;
+import logo from "@/assets/img-TO-logo-full-desktop-v2.svg";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
