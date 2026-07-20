@@ -45,14 +45,14 @@ const RedditIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const SOCIAL_LINKS: { key: string; label: string; href: string; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; event: string }[] = [
-  { key: "instagram", label: "Instagram", href: "https://www.instagram.com/triviolivia/", Icon: Instagram, event: "about_social_instagram" },
+const SOCIAL_LINKS: { key: string; label: string; href: string; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; event: string; active?: boolean }[] = [
+  { key: "instagram", label: "Instagram", href: "https://www.instagram.com/triviolivia/", Icon: Instagram, event: "about_social_instagram", active: true },
   { key: "youtube", label: "YouTube", href: "https://www.youtube.com/@triviolivia", Icon: Youtube, event: "about_social_youtube" },
   { key: "tiktok", label: "TikTok", href: "https://www.tiktok.com/@triviolivia", Icon: TikTokIcon, event: "about_social_tiktok" },
-  { key: "facebook", label: "Facebook", href: "https://www.facebook.com/triviolivia", Icon: Facebook, event: "about_social_facebook" },
+  { key: "facebook", label: "Facebook", href: "https://www.facebook.com/triviolivia", Icon: Facebook, event: "about_social_facebook", active: true },
   { key: "threads", label: "Threads", href: "https://www.threads.com/@triviolivia", Icon: ThreadsIcon, event: "about_social_threads" },
   { key: "bluesky", label: "Bluesky", href: "https://bsky.app/profile/triviolivia.bsky.social", Icon: BlueskyIcon, event: "about_social_bluesky" },
-  { key: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/company/triviolivia/", Icon: Linkedin, event: "about_social_linkedin" },
+  { key: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/company/triviolivia/", Icon: Linkedin, event: "about_social_linkedin", active: true },
   { key: "reddit", label: "Reddit", href: "https://www.reddit.com/r/triviolivia/", Icon: RedditIcon, event: "about_social_reddit" },
 ];
 
