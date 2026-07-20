@@ -491,7 +491,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 Follow Us
               </h2>
               <div className="flex flex-wrap gap-2">
-                {SOCIAL_LINKS.map(({ key, label, href, Icon, event }) => (
+                {SOCIAL_LINKS.filter((link) => link.active).map(({ key, label, href, Icon, event }) => (
                   <a
                     key={key}
                     href={href}
