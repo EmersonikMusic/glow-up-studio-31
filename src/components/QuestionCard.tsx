@@ -77,6 +77,8 @@ export default function QuestionCard({
 
   const questionStyle: React.CSSProperties = {
     textWrap: "balance",
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
     color: answered ? "hsl(0 0% 60%)" : "hsl(0 0% 97%)",
     transition:
       "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease, opacity 0.5s ease",
@@ -94,6 +96,8 @@ export default function QuestionCard({
 
   const answerStyle: React.CSSProperties = {
     textWrap: "balance",
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
     color: "hsl(0 0% 97%)",
     ...(isMobile
       ? {
