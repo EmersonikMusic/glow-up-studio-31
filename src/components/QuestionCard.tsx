@@ -77,6 +77,8 @@ export default function QuestionCard({
 
   const questionStyle: React.CSSProperties = {
     textWrap: "balance",
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
     color: answered ? "hsl(0 0% 60%)" : "hsl(0 0% 97%)",
     transition:
       "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease, opacity 0.5s ease",
@@ -94,6 +96,8 @@ export default function QuestionCard({
 
   const answerStyle: React.CSSProperties = {
     textWrap: "balance",
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
     color: "hsl(0 0% 97%)",
     ...(isMobile
       ? {
@@ -107,7 +111,7 @@ export default function QuestionCard({
     <div
       key={animKey}
       data-testid="question-card"
-      className={`w-full rounded-2xl flex flex-col justify-start md:justify-center items-center ${flashColor ? "animate-border-flash" : ""} h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]`}
+      className={`w-full min-w-0 max-w-full rounded-2xl flex flex-col justify-start md:justify-center items-center ${flashColor ? "animate-border-flash" : ""} h-full backdrop-blur-xl min-h-0 overflow-hidden p-[28px] md:pt-[clamp(0.75rem,2.5vw,2.5rem)] md:pb-[clamp(0.75rem,2.5vw,2.5rem)] md:px-[clamp(0.875rem,3vw,2.5rem)]`}
       style={{
         background: "rgba(0, 0, 0, 0.45)",
         border: "1.5px solid rgba(255, 255, 255, 0.18)",
@@ -119,11 +123,11 @@ export default function QuestionCard({
     >
       {isMobile ? (
         // ─── MOBILE: 3-zone anchored layout ─────────────────────────────
-        <div className="w-full flex-1 flex flex-col items-center mt-[12px] mb-[182px] min-h-0">
+        <div className="w-full min-w-0 flex-1 flex flex-col items-center mt-[12px] mb-[182px] min-h-0">
           {/* Question zone — bottom-aligned to divider, grows upward */}
           <div
             ref={questionContainerRef}
-            className="flex-[3] w-full flex items-end justify-center min-h-0 overflow-hidden"
+            className="flex-[3] w-full min-w-0 flex items-end justify-center min-h-0 overflow-hidden"
           >
             <p
               key={`q-m-${animKey}`}
@@ -159,7 +163,7 @@ export default function QuestionCard({
           {/* Answer zone — top-aligned to divider, grows downward */}
           <div
             ref={answerContainerRef}
-            className="flex-[2] w-full flex items-start justify-center min-h-0 overflow-hidden"
+            className="flex-[2] w-full min-w-0 flex items-start justify-center min-h-0 overflow-hidden"
           >
             {answered && correctAnswer && (
               <p
