@@ -123,11 +123,11 @@ export default function QuestionCard({
     >
       {isMobile ? (
         // ─── MOBILE: 3-zone anchored layout ─────────────────────────────
-        <div className="w-full flex-1 flex flex-col items-center mt-[12px] mb-[182px] min-h-0">
+        <div className="w-full min-w-0 flex-1 flex flex-col items-center mt-[12px] mb-[182px] min-h-0">
           {/* Question zone — bottom-aligned to divider, grows upward */}
           <div
             ref={questionContainerRef}
-            className="flex-[3] w-full flex items-end justify-center min-h-0 overflow-hidden"
+            className="flex-[3] w-full min-w-0 flex items-end justify-center min-h-0 overflow-hidden"
           >
             <p
               key={`q-m-${animKey}`}
