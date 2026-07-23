@@ -163,7 +163,7 @@ export default function QuestionCard({
           {/* Answer zone — top-aligned to divider, grows downward */}
           <div
             ref={answerContainerRef}
-            className="flex-[2] w-full flex items-start justify-center min-h-0 overflow-hidden"
+            className="flex-[2] w-full min-w-0 flex items-start justify-center min-h-0 overflow-hidden"
           >
             {answered && correctAnswer && (
               <p
