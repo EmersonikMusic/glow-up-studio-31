@@ -271,7 +271,10 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                   </button>
                 );
               })}
+              {/* Trailing spacer: browsers drop end-padding on horizontal scrollers */}
+              <div aria-hidden className="shrink-0 w-2" />
             </div>
+
           ) : (
             <div className="flex flex-wrap gap-2">
               {sections.map((btn) => {
