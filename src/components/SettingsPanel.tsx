@@ -431,7 +431,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       )}
 
       {/* Title */}
-      <div className="px-5 pt-2 pb-2 md:px-6 md:pt-2 md:pb-3">
+      <div className="px-5 pt-5 pb-4 md:px-6 md:pt-2 md:pb-3">
         <h2
           className="text-lg sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
           style={{
@@ -670,7 +670,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           data-open={open ? "true" : "false"}
           style={{
-            maxHeight: "92dvh",
+            maxHeight: "85dvh",
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
