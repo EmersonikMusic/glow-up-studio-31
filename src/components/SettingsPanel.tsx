@@ -439,6 +439,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
+            WebkitBoxDecorationBreak: "clone",
+            boxDecorationBreak: "clone",
             lineHeight: 1.05,
             textAlign: "center",
           }}
