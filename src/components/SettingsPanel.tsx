@@ -431,15 +431,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       )}
 
       {/* Title */}
-      <div className="px-5 pt-5 pb-4 md:px-6 md:pt-2 md:pb-3">
+      <div className="px-5 pt-4 pb-3 md:px-6 md:pt-2 md:pb-3">
         <h2
-          className="text-xl sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center"
-          style={{ lineHeight: 1.05 }}
+          className="sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center"
+          style={{ lineHeight: 1.05, fontSize: "clamp(14px, 6.2vw, 24px)" }}
         >
-          {["CUSTOMIZE YOUR", "EXPERIENCE"].map((line, i) => (
+          {["CUSTOMIZE YOUR", "EXPERIENCE"].map((line) => (
             <span
               key={line}
-              className={i === 0 ? "inline sm:block" : "inline sm:block"}
+              className="block"
               style={{
                 background:
                   "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
@@ -448,10 +448,11 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
                 backgroundClip: "text",
               }}
             >
-              {i === 0 ? `${line} ` : line}
+              {line}
             </span>
           ))}
         </h2>
+
 
       </div>
       <div className="px-5 md:px-6 mb-2 md:mb-3">
