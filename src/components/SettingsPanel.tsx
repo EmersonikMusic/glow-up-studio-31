@@ -431,7 +431,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       )}
 
       {/* Title */}
-      <div className="px-5 pt-2 pb-2 md:px-6 md:pt-2 md:pb-3">
+      <div className="px-5 pt-5 pb-4 md:px-6 md:pt-2 md:pb-3">
         <h2
           className="text-lg sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
           style={{
