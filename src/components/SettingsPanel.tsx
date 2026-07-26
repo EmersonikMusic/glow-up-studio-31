@@ -433,20 +433,26 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Title */}
       <div className="px-5 pt-5 pb-4 md:px-6 md:pt-2 md:pb-3">
         <h2
-          className="text-xl sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
-          style={{
-            background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            WebkitBoxDecorationBreak: "clone",
-            boxDecorationBreak: "clone",
-            lineHeight: 1.05,
-            textAlign: "center",
-          }}
+          className="text-xl sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center"
+          style={{ lineHeight: 1.05 }}
         >
-          CUSTOMIZE YOUR EXPERIENCE
+          {["CUSTOMIZE YOUR", "EXPERIENCE"].map((line, i) => (
+            <span
+              key={line}
+              className={i === 0 ? "inline sm:block" : "inline sm:block"}
+              style={{
+                background:
+                  "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              {i === 0 ? `${line} ` : line}
+            </span>
+          ))}
         </h2>
+
       </div>
       <div className="px-5 md:px-6 mb-2 md:mb-3">
         <div className="h-px" style={{ background: "rgba(255, 255, 255, 0.1)" }} />

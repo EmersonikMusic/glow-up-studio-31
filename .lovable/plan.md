@@ -1,21 +1,16 @@
-Adjust the "CUSTOMIZE YOUR EXPERIENCE" header in `src/components/SettingsPanel.tsx` so its gold-to-red gradient renders cleanly when the text wraps across two lines on desktop/tablet.
+## Goal
+On desktop/tablet the "CUSTOMIZE YOUR EXPERIENCE" heading wraps to two lines, but the red→yellow gradient is painted once across the whole block, so line 1 is yellow and line 2 is orange. Each line should carry the full gradient.
 
-## Problem
-The header is a single `<h2>` with `background-clip: text` and a vertical gradient. When the text wraps onto two lines, the gradient is stretched across the entire element height, so the color distribution is split awkwardly between the two lines.
+## Why the last fix failed
+`box-decoration-break: clone` only affects fragmented **inline** boxes. The heading is a block-level `<h2>`, so the property has no effect and the background is still painted once over the full block.
 
-## Proposed Fix
-Apply `box-decoration-break: clone` (with `-webkit-box-decoration-break: clone`) to the heading. This makes each wrapped line render its own copy of the gradient, so both lines display the full red-to-yellow gradient consistently.
+## Fix
+In `src/components/SettingsPanel.tsx`, split the heading into explicit line spans instead of relying on natural wrapping:
 
-Optionally review the tablet font size (`sm:text-2xl`) to see if the heading can be kept on one line at common tablet widths without sacrificing readability.
-
-## Files
-- `src/components/SettingsPanel.tsx` — add the box-decoration-break property to the title styles and verify responsive breakpoints.
+- Keep the `<h2>` as a plain container (no gradient background on it).
+- Render two `block` child spans: `CUSTOMIZE YOUR` and `EXPERIENCE`, each with its own gradient background + `background-clip: text`.
+- Move the gradient styles into a small shared style object so both spans stay identical.
+- On mobile, where the heading currently fits on one line, force a single line by making the spans `inline` at the `sm`-and-below breakpoint (or keep two lines if it no longer fits at `text-xl`) — I'll verify the mobile 390px render and keep the current single-line appearance.
 
 ## Verification
-- Build the project.
-- Open the settings panel at desktop (~1280px) and tablet (~768px) widths.
-- Confirm the gradient looks consistent across both lines of wrapped text and the design still follows the dark/glassmorphism theme.
-
-## Technical Notes
-- `box-decoration-break: clone` is supported in all modern browsers (Chrome, Firefox, Safari, Edge). The `-webkit-` prefix covers Safari.
-- No backend changes are required.
+Playwright screenshots at 1280px (desktop), 834px (tablet), and 390px (mobile) to confirm each line runs red→yellow and mobile stays on one line.
