@@ -272,7 +272,7 @@ export default function AboutScreen({ onClose }: AboutScreenProps) {
                 );
               })}
               {/* Trailing spacer: browsers drop end-padding on horizontal scrollers */}
-              <div aria-hidden className="shrink-0 w-6" />
+              <div aria-hidden className="shrink-0 w-2" />
             </div>
 
           ) : (
