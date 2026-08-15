@@ -186,6 +186,14 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           }
           return;
         }
+        // Google Ads conversion: account creation (sign-up).
+        if (typeof window !== "undefined" && typeof window.gtag === "function") {
+          window.gtag("event", "conversion", {
+            send_to: "AW-18392006298/2HaOCLCCq-IcEJr9_sFE",
+            value: 1.0,
+            currency: "CAD",
+          });
+        }
         toast.success("Account created! Check your email to confirm.");
         onOpenChange(false);
       } else {
