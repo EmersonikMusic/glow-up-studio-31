@@ -169,7 +169,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           setLoading(false);
           return;
         }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -187,8 +187,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           return;
         }
         // Google Ads conversion: account creation (sign-up).
-        if (typeof window !== "undefined" && typeof window.gtag_report_conversion === "function") {
-          window.gtag_report_conversion();
+        if (data?.user) {
+          fireSignUpConversionForUser(data.user);
         }
         toast.success("Account created! Check your email to confirm.");
         onOpenChange(false);
