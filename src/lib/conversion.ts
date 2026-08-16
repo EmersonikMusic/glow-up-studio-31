@@ -32,3 +32,24 @@ export function fireSignUpConversionForUser(user: User): void {
   sessionStorage.setItem(FIRED_KEY, user.id);
   window.gtag_report_conversion();
 }
+
+/**
+ * Fires the Google Ads quiz-completion conversion. Called once per fully
+ * completed game (the user answered the final question). Unlike sign-up,
+ * there is no dedupe — every finished quiz is a distinct conversion.
+ *
+ * Guards: `gtag` must exist (gtag.js loaded); never throws.
+ */
+export function fireQuizConversion(): void {
+  if (typeof window === "undefined") return;
+  if (typeof window.gtag !== "function") return;
+  try {
+    window.gtag("event", "conversion", {
+      send_to: "AW-18392006298/Xo0pCKn31-IcEJr9_sFE",
+      value: 1.0,
+      currency: "CAD",
+    });
+  } catch {
+    // swallow — analytics must never break the app
+  }
+}
