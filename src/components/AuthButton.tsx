@@ -3,6 +3,7 @@ import { LogIn, User as UserIcon } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { trackClick } from "@/lib/analytics";
+import { fireSignUpConversionForUser } from "@/lib/conversion";
 import { getUnseen, badgeNamesToIds, SEEN_EVENT } from "@/lib/badgeSeen";
 import AuthModal from "./AuthModal";
 
