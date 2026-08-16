@@ -32,8 +32,11 @@ export default function AuthButton({ onOpenProfile }: AuthButtonProps) {
   }, []);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      if (event === "SIGNED_IN" && session?.user) {
+        fireSignUpConversionForUser(session.user);
+      }
     });
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
