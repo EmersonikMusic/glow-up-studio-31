@@ -23,7 +23,7 @@ import BadgeToast from "./BadgeToast";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
-import { fireQuizConversion } from "@/lib/conversion";
+import { fireQuizConversion, fireSearchGameConversion } from "@/lib/conversion";
 import type { GameSessionData } from "@/lib/badgeEvaluator";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
@@ -292,6 +292,7 @@ export default function TriviaGame() {
           : 0,
       });
       fireQuizConversion();
+      fireSearchGameConversion();
       setGameState("finished");
       return;
     }

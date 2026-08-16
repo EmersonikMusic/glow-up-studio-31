@@ -53,3 +53,24 @@ export function fireQuizConversion(): void {
     // swallow — analytics must never break the app
   }
 }
+
+/**
+ * Fires the Google Ads "Search Game Completions" conversion. Called once per
+ * fully completed game alongside `fireQuizConversion`. No dedupe — every
+ * finished quiz is a distinct conversion.
+ *
+ * Guards: `gtag` must exist (gtag.js loaded); never throws.
+ */
+export function fireSearchGameConversion(): void {
+  if (typeof window === "undefined") return;
+  if (typeof window.gtag !== "function") return;
+  try {
+    window.gtag("event", "conversion", {
+      send_to: "AW-18392006298/y8ggCNWF6OIcEJr9_sFE",
+      value: 1.0,
+      currency: "CAD",
+    });
+  } catch {
+    // swallow — analytics must never break the app
+  }
+}
