@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
+import { fireSignUpConversionForUser } from "@/lib/conversion";
 
 import appleLogo from "@/assets/apple-logo-white.svg";
 
@@ -169,7 +170,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           setLoading(false);
           return;
         }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -187,8 +188,8 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           return;
         }
         // Google Ads conversion: account creation (sign-up).
-        if (typeof window !== "undefined" && typeof window.gtag_report_conversion === "function") {
-          window.gtag_report_conversion();
+        if (data?.user) {
+          fireSignUpConversionForUser(data.user);
         }
         toast.success("Account created! Check your email to confirm.");
         onOpenChange(false);
