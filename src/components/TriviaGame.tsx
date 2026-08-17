@@ -23,7 +23,7 @@ import BadgeToast from "./BadgeToast";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
-import { fireQuizConversion, fireSearchGameConversion } from "@/lib/conversion";
+import { fireQuizConversion, fireSearchGameConversion, fireGameStartConversion } from "@/lib/conversion";
 import type { GameSessionData } from "@/lib/badgeEvaluator";
 
 import MascotSvg, { type MascotState } from "./MascotSvg";
@@ -527,6 +527,7 @@ export default function TriviaGame() {
       setGameState("playing");
       startedAtRef.current = Date.now();
       trackGameStart(newSettings);
+      fireGameStartConversion();
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);

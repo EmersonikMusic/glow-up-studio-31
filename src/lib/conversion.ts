@@ -55,6 +55,26 @@ export function fireQuizConversion(): void {
 }
 
 /**
+ * Fires the Google Ads "Other" conversion when a game successfully starts.
+ * Called once per started game from the shared start chokepoint in
+ * TriviaGame's runFetchAndStart, so it covers Quick Play, Custom, and
+ * Kids Mode. No dedupe — every started game is a distinct conversion.
+ *
+ * Guards: `gtag` must exist (gtag.js loaded); never throws.
+ */
+export function fireGameStartConversion(): void {
+  if (typeof window === "undefined") return;
+  if (typeof window.gtag !== "function") return;
+  try {
+    window.gtag("event", "conversion", {
+      send_to: "AW-18392006298/eqgwCJvR7uIcEJr9_sFE",
+    });
+  } catch {
+    // swallow — analytics must never break the app
+  }
+}
+
+/**
  * Fires the Google Ads "Search Game Completions" conversion. Called once per
  * fully completed game alongside `fireQuizConversion`. No dedupe — every
  * finished quiz is a distinct conversion.
