@@ -433,8 +433,8 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Title */}
       <div className="px-5 pt-4 pb-3 md:px-6 md:pt-2 md:pb-3">
         <h2
-          className="sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center"
-          style={{ lineHeight: 1.05, fontSize: "clamp(14px, 6.2vw, 24px)" }}
+          className="text-[clamp(14px,6.2vw,24px)] sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center"
+          style={{ lineHeight: 1.05 }}
         >
           {["CUSTOMIZE YOUR", "EXPERIENCE"].map((line) => (
             <span
