@@ -275,6 +275,50 @@ for (const browserName of ["chromium", "firefox", "webkit"] as const) {
       const vh = await page.evaluate(() => window.innerHeight);
       expect(rect!.top).toBeLessThan(vh - 100);
     });
+
+    for (const size of [
+      { width: 360, height: 640 },
+      { width: 390, height: 844 },
+      { width: 393, height: 852 },
+      { width: 414, height: 896 },
+    ]) {
+      test(`gear and Customize CTA open the same height @ ${size.width}x${size.height}`, async ({
+        page,
+      }) => {
+        const heights: number[] = [];
+        for (const trigger of ["Open settings", "Customize Game"] as const) {
+          await page.setViewportSize(size);
+          await page.goto("/");
+          await page.waitForTimeout(800);
+          await page.getByRole("button", { name: trigger }).first().click();
+          await page.waitForTimeout(700);
+          const box = await page.locator('[data-testid="settings-panel-sheet"]').boundingBox();
+          expect(box, `sheet missing after ${trigger}`).not.toBeNull();
+          heights.push(box!.height);
+        }
+        // Both entry points must yield the same sheet height, ~85% of viewport.
+        expect(Math.abs(heights[0] - heights[1])).toBeLessThanOrEqual(1);
+        expect(heights[0]).toBeGreaterThan(size.height * 0.8);
+        expect(heights[0]).toBeLessThan(size.height * 0.9);
+      });
+    }
+
+    test("sheet slides up rather than fading in place", async ({ page }) => {
+      await page.goto("/");
+      await page.waitForTimeout(800);
+      await page.getByRole("button", { name: "Customize Game" }).first().click();
+      const tops: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        const box = await page.locator('[data-testid="settings-panel-sheet"]').boundingBox();
+        if (box) tops.push(box.y);
+        await page.waitForTimeout(35);
+      }
+      await page.waitForTimeout(500);
+      const settled = (await page.locator('[data-testid="settings-panel-sheet"]').boundingBox())!.y;
+      // Some sampled frame must sit lower than the settled position → it slid up.
+      expect(Math.max(...tops)).toBeGreaterThan(settled + 20);
+    });
+
   });
 }
 
