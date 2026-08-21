@@ -687,8 +687,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           data-testid="settings-panel-sheet"
           className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           data-open={open ? "true" : "false"}
+          data-ready={ready ? "true" : "false"}
           style={{
-            maxHeight: "85dvh",
+
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
