@@ -649,12 +649,26 @@
   pointer-events: auto;
   transition: opacity 0.22s ease-out 0.08s, visibility 0s linear 0s;
 }
-/* Mobile sheet height fallbacks. Chrome mobile measures `vh` against the
-   large viewport (URL bar hidden), so 92vh can overflow the visible area
-   and clip the header. Use svh/dvh where supported. */
-.settings-sheet-mobile { max-height: 92vh; }
-@supports (height: 100svh) { .settings-sheet-mobile { max-height: 92svh; } }
-@supports (height: 100dvh) { .settings-sheet-mobile { max-height: 92dvh; } }
+/* Mobile sheet: deterministic height + slide-up entrance.
+   Height uses a vh -> svh -> dvh fallback chain so every engine gets a
+   valid value (an unsupported unit in a single declaration would leave the
+   sheet content-sized, i.e. "only half open"). */
+.settings-sheet-mobile {
+  height: 85vh;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.18s ease-out,
+    visibility 0s linear 0.28s;
+}
+@supports (height: 100svh) { .settings-sheet-mobile { height: 85svh; } }
+@supports (height: 100dvh) { .settings-sheet-mobile { height: 85dvh; } }
+.settings-sheet-mobile[data-open="true"] {
+  transform: translateY(0);
+  transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-out,
+    visibility 0s linear 0s;
+}
+/* Before the app has mounted, never animate — guarantees no first-paint slide. */
+.settings-sheet-mobile[data-ready="false"] { transition: none !important; }
+
 
 /* Follow Us social links – hover only on pointer devices */
 @media (hover: hover) {
