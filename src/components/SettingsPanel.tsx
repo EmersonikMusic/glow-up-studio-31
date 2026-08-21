@@ -370,6 +370,15 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   const dragStartY = useRef<number | null>(null);
   const dragOffset = useRef(0);
 
+  // Transitions stay disabled until after mount so the sheet can never
+  // slide or fade during first paint.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+
   const onDragStart = useCallback((clientY: number) => {
     dragStartY.current = clientY;
     dragOffset.current = 0;
@@ -678,8 +687,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
           data-testid="settings-panel-sheet"
           className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           data-open={open ? "true" : "false"}
+          data-ready={ready ? "true" : "false"}
           style={{
-            maxHeight: "85dvh",
+
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
