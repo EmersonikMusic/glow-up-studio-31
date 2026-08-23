@@ -1,12 +1,13 @@
 /**
- * Lightweight wrapper around the GA4 gtag.js loaded in index.html.
- * Safe to call from any component — no-ops when gtag is unavailable.
+ * Lightweight wrapper around the Google Tag Manager dataLayer loaded in
+ * index.html. Safe to call from any component — no-ops outside the browser.
  *
  * Only events in ALLOWED_CLICK_EVENTS (plus the funnel events `game_start`
- * and `game_complete`) are forwarded to GA4. Each fires as its own named
- * event so they appear directly in GA4's Events list and can be marked
- * as Key Events without custom dimensions.
+ * and `game_complete`) are pushed. Each fires as its own named dataLayer
+ * event, so GTM can trigger GA4 tags (and any Ads conversion tags) on them
+ * without any conversion labels living in the app code.
  */
+
 
 import type { GameSettings } from "@/data/gameOptions";
 
@@ -29,27 +30,20 @@ const ALLOWED_CLICK_EVENTS = new Set<string>([
   "click_continue_after_reset",
 ]);
 
-function getGtag(): ((...args: unknown[]) => void) | null {
-  if (typeof window === "undefined") return null;
-  const g = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
-  return typeof g === "function" ? g : null;
-}
-
 export function trackEvent(name: string, params?: GtagParams): void {
   // Mirror every GA4-bound event to the browser console for debugging.
   // Filter DevTools by "[GA4]" to see only analytics traffic.
-  if (typeof window !== "undefined") {
-    // eslint-disable-next-line no-console
-    console.log(`[GA4] ${name}`, params ?? {});
-  }
-  const gtag = getGtag();
-  if (!gtag) return;
+  if (typeof window === "undefined") return;
+  // eslint-disable-next-line no-console
+  console.log(`[GA4] ${name}`, params ?? {});
   try {
-    gtag("event", name, params ?? {});
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: name, ...(params ?? {}) });
   } catch {
     // swallow — analytics must never break the app
   }
 }
+
 
 /**
  * Emit a click as its own named GA4 event. Names not in the allowlist
