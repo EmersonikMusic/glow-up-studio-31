@@ -291,9 +291,6 @@ export default function TriviaGame() {
           ? Math.round((Date.now() - startedAtRef.current) / 1000)
           : 0,
       });
-      fireQuizConversion();
-      fireSearchGameConversion();
-      fireGameStartConversion();
       setGameState("finished");
       return;
     }
