@@ -55,10 +55,11 @@ export function fireQuizConversion(): void {
 }
 
 /**
- * Fires the Google Ads "Other" conversion when a game successfully starts.
- * Called once per started game from the shared start chokepoint in
- * TriviaGame's runFetchAndStart, so it covers Quick Play, Custom, and
- * Kids Mode. No dedupe — every started game is a distinct conversion.
+ * Fires the Google Ads "Other" conversion (label eqgwCJvR7uIcEJr9_sFE) when a
+ * game is successfully completed. Called from the shared finish branch in
+ * TriviaGame's advanceOrFinish alongside the other completion conversions, so
+ * it covers Quick Play, Custom, and Kids Mode. No dedupe — every completed
+ * game is a distinct conversion. Abandoned games never reach it.
  *
  * Guards: `gtag` must exist (gtag.js loaded); never throws.
  */
