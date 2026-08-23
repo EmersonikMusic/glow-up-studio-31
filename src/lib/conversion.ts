@@ -7,11 +7,13 @@ const FIRED_KEY = "google_ads_signup_conversion_fired_for";
 const NEW_ACCOUNT_WINDOW_MS = 5 * 60 * 1000; // 5 min
 
 /**
- * Fires the Google Ads sign-up conversion exactly once for a freshly-created
- * account, regardless of how the account was created (email, Google, or Apple).
+ * Pushes a `sign_up` event to the GTM dataLayer exactly once for a
+ * freshly-created account, regardless of how the account was created
+ * (email, Google, or Apple).
  *
- * Guards:
- *  - `gtag_report_conversion` must exist (gtag.js loaded).
+ * The Google Ads conversion itself is configured in GTM against this event —
+ * no conversion label lives in the app code. The dedupe and account-age
+ * guards stay here because GTM cannot replicate them:
  *  - Fire-once per user id (sessionStorage) so a returning sign-in or a
  *    duplicate SIGNED_IN event can't double-fire.
  *  - The account must have been created within `NEW_ACCOUNT_WINDOW_MS` of now;
@@ -19,7 +21,6 @@ const NEW_ACCOUNT_WINDOW_MS = 5 * 60 * 1000; // 5 min
  */
 export function fireSignUpConversionForUser(user: User): void {
   if (typeof window === "undefined") return;
-  if (typeof window.gtag_report_conversion !== "function") return;
 
   const already = sessionStorage.getItem(FIRED_KEY);
   if (already === user.id) return;
@@ -30,67 +31,9 @@ export function fireSignUpConversionForUser(user: User): void {
   if (ageMs < 0 || ageMs > NEW_ACCOUNT_WINDOW_MS) return;
 
   sessionStorage.setItem(FIRED_KEY, user.id);
-  window.gtag_report_conversion();
-}
-
-/**
- * Fires the Google Ads quiz-completion conversion. Called once per fully
- * completed game (the user answered the final question). Unlike sign-up,
- * there is no dedupe — every finished quiz is a distinct conversion.
- *
- * Guards: `gtag` must exist (gtag.js loaded); never throws.
- */
-export function fireQuizConversion(): void {
-  if (typeof window === "undefined") return;
-  if (typeof window.gtag !== "function") return;
   try {
-    window.gtag("event", "conversion", {
-      send_to: "AW-18392006298/Xo0pCKn31-IcEJr9_sFE",
-      value: 1.0,
-      currency: "CAD",
-    });
-  } catch {
-    // swallow — analytics must never break the app
-  }
-}
-
-/**
- * Fires the Google Ads "Other" conversion (label eqgwCJvR7uIcEJr9_sFE) when a
- * game is successfully completed. Called from the shared finish branch in
- * TriviaGame's advanceOrFinish alongside the other completion conversions, so
- * it covers Quick Play, Custom, and Kids Mode. No dedupe — every completed
- * game is a distinct conversion. Abandoned games never reach it.
- *
- * Guards: `gtag` must exist (gtag.js loaded); never throws.
- */
-export function fireGameStartConversion(): void {
-  if (typeof window === "undefined") return;
-  if (typeof window.gtag !== "function") return;
-  try {
-    window.gtag("event", "conversion", {
-      send_to: "AW-18392006298/eqgwCJvR7uIcEJr9_sFE",
-    });
-  } catch {
-    // swallow — analytics must never break the app
-  }
-}
-
-/**
- * Fires the Google Ads "Search Game Completions" conversion. Called once per
- * fully completed game alongside `fireQuizConversion`. No dedupe — every
- * finished quiz is a distinct conversion.
- *
- * Guards: `gtag` must exist (gtag.js loaded); never throws.
- */
-export function fireSearchGameConversion(): void {
-  if (typeof window === "undefined") return;
-  if (typeof window.gtag !== "function") return;
-  try {
-    window.gtag("event", "conversion", {
-      send_to: "AW-18392006298/y8ggCNWF6OIcEJr9_sFE",
-      value: 1.0,
-      currency: "CAD",
-    });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "sign_up", user_id: user.id });
   } catch {
     // swallow — analytics must never break the app
   }
