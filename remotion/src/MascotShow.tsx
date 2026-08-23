@@ -80,6 +80,36 @@ export const MascotShow: React.FC = () => {
             objectFit: "contain",
           }}
         />
+
+        {/* Curved tagline — mirrors the app's start screen lockup */}
+        <svg
+          viewBox="-20 0 640 60"
+          style={{ width: width * 0.82, height: (width * 0.82 * 60) / 640, marginTop: -24 }}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <path id="tagline-arc" d="M 30 46 Q 300 14 570 46" fill="none" />
+            <filter id="tagline-shadow" x="-20%" y="-50%" width="140%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.45" />
+            </filter>
+          </defs>
+          <text
+            fill="#3fd7de"
+            style={{
+              fontFamily: rubik,
+              fontWeight: 800,
+              fontSize: "24px",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+            }}
+            filter="url(#tagline-shadow)"
+          >
+            <textPath href="#tagline-arc" startOffset="50%" textAnchor="middle">
+              Earth&apos;s Deepest Trivia Source
+            </textPath>
+          </text>
+        </svg>
+
         <div
           style={{
             fontFamily: rubik,
