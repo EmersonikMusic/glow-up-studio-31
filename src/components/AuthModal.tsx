@@ -316,7 +316,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                     color: "#E3E3E3",
                   }}
                 >
-                  Sign in with Google
+                  {isSignup ? "Sign up with Google" : "Sign in with Google"}
                 </span>
               </button>
               {/* Sign in with Apple — sized to match Google's pill. */}
