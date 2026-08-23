@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { rubik, quicksand } from "./fonts";
+import { FACES } from "./faces";
 
 // Category background gradients — mirrors src/data/categoryColors.ts
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -42,13 +43,18 @@ function fileName(category: string): string {
     .replace(/\s+/g, "-");
 }
 
-export const CARD_FRAMES = 15; // 0.5s each
+export const CARD_FRAMES = 9; // 0.3s each
 export const END_FRAMES = 75; // 2.5s
-export const MASCOT_DURATION = CATEGORIES.length * CARD_FRAMES + END_FRAMES; // 450
+export const MASCOT_DURATION = CATEGORIES.length * CARD_FRAMES + END_FRAMES; // 300 = 10s
+
+// Face lock: every mascot is scaled so her face is the same size, and shifted
+// so the face centre sits at the exact same point on every card.
+const FACE_WIDTH = 330; // on-screen width of the reference face box
+const FACE_CENTER_Y = 640;
 
 export const MascotShow: React.FC = () => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { width } = useVideoConfig();
 
   const index = Math.floor(frame / CARD_FRAMES);
   const isEnd = index >= CATEGORIES.length;
@@ -96,36 +102,46 @@ export const MascotShow: React.FC = () => {
   }
 
   const category = CATEGORIES[index];
+  const key = fileName(category);
+  const face = FACES[key];
+  const k = FACE_WIDTH / (300 * face.s);
 
   return (
-    <AbsoluteFill
-      style={{
-        background: CATEGORY_COLORS[category],
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        padding: "0 0 190px 0",
-      }}
-    >
+    <AbsoluteFill style={{ background: CATEGORY_COLORS[category], overflow: "hidden" }}>
       <Img
-        src={staticFile(`mascots-png/${fileName(category)}.png`)}
+        src={staticFile(`mascots-png/${key}.png`)}
         style={{
-          width: width * 0.82,
-          height: height * 0.6,
-          objectFit: "contain",
-          objectPosition: "bottom center",
+          position: "absolute",
+          width: face.w * k,
+          height: face.h * k,
+          left: width / 2 - face.cx * k,
+          top: FACE_CENTER_Y - face.cy * k,
         }}
       />
       <div
         style={{
-          marginTop: 48,
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 420,
+          background:
+            "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 130,
           fontFamily: rubik,
           fontWeight: 900,
           fontSize: 84,
           letterSpacing: 2,
           color: "#ffffff",
           textAlign: "center",
-          textShadow: "0 6px 26px rgba(0,0,0,0.35)",
+          textShadow: "0 6px 26px rgba(0,0,0,0.45)",
           textTransform: "uppercase",
         }}
       >
@@ -134,3 +150,4 @@ export const MascotShow: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
