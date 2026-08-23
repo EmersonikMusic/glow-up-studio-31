@@ -13,6 +13,14 @@ const SIZES = [
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="mascots-9x16"
+        component={MascotShow}
+        durationInFrames={MASCOT_DURATION}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
       {SIZES.map((s) => (
         <Composition
           key={s.id}
@@ -25,5 +33,6 @@ export const RemotionRoot: React.FC = () => {
         />
       ))}
     </>
+
   );
 };
