@@ -275,7 +275,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 type="button"
                 onClick={handleGoogle}
                 disabled={loading}
-                aria-label="Sign in with Google"
+                aria-label={isSignup ? "Sign up with Google" : "Sign in with Google"}
                 className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
