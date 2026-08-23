@@ -38,7 +38,7 @@ In container `GTM-N8WKMK2M`:
 | Tag | Type | Trigger |
 |---|---|---|
 | GA4 Event - sign_up | GA4 Event, name `sign_up`, param `method` | Custom Event `sign_up` |
-| Ads - Sign-up Conversion | Google Ads Conversion, ID `AW-18392006298`, label `2HaOCLCCq-IcEJr9_sFE` | Custom Event `sign_up` |
+| Ads - Sign-up Conversion | Google Ads Conversion, ID `AW-18392006298`, label `CyidCKruzOYcEJr9_sFE`, value `1.0`, currency `CAD` | Custom Event `sign_up` |
 
 Optionally create a Data Layer Variable named `method` if you want provider breakdowns in GA4 reports.
 
