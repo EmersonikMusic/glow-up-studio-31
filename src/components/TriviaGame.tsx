@@ -31,7 +31,7 @@ import PauseOverlay from "./PauseOverlay";
 import MascotDebugOverlay from "./MascotDebugOverlay";
 
 import { matchesMedia } from "@/lib/browserCompat";
-import { trackGameStart, trackGameComplete } from "@/lib/analytics";
+import { trackGameStart, trackGameComplete, beginRound } from "@/lib/analytics";
 
 /** Extracts the gradient's first rgba(...) for use as the card-flash glow color. */
 function gradientFlashColor(gradient?: string): string | undefined {
@@ -524,6 +524,7 @@ export default function TriviaGame() {
       setPaused(false);
       setGameState("playing");
       startedAtRef.current = Date.now();
+      beginRound();
       trackGameStart(newSettings);
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
