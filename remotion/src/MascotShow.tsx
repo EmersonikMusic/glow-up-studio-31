@@ -1,5 +1,13 @@
 import React from "react";
-import { AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Img,
+  staticFile,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { rubik, quicksand } from "./fonts";
 import { FACES } from "./faces";
 
@@ -47,97 +55,51 @@ export const CARD_FRAMES = 9; // 0.3s each
 export const END_FRAMES = 75; // 2.5s
 export const MASCOT_DURATION = CATEGORIES.length * CARD_FRAMES + END_FRAMES; // 300 = 10s
 
+const REEL_FRAMES = CATEGORIES.length * CARD_FRAMES; // 225
+const XFADE = 3; // micro crossfade between cards
+const END_XFADE = 8; // dissolve from last mascot into the end card
+
 // Face lock: every mascot is scaled so her face is the same size, and shifted
 // so the face centre sits at the exact same point on every card.
 const FACE_WIDTH = 330; // on-screen width of the reference face box
 const FACE_CENTER_Y = 640;
 
-export const MascotShow: React.FC = () => {
-  const frame = useCurrentFrame();
+/** One mascot card — background, face-locked mascot, scrim, category label. */
+const Card: React.FC<{ index: number; frame: number; opacity: number }> = ({
+  index,
+  frame,
+  opacity,
+}) => {
   const { width } = useVideoConfig();
-
-  const index = Math.floor(frame / CARD_FRAMES);
-  const isEnd = index >= CATEGORIES.length;
-
-  if (isEnd) {
-    return (
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(120% 100% at 50% 20%, #2b1c5a 0%, #161035 55%, #0c0822 100%)",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "0 80px",
-          gap: 56,
-        }}
-      >
-        <Img
-          src={staticFile("images/logo.svg")}
-          style={{
-            width: width * 0.86,
-            height: width * 0.86 * (922 / 2684),
-            objectFit: "contain",
-          }}
-        />
-
-        {/* Curved tagline — mirrors the app's start screen lockup */}
-        <svg
-          viewBox="-20 0 640 60"
-          style={{ width: width * 0.82, height: (width * 0.82 * 60) / 640, marginTop: -24 }}
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <defs>
-            <path id="tagline-arc" d="M 30 46 Q 300 14 570 46" fill="none" />
-            <filter id="tagline-shadow" x="-20%" y="-50%" width="140%" height="200%">
-              <feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.45" />
-            </filter>
-          </defs>
-          <text
-            fill="#3fd7de"
-            style={{
-              fontFamily: rubik,
-              fontWeight: 800,
-              fontSize: "24px",
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-            }}
-            filter="url(#tagline-shadow)"
-          >
-            <textPath href="#tagline-arc" startOffset="50%" textAnchor="middle">
-              Earth&apos;s Deepest Trivia Source
-            </textPath>
-          </text>
-        </svg>
-
-        <div
-          style={{
-            fontFamily: rubik,
-            fontWeight: 900,
-            fontSize: 62,
-            color: "#ffffff",
-            textAlign: "center",
-            letterSpacing: 1,
-            lineHeight: 1.25,
-          }}
-        >
-          Play now at
-          <br />
-          <span style={{ fontFamily: quicksand, fontWeight: 700, color: "#ffc922" }}>
-            www.TRIVIOLIVIA.com
-          </span>
-        </div>
-      </AbsoluteFill>
-    );
-  }
-
   const category = CATEGORIES[index];
   const key = fileName(category);
   const face = FACES[key];
   const k = FACE_WIDTH / (300 * face.s);
 
+  // local frame within this card (can run past CARD_FRAMES while fading out)
+  const local = frame - index * CARD_FRAMES;
+
+  // gentle life: slow float + a whisper of scale so nothing is frozen
+  const float = Math.sin((frame / 30) * Math.PI * 0.9) * 6;
+  const breathe = 1 + Math.sin(frame / 42) * 0.008;
+  // background drift
+  const bgShift = Math.sin(frame / 55) * 3;
+
+  // label rises + fades on each cut
+  const labelIn = interpolate(local, [0, 5], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const labelY = interpolate(labelIn, [0, 1], [14, 0]);
+
   return (
-    <AbsoluteFill style={{ background: CATEGORY_COLORS[category], overflow: "hidden" }}>
+    <AbsoluteFill style={{ opacity, overflow: "hidden" }}>
+      <AbsoluteFill
+        style={{
+          background: CATEGORY_COLORS[category],
+          transform: `scale(1.06) translateY(${bgShift}px)`,
+        }}
+      />
       <Img
         src={staticFile(`mascots-png/${key}.png`)}
         style={{
@@ -146,6 +108,8 @@ export const MascotShow: React.FC = () => {
           height: face.h * k,
           left: width / 2 - face.cx * k,
           top: FACE_CENTER_Y - face.cy * k,
+          transform: `translateY(${float}px) scale(${breathe})`,
+          transformOrigin: `${face.cx * k}px ${face.cy * k}px`,
         }}
       />
       <div
@@ -173,6 +137,8 @@ export const MascotShow: React.FC = () => {
           textAlign: "center",
           textShadow: "0 6px 26px rgba(0,0,0,0.45)",
           textTransform: "uppercase",
+          opacity: labelIn,
+          transform: `translateY(${labelY}px)`,
         }}
       >
         {category}
@@ -181,3 +147,187 @@ export const MascotShow: React.FC = () => {
   );
 };
 
+/** Final logo + tagline + URL card. */
+const EndCard: React.FC<{ localFrame: number }> = ({ localFrame }) => {
+  const { fps, width } = useVideoConfig();
+  const f = localFrame;
+
+  const logoSpring = spring({
+    frame: f,
+    fps,
+    config: { damping: 16, stiffness: 110 },
+  });
+  const logoY = interpolate(logoSpring, [0, 1], [46, 0]);
+  const logoBreathe = 1 + Math.sin(f / 34) * 0.012;
+  const logoOpacity = interpolate(f, [0, 10], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const tagDelay = 8;
+  const tagSpring = spring({
+    frame: f - tagDelay,
+    fps,
+    config: { damping: 18, stiffness: 90 },
+  });
+  const tagY = interpolate(tagSpring, [0, 1], [22, 0]);
+  const tagOpacity = interpolate(f, [tagDelay, tagDelay + 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const urlDelay = 18;
+  const urlSpring = spring({
+    frame: f - urlDelay,
+    fps,
+    config: { damping: 14, stiffness: 120 },
+  });
+  const urlY = interpolate(urlSpring, [0, 1], [26, 0]);
+  const urlOpacity = interpolate(f, [urlDelay, urlDelay + 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const urlPulse = 1 + Math.sin(Math.max(0, f - urlDelay) / 11) * 0.018;
+
+  // slow background brighten + drift over the hold
+  const glow = interpolate(f, [0, END_FRAMES], [0.9, 1.25], {
+    extrapolateRight: "clamp",
+  });
+  const glowY = interpolate(f, [0, END_FRAMES], [16, 24], {
+    extrapolateRight: "clamp",
+  });
+
+  const logoW = width * 0.86;
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: `radial-gradient(${120 * glow}% 100% at 50% ${glowY}%, #2f1f63 0%, #171139 55%, #0b0720 100%)`,
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "0 70px",
+      }}
+    >
+      <Img
+        src={staticFile("images/logo.svg")}
+        style={{
+          width: logoW,
+          height: logoW * (922 / 2684),
+          objectFit: "contain",
+          opacity: logoOpacity,
+          transform: `translateY(${logoY}px) scale(${logoBreathe})`,
+        }}
+      />
+
+      {/* Curved tagline — mirrors the app's start screen lockup */}
+      <svg
+        viewBox="-20 24 640 36"
+        style={{
+          width: width * 0.8,
+          height: (width * 0.8 * 36) / 640,
+          marginTop: 6,
+          opacity: tagOpacity,
+          transform: `translateY(${tagY}px)`,
+          overflow: "visible",
+        }}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <path id="tagline-arc" d="M 30 46 Q 300 14 570 46" fill="none" />
+          <filter id="tagline-shadow" x="-20%" y="-80%" width="140%" height="260%">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.45" />
+          </filter>
+        </defs>
+        <text
+          fill="#3fd7de"
+          style={{
+            fontFamily: rubik,
+            fontWeight: 800,
+            fontSize: "24px",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+          }}
+          filter="url(#tagline-shadow)"
+        >
+          <textPath href="#tagline-arc" startOffset="50%" textAnchor="middle">
+            Earth&apos;s Deepest Trivia Source
+          </textPath>
+        </text>
+      </svg>
+
+      <div
+        style={{
+          marginTop: 64,
+          textAlign: "center",
+          opacity: urlOpacity,
+          transform: `translateY(${urlY}px) scale(${urlPulse})`,
+          lineHeight: 1.3,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: rubik,
+            fontWeight: 900,
+            fontSize: 58,
+            color: "#ffffff",
+            letterSpacing: 1,
+          }}
+        >
+          Play now at
+        </div>
+        <div
+          style={{
+            fontFamily: quicksand,
+            fontWeight: 700,
+            fontSize: 66,
+            color: "#ffc922",
+            letterSpacing: 1,
+          }}
+        >
+          www.TRIVIOLIVIA.com
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export const MascotShow: React.FC = () => {
+  const frame = useCurrentFrame();
+
+  const rawIndex = Math.floor(frame / CARD_FRAMES);
+  const index = Math.min(rawIndex, CATEGORIES.length - 1);
+  const local = frame - index * CARD_FRAMES;
+
+  // micro crossfade from the previous card
+  const inOpacity =
+    rawIndex >= CATEGORIES.length
+      ? 1
+      : interpolate(local, [0, XFADE], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        });
+
+  const endLocal = frame - (REEL_FRAMES - END_XFADE);
+  const endOpacity =
+    endLocal <= 0
+      ? 0
+      : interpolate(endLocal, [0, END_XFADE], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        });
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#0b0720" }}>
+      {index > 0 && inOpacity < 1 ? (
+        <Card index={index - 1} frame={frame} opacity={1} />
+      ) : null}
+      <Card index={index} frame={frame} opacity={inOpacity} />
+      {endOpacity > 0 ? (
+        <AbsoluteFill style={{ opacity: endOpacity }}>
+          <EndCard localFrame={Math.max(0, frame - REEL_FRAMES)} />
+        </AbsoluteFill>
+      ) : null}
+    </AbsoluteFill>
+  );
+};
