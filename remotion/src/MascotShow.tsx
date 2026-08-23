@@ -108,7 +108,7 @@ export const MascotShow: React.FC = () => {
       }}
     >
       <Img
-        src={staticFile(`mascots/${fileName(category)}.svg`)}
+        src={staticFile(`mascots-png/${fileName(category)}.png`)}
         style={{
           width: width * 0.82,
           height: height * 0.6,
