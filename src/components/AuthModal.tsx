@@ -89,6 +89,9 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
+        // Force the Google account chooser so users can pick which account
+        // to sign in/up with, rather than silently using the active session.
+        extraParams: { prompt: "select_account" },
       });
       if (result.error) {
         setError("Google sign-in failed. Please try again.");
@@ -272,7 +275,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 type="button"
                 onClick={handleGoogle}
                 disabled={loading}
-                aria-label="Sign in with Google"
+                aria-label={isSignup ? "Sign up with Google" : "Sign in with Google"}
                 className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
@@ -313,7 +316,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                     color: "#E3E3E3",
                   }}
                 >
-                  Sign in with Google
+                  {isSignup ? "Sign up with Google" : "Sign in with Google"}
                 </span>
               </button>
               {/* Sign in with Apple — sized to match Google's pill. */}
@@ -321,7 +324,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 type="button"
                 onClick={handleApple}
                 disabled={loading}
-                aria-label="Sign in with Apple"
+                aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
                 className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
@@ -341,7 +344,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   className="text-white text-[14px] font-medium"
                   style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif" }}
                 >
-                  Sign in with Apple
+                  {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
                 </span>
               </button>
 
