@@ -4,6 +4,10 @@
 
 Move all Google Ads conversion tracking out of the app code and into a GTM container. The app stops knowing about Ads labels entirely — it emits clean semantic events (`game_complete`, `sign_up`, `game_start`, click events) to the data layer, and GTM translates those into Ads conversions. Only `Xo0pCKn31-IcEJr9_sFE` fires on game completion. The two extra labels (`y8ggCNWF6…`, `eqgwCJvR7…`) are dropped entirely.
 
+**All existing event tracking stays active.** `trackGameStart`, `trackGameComplete`, `trackClick`, and every other `trackEvent` call keep firing from the exact same places in the code — they just push to `dataLayer` instead of calling `gtag` directly, so GTM/GA4 keep receiving them. Only the four Ads-label helpers (`fireQuizConversion`, `fireSearchGameConversion`, `fireGameStartConversion`, and the `gtag_report_conversion` snippet) are removed; the sign-up helper is kept and rewired to a `sign_up` dataLayer push.
+
+
+
 ## Prerequisite (user action, outside code)
 
 1. Create a GTM container at tagmanager.google.com for triviolivia.com.
