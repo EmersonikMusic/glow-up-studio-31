@@ -20,16 +20,22 @@ I'll use the site's existing look for everything else: dark indigo background (`
 0.0-2.5s  HOOK      Logo snaps in over drifting ambient blobs; tagline
                     "Earth's Deepest Trivia Source" arcs in.
 2.5-6.0s  FREE      "Free to play. No signup." Big type, mascot pops in,
-                    home screen phone slides up behind.
-6.0-9.5s  CUSTOM    "Make it yours." Customize screen in phone frame;
-                    category / difficulty / era chips stagger in.
-9.5-12.5s PLAY      "Say it out loud." Question screen phone, countdown
-                    ring sweeps, answer reveal snap.
+                    home-screen phone ROTATES IN from off-frame.
+6.0-9.5s  CUSTOM    "Make it yours." Phone spins on its Y axis to reveal
+                    the Customize screen; category / difficulty / era
+                    chips stagger in around it.
+9.5-12.5s PLAY      "Call out your answer — before the timer runs out!"
+                    Phone flips to the question screen, countdown ring
+                    sweeps, answer reveal snap.
 12.5-15s  END CARD  "Ready to play?" + Play Now button + triviolivia.com,
                     logo lockup, gold accent wipe out.
 ```
 
-Motion system: one default entrance (spring scale + rise + blur-to-sharp), gold wipe transitions between scenes, phone mockups on subtle parallax, no static frames. Silent (PMax plays muted by default) — captions/type carry the message.
+Phone motion: the device is a single persistent 3D element in `perspective` space. It arcs in with a spring-driven `rotateY` + `rotateZ` tumble (roughly -75deg to 0deg with a slight overshoot), then each scene change flips it on the Y axis — the screen content swaps at the 90deg point so the flip reads as a real card turn. Between flips it holds a slow idle tilt so nothing is ever static. If you share a motion reference I'll match its arc, spin count and easing.
+
+Copy for the PLAY line is a placeholder to tune — alternatives: "Shout it out before time's up!" / "Beat the buzzer. Say it loud."
+
+Motion system: one default entrance (spring scale + rise + blur-to-sharp), gold wipe transitions between scenes, phone parallax against the type, no static frames. Silent (PMax plays muted by default) — captions/type carry the message.
 
 ## Aspect ratios
 
