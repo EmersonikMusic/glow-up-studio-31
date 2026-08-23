@@ -89,6 +89,9 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
+        // Force the Google account chooser so users can pick which account
+        // to sign in/up with, rather than silently using the active session.
+        extraParams: { prompt: "select_account" },
       });
       if (result.error) {
         setError("Google sign-in failed. Please try again.");
