@@ -344,7 +344,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   className="text-white text-[14px] font-medium"
                   style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif" }}
                 >
-                  Sign in with Apple
+                  {isSignup ? "Sign up with Apple" : "Sign in with Apple"}
                 </span>
               </button>
 
