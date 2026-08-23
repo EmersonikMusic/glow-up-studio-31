@@ -1,31 +1,41 @@
-# Fix: conversion must fire only on game_complete
+# Fix: only one conversion fires on game_complete
 
-## What's actually in the code
+## Where the snippet lives
 
-The Ads conversion snippet is **already** inside the game-complete block — not the start function.
+`gtag('event', 'conversion', {'send_to': 'AW-18392006298/Xo0pCKn31-IcEJr9_sFE'})` is in:
+- `src/lib/conversion.ts` → function `fireQuizConversion()` (lines 43–55).
+- Called at `src/components/TriviaGame.tsx:294`, inside the `isLastNow` (game-complete) branch of `advanceOrFinish`.
 
-- On game **start** (`TriviaGame.tsx:530`): only `trackGameStart()` fires — a plain GA4 event, no `send_to`, not a conversion.
-- On game **complete** (`TriviaGame.tsx:294–296`, the `isLastNow` branch): all three Ads conversions fire.
+It already fires only on game_complete — never on start. The start path (`:530`) calls only `trackGameStart()` (a plain GA4 event, no `send_to`).
 
-So there's nothing to physically move.
+## The real problem
 
-## The real cause
+Two **other** conversions also fire on game_complete, at `TriviaGame.tsx:295–296`:
 
-A "conversion" still shows on `game_start` in GA4 because of a Google-side setting:
+- Line 295: `fireSearchGameConversion()` → `AW-18392006298/y8ggCNWF6OIcEJr9_sFE`
+- Line 296: `fireGameStartConversion()` → `AW-18392006298/eqgwCJvR7uIcEJr9_sFE`
 
-- **`game_start` is marked as a Key Event (conversion) in GA4.** GA4 calls key events "conversions," so it reports `game_start` as a conversion regardless of your code.
-- Or Enhanced Conversions / a Tag Manager trigger is bound to `game_start`.
+You want only the `Xo0pCKn31` snippet to fire on game_complete.
 
-## What I'll change in the code
+## Change
 
-Rename the misleading function so it stops looking like a start trigger:
+`src/components/TriviaGame.tsx` — in the completion branch (`isLastNow`), remove the two extra conversion calls:
 
-- `fireGameStartConversion` → `fireOtherCompletionConversion`
-- Same label (`eqgwCJvR7uIcEJr9_sFE`), same trigger point (game complete only).
+- Remove `fireSearchGameConversion();` (line 295)
+- Remove `fireGameStartConversion();` (line 296)
+- Keep `fireQuizConversion();` (line 294) — the only conversion that fires on game_complete.
+- Keep `trackGameComplete({...})` — the GA4 measurement event stays.
+- Update the import line to drop the two removed functions, keeping only `fireQuizConversion`.
 
-Files: `src/lib/conversion.ts` (rename + comment), `src/components/TriviaGame.tsx` (import + call site).
+`src/lib/conversion.ts` — optionally delete the now-unused `fireSearchGameConversion` and `fireGameStartConversion` functions so they can't be re-added by mistake.
 
-## What you'll change on Google's side
+## What this will NOT change
 
-- GA4 → Admin → Events → turn off "Mark as key event" for `game_start`; set `game_complete` as the key event.
-- Tag Manager: remove any trigger bound to `game_start`.
+- The `Xo0pCKn31` snippet still fires exactly once per completed game.
+- `trackGameStart()` on the start path is untouched (GA4 event, not a conversion).
+- Sign-up conversion is untouched.
+- Labels `y8ggCNWF6…` and `eqgwCJvR7…` no longer fire anywhere.
+
+## What you'll check on Google's side
+
+In GA4: Admin → Events → confirm `game_start` is NOT marked as a key event (GA4 calls key events "conversions"); only `game_complete` should be. That stops GA4 from reporting a "conversion" on game starts that your code never sends.
