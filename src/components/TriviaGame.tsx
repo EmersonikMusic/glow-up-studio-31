@@ -293,6 +293,7 @@ export default function TriviaGame() {
       });
       fireQuizConversion();
       fireSearchGameConversion();
+      fireGameStartConversion();
       setGameState("finished");
       return;
     }
@@ -527,7 +528,6 @@ export default function TriviaGame() {
       setGameState("playing");
       startedAtRef.current = Date.now();
       trackGameStart(newSettings);
-      fireGameStartConversion();
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
