@@ -9,8 +9,10 @@ Before I build, attach:
 - 1-2 mascots you want featured
 - Phone-screen UI captures: Customize Your Experience screen, a question screen, and the home screen
 - Your organic social end-card reference ("Ready to play? visit www.triviolivia.com")
+- Optional but helpful: a motion reference for the phone rotate-in, and your step-by-step "How to Play" references (they'll shape the CUSTOM and PLAY scene copy)
 
 I'll use the site's existing look for everything else: dark indigo background (`240 45% 16%`), gold (`42 100% 55%`) and teal (`185 70% 55%`) accents, Rubik for headings, Quicksand for body, plus the red-to-yellow logo gradient for hero type.
+
 
 ## Story (15s, 30fps)
 
