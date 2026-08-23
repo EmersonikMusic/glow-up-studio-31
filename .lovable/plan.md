@@ -2,16 +2,18 @@
 
 A 15-second kinetic-energy motion graphics ad built in code (Remotion), rendered as MP4 in 1:1, 9:16 and 16:9 from one shared source so all three cuts are visually identical.
 
-## What you need to attach first
+## Assets received
 
-Before I build, attach:
-- Full Triviolivia logo (SVG or high-res PNG)
-- 1-2 mascots you want featured
-- Phone-screen UI captures: Customize Your Experience screen, a question screen, and the home screen
-- Your organic social end-card reference ("Ready to play? visit www.triviolivia.com")
-- Optional but helpful: a motion reference for the phone rotate-in, and your step-by-step "How to Play" references (they'll shape the CUSTOM and PLAY scene copy)
+- `TO_LOGO_FINAL-2.svg` — full logo lockup (hero + end card)
+- `default.svg` — Olivia mascot
+- `TO_UI_StartScreen.png`, `TO_UI_SettingsScreen.png`, `TO_UI_GameScreen.png` — phone-framed UI screens (already in device frames, so they drop straight into the 3D phone element)
+- `PMAX_4x5_A.png` — end-card reference (layout, type hierarchy, feature bullets, Play Now pill)
+- How-to-play carousel screenshot — scene order and copy reference
 
-I'll use the site's existing look for everything else: dark indigo background (`240 45% 16%`), gold (`42 100% 55%`) and teal (`185 70% 55%`) accents, Rubik for headings, Quicksand for body, plus the red-to-yellow logo gradient for hero type.
+Nothing else is blocking. Two things I can't do myself: I can't watch the YouTube reference, so I'll build the phone motion from the description below — if it's off, point me at a timestamp and describe the move. And confirm the end-card CTA line: reference says "READY TO PLAY?" / "TRIVIA. BUILT YOUR WAY." / PLAY NOW / triviolivia.com — I'll use exactly that unless you say otherwise.
+
+Everything else comes from the site's look: dark indigo background (`240 45% 16%`), gold (`42 100% 55%`) and teal (`185 70% 55%`) accents, Rubik headings, Quicksand body, red-to-yellow logo gradient for hero type.
+
 
 
 ## Story (15s, 30fps)
