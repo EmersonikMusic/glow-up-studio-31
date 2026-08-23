@@ -324,7 +324,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 type="button"
                 onClick={handleApple}
                 disabled={loading}
-                aria-label="Sign in with Apple"
+                aria-label={isSignup ? "Sign up with Apple" : "Sign in with Apple"}
                 className="w-full flex items-center justify-center gap-2 rounded-full overflow-hidden transition-all active:scale-95 disabled:opacity-60"
                 style={{
                   height: SOCIAL_BTN_HEIGHT,
