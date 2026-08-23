@@ -189,7 +189,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         }
         // Google Ads conversion: account creation (sign-up).
         if (data?.user) {
-          fireSignUpConversionForUser(data.user);
+          fireSignUpConversionForUser(data.user, "email");
         }
         toast.success("Account created! Check your email to confirm.");
         onOpenChange(false);
