@@ -1,40 +1,42 @@
-# Fix: Ads conversion appearing to fire on game_start
+# Fix: conversion must fire only on game_complete, not game_start
 
-## Verified current state (code)
+## Verified current state (read this turn)
 
-- `TriviaGame.tsx:530` (inside `runFetchAndStart`, the game-start path) calls **only** `trackGameStart(newSettings)`. That emits a GA4 `game_start` event with no `send_to`, so it is **not** a Google Ads conversion.
-- `TriviaGame.tsx:294–296` (inside `advanceOrFinish`, the `isLastNow` game-complete branch) are the **only** places the three Ads conversions fire:
+The Ads conversion snippet is **already** strictly inside the game-complete block — it is NOT in the start function.
+
+- `TriviaGame.tsx:530` (the game-start path, inside `runFetchAndStart`) calls **only** `trackGameStart(newSettings)`. That emits a GA4 `game_start` event with **no `send_to`** — it is a measurement event, not a Google Ads conversion.
+- `TriviaGame.tsx:294–296` (inside `advanceOrFinish`, the `if (isLastNow)` game-complete branch) are the **only** places the three Ads conversions fire:
   - `fireQuizConversion()` → `AW-18392006298/Xo0pCKn31-IcEJr9_sFE`
   - `fireSearchGameConversion()` → `AW-18392006298/y8ggCNWF6OIcEJr9_sFE`
   - `fireGameStartConversion()` → `AW-18392006298/eqgwCJvR7uIcEJr9_sFE`
 
-So **no** `gtag('event','conversion', …)` snippet sits in the start function. The conversion code is already strictly inside the game-complete block.
+Nothing is misplaced, so there is no snippet to physically move.
 
-## Why you still see a "conversion" on game_start in GA4
+## Why a "conversion" still appears on game_start in GA4
 
-This is a GA4 configuration issue, not an app-code issue. Two likely causes (both on Google's side, not changeable from here):
+The cause is on Google's side, not in the app code:
 
-1. **`game_start` is marked as a Key Event (conversion) in GA4.** GA4 calls key events "conversions." If `game_start` is flagged as a key event, GA4 reports it as a conversion on every game start regardless of your snippet.
-   - Fix: GA4 Admin → Events → find `game_start` → toggle off "Mark as key event" (or replace it with `game_complete`).
-2. **Enhanced Conversions / auto-tagging** or a Tag Manager trigger still bound to `game_start`/page view.
+1. **`game_start` is marked as a Key Event (conversion) in GA4.** GA4 calls key events "conversions." If `game_start` is flagged, GA4 reports it as a conversion on every game start regardless of the snippet.
+   - Fix: GA4 Admin → Events → `game_start` → turn off "Mark as key event"; make `game_complete` the key event instead.
+2. **Enhanced Conversions / auto-tagging**, or a Tag Manager trigger still bound to `game_start`/page view.
 
-## Code change to make (optional but recommended)
+## Code change to make (removes the confusion at the source)
 
-Rename the misnamed function so it stops implying a start trigger:
+Rename the misnamed function so it stops implying a start trigger — same label, same trigger point, just an honest name:
 
-- `fireGameStartConversion` → `fireOtherCompletionConversion` (label `eqgwCJvR7uIcEJr9_sFE` stays the same)
-- Update the doc comment in `src/lib/conversion.ts` to state it fires only on game completion.
-- Update the import + call site in `src/components/TriviaGame.tsx` (line 26 import, line 296 call).
+- `fireGameStartConversion` → `fireOtherCompletionConversion` (label `eqgwCJvR7uIcEJr9_sFE` unchanged)
+- `src/lib/conversion.ts`: rename function + update its doc comment to say it fires only on game completion.
+- `src/components/TriviaGame.tsx`: update the import (line 26) and the call site (line 296).
 
-No logic changes — same label, same trigger point, just an honest name.
+No logic changes, no label changes, no new/different trigger points.
 
-## What I will NOT do
+## What this will NOT do
 
-- Move any snippet, because nothing is misplaced.
-- Touch the start path's `trackGameStart` GA4 event (it's a measurement event, not a conversion).
-- Change any label values.
+- Move any snippet (nothing is misplaced).
+- Touch `trackGameStart` on the start path (it's a GA4 event, not a conversion).
+- Change any conversion label values.
 
-## Action on Google's side (you, after approval)
+## After approval — action on your side (Google)
 
-- In GA4: Admin → Events → confirm `game_start` is NOT a key event; make `game_complete` the key event instead.
+- In GA4: Admin → Events → confirm `game_start` is NOT a key event; set `game_complete` as the key event.
 - If you use Tag Manager: remove any trigger bound to `game_start` for the Ads conversion.
