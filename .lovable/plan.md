@@ -26,7 +26,7 @@ Everything else comes from the site's look: dark indigo background (`240 45% 16%
 6.0-9.5s  CUSTOM    "Make it yours." Phone spins on its Y axis to reveal
                     the Customize screen; category / difficulty / era
                     chips stagger in around it.
-9.5-12.5s PLAY      "Call out your answer — before the timer runs out!"
+9.5-12.5s PLAY      "Call out your answer before the timer runs out!"
                     Phone flips to the question screen, countdown ring
                     sweeps, answer reveal snap.
 12.5-15s  END CARD  "Ready to play?" + Play Now button + triviolivia.com,
