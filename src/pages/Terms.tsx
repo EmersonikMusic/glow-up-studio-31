@@ -18,7 +18,7 @@ export default function Terms() {
       "Triviolivia's Terms of Service and Privacy Policy governing use of the Triviolivia trivia app and website.",
     url: "https://triviolivia.com/terms",
     datePublished: "2026-07-11",
-    dateModified: "2026-07-11",
+    dateModified: "2026-08-24",
     publisher: {
       "@type": "Organization",
       name: "Triviolivia",
