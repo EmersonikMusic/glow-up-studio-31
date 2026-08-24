@@ -16,7 +16,7 @@ export default function LegalContent() {
             lineHeight: 1.05,
           }}
         >
-          TERMS OF SERVICE & PRIVACY POLICY
+          TERMS OF SERVICE <br /> & PRIVACY POLICY
         </h1>
         <p className="mt-3 text-sm font-body font-semibold text-white/80">
           Effective Date: August 24, 2026
