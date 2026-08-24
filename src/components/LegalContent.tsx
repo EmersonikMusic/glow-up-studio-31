@@ -8,15 +8,23 @@ export default function LegalContent() {
         </p>
         <h1
           className="text-3xl sm:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight"
-          style={{
-            background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            lineHeight: 1.05,
-          }}
+          style={{ lineHeight: 1.05 }}
         >
-          TERMS OF SERVICE <br /> & PRIVACY POLICY
+          {["TERMS OF SERVICE", "& PRIVACY POLICY"].map((line) => (
+            <span
+              key={line}
+              className="block"
+              style={{
+                background:
+                  "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              {line}
+            </span>
+          ))}
         </h1>
         <p className="mt-3 text-sm font-body font-semibold text-white/80">
           Effective Date: August 24, 2026
