@@ -133,7 +133,7 @@ export default function LegalContent() {
                 <p>We may update this Privacy Policy from time to time. We will notify you of any major changes by posting the new policy on this page and updating the effective date.</p>
               </div>
               <div>
-                <p className="font-black">7. Contact Us</p>
+                <p className="font-black">8. Contact Us</p>
                 <p>If you have any questions about these Terms or our Privacy Policy, please contact us at:</p>
                 <p className="mt-1">
                   Email:{" "}
