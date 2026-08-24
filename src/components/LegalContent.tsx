@@ -19,7 +19,7 @@ export default function LegalContent() {
           TERMS OF SERVICE & PRIVACY POLICY
         </h1>
         <p className="mt-3 text-sm font-body font-semibold text-white/80">
-          Effective Date: July 11, 2026
+          Effective Date: August 24, 2026
         </p>
       </div>
 
@@ -104,11 +104,23 @@ export default function LegalContent() {
                 <p className="mt-1">We only share information with third-party service providers (like hosting platforms or databases) necessary to run the app, or if required by law to comply with legal obligations.</p>
               </div>
               <div>
-                <p className="font-black">4. Data Security & Retention</p>
+                <p className="font-black">4. Analytics and Tracking Technologies</p>
+                <p>We use Google Analytics, a web analytics service provided by Google LLC ("Google"), to understand how visitors use our website and application. Google Analytics uses cookies and similar tracking technologies to collect and analyze data about your interactions with the Service, including page views, session duration, in-app events (such as game starts, game completions, and account sign-ups), device type, browser type, and approximate location derived from your IP address.</p>
+                <p className="mt-1">The information collected by Google Analytics may be associated with your account information when you are signed in, which allows us to link visitation data with your user profile for the purpose of understanding engagement and improving the Service. This association occurs only for signed-in users; anonymous visitors are tracked without a linked account identity.</p>
+                <p className="mt-1">Google may use this data to provide analytics services and may transfer it to servers located outside of Canada. You can learn more about how Google uses data in connection with Google Analytics and how to opt out by reviewing:</p>
+                <ul className="list-disc pl-5 mt-1 flex flex-col gap-1">
+                  <li><span className="font-black">Google's Privacy Policy:</span> <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="font-black underline underline-offset-[3px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors">policies.google.com/privacy</a></li>
+                  <li><span className="font-black">Google Analytics opt-out browser add-on:</span> <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="font-black underline underline-offset-[3px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors">tools.google.com/dlpage/gaoptout</a></li>
+                  <li><span className="font-black">Google Ads Settings (to manage ad personalization):</span> <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="font-black underline underline-offset-[3px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors">adssettings.google.com</a></li>
+                </ul>
+                <p className="mt-1">You can also limit tracking by disabling cookies in your browser, using private/incognito browsing mode, or using a browser with built-in tracking protection.</p>
+              </div>
+              <div>
+                <p className="font-black">5. Data Security & Retention</p>
                 <p>We implement industry-standard security measures to protect your data. We retain your information for as long as your account is active or as needed to provide you with the Service.</p>
               </div>
               <div>
-                <p className="font-black">5. Your Rights & Data Deletion</p>
+                <p className="font-black">6. Your Rights & Data Deletion</p>
                 <p>
                   Depending on your location, you may have the right to access, correct, or delete your personal data. To request the deletion of your account and all associated Google OAuth data, please contact us at{" "}
                   <a href="mailto:mark.mazurek@triviolivia.com" className="font-black underline underline-offset-[3px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors">
@@ -117,11 +129,11 @@ export default function LegalContent() {
                 </p>
               </div>
               <div>
-                <p className="font-black">6. Changes to This Policy</p>
+                <p className="font-black">7. Changes to This Policy</p>
                 <p>We may update this Privacy Policy from time to time. We will notify you of any major changes by posting the new policy on this page and updating the effective date.</p>
               </div>
               <div>
-                <p className="font-black">7. Contact Us</p>
+                <p className="font-black">8. Contact Us</p>
                 <p>If you have any questions about these Terms or our Privacy Policy, please contact us at:</p>
                 <p className="mt-1">
                   Email:{" "}
