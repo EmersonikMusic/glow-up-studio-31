@@ -19,7 +19,7 @@ export default function LegalContent() {
           TERMS OF SERVICE & PRIVACY POLICY
         </h1>
         <p className="mt-3 text-sm font-body font-semibold text-white/80">
-          Effective Date: July 11, 2026
+          Effective Date: August 24, 2026
         </p>
       </div>
 
