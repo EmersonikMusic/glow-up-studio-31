@@ -120,7 +120,7 @@ export default function LegalContent() {
                 <p>We implement industry-standard security measures to protect your data. We retain your information for as long as your account is active or as needed to provide you with the Service.</p>
               </div>
               <div>
-                <p className="font-black">5. Your Rights & Data Deletion</p>
+                <p className="font-black">6. Your Rights & Data Deletion</p>
                 <p>
                   Depending on your location, you may have the right to access, correct, or delete your personal data. To request the deletion of your account and all associated Google OAuth data, please contact us at{" "}
                   <a href="mailto:mark.mazurek@triviolivia.com" className="font-black underline underline-offset-[3px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors">
