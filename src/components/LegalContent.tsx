@@ -129,7 +129,7 @@ export default function LegalContent() {
                 </p>
               </div>
               <div>
-                <p className="font-black">6. Changes to This Policy</p>
+                <p className="font-black">7. Changes to This Policy</p>
                 <p>We may update this Privacy Policy from time to time. We will notify you of any major changes by posting the new policy on this page and updating the effective date.</p>
               </div>
               <div>
