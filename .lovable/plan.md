@@ -1,71 +1,111 @@
-# Google Ads conversion fires on game_start, not game_complete
+# Fix event tracking: allowlist drops most clicks; conversion fires on start
 
-## Root cause (verified live)
+## What the live traces proved
 
-A deep live-site trace against `www.triviolivia.com` confirms the bug. On the
-wall clock, in order:
+Three traces against `www.triviolivia.com` settle all three of your points.
 
-1. The `game_start` dataLayer event is pushed (the only custom event in the run).
-2. The Google Ads conversion pixel immediately fires:
-   - `https://www.googleadservices.com/pagead/conversion/18392006298/?...&en=conversion...`
-   - `https://googleads.g.doubleclick.net/pagead/viewthroughconversion/18392006298/?...&en=conversion...`
+### 1. `game_start` is already correct — no code change needed
 
-No `game_complete` event was ever pushed during that run (the game did not
-finish), yet the conversion fired. The conversion is gated on **game_start**,
-not on game completion.
+`game_start` fired **only** after clicking PLAY, never on page load. In the
+trace, the page sat loaded for 2.5s with zero custom events; `game_start`
+appeared only after the click. In `src/components/TriviaGame.tsx` it is called
+at line 528 inside `runFetchAndStart`, after questions are fetched and
+`setGameState("playing")` — i.e. only when gameplay actually begins. This path
+is shared by Quick Play, Custom, and Kids Mode.
 
-This is the source of the symptom you reported — "conversion firing when game
-start happens" and the mismatch between GA4 plays and recorded completions.
-Every started game registers a Google Ads conversion, including abandoned ones.
+### 2. `game_complete` IS firing correctly — no code change needed
 
-## Why the app code is NOT the cause
+A full played-to-the-end round pushed:
+`game_start → click_skip_question ×9 → game_complete`
 
-`src/lib/analytics.ts` and `src/lib/conversion.ts` are correct and unchanged:
+So the app emits `game_complete` reliably on completion.
 
-- `trackGameStart` pushes only the `game_start` event (GA4 funnel metric, no
-  conversion label in code).
-- `trackGameComplete` pushes `game_complete` exactly once per completed round,
-  behind a sessionStorage dedupe guard. No `game_complete` was emitted during the
-  trace because the game never finished — yet the conversion still fired.
-- The codebase contains zero Ads labels. All conversion definitions live in GTM.
+### 3. The conversion fires TWICE — at start AND at complete (GTM bug)
 
-So the misfire is entirely a GTM trigger configuration: the Google Ads
-Conversion Tracking tag is firing on the `game_start` custom event (or a
-pageview/consent trigger that happens to coincide with start) instead of the
-`game_complete` custom event.
+Counting Google Ads `en=conversion` pixels in the completed-game trace:
+- **4 conversion pixels at game start**
+- **8 conversion pixels total** by the end
 
-## The fix (GTM dashboard — no code change)
+The conversion tag is firing on `game_start` *in addition to* `game_complete`.
+That is why your conversion numbers look inflated and untrustworthy.
 
-In your GTM container `GTM-N8WKMK2M`:
+### 4. Why "skip question etc." isn't tracking — the allowlist
 
-1. Open **Triggers**. Find the trigger attached to the Google Ads Conversion
-   Tracking tag for conversion ID `AW-18392006298` / label
-   `Xo0pCKn31-IcEJr9_sFE`.
-2. Confirm what it currently fires on. It is expected to be set to a Custom
-   Event named `game_start` (the bug) rather than `game_complete`.
-3. Change that trigger's Custom Event name from `game_start` to
-   `game_complete` (use "Equals to" matching, Custom Event type).
-4. Delete or disable any other trigger on the same tag that could cause an
-   early fire (e.g. a Page View / DOM Ready / All Pages trigger).
-5. Preview in GTM (Preview mode): start a game and verify NO conversion fires at
-   start. Then complete a full round and verify the conversion fires exactly
-   once, only when the `game_complete` dataLayer event pushes.
-6. Publish the container.
+`src/lib/analytics.ts` has `ALLOWED_CLICK_EVENTS`, a 14-name hardcoded set.
+`trackClick` silently drops any event not in it. There are ~34 `trackClick`
+call sites in the app, so most are discarded before ever reaching the dataLayer.
 
-After publishing, re-run this trace: start a game and confirm zero
-`en=conversion` requests until the round is fully completed.
+Proven live: clicking **Skip** pushed `click_skip_question` (it is on the list),
+but clicking **Pause** pushed nothing at all (it is not).
 
-## Why no code change is proposed
+Currently dropped events include:
 
-The app already emits exactly the right semantic events (`game_start` for the
-funnel, `game_complete` for conversions). Moving any conversion logic back into
-the code would undo the GTM migration. The single defect is the GTM trigger's
-event name, which only you can edit in the GTM dashboard.
+```text
+click_pause              click_resume
+click_sign_in_google     click_sign_in_apple
+click_sign_up_email      click_sign_in_email
+click_open_auth_modal    click_privacy_policy
+click_terms_home         click_review_play_again
+submit_question_ratings  about_close
+how_to_play_close        privacy_close
+profile_open             profile_back
+profile_sign_out         profile_username_save
+profile_delete_account   settings_back
+settings_section_*_open / _close
+plus dynamic cta_primary_* / cta_secondary__* names
+```
 
-## Verification (after the GTM fix)
+Note `click_skip_question` DOES reach the dataLayer. If it is missing from your
+reports, that is the GTM side — see below.
 
-- Live trace: a started-but-uncompleted game fires zero conversion pixels.
-- Live trace: a fully completed game fires the conversion pixel exactly once,
-  coincident with the `game_complete` dataLayer push.
-- GA4 still receives `game_start` for funnel measurement; only `game_complete`
-  produces an Ads conversion.
+## Two separate layers, two separate fixes
+
+The app is the **sender**; GTM is the **router**. An event must clear both.
+
+```text
+app trackClick() --[allowlist]--> dataLayer --[GTM tag+trigger]--> GA4 / Ads
+        ^ fix #1 (code)                          ^ fix #2 (GTM)
+```
+
+## Fix #1 — code: stop dropping events
+
+In `src/lib/analytics.ts`, remove the `ALLOWED_CLICK_EVENTS` gate so every
+`trackClick` call reaches the dataLayer. GTM already decides which events matter
+via its own triggers, so a second hardcoded filter in the app only creates
+silent data loss that requires a code deploy to change.
+
+`trackClick` becomes a thin pass-through to `trackEvent`, keeping the existing
+console `[GA4]` logging and the try/catch guard. No call sites change, and the
+funnel events (`game_start`, `game_complete`) and their dedupe logic are
+untouched.
+
+Also normalize the auto-generated CTA names: `PrimaryCTA`/`SecondaryCTA` derive
+an event name from `trackId`, then `aria-label`, then the raw button text. Raw
+text can produce inconsistent names with spaces and capitals, so the derived id
+will be lowercased with non-alphanumerics collapsed to underscores, giving
+stable names like `cta_primary_start_game`.
+
+## Fix #2 — GTM: fix the trigger and add the missing tags
+
+In container `GTM-N8WKMK2M`:
+
+1. **Stop the double conversion.** Open the Google Ads Conversion Tracking tag
+   for `AW-18392006298` / label `Xo0pCKn31-IcEJr9_sFE`. Remove the trigger that
+   fires it on `game_start` (and any All Pages / Page View trigger). Leave
+   exactly one trigger: Custom Event, "Equals to", `game_complete`.
+2. **Add a GA4 event tag for the click events.** GA4 will not report
+   `click_skip_question` or any other custom event unless a tag sends it. The
+   efficient approach is one GA4 Event tag with Event Name set to the built-in
+   `{{Event}}` variable, fired by a Custom Event trigger using **regex match**
+   on something like `^(click_|cta_|settings_|profile_|submit_)` — this covers
+   every current and future click event with a single tag.
+3. Verify in GTM Preview, then publish.
+
+## Verification
+
+- Start a game: `game_start` pushes and **zero** conversion pixels fire.
+- Complete a game: `game_complete` pushes and the conversion pixel fires
+  **exactly once**.
+- Click Pause, Skip, Settings, and a CTA: each appears in the dataLayer (after
+  fix #1) and in GTM Preview (after fix #2).
+- `tsgo` typecheck passes.
