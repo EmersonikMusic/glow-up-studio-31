@@ -226,7 +226,7 @@ const EndCard: React.FC<{ localFrame: number }> = ({ localFrame }) => {
         style={{
           width: width * 0.8,
           height: (width * 0.8 * 36) / 640,
-          marginTop: 12,
+          marginTop: -10,
           opacity: tagOpacity,
           transform: `translateY(${tagY}px)`,
           overflow: "visible",
