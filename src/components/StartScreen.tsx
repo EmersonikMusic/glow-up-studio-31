@@ -93,7 +93,7 @@ export default function StartScreen({ onStart, onStartKids, onAbout, onHowToPlay
 
           {/* Curved tagline */}
           <div
-            className="w-full max-w-xl mt-2 animate-fade-in"
+            className="w-full max-w-xl -mt-3 animate-fade-in"
             style={{ animationDelay: "90ms" }}
             aria-hidden="true"
           >
