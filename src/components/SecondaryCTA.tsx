@@ -9,13 +9,17 @@ export interface SecondaryCTAProps extends ButtonHTMLAttributes<HTMLButtonElemen
 const SecondaryCTA = forwardRef<HTMLButtonElement, SecondaryCTAProps>(
   ({ className, children, style, onClick, trackId, ...props }, ref) => {
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-      const id =
+      const rawId =
         trackId ||
         (props["aria-label"] as string | undefined) ||
         (typeof children === "string" ? children : "secondary_cta");
+      // Normalize so button text casing/spacing can't change the event name:
+      // "Customize Game" and "CUSTOMIZE GAME" both become "customize_game".
+      const id = rawId.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
       trackClick(`cta_secondary__${id}`);
       onClick?.(e);
     };
+
     return (
       <button
         ref={ref}
