@@ -1,120 +1,126 @@
-# Fix click-event tracking: remove the allowlist that drops most events
+# Track engagement events via a single `user_engagement_action` dataLayer push
+
+## Goal
+
+Send 11 specific interactions to GA4 as **engagement events only** — never
+conversions — using one consistent dataLayer shape so a single GTM tag handles
+all of them:
+
+```js
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({
+  event: 'user_engagement_action',
+  action_name: 'click_skip_question'
+});
+```
 
 ## Scope note
 
-The Google Ads conversion behaviour is **intentional and stays as-is**: one
-conversion fires on `game_start` and another on `game_complete`. Nothing in this
-plan changes the conversion tags, their triggers, or the `game_start` /
-`game_complete` events. This plan is only about the click events that are being
-silently dropped.
+The Google Ads conversion behaviour stays exactly as-is: one conversion on
+`game_start`, another on `game_complete`. This plan does not touch the
+conversion tags, their triggers, or the `game_start` / `game_complete` events.
 
-## What the live traces proved
-
-Three traces against `www.triviolivia.com`:
-
-1. **`game_start` fires only on click**, never on page load. It is called in
-   `src/components/TriviaGame.tsx` (line 528) inside `runFetchAndStart`, after
-   questions load and `setGameState("playing")` — the shared chokepoint for
-   Quick Play, Custom, and Kids Mode. Correct as-is.
-2. **`game_complete` fires reliably** on a played-to-the-end round. Correct as-is.
-3. **Click events are being dropped by the app.** Clicking **Skip** pushed
-   `click_skip_question` (it is allowlisted), but clicking **Pause** pushed
-   nothing at all (it is not).
-
-## Root cause
-
-`src/lib/analytics.ts` defines `ALLOWED_CLICK_EVENTS`, a hardcoded 14-name set.
-`trackClick` returns early and discards any event not in it. The app has ~34
-`trackClick` call sites, so roughly 20 are thrown away before reaching the
-dataLayer.
-
-Currently allowed (14):
+## The 11 tracked actions
 
 ```text
-cta_primary_settings_apply      click_about
-click_how_to_play               click_settings
-cta_primary_result_play_again   cta_secondary__customize_game
-click_skip_question             click_back_question
-click_review_game               click_forgot_password
-click_send_reset_link           click_resend_reset_link
-password_reset_success          click_continue_after_reset
+cta_primary_settings_apply       click_about
+click_how_to_play                click_settings
+cta_primary_result_play_again    cta_secondary__customize_game
+click_skip_question              click_back_question
+click_review_game                click_pause
+click_resume
 ```
 
-Currently dropped (~20):
+`click_pause` and `click_resume` already have `trackClick` calls in
+`src/components/GameFooter.tsx` (line 138) but are currently dropped by the
+allowlist — adding them to the list is all that is needed.
+
+## Decision to confirm: five events drop off the list
+
+The current allowlist contains five password-reset events that are **not** in
+your list. Following your list exactly means they stop being sent to GA4:
 
 ```text
-click_pause                click_resume
-click_sign_in_google       click_sign_in_apple
-click_sign_up_email        click_sign_in_email
-click_open_auth_modal      click_privacy_policy
-click_terms_home           click_review_play_again
-submit_question_ratings    about_close
-how_to_play_close          privacy_close
-profile_open               profile_back
-profile_sign_out           profile_username_save
-profile_delete_account     settings_back
-settings_section_*_open / _close
-plus dynamic cta_primary_* / cta_secondary__* names
+click_forgot_password      click_send_reset_link
+click_resend_reset_link    password_reset_success
+click_continue_after_reset
 ```
 
-## Two layers, two fixes
+The plan implements your list as written (these five stop tracking). Say the
+word if you want them kept and they will be added back to the set.
 
-The app is the **sender**; GTM is the **router**. An event must clear both.
+All other `trackClick` call sites in the app (auth, profile, settings sections,
+about/privacy close, etc.) remain untracked, as they are today.
 
-```text
-app trackClick() --[allowlist]--> dataLayer --[GTM tag+trigger]--> GA4
-        ^ fix #1 (code)                          ^ fix #2 (GTM)
+## Code changes
+
+### `src/lib/analytics.ts`
+
+1. Replace the contents of `ALLOWED_CLICK_EVENTS` with exactly the 11 names
+   above, and rename it `ENGAGEMENT_ACTIONS` to reflect its new purpose.
+2. Change `trackClick` so allowlisted events push the shared engagement shape
+   instead of pushing the raw event name:
+
+```ts
+export function trackClick(eventName: string, params?: GtagParams): void {
+  if (!ENGAGEMENT_ACTIONS.has(eventName)) return;
+  trackEvent("user_engagement_action", { action_name: eventName, ...params });
+}
 ```
 
-This explains why `click_skip_question` is missing from your reports even though
-it clears the allowlist: it reaches the dataLayer, but GTM has no tag to forward
-it to GA4.
+`trackEvent` already performs `window.dataLayer = window.dataLayer || []`, the
+`dataLayer.push({ event, ...params })`, the `[GA4]` console log, and the
+try/catch guard — so the emitted object is exactly
+`{ event: 'user_engagement_action', action_name: '<name>' }`.
 
-## Fix #1 — code: stop dropping events
+No call sites change: every component keeps calling
+`trackClick("click_pause")` and the shared shape is applied centrally.
 
-In `src/lib/analytics.ts`:
+### `src/components/PrimaryCTA.tsx` and `src/components/SecondaryCTA.tsx`
 
-- Delete the `ALLOWED_CLICK_EVENTS` set.
-- Reduce `trackClick` to a thin pass-through to `trackEvent`, keeping the
-  existing `[GA4]` console logging and try/catch guard.
+These derive their id from `trackId` → `aria-label` → raw button text, so raw
+text can produce names like `cta_primary_START GAME` that never match the
+allowlist. Lowercase the derived id and collapse non-alphanumeric runs to
+underscores, so `cta_primary_settings_apply` and
+`cta_primary_result_play_again` match reliably regardless of button casing.
 
-GTM already decides which events matter via its own triggers, so a second
-hardcoded filter in the app only causes silent data loss that needs a code
-deploy to change. No call sites change.
+### Unchanged
 
-In `src/components/PrimaryCTA.tsx` and `src/components/SecondaryCTA.tsx`:
+`trackGameStart`, `trackGameComplete`, `beginRound`, the round dedupe logic, and
+`src/lib/conversion.ts` are all untouched.
 
-- Normalize the derived event id. Both fall back to `trackId` → `aria-label` →
-  raw button text, and raw text produces inconsistent names with spaces and
-  capitals (e.g. `cta_primary_START GAME`). Lowercase the id and collapse
-  non-alphanumeric runs to underscores, yielding stable names like
-  `cta_primary_start_game`.
+## GTM configuration (single shared tag)
 
-`trackGameStart`, `trackGameComplete`, `beginRound`, and the round dedupe logic
-are untouched.
+In container `GTM-N8WKMK2M`:
 
-## Fix #2 — GTM: add a tag for the click events
+1. **Variable** — Data Layer Variable, name `DLV - action_name`, data layer
+   variable name `action_name`.
+2. **Trigger** — Custom Event, event name `user_engagement_action`. One trigger
+   covers all 11 actions.
+3. **Tag** — Google Analytics: GA4 Event
+   - Measurement ID `G-7T5D6V0V38`
+   - Event Name: `user_engagement_action`
+   - Event Parameter: `action_name` = `{{DLV - action_name}}`
+   - Trigger: the custom event trigger above
+4. Publish.
 
-In container `GTM-N8WKMK2M`, add **one** GA4 Event tag that forwards all click
-events, rather than one tag per event:
+**Keeping them non-conversions:** in GA4, an event only becomes a conversion if
+you explicitly toggle it on under Admin → Events → "Mark as key event". Leave
+`user_engagement_action` toggled **off**. Because all 11 actions share one GA4
+event name, there is a single toggle to keep off — they cannot accidentally
+become conversions individually.
 
-- Tag type: Google Analytics: GA4 Event
-- Measurement ID: `G-7T5D6V0V38`
-- Event Name: the built-in `{{Event}}` variable (passes the name through)
-- Trigger: Custom Event, **regex match**, pattern
-  `^(click_|cta_|settings_|profile_|submit_|about_|privacy_|how_to_play_|password_)`
-
-This covers every current and future click event with a single tag. Verify in
-GTM Preview, then publish.
-
-Do **not** touch the Google Ads conversion tags or their `game_start` /
-`game_complete` triggers.
+To break the actions out in reports, register `action_name` as a custom
+dimension (Admin → Custom definitions → Create custom dimension, event-scoped,
+parameter `action_name`).
 
 ## Verification
 
-- Click Pause, Resume, sign-in buttons, profile actions, and settings sections:
-  each now appears in the dataLayer (after fix #1).
-- Confirm in GTM Preview that those events reach GA4 (after fix #2).
-- Confirm the conversion behaviour is unchanged: one conversion on start, one on
-  complete.
+- Click each of the 11 controls and confirm the console shows
+  `[GA4] user_engagement_action { action_name: '<name>' }`.
+- Confirm the dataLayer object is exactly
+  `{ event: 'user_engagement_action', action_name: '<name>' }`.
+- Confirm non-listed clicks (e.g. `profile_open`) still push nothing.
+- Confirm in GTM Preview that one GA4 tag fires per action.
+- Confirm conversions still fire on start and on complete, unchanged.
 - `tsgo` typecheck passes.
