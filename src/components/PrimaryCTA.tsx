@@ -10,14 +10,18 @@ export interface PrimaryCTAProps extends ButtonHTMLAttributes<HTMLButtonElement>
 const PrimaryCTA = forwardRef<HTMLButtonElement, PrimaryCTAProps>(
   ({ className, children, style, onClick, trackId, ...props }, ref) => {
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-      const id =
+      const rawId =
         trackId ||
         (props["aria-label"] as string | undefined) ||
         (typeof children === "string" ? children : "primary_cta");
+      // Normalize so button text casing/spacing can't change the event name:
+      // "Play Again" and "PLAY AGAIN" both become "play_again".
+      const id = rawId.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
       const eventName = `cta_primary_${id}`;
       trackClick(eventName);
       onClick?.(e);
     };
+
     return (
       <button
         ref={ref}
