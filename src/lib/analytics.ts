@@ -2,10 +2,15 @@
  * Lightweight wrapper around the Google Tag Manager dataLayer loaded in
  * index.html. Safe to call from any component — no-ops outside the browser.
  *
- * Only events in ALLOWED_CLICK_EVENTS (plus the funnel events `game_start`
- * and `game_complete`) are pushed. Each fires as its own named dataLayer
- * event, so GTM can trigger GA4 tags (and any Ads conversion tags) on them
- * without any conversion labels living in the app code.
+ * Engagement clicks (ENGAGEMENT_ACTIONS) are all emitted under a single
+ * shared event name, `user_engagement_action`, with the specific control
+ * carried in the `action_name` parameter. One GTM trigger + one GA4 tag
+ * therefore covers every engagement interaction, and because they share a
+ * single GA4 event name they can never be individually flipped into
+ * conversions.
+ *
+ * The funnel events `game_start` and `game_complete` keep their own dedicated
+ * event names — the Google Ads conversion tags in GTM trigger on those.
  */
 
 
@@ -13,7 +18,14 @@ import type { GameSettings } from "@/data/gameOptions";
 
 type GtagParams = Record<string, unknown>;
 
-const ALLOWED_CLICK_EVENTS = new Set<string>([
+/** The shared GA4 event name every engagement click is reported under. */
+const ENGAGEMENT_EVENT = "user_engagement_action";
+
+/**
+ * Interactions reported to GA4 as engagement (never conversions). Anything
+ * not listed here is silently dropped so the GA4 property stays focused.
+ */
+const ENGAGEMENT_ACTIONS = new Set<string>([
   "cta_primary_settings_apply",
   "click_about",
   "click_how_to_play",
@@ -23,11 +35,8 @@ const ALLOWED_CLICK_EVENTS = new Set<string>([
   "click_skip_question",
   "click_back_question",
   "click_review_game",
-  "click_forgot_password",
-  "click_send_reset_link",
-  "click_resend_reset_link",
-  "password_reset_success",
-  "click_continue_after_reset",
+  "click_pause",
+  "click_resume",
 ]);
 
 export function trackEvent(name: string, params?: GtagParams): void {
@@ -46,13 +55,16 @@ export function trackEvent(name: string, params?: GtagParams): void {
 
 
 /**
- * Emit a click as its own named GA4 event. Names not in the allowlist
- * are silently dropped so the GA4 property stays limited to key events.
+ * Report an engagement interaction. Emits the shared
+ * `user_engagement_action` event with `action_name` set to the control id,
+ * e.g. { event: 'user_engagement_action', action_name: 'click_skip_question' }.
+ * Names outside ENGAGEMENT_ACTIONS are silently dropped.
  */
 export function trackClick(eventName: string, params?: GtagParams): void {
-  if (!ALLOWED_CLICK_EVENTS.has(eventName)) return;
-  trackEvent(eventName, params);
+  if (!ENGAGEMENT_ACTIONS.has(eventName)) return;
+  trackEvent(ENGAGEMENT_EVENT, { action_name: eventName, ...(params ?? {}) });
 }
+
 
 // ---------- Funnel events ----------
 
