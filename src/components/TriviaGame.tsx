@@ -4,6 +4,7 @@ import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
+import { isKidsPreset, settingsForPreset, type PlayPreset } from "@/data/playSlugs";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import { useSound } from "@/hooks/useSound";
 
