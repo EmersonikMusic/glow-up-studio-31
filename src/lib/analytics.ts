@@ -37,6 +37,7 @@ const ENGAGEMENT_ACTIONS = new Set<string>([
   "click_review_game",
   "click_pause",
   "click_resume",
+  "cta_primary_landing_play",
 ]);
 
 export function trackEvent(name: string, params?: GtagParams): void {
