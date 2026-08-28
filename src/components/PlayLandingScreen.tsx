@@ -4,7 +4,6 @@ import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import PrimaryCTA from "./PrimaryCTA";
 import LegalFooter from "./LegalFooter";
-import logoSm from "@/assets/TO_logo_sm_clr.svg";
 import { useSound } from "@/hooks/useSound";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GameSettings } from "@/data/gameOptions";
@@ -127,7 +126,6 @@ export default function PlayLandingScreen({
               to="/"
               className="howto-link inline-flex items-center gap-2 text-xs font-body font-semibold underline underline-offset-[5px] text-white/80 hover:text-[hsl(185_70%_55%)] transition-colors"
             >
-              <img src={logoSm} alt="" aria-hidden="true" className="w-4 h-4" />
               Play all categories
             </Link>
           </div>
