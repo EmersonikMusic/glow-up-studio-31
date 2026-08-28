@@ -15,6 +15,7 @@ import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
+import PlayLandingScreen from "./PlayLandingScreen";
 import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import PrivacyScreen from "./PrivacyScreen";
