@@ -631,21 +631,36 @@ export default function TriviaGame({ preset }: TriviaGameProps = {}) {
   if (gameState === "start") {
     return (
       <>
-        <StartScreen
-          onStart={handleStart}
-          onStartKids={handleStartKids}
-          onAbout={handleOpenAbout}
-          onHowToPlay={() => setShowHowToPlay(true)}
-          onPrivacy={() => setShowPrivacy(true)}
-          onApply={handleApply}
-          panelOpen={panelOpen}
-          onPanelToggle={() => setPanelOpen((v) => !v)}
-          onPanelClose={() => setPanelOpen(false)}
-          onOpenProfile={() => setProfileOpen(true)}
-          loading={loading}
-          customized={hasCustomized}
-        />
-        {showAbout && <AboutScreen onClose={handleCloseAbout} />}
+        {preset ? (
+          <PlayLandingScreen
+            preset={preset}
+            onStart={handleStart}
+            onAbout={handleOpenAbout}
+            onHowToPlay={() => setShowHowToPlay(true)}
+            onPrivacy={() => setShowPrivacy(true)}
+            onApply={handleApply}
+            panelOpen={panelOpen}
+            onPanelToggle={() => setPanelOpen((v) => !v)}
+            onPanelClose={() => setPanelOpen(false)}
+            onOpenProfile={() => setProfileOpen(true)}
+            loading={loading}
+          />
+        ) : (
+          <StartScreen
+            onStart={handleStart}
+            onStartKids={handleStartKids}
+            onAbout={handleOpenAbout}
+            onHowToPlay={() => setShowHowToPlay(true)}
+            onPrivacy={() => setShowPrivacy(true)}
+            onApply={handleApply}
+            panelOpen={panelOpen}
+            onPanelToggle={() => setPanelOpen((v) => !v)}
+            onPanelClose={() => setPanelOpen(false)}
+            onOpenProfile={() => setProfileOpen(true)}
+            loading={loading}
+            customized={hasCustomized}
+          />
+        )}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
         {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
         <ProfilePanel
