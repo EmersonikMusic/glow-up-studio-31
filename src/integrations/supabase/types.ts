@@ -50,6 +50,45 @@ export type Database = {
         }
         Relationships: []
       }
+      game_starts: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          is_custom: boolean
+          is_kids_mode: boolean
+          is_minimum_timer: boolean
+          is_quickplay: boolean
+          settings_code: string
+          started_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          is_custom?: boolean
+          is_kids_mode?: boolean
+          is_minimum_timer?: boolean
+          is_quickplay?: boolean
+          settings_code: string
+          started_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          is_custom?: boolean
+          is_kids_mode?: boolean
+          is_minimum_timer?: boolean
+          is_quickplay?: boolean
+          settings_code?: string
+          started_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
