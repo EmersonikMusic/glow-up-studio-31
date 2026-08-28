@@ -575,11 +575,14 @@ export default function TriviaGame({ preset }: TriviaGameProps = {}) {
 
   const handleStart = useCallback(async () => {
     if (loading) return;
-    setKidsMode(false);
+    // A Kids landing page starts from the Kids-only pool; everything else
+    // (including category/era/difficulty presets) is a normal Quick Play.
+    const startKids = isKidsPreset(preset);
+    setKidsMode(startKids);
     setPanelOpen(false);
     clearAnswerTimer();
-    await runFetchAndStart(settings, { kidsMode: false });
-  }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
+    await runFetchAndStart(settings, { kidsMode: startKids });
+  }, [loading, settings, clearAnswerTimer, runFetchAndStart, preset]);
 
   const handleStartKids = useCallback(async () => {
     if (loading) return;
