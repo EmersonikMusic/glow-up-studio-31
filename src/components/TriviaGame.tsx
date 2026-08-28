@@ -661,6 +661,7 @@ export default function TriviaGame({ preset }: TriviaGameProps = {}) {
             customized={hasCustomized}
           />
         )}
+        {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
         {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}
         <ProfilePanel
