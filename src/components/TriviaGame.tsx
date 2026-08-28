@@ -23,6 +23,7 @@ import BadgeToast from "./BadgeToast";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { handleGameCompletion, handleAnonymousGameCompletion } from "@/lib/gameCompletion";
+import { recordGameStart } from "@/lib/gameStart";
 
 import type { GameSessionData } from "@/lib/badgeEvaluator";
 
@@ -526,6 +527,16 @@ export default function TriviaGame() {
       startedAtRef.current = Date.now();
       beginRound();
       trackGameStart(newSettings);
+      // Record the start once per round so the DB start count lines up with GA4.
+      const startKidsMode = opts.kidsMode === true;
+      recordGameStart({
+        userId: currentUser?.id ?? null,
+        settings: newSettings,
+        isKidsMode: startKidsMode,
+        isQuickplay: !hasCustomized && !startKidsMode,
+        isCustom: hasCustomized && !startKidsMode,
+        isMinimumTimer: newSettings.timePerQuestion <= 5 && newSettings.timePerAnswer <= 5,
+      });
       deferCountdown(newSettings.timePerQuestion);
     } catch (err) {
       console.error("fetchAndStartGame failed:", err);
