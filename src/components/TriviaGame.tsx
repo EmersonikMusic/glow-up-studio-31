@@ -97,7 +97,16 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
 
 type GameState = "start" | "loading" | "playing" | "answered" | "finished";
 
-export default function TriviaGame() {
+interface TriviaGameProps {
+  /**
+   * Themed ad-landing preset (/play/<slug>). When set, the initial settings
+   * narrow one filter axis to the preset value and the start screen is
+   * replaced by the landing screen.
+   */
+  preset?: PlayPreset;
+}
+
+export default function TriviaGame({ preset }: TriviaGameProps = {}) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [questionStatuses, setQuestionStatuses] = useState<("played" | "skipped")[]>([]);
@@ -105,13 +114,13 @@ export default function TriviaGame() {
   const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
-  const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<GameSettings>(() => settingsForPreset(preset));
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
-  const [kidsMode, setKidsMode] = useState(false);
+  const [kidsMode, setKidsMode] = useState(() => isKidsPreset(preset));
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
