@@ -4,6 +4,7 @@ import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
+import { isKidsPreset, settingsForPreset, type PlayPreset } from "@/data/playSlugs";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import { useSound } from "@/hooks/useSound";
 
@@ -14,6 +15,7 @@ import QuestionCard from "./QuestionCard";
 import GameFooter from "./GameFooter";
 import ResultScreen from "./ResultScreen";
 import StartScreen from "./StartScreen";
+import PlayLandingScreen from "./PlayLandingScreen";
 import AboutScreen from "./AboutScreen";
 import HowToPlayScreen from "./HowToPlayScreen";
 import PrivacyScreen from "./PrivacyScreen";
@@ -97,7 +99,16 @@ function MilestoneParticle({ milestoneKey }: { milestoneKey: number }) {
 
 type GameState = "start" | "loading" | "playing" | "answered" | "finished";
 
-export default function TriviaGame() {
+interface TriviaGameProps {
+  /**
+   * Themed ad-landing preset (/play/<slug>). When set, the initial settings
+   * narrow one filter axis to the preset value and the start screen is
+   * replaced by the landing screen.
+   */
+  preset?: PlayPreset;
+}
+
+export default function TriviaGame({ preset }: TriviaGameProps = {}) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [questionStatuses, setQuestionStatuses] = useState<("played" | "skipped")[]>([]);
@@ -105,13 +116,13 @@ export default function TriviaGame() {
   const [loading, setLoading] = useState(false);
   const [gameState, setGameState] = useState<GameState>("start");
   const [animKey, setAnimKey] = useState(0);
-  const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<GameSettings>(() => settingsForPreset(preset));
   const [paused, setPaused] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
-  const [kidsMode, setKidsMode] = useState(false);
+  const [kidsMode, setKidsMode] = useState(() => isKidsPreset(preset));
   
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -565,11 +576,14 @@ export default function TriviaGame() {
 
   const handleStart = useCallback(async () => {
     if (loading) return;
-    setKidsMode(false);
+    // A Kids landing page starts from the Kids-only pool; everything else
+    // (including category/era/difficulty presets) is a normal Quick Play.
+    const startKids = isKidsPreset(preset);
+    setKidsMode(startKids);
     setPanelOpen(false);
     clearAnswerTimer();
-    await runFetchAndStart(settings, { kidsMode: false });
-  }, [loading, settings, clearAnswerTimer, runFetchAndStart]);
+    await runFetchAndStart(settings, { kidsMode: startKids });
+  }, [loading, settings, clearAnswerTimer, runFetchAndStart, preset]);
 
   const handleStartKids = useCallback(async () => {
     if (loading) return;
@@ -593,12 +607,13 @@ export default function TriviaGame() {
     setQuestionIndex(0);
     setScore(0);
     setActiveQuestions([]);
-    setKidsMode(false);
+    setKidsMode(isKidsPreset(preset));
     setCountdown(settings.timePerQuestion);
     setGameState("start");
-    setPanelOpen(!matchesMedia("(max-width: 767px)", false));
+    // Landing pages stay focused on their single CTA — don't auto-open settings.
+    setPanelOpen(!preset && !matchesMedia("(max-width: 767px)", false));
     setAnimKey((k) => k + 1);
-  }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
+  }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion, preset]);
 
   // Play Again: show loading overlay, then restart with the same settings.
   // NOTE: we intentionally do NOT clear activeQuestions/score/questionIndex
@@ -617,20 +632,36 @@ export default function TriviaGame() {
   if (gameState === "start") {
     return (
       <>
-        <StartScreen
-          onStart={handleStart}
-          onStartKids={handleStartKids}
-          onAbout={handleOpenAbout}
-          onHowToPlay={() => setShowHowToPlay(true)}
-          onPrivacy={() => setShowPrivacy(true)}
-          onApply={handleApply}
-          panelOpen={panelOpen}
-          onPanelToggle={() => setPanelOpen((v) => !v)}
-          onPanelClose={() => setPanelOpen(false)}
-          onOpenProfile={() => setProfileOpen(true)}
-          loading={loading}
-          customized={hasCustomized}
-        />
+        {preset ? (
+          <PlayLandingScreen
+            preset={preset}
+            onStart={handleStart}
+            onAbout={handleOpenAbout}
+            onHowToPlay={() => setShowHowToPlay(true)}
+            onPrivacy={() => setShowPrivacy(true)}
+            onApply={handleApply}
+            panelOpen={panelOpen}
+            onPanelToggle={() => setPanelOpen((v) => !v)}
+            onPanelClose={() => setPanelOpen(false)}
+            onOpenProfile={() => setProfileOpen(true)}
+            loading={loading}
+          />
+        ) : (
+          <StartScreen
+            onStart={handleStart}
+            onStartKids={handleStartKids}
+            onAbout={handleOpenAbout}
+            onHowToPlay={() => setShowHowToPlay(true)}
+            onPrivacy={() => setShowPrivacy(true)}
+            onApply={handleApply}
+            panelOpen={panelOpen}
+            onPanelToggle={() => setPanelOpen((v) => !v)}
+            onPanelClose={() => setPanelOpen(false)}
+            onOpenProfile={() => setProfileOpen(true)}
+            loading={loading}
+            customized={hasCustomized}
+          />
+        )}
         {showAbout && <AboutScreen onClose={handleCloseAbout} />}
         {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
         {showPrivacy && <PrivacyScreen onClose={() => setShowPrivacy(false)} />}

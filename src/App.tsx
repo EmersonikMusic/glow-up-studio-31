@@ -10,6 +10,7 @@ import Index from "./pages/Index.tsx";
 import Terms from "./pages/Terms.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
+import PlayLanding from "./pages/PlayLanding.tsx";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/play/:slug" element={<PlayLanding />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
