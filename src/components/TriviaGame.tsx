@@ -606,12 +606,13 @@ export default function TriviaGame({ preset }: TriviaGameProps = {}) {
     setQuestionIndex(0);
     setScore(0);
     setActiveQuestions([]);
-    setKidsMode(false);
+    setKidsMode(isKidsPreset(preset));
     setCountdown(settings.timePerQuestion);
     setGameState("start");
-    setPanelOpen(!matchesMedia("(max-width: 767px)", false));
+    // Landing pages stay focused on their single CTA — don't auto-open settings.
+    setPanelOpen(!preset && !matchesMedia("(max-width: 767px)", false));
     setAnimKey((k) => k + 1);
-  }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion]);
+  }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion, preset]);
 
   // Play Again: show loading overlay, then restart with the same settings.
   // NOTE: we intentionally do NOT clear activeQuestions/score/questionIndex
