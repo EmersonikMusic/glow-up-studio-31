@@ -545,7 +545,7 @@ export default function TriviaGame() {
     } finally {
       setLoading(false);
     }
-  }, [clearTimer, clearAnswerTimer, setCountdown, deferCountdown]);
+  }, [clearTimer, clearAnswerTimer, setCountdown, deferCountdown, hasCustomized, currentUser]);
 
 
   const handleApply = useCallback(async (newSettings: GameSettings) => {
