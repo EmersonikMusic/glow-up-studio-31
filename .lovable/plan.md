@@ -1,27 +1,40 @@
-# Plan: Clean up the /play/<slug> landing screen
+# Plan: Bring /play/<slug> landing screen in line with site standards
 
 ## Goal
-On the themed ad-landing pages (`/play/movies`, `/play/history`, etc.), remove two things the user flagged:
+On the themed ad-landing pages (`/play/movies`, `/play/history`, etc.), fix three things so the screen matches the rest of the site:
 
-1. The supporting text directly under the headline (e.g. under "FREE MOVIE TRIVIA").
-2. The stray-looking element between the "How to Play" and "Play all categories" links.
+1. Remove the supporting text under the headline (e.g. under "FREE MOVIE TRIVIA").
+2. Make the "How to Play" and "Play all categories" links teal with a gold hover, matching the homepage "How to Play" link.
+3. Make the headline use the standard red-to-yellow gradient treatment used by every other screen heading (About, How To Play, Result, Settings "CUSTOMIZE YOUR EXPERIENCE").
 
-## Current state (verified)
+## Verified current state
 File: `src/components/PlayLandingScreen.tsx`
 
-- Lines 90-95: a `<p>` rendering `preset.subhead` ("Say your answer out loud before the timer runs out, then reveal it. Free, no signup, plays right in your browser."). This is the text under the headline.
-- Lines 115-131: a `flex flex-col items-center gap-2` container holding the "How to Play" button and the "Play all categories" `<Link>`. The DOM contains only those two elements (confirmed via Playwright DOM dump) — there is no third node. The only visible artifact in that gap is the persistent white underline of the "How to Play" button, which sits detached from its text via `underline-offset-[5px]` and reads as a stray thin line/dash between the two links.
+- Lines 90-95: `<p>` rendering `preset.subhead` ("Say your answer out loud…"). This is the text under the headline. (`preset.subhead` stays defined in `src/data/playSlugs.ts` for the `<meta name="description">`; only the on-screen `<p>` is removed.)
+- Lines 83-88: headline `<h1>` using `text-white` + `textShadow` — the only heading on the site NOT using the gradient.
+- Lines 119-130: "How to Play" button is `text-white hover:text-gold`; "Play all categories" link is `text-white/80 hover:text-teal`. Both are inconsistent with the homepage link.
 
-## Changes
-File: `src/components/PlayLandingScreen.tsx`
+## Site standards (confirmed by reading other components)
+- **Standard headline** (AboutScreen L224-230, HowToPlayScreen L84-90, ResultScreen L162-168, SettingsPanel L444-458):
+  `font-heading font-extrabold uppercase leading-none tracking-tight` with
+  `background: linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)`,
+  `WebkitBackgroundClip: text`, `WebkitTextFillColor: transparent`, `backgroundClip: text`. No text-shadow.
+- **Standard link** (StartScreen L187, the homepage "How to Play"):
+  `text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors`.
 
-1. **Remove the subhead.** Delete the `<p>` block (lines 90-95) that renders `preset.subhead`. The headline + mascot + CTA remain.
-   - Note: `preset.subhead` is still defined in `src/data/playSlugs.ts` and used for `<meta name="description">`; leaving that data in place keeps SEO meta intact. No change to `playSlugs.ts`.
+## Changes (single file: `src/components/PlayLandingScreen.tsx`)
 
-2. **Remove the stray underline mark.** Drop the persistent `underline underline-offset-[5px]` from both the "How to Play" button and the "Play all categories" link, so no thin detached line sits in the gap. Replace with a hover-only underline (`hover:underline`) to keep the affordance without the stray persistent line. Keep `gap-2` spacing so the two links remain visually distinct.
+1. **Remove the subhead.** Delete the `<p>` block (lines 90-95) that renders `preset.subhead`.
 
-No other files change. Analytics, routing, sitemap, and gameplay are untouched.
+2. **Convert the headline to the standard gradient.** Replace the `text-white` + `textShadow` treatment on the `<h1>` (lines 83-88) with the standard gradient block:
+   - className: `mt-4 text-center font-heading font-extrabold uppercase leading-none tracking-tight text-3xl sm:text-4xl md:text-5xl animate-fade-in`
+   - style: `{ background: "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }`
+   - Remove `textShadow`. Keep the `animate-fade-in`.
+
+3. **Make both links teal with gold hover.** On the "How to Play" button (lines 119-124) and the "Play all categories" `<Link>` (lines 125-130), replace the color/hover classes with the standard link classes: `text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))]` (keeping `underline underline-offset-[5px]`, `text-xs`, `font-body font-semibold`, `transition-colors`). This matches the homepage "How to Play" link exactly.
+
+No changes to `playSlugs.ts`, routing, analytics, sitemap, or gameplay. The `preset.subhead` data remains for SEO meta only.
 
 ## Verification
 - `npx tsgo --noEmit` passes.
-- Playwright: load `/play/movies` on desktop (1280px) and mobile (390px), screenshot, confirm the subtext is gone and no thin white line/dot sits between the two links.
+- Playwright: load `/play/movies` on desktop (1280) and mobile (390), screenshot, confirm: no text under the headline; headline shows the red-to-yellow gradient (not white); both links are teal and turn gold on hover.
