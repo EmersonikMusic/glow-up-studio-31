@@ -81,18 +81,18 @@ export default function PlayLandingScreen({
           />
 
           <h1
-            className="mt-4 text-center font-heading font-extrabold uppercase tracking-[0.06em] text-white text-3xl sm:text-5xl animate-fade-in"
-            style={{ textShadow: "0 3px 6px rgba(0,0,0,0.5)" }}
+            className="mt-4 text-center font-heading font-extrabold uppercase leading-none tracking-tight text-3xl sm:text-4xl md:text-5xl animate-fade-in"
+            style={{
+              background:
+                "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
           >
             {preset.headline}
           </h1>
 
-          <p
-            className="mt-3 max-w-md text-center text-sm sm:text-base font-body font-semibold text-white/85 animate-fade-in"
-            style={{ animationDelay: "90ms" }}
-          >
-            {preset.subhead}
-          </p>
 
           <PrimaryCTA
             onClick={handleStart}
