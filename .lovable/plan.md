@@ -35,6 +35,29 @@ File: `src/components/PlayLandingScreen.tsx`
 
 No changes to `playSlugs.ts`, routing, analytics, sitemap, or gameplay. The `preset.subhead` data remains for SEO meta only.
 
+## Conversion measurement on the landing pages — verified, no changes needed
+
+`/play/:slug` renders the same `<TriviaGame preset={preset} />` component as the homepage, so it inherits the identical tracking path. Verified by playing a full round on `/play/movies` in a real browser and capturing `dataLayer` plus outbound tag requests:
+
+Events captured on the landing page:
+- `user_engagement_action` with `action_name: cta_primary_landing_play` (landing CTA click)
+- `game_start` with the preset-filtered payload (`categories_count: 1` — the Movies filter is correctly applied)
+- `game_complete` with `num_questions: 10, questions_played: 10, duration_sec, round_id`
+
+Network confirmed the tags actually fired, not just the pushes:
+- GTM container `GTM-N8WKMK2M` loaded
+- GA4 `G-7T5D6V0V38` collect hits
+- Google Ads `AW-18392006298` conversion pixels fired twice — once after start, once after complete (`googleadservices.com/pagead/conversion/18392006298`)
+
+Also confirmed by code trace (shared, not landing-specific):
+- **Game plays / completes**: `beginRound()` + `trackGameStart()` + `recordGameStart()` at `TriviaGame.tsx:539-550`; `trackGameComplete()` in `advanceOrFinish` at `TriviaGame.tsx:299`. Per-round dedupe in `analytics.ts` still applies.
+- **Replays**: the Result screen "Play Again" `PrimaryCTA` uses `trackId="result_play_again"` → `cta_primary_result_play_again` (allowlisted), and the replay re-enters `runFetchAndStart`, so a new `beginRound()`/`game_start` and a fresh `game_complete` fire for each replay.
+- **Sign-ups**: unchanged and route-independent — `AuthModal.tsx:195` calls `fireSignUpConversionForUser(...)`, which pushes the `sign_up` event; the Google Ads conversion is configured in GTM against it. The auth modal is reachable from the landing header, so sign-ups from an ad landing page are tracked identically.
+
+The three UI edits above are purely presentational (headline gradient, link colors, removing a `<p>`) and touch no tracking code, so measurement stays intact.
+
 ## Verification
 - `npx tsgo --noEmit` passes.
 - Playwright: load `/play/movies` on desktop (1280) and mobile (390), screenshot, confirm: no text under the headline; headline shows the red-to-yellow gradient (not white); both links are teal and turn gold on hover.
+- Re-run the landing-page round capture after the edits to confirm `cta_primary_landing_play`, `game_start`, and `game_complete` still fire.
+
