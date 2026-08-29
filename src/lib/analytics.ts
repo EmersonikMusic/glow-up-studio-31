@@ -64,6 +64,12 @@ export function trackEvent(name: string, params?: GtagParams): void {
 export function trackClick(eventName: string, params?: GtagParams): void {
   if (!ENGAGEMENT_ACTIONS.has(eventName)) return;
   trackEvent(ENGAGEMENT_EVENT, { action_name: eventName, ...(params ?? {}) });
+  // Replays also get their own dedicated event name so GTM can trigger on it
+  // directly (e.g. a Google Ads replay conversion), independent of the shared
+  // engagement tag above.
+  if (eventName === "cta_primary_result_play_again") {
+    trackEvent("cta_primary_result_play_again", { ...(params ?? {}) });
+  }
 }
 
 
