@@ -444,8 +444,9 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
 
       {/* Title */}
       <div className="px-5 pt-4 pb-3 md:px-6 md:pt-2 md:pb-3">
+        {/* Mobile: single line, small clamp. Desktop/tablet: two stacked lines. */}
         <h2
-          className="text-[clamp(11px,4.2vw,17px)] sm:text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center whitespace-nowrap"
+          className="text-[clamp(11px,4.2vw,17px)] sm:hidden font-heading font-extrabold uppercase leading-none tracking-tight text-center whitespace-nowrap"
           style={{ lineHeight: 1.05 }}
         >
           <span
@@ -460,6 +461,27 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
             Customize Your Experience
           </span>
         </h2>
+        <h2
+          className="hidden sm:block text-2xl md:text-4xl font-heading font-extrabold uppercase leading-none tracking-tight text-center"
+          style={{ lineHeight: 1.05 }}
+        >
+          {["CUSTOMIZE YOUR", "EXPERIENCE"].map((line) => (
+            <span
+              key={line}
+              className="block"
+              style={{
+                background:
+                  "linear-gradient(0deg, #e93e3a 0%, #ed683c 11%, #f3903f 33%, #fdc70c 72%, #fff33b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              {line}
+            </span>
+          ))}
+        </h2>
+
 
 
       </div>
