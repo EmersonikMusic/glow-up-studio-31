@@ -121,7 +121,7 @@ export default function PlayLandingScreen({
             <SecondaryCTA
               onClick={() => navigate("/")}
               trackId={isKidsOrCustom ? "switch_game_mode" : "play_all_categories"}
-              className="mt-3 w-full animate-fade-in"
+              className="mt-3 w-full px-5 sm:px-10 animate-fade-in"
               style={{ animationDelay: "160ms" }}
               aria-label={isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
             >
