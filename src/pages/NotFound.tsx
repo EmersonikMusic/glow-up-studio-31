@@ -111,12 +111,10 @@ const NotFound = () => {
           >
             404
           </h1>
-
-          <p className="text-sm text-white/70 font-body">
-            (But seriously, this is a 404 error)
-          </p>
-
-          <div className="pt-2">
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm text-white/70 font-body">
+              (But seriously, this is a 404 error)
+            </p>
             <PrimaryCTA onClick={() => navigate("/")} aria-label="Back to Game">
               Back to Game
             </PrimaryCTA>
