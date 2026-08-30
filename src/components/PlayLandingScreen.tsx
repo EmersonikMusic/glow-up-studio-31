@@ -95,45 +95,26 @@ export default function PlayLandingScreen({
           </h1>
 
 
-          {/* CTA stack — shared width so both buttons match */}
-          <div className="mt-8 flex flex-col items-stretch w-fit mx-auto max-w-full">
-            <PrimaryCTA
-              onClick={handleStart}
-              disabled={loading}
-              trackId="landing_play"
-              className="w-full px-5 sm:px-10 animate-fade-in"
-              style={{ animationDelay: "160ms" }}
-              aria-label={loading ? "Loading questions" : preset.ctaLabel}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                  <span>Loading…</span>
-                </>
-              ) : (
-                preset.ctaLabel
-              )}
-            </PrimaryCTA>
-
-            <SecondaryCTA
-              onClick={() => navigate("/")}
-              trackId={isKidsOrCustom ? "switch_game_mode" : "play_all_categories"}
-              className="mt-3 w-full px-5 sm:px-10 animate-fade-in"
-              style={{ animationDelay: "160ms" }}
-              aria-label={isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
-            >
-              {isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
-            </SecondaryCTA>
-          </div>
-
-          {/* How to Play link */}
-          <button
-            onClick={() => { trackClick("click_how_to_play"); onHowToPlay(); }}
-            className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
-            style={{ animationDelay: "240ms" }}
-          >
-            How to Play
-          </button>
+          <CTAStack
+            primary={{
+              label: preset.ctaLabel,
+              onClick: handleStart,
+              trackId: "landing_play",
+              ariaLabel: preset.ctaLabel,
+            }}
+            secondary={[
+              {
+                label: isKidsOrCustom ? "Switch Game Mode" : "Play All Categories",
+                onClick: () => navigate("/"),
+                trackId: isKidsOrCustom ? "switch_game_mode" : "play_all_categories",
+                ariaLabel: isKidsOrCustom ? "Switch Game Mode" : "Play All Categories",
+              },
+            ]}
+            onHowToPlay={onHowToPlay}
+            loading={loading}
+            compactMobilePadding
+            animationDelay={160}
+          />
         </div>
       </div>
 
