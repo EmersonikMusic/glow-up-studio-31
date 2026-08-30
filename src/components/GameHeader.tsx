@@ -25,6 +25,9 @@ export default function GameHeader({
   settingsOpen = false,
   showNav = true,
 }: GameHeaderProps) {
+  const headerRef = useRef<HTMLElement>(null);
+  useHeaderHeightVar(headerRef);
+
 
   const fsSupported =
     typeof document !== "undefined" &&
