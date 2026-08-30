@@ -1,13 +1,20 @@
 import { Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import PrimaryCTA from "./PrimaryCTA";
+import SecondaryCTA from "./SecondaryCTA";
 import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GameSettings } from "@/data/gameOptions";
-import { presetGradient, presetMascot, type PlayPreset } from "@/data/playSlugs";
+import {
+  presetGradient,
+  presetMascot,
+  isKidsPreset,
+  isCustomPreset,
+  type PlayPreset,
+} from "@/data/playSlugs";
 
 interface PlayLandingScreenProps {
   preset: PlayPreset;
@@ -42,6 +49,8 @@ export default function PlayLandingScreen({
 }: PlayLandingScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
+  const navigate = useNavigate();
+  const isKidsOrCustom = isKidsPreset(preset) || isCustomPreset(preset);
 
   const handleStart = () => {
     play("start");
@@ -116,12 +125,15 @@ export default function PlayLandingScreen({
             >
               How to Play
             </button>
-            <Link
-              to="/"
-              className="howto-link inline-flex items-center gap-2 text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
+            <SecondaryCTA
+              onClick={() => navigate("/")}
+              trackId={isKidsOrCustom ? "switch_game_mode" : "play_all_categories"}
+              className="mt-3 w-full animate-fade-in"
+              style={{ animationDelay: "220ms" }}
+              aria-label={isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
             >
-              Play all categories
-            </Link>
+              {isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
+            </SecondaryCTA>
 
           </div>
         </div>
