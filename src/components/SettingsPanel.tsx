@@ -393,11 +393,14 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
   }, []);
 
   const onDragEnd = useCallback(() => {
-    if (sheetRef.current) sheetRef.current.style.transition = "";
+    if (sheetRef.current) {
+      sheetRef.current.style.transition = "";
+      // Always clear the inline transform: leaving it behind after a
+      // dismiss makes the sheet reopen lower each time.
+      sheetRef.current.style.transform = "";
+    }
     if (dragOffset.current > 120) {
       onClose();
-    } else if (sheetRef.current) {
-      sheetRef.current.style.transform = "";
     }
     dragStartY.current = null;
     dragOffset.current = 0;
@@ -740,6 +743,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       {/* Sliding panel */}
       <div
         data-testid="settings-panel-desktop"
+        data-ready={ready ? "true" : "false"}
         className="settings-sheet-desktop fixed inset-y-0 right-0 z-40 flex w-[420px] md:w-[55%] lg:w-[40%] xl:w-[32%] max-w-[480px]"
         data-open={open ? "true" : "false"}
       >
