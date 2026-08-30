@@ -88,7 +88,13 @@ const NotFound = () => {
             className="text-sm font-subheading font-bold tracking-[0.2em] uppercase"
             style={{ color: "hsl(185 70% 55%)" }}
           >
-            Well, this is awkward…
+            Bonus Level
+          </p>
+
+          <p className="text-lg sm:text-xl font-heading font-semibold text-white leading-snug">
+            Which server-speak status code indicates a client error, a general
+            syntax error, and &lsquo;not found&rsquo; with a three-digit,
+            palindromic number?
           </p>
 
           <h1
@@ -106,11 +112,9 @@ const NotFound = () => {
             404
           </h1>
 
-          <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-white">
-            This page wandered off
-            <br />
-            the trivia trail.
-          </h2>
+          <p className="text-sm text-white/70 font-body">
+            (But seriously, this is a 404 error)
+          </p>
 
           <div className="pt-2">
             <PrimaryCTA onClick={() => navigate("/")} aria-label="Back to Game">
