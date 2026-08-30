@@ -506,9 +506,18 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </button>
               )}
 
+              {isSignup && (
+                <TurnstileWidget
+                  className="mt-1 flex justify-center min-h-[65px]"
+                  resetKey={captchaResetKey}
+                  onToken={setCaptchaToken}
+                />
+              )}
+
               {error && (
                 <p className="text-xs text-red-400 text-center">{error}</p>
               )}
+
 
               <button
                 type="submit"
