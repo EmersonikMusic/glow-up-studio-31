@@ -49,6 +49,8 @@ export default function PlayLandingScreen({
 }: PlayLandingScreenProps) {
   const isMobile = useIsMobile();
   const { play } = useSound();
+  const navigate = useNavigate();
+  const isKidsOrCustom = isKidsPreset(preset) || isCustomPreset(preset);
 
   const handleStart = () => {
     play("start");
