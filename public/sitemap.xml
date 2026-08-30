@@ -224,5 +224,10 @@
     <loc>https://triviolivia.com/play/2020s</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
+   </url>
+   <url>
+     <loc>https://triviolivia.com/play/custom</loc>
+     <changefreq>weekly</changefreq>
+     <priority>0.8</priority>
+   </url>
 </urlset>
