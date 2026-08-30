@@ -202,10 +202,17 @@ export function isCustomPreset(preset: PlayPreset | undefined): boolean {
   return preset?.kind === "custom";
 }
 
+/** Custom + Kids pages match the homepage: default mascot, default background. */
+function isNeutralPreset(preset: PlayPreset): boolean {
+  return isCustomPreset(preset) || isKidsPreset(preset);
+}
+
 export function presetMascot(preset: PlayPreset): string {
+  if (isNeutralPreset(preset)) return defaultMascot;
   return getMascotForCategory(preset.theme);
 }
 
 export function presetGradient(preset: PlayPreset): string | undefined {
+  if (isNeutralPreset(preset)) return undefined;
   return categoryColors[preset.theme];
 }
