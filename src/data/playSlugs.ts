@@ -17,7 +17,7 @@ import type { Category } from "@/data/questions";
 import { getMascotForCategory } from "@/data/categoryMascots";
 import { categoryColors } from "@/data/categoryColors";
 
-export type PlayKind = "category" | "difficulty" | "era";
+export type PlayKind = "category" | "difficulty" | "era" | "custom";
 
 export interface PlayPreset {
   slug: string;
