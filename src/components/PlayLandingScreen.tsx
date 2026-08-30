@@ -99,12 +99,12 @@ export default function PlayLandingScreen({
 
 
           {/* CTA stack — shared width so both buttons match */}
-          <div className="mt-8 flex flex-col items-stretch w-fit mx-auto">
+          <div className="mt-8 flex flex-col items-stretch w-fit mx-auto max-w-full">
             <PrimaryCTA
               onClick={handleStart}
               disabled={loading}
               trackId="landing_play"
-              className="w-full animate-fade-in"
+              className="w-full px-5 sm:px-10 animate-fade-in"
               style={{ animationDelay: "160ms" }}
               aria-label={loading ? "Loading questions" : preset.ctaLabel}
             >
