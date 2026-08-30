@@ -1,14 +1,11 @@
-import { Loader2 } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop-v2.svg";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
-import PrimaryCTA from "./PrimaryCTA";
-import SecondaryCTA from "./SecondaryCTA";
 import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
-import { trackClick } from "@/lib/analytics";
+import CTAStack from "./CTAStack";
 
 interface StartScreenProps {
   onStart: () => void;
@@ -132,63 +129,30 @@ export default function StartScreen({ onStart, onStartKids, onAbout, onHowToPlay
             </svg>
           </div>
 
-          {/* CTA stack — shared width so both buttons match */}
-          <div className="mt-8 flex flex-col items-stretch w-fit mx-auto">
-            {/* Quick Play button — logo-aligned CTA */}
-            <PrimaryCTA
-              onClick={handleStart}
-              disabled={loading}
-              trackId="start_game"
-              className="w-full animate-fade-in"
-              style={{ animationDelay: "180ms" }}
-              aria-label={loading ? "Loading questions" : customized ? "Start Game" : "Quick Play"}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                  <span>Loading…</span>
-                </>
-              ) : customized ? (
-                "Start Game"
-              ) : (
-                "Quick Play"
-              )}
-            </PrimaryCTA>
-
-            {/* Customize Game — opens settings panel */}
-            <SecondaryCTA
-              onClick={onPanelToggle}
-              disabled={loading}
-              trackId="customize_game"
-              className="mt-3 w-full animate-fade-in"
-              style={{ animationDelay: "180ms" }}
-              aria-label="Customize Game"
-            >
-              Customize Game
-            </SecondaryCTA>
-
-            {/* Kids Mode — starts a game using only Kids-difficulty questions */}
-            <SecondaryCTA
-              onClick={handleStartKids}
-              disabled={loading}
-              trackId="kids_mode"
-              className="mt-3 w-full animate-fade-in"
-              style={{ animationDelay: "180ms" }}
-              aria-label="Kids Mode"
-            >
-              Kids Mode
-            </SecondaryCTA>
-          </div>
-
-
-          {/* How Do I Play link */}
-          <button
-            onClick={() => { trackClick("click_how_to_play"); onHowToPlay(); }}
-            className="howto-link mt-[22px] text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors animate-fade-in"
-            style={{ animationDelay: "240ms" }}
-          >
-            How to Play
-          </button>
+          <CTAStack
+            primary={{
+              label: customized ? "Start Game" : "Quick Play",
+              onClick: handleStart,
+              trackId: "start_game",
+              ariaLabel: customized ? "Start Game" : "Quick Play",
+            }}
+            secondary={[
+              {
+                label: "Customize Game",
+                onClick: onPanelToggle,
+                trackId: "customize_game",
+                ariaLabel: "Customize Game",
+              },
+              {
+                label: "Kids Mode",
+                onClick: handleStartKids,
+                trackId: "kids_mode",
+                ariaLabel: "Kids Mode",
+              },
+            ]}
+            onHowToPlay={onHowToPlay}
+            loading={loading}
+          />
         </div>
       </div>
 
