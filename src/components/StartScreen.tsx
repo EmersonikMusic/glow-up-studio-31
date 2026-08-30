@@ -1,14 +1,11 @@
-import { Loader2 } from "lucide-react";
 import logo from "@/assets/img-TO-logo-full-desktop-v2.svg";
 import { useIsMobile } from "@/hooks/use-mobile";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import type { GameSettings } from "@/data/gameOptions";
-import PrimaryCTA from "./PrimaryCTA";
-import SecondaryCTA from "./SecondaryCTA";
 import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
-import { trackClick } from "@/lib/analytics";
+import CTAStack from "./CTAStack";
 
 interface StartScreenProps {
   onStart: () => void;
