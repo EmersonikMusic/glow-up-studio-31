@@ -1,13 +1,20 @@
 import { Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import PrimaryCTA from "./PrimaryCTA";
+import SecondaryCTA from "./SecondaryCTA";
 import LegalFooter from "./LegalFooter";
 import { useSound } from "@/hooks/useSound";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GameSettings } from "@/data/gameOptions";
-import { presetGradient, presetMascot, type PlayPreset } from "@/data/playSlugs";
+import {
+  presetGradient,
+  presetMascot,
+  isKidsPreset,
+  isCustomPreset,
+  type PlayPreset,
+} from "@/data/playSlugs";
 
 interface PlayLandingScreenProps {
   preset: PlayPreset;
