@@ -186,6 +186,7 @@ export function isKidsPreset(preset: PlayPreset | undefined): boolean {
 /** Narrow exactly one settings axis to the preset value; leave the rest full. */
 export function settingsForPreset(preset: PlayPreset | undefined): GameSettings {
   if (!preset) return DEFAULT_SETTINGS;
+  if (preset.kind === "custom") return { ...DEFAULT_SETTINGS };
   if (preset.kind === "category") {
     return { ...DEFAULT_SETTINGS, selectedCategories: [preset.value] };
   }
@@ -194,6 +195,11 @@ export function settingsForPreset(preset: PlayPreset | undefined): GameSettings 
   }
   if (isKidsPreset(preset)) return { ...DEFAULT_SETTINGS };
   return { ...DEFAULT_SETTINGS, selectedDifficulties: [preset.value] };
+}
+
+/** Custom landing page opens the Customize panel on arrival. */
+export function isCustomPreset(preset: PlayPreset | undefined): boolean {
+  return preset?.kind === "custom";
 }
 
 export function presetMascot(preset: PlayPreset): string {
