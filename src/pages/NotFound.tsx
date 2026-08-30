@@ -116,7 +116,7 @@ const NotFound = () => {
             (But seriously, this is a 404 error)
           </p>
 
-          <div className="pt-2">
+          <div className="pt-0.5">
             <PrimaryCTA onClick={() => navigate("/")} aria-label="Back to Game">
               Back to Game
             </PrimaryCTA>
