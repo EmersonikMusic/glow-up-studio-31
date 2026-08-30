@@ -197,9 +197,13 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
     if (sheetRef.current) sheetRef.current.style.transform = `translateY(${delta}px)`;
   }, []);
   const onDragEnd = useCallback(() => {
-    if (sheetRef.current) sheetRef.current.style.transition = "";
+    if (sheetRef.current) {
+      sheetRef.current.style.transition = "";
+      // Always clear the inline transform: leaving it behind after a
+      // dismiss makes the sheet reopen lower each time.
+      sheetRef.current.style.transform = "";
+    }
     if (dragOffset.current > 120) onClose();
-    else if (sheetRef.current) sheetRef.current.style.transform = "";
     dragStartY.current = null;
     dragOffset.current = 0;
   }, [onClose]);
@@ -444,7 +448,6 @@ export default function ProfilePanel({ open, onClose, user }: ProfilePanelProps)
           className="settings-sheet-mobile fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-3xl"
           data-open={open ? "true" : "false"}
           style={{
-            maxHeight: "92dvh",
             background: "rgba(0, 0, 0, 0.25)",
             backdropFilter: "blur(24px)",
             border: "1.5px solid rgba(255, 255, 255, 0.18)",
