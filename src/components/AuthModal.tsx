@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 import { fireSignUpConversionForUser } from "@/lib/conversion";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 import appleLogo from "@/assets/apple-logo-white.svg";
 
