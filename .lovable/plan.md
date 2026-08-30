@@ -18,6 +18,14 @@ Landing at `/play/custom`:
 - On mobile the panel still opens as a bottom sheet under the header; the CTA remains reachable when the panel is dismissed.
 - Analytics unchanged: game_start / game_complete, engagement events and Ads conversions fire the same way as on every other landing page.
 
+## Mobile header: one line
+
+The "CUSTOMIZE YOUR EXPERIENCE" header in `src/components/SettingsPanel.tsx` (line ~448) is currently split into two stacked spans on mobile with `text-[clamp(14px,6.2vw,24px)]`. For `/play/custom` — where the panel is open on arrival — it should fit on a single line on mobile.
+
+- Merge the two-line `["CUSTOMIZE YOUR", "EXPERIENCE"].map(...)` render into one continuous heading span (keep the red-to-yellow gradient applied across the whole line).
+- Reduce the mobile clamp so "CUSTOMIZE YOUR EXPERIENCE" stays on one line at common phone widths (e.g. `text-[clamp(12px,4.4vw,18px)]`), keeping `sm:text-2xl md:text-4xl` for tablet/desktop unchanged.
+- The panel's `85dvh` mobile height cap and flush-under-header positioning stay as-is; this only shrinks the title.
+
 ## Technical notes
 
 - `src/data/playSlugs.ts`: add a `"custom"` kind to `PlayKind` and one hand-written preset entry (`slug: "custom"`, headline "Custom Trivia", CTA "START GAME", meta title/description, a neutral theme category for mascot + gradient). `settingsForPreset` returns plain `DEFAULT_SETTINGS` for it; `isKidsPreset` stays false.
