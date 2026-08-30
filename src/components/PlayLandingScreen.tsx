@@ -125,12 +125,15 @@ export default function PlayLandingScreen({
             >
               How to Play
             </button>
-            <Link
-              to="/"
-              className="howto-link inline-flex items-center gap-2 text-xs font-body font-semibold underline underline-offset-[5px] text-[hsl(185_70%_55%)] hover:text-[hsl(var(--game-gold))] transition-colors"
+            <SecondaryCTA
+              onClick={() => navigate("/")}
+              trackId={isKidsOrCustom ? "switch_game_mode" : "play_all_categories"}
+              className="mt-3 w-full animate-fade-in"
+              style={{ animationDelay: "220ms" }}
+              aria-label={isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
             >
-              Play all categories
-            </Link>
+              {isKidsOrCustom ? "Switch Game Mode" : "Play All Categories"}
+            </SecondaryCTA>
 
           </div>
         </div>
