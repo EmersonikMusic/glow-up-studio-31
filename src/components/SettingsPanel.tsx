@@ -446,7 +446,7 @@ export default function SettingsPanel({ open, onToggle, onClose, onAbout, onAppl
       <div className="px-5 pt-4 pb-3 md:px-6 md:pt-2 md:pb-3">
         {/* Mobile: single line, small clamp. Desktop/tablet: two stacked lines. */}
         <h2
-          className="text-[clamp(11px,4.2vw,17px)] sm:hidden font-heading font-extrabold uppercase leading-none tracking-tight text-center whitespace-nowrap"
+          className="text-[clamp(15px,5.2vw,20px)] sm:hidden font-heading font-extrabold uppercase leading-none tracking-tight text-center whitespace-nowrap"
           style={{ lineHeight: 1.05 }}
         >
           <span
