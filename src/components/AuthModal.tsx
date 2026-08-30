@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { trackClick } from "@/lib/analytics";
 import { fireSignUpConversionForUser } from "@/lib/conversion";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 import appleLogo from "@/assets/apple-logo-white.svg";
 
@@ -45,6 +46,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   // a "sent" confirmation panel + throttled Resend button.
   const [resetSent, setResetSent] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  // Cloudflare Turnstile bot check (sign-up only).
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
+
+
 
   // 30s countdown for the Resend button.
   useEffect(() => {
@@ -154,7 +160,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         setError(usernameError);
         return;
       }
+      if (!captchaToken) {
+        setError("Please complete the human verification check.");
+        return;
+      }
     }
+
     setLoading(true);
     trackClick(isSignup ? "click_sign_up_email" : "click_sign_in_email");
     try {
@@ -170,6 +181,18 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           .maybeSingle();
         if (taken) {
           setError("That username is already taken.");
+          setLoading(false);
+          return;
+        }
+        // Server-side bot verification before creating the account.
+        const { data: verify, error: verifyError } = await supabase.functions.invoke(
+          "verify-turnstile",
+          { body: { token: captchaToken } },
+        );
+        if (verifyError || !verify?.success) {
+          setError("Verification failed. Please try the check again.");
+          setCaptchaToken(null);
+          setCaptchaResetKey((k) => k + 1);
           setLoading(false);
           return;
         }
@@ -483,9 +506,18 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </button>
               )}
 
+              {isSignup && (
+                <TurnstileWidget
+                  className="mt-1 flex justify-center min-h-[65px]"
+                  resetKey={captchaResetKey}
+                  onToken={setCaptchaToken}
+                />
+              )}
+
               {error && (
                 <p className="text-xs text-red-400 text-center">{error}</p>
               )}
+
 
               <button
                 type="submit"
