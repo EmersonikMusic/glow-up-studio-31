@@ -111,7 +111,7 @@ const NotFound = () => {
           >
             404
           </h1>
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex flex-col items-center gap-3">
             <p className="text-sm text-white/70 font-body">
               (But seriously, this is a 404 error)
             </p>
