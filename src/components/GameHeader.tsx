@@ -1,11 +1,12 @@
 import { Info, Maximize2, Minimize2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toLogoSm from "@/assets/TO_logo_sm_clr.svg";
 import settingsIcon from "@/assets/icon-settings.svg";
 import { trackClick } from "@/lib/analytics";
 import SoundToggle from "./SoundToggle";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import AuthButton from "./AuthButton";
+import { useHeaderHeightVar } from "@/hooks/useHeaderHeightVar";
 
 interface GameHeaderProps {
   onSettingsToggle?: () => void;
@@ -62,6 +63,7 @@ export default function GameHeader({
 
   return (
     <header
+      ref={headerRef}
       className="relative z-20 px-4 sm:px-6 md:px-8 backdrop-blur-md mobile-landscape-header"
       style={{
         paddingTop: "max(clamp(0.75rem, 2vw, 1.25rem), env(safe-area-inset-top))",
