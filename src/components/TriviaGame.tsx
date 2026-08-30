@@ -4,7 +4,7 @@ import type { Question } from "@/data/questions";
 import { categoryColors } from "@/data/categoryColors";
 import { fetchAndStartGame } from "@/lib/triviaApi";
 import { DEFAULT_SETTINGS, type GameSettings } from "@/data/gameOptions";
-import { isKidsPreset, settingsForPreset, type PlayPreset } from "@/data/playSlugs";
+import { isCustomPreset, isKidsPreset, settingsForPreset, type PlayPreset } from "@/data/playSlugs";
 import { useCountdown, useNullableCountdown } from "@/hooks/useCountdown";
 import { useSound } from "@/hooks/useSound";
 
@@ -118,7 +118,7 @@ export default function TriviaGame({ preset }: TriviaGameProps = {}) {
   const [animKey, setAnimKey] = useState(0);
   const [settings, setSettings] = useState<GameSettings>(() => settingsForPreset(preset));
   const [paused, setPaused] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(() => isCustomPreset(preset));
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [hasCustomized, setHasCustomized] = useState(false);
@@ -610,8 +610,9 @@ export default function TriviaGame({ preset }: TriviaGameProps = {}) {
     setKidsMode(isKidsPreset(preset));
     setCountdown(settings.timePerQuestion);
     setGameState("start");
-    // Landing pages stay focused on their single CTA — don't auto-open settings.
-    setPanelOpen(!preset && !matchesMedia("(max-width: 767px)", false));
+    // Landing pages stay focused on their single CTA — don't auto-open settings,
+    // except the custom landing page which always opens the panel.
+    setPanelOpen(isCustomPreset(preset) || (!preset && !matchesMedia("(max-width: 767px)", false)));
     setAnimKey((k) => k + 1);
   }, [clearTimer, clearAnswerTimer, setCountdown, settings.timePerQuestion, preset]);
 

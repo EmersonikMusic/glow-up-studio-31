@@ -17,7 +17,7 @@ import type { Category } from "@/data/questions";
 import { getMascotForCategory } from "@/data/categoryMascots";
 import { categoryColors } from "@/data/categoryColors";
 
-export type PlayKind = "category" | "difficulty" | "era";
+export type PlayKind = "category" | "difficulty" | "era" | "custom";
 
 export interface PlayPreset {
   slug: string;
@@ -154,6 +154,19 @@ const presets: PlayPreset[] = [
       theme: ERA_THEMES[era] ?? "History",
     };
   }),
+  // Custom landing page: opens the Customize panel by default, no filter narrowed.
+  {
+    slug: "custom",
+    kind: "custom",
+    value: "",
+    headline: "Custom Trivia",
+    subhead: SUBHEAD,
+    ctaLabel: "Start Game",
+    metaTitle: "Custom Trivia — Build Your Own Quiz | Triviolivia",
+    metaDescription:
+      "Pick your categories, difficulties and eras, then play a custom trivia quiz in your browser. Say-aloud questions, no signup.",
+    theme: "Miscellaneous" as Category,
+  },
 ];
 
 export const PLAY_PRESETS: readonly PlayPreset[] = presets;
@@ -173,6 +186,7 @@ export function isKidsPreset(preset: PlayPreset | undefined): boolean {
 /** Narrow exactly one settings axis to the preset value; leave the rest full. */
 export function settingsForPreset(preset: PlayPreset | undefined): GameSettings {
   if (!preset) return DEFAULT_SETTINGS;
+  if (preset.kind === "custom") return { ...DEFAULT_SETTINGS };
   if (preset.kind === "category") {
     return { ...DEFAULT_SETTINGS, selectedCategories: [preset.value] };
   }
@@ -181,6 +195,11 @@ export function settingsForPreset(preset: PlayPreset | undefined): GameSettings 
   }
   if (isKidsPreset(preset)) return { ...DEFAULT_SETTINGS };
   return { ...DEFAULT_SETTINGS, selectedDifficulties: [preset.value] };
+}
+
+/** Custom landing page opens the Customize panel on arrival. */
+export function isCustomPreset(preset: PlayPreset | undefined): boolean {
+  return preset?.kind === "custom";
 }
 
 export function presetMascot(preset: PlayPreset): string {
