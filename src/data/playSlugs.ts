@@ -15,6 +15,7 @@ import {
 } from "@/data/gameOptions";
 import type { Category } from "@/data/questions";
 import { getMascotForCategory } from "@/data/categoryMascots";
+import defaultMascot from "@/assets/Mascot.svg";
 import { categoryColors } from "@/data/categoryColors";
 
 export type PlayKind = "category" | "difficulty" | "era" | "custom";
