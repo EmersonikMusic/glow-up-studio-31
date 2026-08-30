@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import GameHeader from "./GameHeader";
 import SettingsPanel from "./SettingsPanel";
 import PrimaryCTA from "./PrimaryCTA";
