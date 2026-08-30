@@ -46,6 +46,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   // a "sent" confirmation panel + throttled Resend button.
   const [resetSent, setResetSent] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  // Cloudflare Turnstile bot check (sign-up only).
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
+
+
 
   // 30s countdown for the Resend button.
   useEffect(() => {
@@ -155,7 +160,12 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
         setError(usernameError);
         return;
       }
+      if (!captchaToken) {
+        setError("Please complete the human verification check.");
+        return;
+      }
     }
+
     setLoading(true);
     trackClick(isSignup ? "click_sign_up_email" : "click_sign_in_email");
     try {
