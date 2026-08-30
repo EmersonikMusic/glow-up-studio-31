@@ -184,6 +184,18 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           setLoading(false);
           return;
         }
+        // Server-side bot verification before creating the account.
+        const { data: verify, error: verifyError } = await supabase.functions.invoke(
+          "verify-turnstile",
+          { body: { token: captchaToken } },
+        );
+        if (verifyError || !verify?.success) {
+          setError("Verification failed. Please try the check again.");
+          setCaptchaToken(null);
+          setCaptchaResetKey((k) => k + 1);
+          setLoading(false);
+          return;
+        }
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
