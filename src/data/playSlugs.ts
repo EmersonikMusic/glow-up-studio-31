@@ -154,6 +154,19 @@ const presets: PlayPreset[] = [
       theme: ERA_THEMES[era] ?? "History",
     };
   }),
+  // Custom landing page: opens the Customize panel by default, no filter narrowed.
+  {
+    slug: "custom",
+    kind: "custom",
+    value: "",
+    headline: "Custom Trivia",
+    subhead: SUBHEAD,
+    ctaLabel: "Start Game",
+    metaTitle: "Custom Trivia — Build Your Own Quiz | Triviolivia",
+    metaDescription:
+      "Pick your categories, difficulties and eras, then play a custom trivia quiz in your browser. Say-aloud questions, no signup.",
+    theme: "Miscellaneous" as Category,
+  },
 ];
 
 export const PLAY_PRESETS: readonly PlayPreset[] = presets;
